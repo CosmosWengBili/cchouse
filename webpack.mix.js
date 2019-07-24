@@ -11,5 +11,10 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
+mix.scripts(['resources/vendor/dashboard.js',
+             'resources/vendor/hoverable-collapse.js',
+             'resources/vendor/off-canvas.js',
+             'resources/vendor/settings.js',
+             'resources/vendor/template.js',
+             'resources/vendor/todolist.js'], 'public/js/vendor.js')
     .sass('resources/sass/app.scss', 'public/css');

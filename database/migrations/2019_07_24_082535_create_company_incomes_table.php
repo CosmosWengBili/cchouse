@@ -17,7 +17,7 @@ class CreateCompanyIncomesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tenant_contract_id')->comment('租客合約ID');
             $table->string('subject')->comment('項目');
-            $table->date('income_date')->comment('收入時間');
+            $table->date('income_date')->nullable()->comment('收入時間');
             $table->integer('amount')->comment('費用');
             $table->text('comment')->comment('備註');
 

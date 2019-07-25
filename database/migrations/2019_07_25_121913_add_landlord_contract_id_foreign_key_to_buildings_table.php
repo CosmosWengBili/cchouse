@@ -14,7 +14,7 @@ class AddLandlordContractIdForeignKeyToBuildingsTable extends Migration
     public function up()
     {
         Schema::table('buildings', function (Blueprint $table) {
-            $table->unsignedBigInteger('landlord_contract_id')->comment('房東合約 ID');
+            $table->unsignedBigInteger('landlord_contract_id')->nullable()->comment('房東合約 ID');
 
             $table->foreign('landlord_contract_id')
                 ->references('id')->on('landlord_contract');

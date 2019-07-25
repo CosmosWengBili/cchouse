@@ -16,7 +16,7 @@ class CreateTenantElectricityPaymentsTable extends Migration
         Schema::create('tenant_electricity_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tenant_contract_id')->comment('租客合約ID');
-            $table->date('ammeter_read_date')->comment('抄表時間');
+            $table->date('ammeter_read_date')->nullable()->comment('抄表時間');
             $table->integer('110v_start_degree')->comment('110v起');
             $table->integer('110v_end_degree')->comment('110v迄');
             $table->integer('220v_start_degree')->comment('220v起');

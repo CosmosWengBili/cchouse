@@ -14,7 +14,7 @@ class AddCommissionerIdForeignKeyToTenantContractTable extends Migration
     public function up()
     {
         Schema::table('tenant_contract', function (Blueprint $table) {
-            $table->unsignedBigInteger('commissioner_id')->comment('專員');
+            $table->unsignedBigInteger('commissioner_id')->nullable()->comment('專員');
 
             $table->foreign('commissioner_id')
                 ->references('id')->on('users');

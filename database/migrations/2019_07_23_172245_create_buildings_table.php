@@ -37,7 +37,7 @@ class CreateBuildingsTable extends Migration
             $table->string('water_meter_location')->comment('自來水表位置');
             $table->string('water_meter_serial_number')->comment('自來水表表號');
             $table->string('water_payment_method')->comment('自來水帳單付款方式');
-            $table->date('water_meter_reading_date')->comment('水錶抄表日期');
+            $table->date('water_meter_reading_date')->nullable()->comment('水錶抄表日期');
             $table->string('gas_meter_location')->comment('天然氣表位置');
             $table->string('garbage_collection_location')->comment('收垃圾地點');
             $table->string('garbage_collection_time')->comment('收垃圾時間');
@@ -48,8 +48,8 @@ class CreateBuildingsTable extends Migration
             $table->string('administrative_number')->comment('行政區碼');
             $table->string('accounting_group')->comment('會計組別');
             $table->string('rental_receipt')->comment('租金收據');
-            $table->unsignedBigInteger('commissioner_id')->comment('招租人員');
-            $table->unsignedBigInteger('administrator_id')->comment('管理人員');
+            $table->unsignedBigInteger('commissioner_id')->nullable()->comment('招租人員');
+            $table->unsignedBigInteger('administrator_id')->nullable()->comment('管理人員');
             $table->text('comment');
 
             $table->timestamps();

@@ -25,8 +25,8 @@ class CreateShareholdersTable extends Migration
             $table->string('transfer_from')->comment('匯出銀行');
             $table->string('bill_delivery')->comment('帳單郵寄或傳真');
             $table->string('distribution_method')->comment('分配方式');
-            $table->date('distribution_start_date')->comment('分配起');
-            $table->date('distribution_end_date')->comment('分配迄');
+            $table->date('distribution_start_date')->nullable()->comment('分配起');
+            $table->date('distribution_end_date')->nullable()->comment('分配迄');
             $table->integer('distribution_rate')->comment('分配費率');
             $table->integer('investment_amount')->comment('投資額');    
 

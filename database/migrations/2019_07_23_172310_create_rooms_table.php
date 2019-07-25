@@ -27,7 +27,7 @@ class CreateRoomsTable extends Migration
             $table->integer('room_count')->comment('房間');
             $table->integer('bathroom_count')->comment('衛浴');
             $table->integer('parking_count')->comment('車位');
-            $table->date('ammeter_reading_date')->comment('電表抄表日期');
+            $table->date('ammeter_reading_date')->nullable()->comment('電表抄表日期');
             $table->integer('rent_list_price')->comment('租金牌價');
             $table->integer('rent_reserve_price')->comment('租金底價');
             $table->integer('rent_landlord')->comment('房東租金');

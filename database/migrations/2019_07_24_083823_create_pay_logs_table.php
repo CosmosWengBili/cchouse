@@ -21,7 +21,7 @@ class CreatePayLogsTable extends Migration
             $table->string('payment_type')->comment('繳費類別');
             $table->integer('amount')->comment('費用');
             $table->string('virtual_account')->comment('虛擬帳號');
-            $table->timestamp('paid_at')->comment('匯款時間');
+            $table->timestamp('paid_at')->nullable()->comment('匯款時間');
 
             $table->timestamps();
             $table->softDeletes();

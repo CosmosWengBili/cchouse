@@ -35,8 +35,8 @@ class CreateTenantsTable extends Migration
             $table->string('friend_emergency_contact')->comment('朋友緊急聯絡人');
             $table->string('relationship_to_friend_emergency_contact')->comment('朋友緊急聯絡人關係');
             $table->string('friend_emergency_contact_phone')->comment('朋友緊急聯絡人電話');
-            $table->unsignedBigInteger('confirm_by')->comment('資料確認人員');
-            $table->date('confirm_at')->comment('資料確認日');
+            $table->unsignedBigInteger('confirm_by')->nullable()->comment('資料確認人員');
+            $table->date('confirm_at')->nullable()->comment('資料確認日');
 
             $table->timestamps();
             $table->softDeletes();

@@ -28,8 +28,8 @@ class CreateTenantContractTable extends Migration
             $table->string('motorcycle_parking_space_number')->comment('機車停車編號');
             $table->integer('motorcycle_parking_count')->comment('機車停車個數');
             $table->boolean('effective')->comment('是否已生效');
-            $table->date('contract_start')->comment('租約起');
-            $table->date('contract_end')->comment('租約迄');
+            $table->date('contract_start')->nullable()->comment('租約起');
+            $table->date('contract_end')->nullable()->comment('租約迄');
             $table->integer('rent')->comment('租金');
             $table->integer('rent_pay_day')->comment('租金支付日');
             $table->integer('deposit')->comment('押金');

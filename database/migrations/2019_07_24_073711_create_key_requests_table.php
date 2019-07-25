@@ -18,7 +18,7 @@ class CreateKeyRequestsTable extends Migration
             $table->unsignedBigInteger('request_user_id')->comment('借用人');
             $table->unsignedBigInteger('key_id')->comment('鑰匙 ID');
             $table->string('status')->comment('狀態');
-            $table->date('request_date')->comment('出借日');
+            $table->date('request_date')->nullable()->comment('出借日');
             $table->boolean('request_approved')->comment('出借允許');
 
             $table->timestamps();

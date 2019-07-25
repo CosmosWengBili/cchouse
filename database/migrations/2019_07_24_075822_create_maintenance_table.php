@@ -16,13 +16,13 @@ class CreateMaintenanceTable extends Migration
         Schema::create('maintenance', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tenant_contract_id')->comment('租客合約 ID');
-            $table->date('reported_at')->comment('反映日期');
-            $table->date('expected_service_date')->comment('預計處理日期');
-            $table->time('expected_service_time')->comment('預計處理時間');
-            $table->date('dispatch_date')->comment('派工日');
-            $table->unsignedBigInteger('commissioner_id')->comment('處理專員');
-            $table->unsignedBigInteger('maintenance_staff_id')->comment('維修人員');
-            $table->date('closed_date')->comment('結案日期');
+            $table->date('reported_at')->nullable()->comment('反映日期');
+            $table->date('expected_service_date')->nullable()->comment('預計處理日期');
+            $table->time('expected_service_time')->nullable()->comment('預計處理時間');
+            $table->date('dispatch_date')->nullable()->comment('派工日');
+            $table->unsignedBigInteger('commissioner_id')->nullable()->comment('處理專員');
+            $table->unsignedBigInteger('maintenance_staff_id')->nullable()->comment('維修人員');
+            $table->date('closed_date')->nullable()->comment('結案日期');
             $table->text('closed_comment')->comment('完工備註');
             $table->text('service_comment')->comment('處理備註');
             $table->string('status')->comment('狀態');
@@ -30,7 +30,7 @@ class CreateMaintenanceTable extends Migration
             $table->string('incident_type')->comment('事故類別');
             $table->string('work_type')->comment('工種');
             $table->integer('number_of_times')->comment('趟數');
-            $table->date('payment_request_date')->comment('請款日期');
+            $table->date('payment_request_date')->nullable()->comment('請款日期');
             $table->string('closing_serial_number')->comment('結案單號');
             $table->text('billing_details')->comment('登帳說明');
             $table->string('payment_request_serial_number')->comment('請款單號');

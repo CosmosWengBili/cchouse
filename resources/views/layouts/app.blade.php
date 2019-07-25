@@ -1,9 +1,13 @@
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>CCHouse</title>
+
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>{{ config('app.name', 'CCHouse') }}</title>
         <!-- base:css -->
         <link rel="stylesheet" href="vendors/typicons/font/typicons.css">
         <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">

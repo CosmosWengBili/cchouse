@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBuildingsShareholdersTable extends Migration
+class CreateBuildingShareholderTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateBuildingsShareholdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('buildings_shareholders', function (Blueprint $table) {
+        Schema::create('building_shareholder', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('building_id')->comment('物件 ID');
             $table->unsignedBigInteger('shareholder_id')->comment('股東 ID');
@@ -38,6 +38,6 @@ class CreateBuildingsShareholdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('buildings_shareholders');
+        Schema::dropIfExists('building_shareholder');
     }
 }

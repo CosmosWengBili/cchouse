@@ -15,9 +15,9 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('type')->comment('文件來源類型');
+            $table->string('attachable_type')->comment('文件來源類型');
             $table->string('path')->comment('文件路徑');
-            $table->string('source_id')->comment('來源表ID');
+            $table->string('attachable_id')->comment('來源表ID');
             
             $table->timestamps();
             $table->softDeletes();

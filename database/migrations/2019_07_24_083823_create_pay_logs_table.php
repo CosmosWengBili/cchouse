@@ -15,8 +15,8 @@ class CreatePayLogsTable extends Migration
     {
         Schema::create('pay_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('source_type')->comment('tenant_payment, tenant_electricity_payment');
-            $table->unsignedBigInteger('source_id')->comment('費用 ID (PK)');
+            $table->string('loggable_type')->comment('tenant_payment, tenant_electricity_payment');
+            $table->unsignedBigInteger('loggable_id')->comment('費用 ID (PK)');
             $table->string('subject')->comment('科目');
             $table->string('payment_type')->comment('繳費類別');
             $table->integer('amount')->comment('費用');

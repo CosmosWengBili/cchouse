@@ -16,8 +16,13 @@ class CreateStackdriverLogger
     {
         $logName = isset($config['logName']) ? $config['logName'] : 'app';
         $options = [
-            'resource' => ['type' => 'gce_instance'],
-            'labels' => ['zone' => env('GCE_ZONE'), 'instanceId' => env('GCE_INSTANCE_ID')]
+            'resource' => [
+                'type' => 'gce_instance',
+                'labels' => [
+                    'zone' => env('GCE_ZONE'),
+                    'instance_id' => env('GCE_INSTANCE_ID')
+                ]
+            ]
         ];
         $psrLogger = LoggingClient::psrBatchLogger($logName, $options);
         $handler = new PsrHandler($psrLogger);

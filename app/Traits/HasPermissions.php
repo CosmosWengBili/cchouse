@@ -1,7 +1,6 @@
 <?php
 namespace App\Traits;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Collection;
 use \Spatie\Permission\Traits\HasPermissions as HasPermissionsBase;
@@ -11,29 +10,16 @@ trait HasPermissions {
     use HasPermissionsBase;
 
     /**
-     * A role may be given various permissions.
+     * A model may have multiple direct permissions.
      */
-    public function permissions(): BelongsToMany
+    public function permissions(): MorphToMany
     {
-        return $this->belongsToMany(
+        return $this->morphToMany(
             config('permission.models.permission'),
-            config('permission.table_names.role_has_permissions'),
-            'group_id',
-            'permission_id'
-        );
-    }
-
-    /**
-     * A role belongs to some users of the model associated with its guard.
-     */
-    public function users(): MorphToMany
-    {
-        return $this->morphedByMany(
-            getModelForGuard($this->attributes['guard_name']),
             'model',
-            config('permission.table_names.model_has_roles'),
-            'group_id',
-            config('permission.column_names.model_morph_key')
+            config('permission.table_names.model_has_permissions'),
+            config('permission.column_names.model_morph_key'),
+            'permission_id'
         );
     }
 

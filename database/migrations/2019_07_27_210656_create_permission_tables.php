@@ -93,10 +93,10 @@ class CreatePermissionTables extends Migration
     {
         $tableNames = config('permission.table_names');
 
-        Schema::drop($tableNames['group_has_permissions']);
-        Schema::drop($tableNames['model_has_groups']);
+        Schema::drop('group_has_permissions');
+        Schema::drop('model_has_groups');
         Schema::drop($tableNames['model_has_permissions']);
-        Schema::drop($tableNames['groups']);
+        Schema::drop('groups');
         Schema::drop($tableNames['permissions']);
     }
 }

@@ -28,7 +28,9 @@
     </head>
     <body>
         <div class="container-scroller">
-            @include('layouts.nav')
+            <?php if(Auth::check()): ?> 
+                @include('layouts.nav')
+            <?php endif; ?>
             <div class="container-fluid page-body-wrapper">
                 <div class="main-panel">
                     @yield('content')

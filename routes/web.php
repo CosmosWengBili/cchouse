@@ -18,3 +18,11 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Auth::routes();
+
+// should be in auth
+Route::group(['middleware' => ['with.nested']], function () {
+    Route::resource('buildings', 'BuildingController');
+    Route::resource('rooms', 'RoomController');
+    Route::resource('keys', 'KeyController');
+    Route::resource('keyRequests', 'KeyRequestController');
+});

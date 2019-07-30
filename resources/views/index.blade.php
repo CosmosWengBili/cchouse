@@ -9,6 +9,8 @@
     <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
 </form>
 
+<select data-toggle="selectize" data-table="users" data-text="name" data-selected="2"></select>
+
 <table id="dataA" class="display" style="width:100%">
     <thead>
         <tr>
@@ -522,7 +524,7 @@
 <script>
 $(document).ready( function () {
     renderDataTable(["#dataA", "#dataB"])
-    renderDataTableAll()
+    realtimeSelect()
 } );
 </script>
 @endsection

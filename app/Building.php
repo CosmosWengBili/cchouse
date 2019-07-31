@@ -11,6 +11,31 @@ class Building extends Model
     use SoftDeletes;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [ 'water_meter_reading_date' ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'has_elevator' => 'boolean',
+    ];
+
+    /**
      * Get the user who is the commissioner of this building.
      */
     public function commissioner() {

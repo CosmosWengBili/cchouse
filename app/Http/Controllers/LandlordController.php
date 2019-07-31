@@ -49,12 +49,18 @@ class LandlordController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Landlord  $landlord
      * @return \Illuminate\Http\Response
      */
     public function show(Landlord $landlord)
     {
-        //
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($landlord->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('shared.show', $responseData->get());
     }
 
     /**
@@ -65,7 +71,7 @@ class LandlordController extends Controller
      */
     public function edit(Landlord $landlord)
     {
-        //
+        // return view('your.edit.page', ['landlord' => $landlord]);
     }
 
     /**
@@ -77,7 +83,16 @@ class LandlordController extends Controller
      */
     public function update(Request $request, Landlord $landlord)
     {
-        //
+
+        $validatedData = $request->validate([
+            'name' => 'nullable|max:255',
+            'certificate_number' => 'nullable',
+            'is_legal_person' => 'nullable|boolean',
+            'is_collected_by_third_party' => 'nullable|boolean',
+        ]);
+
+        $landlord->update($validatedData);
+        return response()->json(true);
     }
 
     /**
@@ -88,6 +103,7 @@ class LandlordController extends Controller
      */
     public function destroy(Landlord $landlord)
     {
-        //
+        $landlord->delete();
+        return response()->json(true);
     }
 }

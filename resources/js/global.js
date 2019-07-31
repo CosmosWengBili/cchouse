@@ -4,13 +4,16 @@ function realtimeSelect(){
 
     var selectizeElements = $('[data-toggle=selectize]')
     selectizeElements.each(function(){
+        // Set data
         var select = $(this)
         var table = select.data('table')
         var text = select.data('text')
         var selected = select.data('selected')
 
+        // Set async object
         var $d = $.Deferred();
 
+        // Call API
         var task = $.ajax({
             method: "POST",
             url: "/api/selectize",
@@ -26,7 +29,8 @@ function realtimeSelect(){
                     tableElements += `<option value="${msg[i]['id']}">${msg[i][text]}</option>`
                 }
             }
-            console.log(tableElements)
+
+            // Render HTML code
             select.append(tableElements)
             select.selectize({
                 create: true,

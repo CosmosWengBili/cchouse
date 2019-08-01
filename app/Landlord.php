@@ -9,6 +9,25 @@ class Landlord extends Model
 {
 
     use SoftDeletes;
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_legal_person' => 'boolean',
+        'is_collected_by_third_party' => 'boolean',
+    ];
     
     /**
      * Get all the landlord's contracts.
@@ -21,7 +40,7 @@ class Landlord extends Model
      * Get all the buildings through the contracts that this landlord owns.
      */
     public function buildings() {
-        return $this->hasManyThrough('App\Building', 'App\LandlordContract', 'landlord_id', 'landlord_contract_id');
+        return $this->belongsToMany('App\Building', 'landlord_contract');
     }
 
     /**
@@ -31,6 +50,54 @@ class Landlord extends Model
     public function thirdPartyDocuments()
     {
         return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get all kinds of the landlords's contact infos.
+     * 所有聯絡資訊
+     */
+    public function contactInfos() {
+        return $this->morphMany('App\ContactInfo', 'contactable');
+    }
+
+    /**
+     * Get a list of the landlords's phone numbers.
+     * 聯絡電話
+     */
+    public function phones() {
+        return $this->contactInfos()->where('info_type', 'phone');
+    }
+
+    /**
+     * Get a list of the landlords's mailing addresses.
+     * 聯絡地址
+     */
+    public function mailingAddresses() {
+        return $this->contactInfos()->where('info_type', 'mailing_address');
+    }
+
+    /**
+     * Get a list of the landlords's emails.
+     * 電子郵件
+     */
+    public function emails() {
+        return $this->contactInfos()->where('info_type', 'email');
+    }
+
+    /**
+     * Get a list of the landlords's fax numbers.
+     * 傳真
+     */
+    public function faxNumbers() {
+        return $this->contactInfos()->where('info_type', 'fax_number');
+    }
+
+    /**
+     * Get all of the landlord's agents.
+     * 代理人
+     */
+    public function agents() {
+        return $this->hasMany('App\LandlordAgent');
     }
     
 }

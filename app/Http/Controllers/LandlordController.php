@@ -6,6 +6,7 @@ use App\Landlord;
 use Illuminate\Http\Request;
 
 use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
 
 class LandlordController extends Controller
 {
@@ -32,7 +33,8 @@ class LandlordController extends Controller
      */
     public function create()
     {
-        //
+        $responseData = new FormDataResponser();
+        return view('shared.form', $responseData->create(Landlord::class, 'landlords.store')->get());
     }
 
     /**
@@ -43,7 +45,15 @@ class LandlordController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'certificate_number' => 'required',
+            'is_legal_person' => 'required|boolean',
+            'is_collected_by_third_party' => 'required|boolean',
+        ]);
+
+        Landlord::create($validatedData);
+        return response()->json(true);
     }
 
     /**
@@ -53,7 +63,7 @@ class LandlordController extends Controller
      * @param  \App\Landlord  $landlord
      * @return \Illuminate\Http\Response
      */
-    public function show(Landlord $landlord)
+    public function show(Request  $request, Landlord $landlord)
     {
         $responseData = new NestedRelationResponser();
         $responseData
@@ -71,7 +81,8 @@ class LandlordController extends Controller
      */
     public function edit(Landlord $landlord)
     {
-        // return view('your.edit.page', ['landlord' => $landlord]);
+        $responseData = new FormDataResponser();
+        return view('shared.form', $responseData->edit($landlord, 'landlords.update')->get());
     }
 
     /**
@@ -86,9 +97,9 @@ class LandlordController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'nullable|max:255',
-            'certificate_number' => 'nullable',
-            'is_legal_person' => 'nullable|boolean',
-            'is_collected_by_third_party' => 'nullable|boolean',
+            'certificate_number' => 'required',
+            'is_legal_person' => 'required|boolean',
+            'is_collected_by_third_party' => 'required|boolean',
         ]);
 
         $landlord->update($validatedData);

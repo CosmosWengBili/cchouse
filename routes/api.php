@@ -17,6 +17,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['namespace' => '_Api'], function () {
-    Route::post('selectize', 'ApiController@selectize');
+Route::group(['namespace' => 'Api'], function () {
+    Route::post('selectize', 'FeatureController@selectize');
 });

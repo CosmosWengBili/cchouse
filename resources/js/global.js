@@ -1,48 +1,41 @@
-function realtimeSelect(){
+function realtimeSelect(selectizeElements) {
 
-    var tasks = []
-
-    var selectizeElements = $('[data-toggle=selectize]')
-    selectizeElements.each(function(){
+    selectizeElements.each(function () {
         // Set data
-        var select = $(this)
-        var table = select.data('table')
-        var text = select.data('text')
-        var selected = select.data('selected')
-
-        // Set async object
-        var $d = $.Deferred();
+        const select = $(this)
+        const table = select.data('table')
+        const text = select.data('text')
+        const selected = select.data('selected')
 
         // Call API
-        var task = $.ajax({
-            method: "POST",
-            url: "/api/selectize",
-            data: { table: table, text: text }
-        })
-        .done(function( msg ) {
-            var tableElements = ""
-            for( var i = 0 ; i < msg.length; i++ ){
-                if( selected == msg[i]['id'] ){
-                    tableElements += `<option value="${msg[i]['id']}" selected>${msg[i][text]}</option>` 
+        $.ajax({
+                method: "POST",
+                url: "/api/selectize",
+                data: {
+                    table: table,
+                    text: text
                 }
-                else{
-                    tableElements += `<option value="${msg[i]['id']}">${msg[i][text]}</option>`
+            })
+            .done(function (msg) {
+                if (msg !== "invalid") {
+                    const tableElements = ""
+                    for (var i = 0; i < msg.length; i++) {
+                        if (selected === msg[i]['id']) {
+                            tableElements += `<option value="${msg[i]['id']}" selected>${msg[i][text]}</option>`
+                        } else {
+                            tableElements += `<option value="${msg[i]['id']}">${msg[i][text]}</option>`
+                        }
+                    }
+
+                    // Render HTML code
+                    select.append(tableElements)
+                    select.selectize({
+                        create: true,
+                        sortField: 'text'
+                    });
+                } else {
+                    alert('SQL Query issue');
                 }
-            }
-
-            // Render HTML code
-            select.append(tableElements)
-            select.selectize({
-                create: true,
-                sortField: 'text'
-            });
-            $d.resolve('done')
-
-            return $d.promise()
-        });
-
-        tasks.push(task)
+            })
     })
 }
-
-

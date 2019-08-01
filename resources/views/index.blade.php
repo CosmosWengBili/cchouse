@@ -9,7 +9,9 @@
     <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
 </form>
 
-<select data-toggle="selectize" data-table="users" data-text="name" data-selected="2"></select>
+<select data-toggle="selectize" data-table="user" data-text="name" data-selected="2"></select>
+
+<select data-toggle="selectize" data-table="user" data-text="email" data-selected="1"></select>
 
 <table id="dataA" class="display" style="width:100%">
     <thead>
@@ -524,7 +526,7 @@
 <script>
 $(document).ready( function () {
     renderDataTable(["#dataA", "#dataB"])
-    realtimeSelect()
+    realtimeSelect($('[data-toggle=selectize]'))
 } );
 </script>
 @endsection

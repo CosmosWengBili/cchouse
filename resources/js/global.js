@@ -1,3 +1,25 @@
+$(document).ready(function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $("#csrf").val()
+        }
+    });
+});
+$(document).on('click', 'a.jquery-postback', function (e) {
+    e.preventDefault();
+    if (confirm('是否刪除?')) {
+        $.post({
+            type: $(this).data('method'),
+            url: $(this).attr('href')
+        }).done(function () {
+            location.reload();
+        });
+    } else {
+        alert("取消刪除")
+    }
+
+});
+
 function realtimeSelect(selectizeElements) {
 
     selectizeElements.each(function () {

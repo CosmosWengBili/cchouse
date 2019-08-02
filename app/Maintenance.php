@@ -4,11 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Maintenance extends Pivot
 {
-    
     use SoftDeletes;
+    use AuditableTrait;
 
     /**
      * Get the user who took care of this maintenance.

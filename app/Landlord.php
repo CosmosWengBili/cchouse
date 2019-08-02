@@ -4,11 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Landlord extends Model
+class Landlord extends Model implements AuditableContract
 {
-
     use SoftDeletes;
+    use AuditableTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -28,7 +30,7 @@ class Landlord extends Model
         'is_legal_person' => 'boolean',
         'is_collected_by_third_party' => 'boolean',
     ];
-    
+
     /**
      * Get all the landlord's contracts.
      */
@@ -99,5 +101,5 @@ class Landlord extends Model
     public function agents() {
         return $this->hasMany('App\LandlordAgent');
     }
-    
+
 }

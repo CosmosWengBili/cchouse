@@ -18,6 +18,7 @@
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
         <link rel="stylesheet" href={{ asset('css/datatables.css') }}>
+        <link rel="stylesheet" href={{ asset('css/vendor.css') }}>
         <!-- End plugin css for this page -->
         <!-- inject:css -->
         <link rel="stylesheet" href={{ asset('css/app.css') }}>
@@ -48,6 +49,7 @@
         
         <script src={{ asset('js/manifest.js') }}></script>
         <script src={{ asset('js/vendor.js') }}></script>
+        <script src={{ asset('js/app.js') }}></script>
         <!-- endinject -->
         <!-- plugin js for this page -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

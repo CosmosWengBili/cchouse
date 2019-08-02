@@ -23,8 +23,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
+            Route::resource('landlords', 'LandlordController');
+            Route::resource('contactInfos', 'ContactInfoController');
+            Route::resource('landlordAgents', 'LandlordAgentController');
 
-            
+
             // excels
             Route::get('upload/{model}', 'ExcelController@upload');
             Route::post('import/{model}', 'ExcelController@import');

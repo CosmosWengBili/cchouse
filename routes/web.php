@@ -33,6 +33,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
         });
+        Route::resource('audits', 'AuditController', ['only' => ['index']]);
     });
 
     Auth::routes();

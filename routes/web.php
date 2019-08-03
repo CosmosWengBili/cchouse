@@ -26,6 +26,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlords', 'LandlordController');
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
+
+            // notifications
+            Route::get('notifications', 'NotificationController@index')->name('notifications.index');
+            Route::post('notifications/{id}', 'NotificationController@read')->name('notifications.read');
         });
     });
 

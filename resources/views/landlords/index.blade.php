@@ -10,7 +10,7 @@
             @foreach ( $data as $type => $entries)
                 
         
-                @include('shared.table', ['objects' => $entries, 'layer' => $type])
+                @include('landlords.table', ['objects' => $entries, 'layer' => $type])
 
             @endforeach
 

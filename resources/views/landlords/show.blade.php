@@ -26,7 +26,7 @@
                                 $layer = explode('.', $relation)[0];
                             @endphp
 
-                            @include('shared.table', ['objects' => $data[$layer], 'layer' => $layer])
+                            @include('landlords.table', ['objects' => $data[$layer], 'layer' => $layer])
                         </div>
                     @endforeach
 

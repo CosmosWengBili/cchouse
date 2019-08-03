@@ -12,7 +12,7 @@
                 <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
             </form>
             <div class="p-3" style="background-color: #fff; border-radius: 5px;" >
-                    <table id="audit-logs-table" style="table-layout: fixed; word-break: break-word;">
+                    <table id="audit-logs-table" class="w-100">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -20,12 +20,9 @@
                             <th>事件</th>
                             <th>Model</th>
                             <th>Model ID</th>
-                            <th>User-Agent</th>
                             <th>IP</th>
-                            <th>網址</th>
                             <th>操作時間</th>
-                            <th>舊資料</th>
-                            <th>新資料</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,12 +33,13 @@
                                 <td>{{ $auditLog->event }}</td>
                                 <td>{{ $auditLog->auditable_type }}</td>
                                 <td>{{ $auditLog->auditable_id }}</td>
-                                <td>{{ $auditLog->user_agent }}</td>
                                 <td>{{ $auditLog->ip_address }}</td>
-                                <td>{{ $auditLog->url }}</td>
                                 <td>{{ $auditLog->created_at }}</td>
-                                <td>{{ $auditLog->old_values }}</td>
-                                <td>{{ $auditLog->new_values }}</td>
+                                <td>
+                                    <a target="_blank" href="{{ route('audits.show', ['audit' => $auditLog]) }}" class="btn btn-info">
+                                        詳細資料
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -56,22 +54,7 @@
 </div>
 <script>
     $(document).ready(function () {
-        renderDataTable(["#audit-logs-table"], {
-            scrollX: true,
-            columns: [
-                { width: '30px' },
-                { width: '80px' },
-                { width: '80px' },
-                { width: '80px' },
-                { width: '80px' },
-                { width: '100px' },
-                { width: '80px' },
-                { width: '200px' },
-                { width: '100px' },
-                { width: '200px' },
-                { width: '200px' },
-            ],
-        });
+        renderDataTable(["#audit-logs-table"]);
     });
 </script>
 @endsection

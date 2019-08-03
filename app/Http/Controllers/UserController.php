@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Landlord;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
-class LandlordController extends Controller
+
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,10 +22,10 @@ class LandlordController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('landlords', Landlord::with($request->withNested)->get())
+            ->index('Users', User::select($this->whitelist('users'))->with($request->withNested)->get())
             ->relations($request->withNested);
 
-        return view('landlords.index', $responseData->get());
+        return view('users.index', $responseData->get());
     }
 
     /**
@@ -34,7 +36,7 @@ class LandlordController extends Controller
     public function create()
     {
         $responseData = new FormDataResponser();
-        return view('landlords.form', $responseData->create(Landlord::class, 'landlords.store')->get());
+        return view('users.form', $responseData->create(User::class, 'users.store')->get());
     }
 
     /**
@@ -46,75 +48,79 @@ class LandlordController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'certificate_number' => 'required',
-            'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean',
+            'name' => 'nullable|max:255',
+            'mobile' => 'nullable',
+            'email' => 'required',
+            'password' => 'required' 
         ]);
 
-        Landlord::create($validatedData);
-        return response()->json(true);
+        User::create($validatedData);
+
+        return redirect('users');
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Landlord  $landlord
+     * @param  \App\User  $User
      * @return \Illuminate\Http\Response
      */
-    public function show(Request  $request, Landlord $landlord)
+    public function show(Request $request, User $user)
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->show($landlord->load($request->withNested))
+            ->show($user->load($request->withNested))
             ->relations($request->withNested);
 
-        return view('landlords.show', $responseData->get());
+        return view('users.show', $responseData->get());
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Landlord  $landlord
+     * @param  \App\User  $User
      * @return \Illuminate\Http\Response
      */
-    public function edit(Landlord $landlord)
+    public function edit(User $user)
     {
         $responseData = new FormDataResponser();
-        return view('landlords.form', $responseData->edit($landlord, 'landlords.update')->get());
+        return view('users.form', $responseData->edit($user, 'users.update')->get());
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Landlord  $landlord
+     * @param  \App\User  $User
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Landlord $landlord)
+    public function update(Request $request, User $user)
     {
 
-        $validatedData = $request->validate([
+        $input = $request->input();
+
+        $request->validate([
             'name' => 'nullable|max:255',
-            'certificate_number' => 'required',
-            'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean',
+            'mobile' => 'nullable',
+            'email' => 'required',
         ]);
 
-        $landlord->update($validatedData);
-        return response()->json(true);
+        $input['password'] = Hash::make($input['password']);
+        $user->update($input);
+        
+        return redirect('/users/'.$user->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Landlord  $landlord
+     * @param  \App\User  $User
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Landlord $landlord)
+    public function destroy(User $user)
     {
-        $landlord->delete();
+        $user->delete();
         return response()->json(true);
     }
 }

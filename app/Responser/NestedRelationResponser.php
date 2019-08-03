@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class NestedRelationResponser {
 
+    private $makeHidden = [ 'created_at', 'updated_at', 'deleted_at' ];
+
     private $responseData = [
         'data' => [],
-        'relations' => []
+        'relations' => [],
+        'model_name' => ''
     ];
 
     // for displaying a list of models
@@ -20,7 +23,8 @@ class NestedRelationResponser {
 
     // for showing a required model
     public function show(Model $model) {
-        $this->responseData['data'] = $model->toArray();
+        $this->responseData['data'] = $model->makeHidden($this->makeHidden)->toArray();
+        $this->responseData['model_name'] = class_basename($model);
         return $this;
     }
 

@@ -114,4 +114,10 @@ class User extends Authenticatable implements AuditableContract
     public function landlordContracts() {
         return $this->hasMany('App\LandlordContract', 'commissioner_id');
     }
+    /**
+     * Get all the audits of this user.
+     */
+    public function allAudits() {
+        return $this->hasMany('App\Audit', 'user_id')->where('user_type', static::class);
+    }
 }

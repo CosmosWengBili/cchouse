@@ -15,6 +15,10 @@
     <div>
         {{json_encode($objects)}}
     </div>
+@elseif($layer === 'landlord')
+    <div>
+        {{json_encode($objects)}}
+    </div>
 @else
     <table border="1">
         <thead>

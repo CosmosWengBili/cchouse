@@ -26,6 +26,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlords', 'LandlordController');
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
+            Route::resource('users', 'UserController');
         });
     });
 

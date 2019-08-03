@@ -50,6 +50,28 @@ class Kernel extends ConsoleKernel
                 // ->emailOutputTo('foo@example.com');
                 // ->emailOutputOnFailure('foo@example.com');
 
+
+        $schedule->call(function () {
+                    LandlordContract::with('building.rooms')
+                                    ->where('rent_adjusted_date', Carbon::today())
+                                    ->get()
+                                    ->each(function ($landlordContract) {
+                                        $landlordContract->building->rooms->each(function ($room) use ($landlordContract) {
+                                            $room->rent_list_price = intval(round($room->rent_list_price * (100 - $landlordContract->adjust_ratio ) / 100));
+                                            $room->rent_landlord = intval(round($room->rent_landlord * (100 - $landlordContract->adjust_ratio ) / 100));
+                                            $room->save();
+                                        });
+                                    });
+                })->before(function () {
+                    // Task is about to start...
+                })
+                ->after(function () {
+                    // Task is complete...
+                })
+                ->daily()
+                ->runInBackground();
+                // ->emailOutputTo('foo@example.com');
+                // ->emailOutputOnFailure('foo@example.com');
                 
     }
 

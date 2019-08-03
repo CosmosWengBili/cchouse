@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Audit;
+
 class AuditController extends Controller
 {
     /**
@@ -11,6 +13,7 @@ class AuditController extends Controller
      */
     public function index()
     {
-        return response('foobar');
+        $auditLogs = Audit::with('user')->get();
+        return view('audit.index')->with('auditLogs', $auditLogs);
     }
 }

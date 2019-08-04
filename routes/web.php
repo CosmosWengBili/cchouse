@@ -27,6 +27,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
             Route::resource('users', 'UserController');
+            Route::resource('tenants', 'TenantController');
+
             // excels
             Route::get('upload/{model}', 'ExcelController@upload');
             Route::post('import/{model}', 'ExcelController@import');

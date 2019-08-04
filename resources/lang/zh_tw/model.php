@@ -21,6 +21,20 @@ return [
         'user_agent' => 'User Agent',
         'tags' => '標籤',
         'created_at' => '發生時間',
-    ]
+    ],
+    'Tenant' => [
+        'id' => '編號',
+        'name' => '姓名',
+        'certificate_number' => '證號',
+        'is_legal_person' => '是否法人',
+        'line_id' => 'Line ID',
+        'residence_address' => '戶籍地址',
+        'company' => '任職公司',
+        'job_position' => '任職職位',
+        'company_address' => '任職公司地址',
+        'confirm_by' => '資料確認人員',
+        'confirm_at' => '資料確認時間',
+        'created_at' => '建立時間',
+        'updated_at' => '最後更新時間',
+    ],
 ];
-?>

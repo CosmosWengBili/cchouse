@@ -49,7 +49,7 @@ class Tenant extends Model implements AuditableContract
     }
 
     /**
-     * Get a list of the landlords's phone numbers.
+     * Get a list of the tenant's phone numbers.
      * 聯絡電話
      */
     public function phones() {
@@ -57,7 +57,7 @@ class Tenant extends Model implements AuditableContract
     }
 
     /**
-     * Get a list of the landlords's mailing addresses.
+     * Get a list of the tenant's mailing addresses.
      * 聯絡地址
      */
     public function mailingAddresses() {
@@ -65,10 +65,34 @@ class Tenant extends Model implements AuditableContract
     }
 
     /**
-     * Get a list of the landlords's emails.
+     * Get a list of the tenant's emails.
      * 電子郵件
      */
     public function emails() {
         return $this->contactInfos()->where('info_type', 'email');
+    }
+
+    /**
+     * Get all kinds of the tenant's related people.
+     * 所有關係人
+     */
+    public function relatedPeople() {
+        return $this->morphMany('App\RelatedPerson', 'related_person');
+    }
+
+    /**
+     * Get all tenant's emergency contacts.
+     * 所有緊急聯絡人
+     */
+    public function emergencyContacts() {
+        return $this->relatedPeople()->where('type', 'emergency_contact');
+    }
+
+    /**
+     * Get all tenant's guarantor.
+     * 所有保證人
+     */
+    public function guarantors() {
+        return $this->relatedPeople()->where('type', 'guarantor');
     }
 }

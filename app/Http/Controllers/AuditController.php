@@ -11,12 +11,17 @@ class AuditController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $auditLogs = Audit::with('user')->get();
-        return view('audit.index')->with('auditLogs', $auditLogs);
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->index('audits', Audit::with($request->withNested)->get())
+            ->relations($request->withNested);
+
+        return view('audit.index', $responseData->get());
     }
 
     /**

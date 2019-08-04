@@ -10,7 +10,9 @@
         <h2>@lang("model.{$model_name}.{$layer}")</h2>
 
         {{-- the route to create this kind of resource --}}
-{{--        <a class="btn btn-sm btn-success" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>--}}
+        @if(Route::has(Str::camel($layer) . '.create'))
+            <a class="btn btn-sm btn-success" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+        @endif
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))

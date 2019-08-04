@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Responser\NestedRelationResponser;
+use Exception;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use App\Responser\NestedRelationResponser;
 use App\Tenant;
 
 class TenantController extends Controller
@@ -11,8 +13,8 @@ class TenantController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -26,11 +28,10 @@ class TenantController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $User
-     * @return \Illuminate\Http\Response
+     * @param Tenant $tenant
+     * @return Response
      */
-    public function show(Request $request, Tenant $tenant)
+    public function show(Tenant $tenant)
     {
         $with = ['emergencyContacts', 'guarantors'];
         $responseData = new NestedRelationResponser();
@@ -39,4 +40,16 @@ class TenantController extends Controller
         return view('tenants.show', $responseData->get());
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Tenant $tenant
+     * @return Response
+     * @throws Exception
+     */
+    public function destroy(Tenant $tenant)
+    {
+        $tenant->delete();
+        return response()->json(true);
+    }
 }

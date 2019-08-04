@@ -1,5 +1,5 @@
 @php
-    $tableId = "model-{$model_name}-{$layer}";
+    $tableId = "model-{$model_name}-{$layer}-" . rand();
     $showFunction = Route::has(Str::camel($layer) . '.show') ||
                     Route::has(Str::camel($layer) . '.edit') ||
                     Route::has(Str::camel($layer) . '.destroy');

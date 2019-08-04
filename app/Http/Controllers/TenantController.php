@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\RelatedPerson;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Tenant;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class TenantController extends Controller
 {
@@ -35,7 +37,12 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        $with = ['emergencyContacts', 'guarantors'];
+        $with = [
+            'emergencyContacts',
+            'guarantors',
+            'tenantContracts.tenantPayments.payLog',
+            'tenantContracts.tenantElectricityPayments.payLog',
+        ];
         $responseData = new NestedRelationResponser();
         $responseData->show($tenant->load($with))->relations($with);
 

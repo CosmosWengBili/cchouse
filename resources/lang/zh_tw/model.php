@@ -36,5 +36,23 @@ return [
         'confirm_at' => '資料確認時間',
         'created_at' => '建立時間',
         'updated_at' => '最後更新時間',
+        'emergency_contacts' => '緊急聯絡人',
+        'guarantors' => '保證人',
+    ],
+    'Guarantor' => [
+        'id' => '編號',
+        'name' => '姓名',
+        'phone' => '電話',
+        'relationship' => '關係',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+    ],
+    'EmergencyContact' => [
+        'id' => '編號',
+        'name' => '姓名',
+        'phone' => '電話',
+        'relationship' => '關係',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
 ];

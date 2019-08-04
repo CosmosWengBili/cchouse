@@ -23,4 +23,20 @@ class TenantController extends Controller
         return view('tenants.index', $responseData->get());
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\User  $User
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, Tenant $tenant)
+    {
+        $with = ['emergencyContacts', 'guarantors'];
+        $responseData = new NestedRelationResponser();
+        $responseData->show($tenant->load($with))->relations($with);
+
+        return view('tenants.show', $responseData->get());
+    }
+
 }

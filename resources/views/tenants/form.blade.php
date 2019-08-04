@@ -13,6 +13,7 @@
                         @csrf
                         @method($method)
 
+                        <h3 class="mt-3">基本資料</h3>
                         <table class="table table-bordered">
                             <tbody>
                             <tr>
@@ -113,6 +114,12 @@
                             </tr>
                             </tbody>
                         </table>
+
+                        <h3 class="mt-3">緊急聯絡人</h3>
+                        @include('tenants.related_people_form', ['prefix' => 'emergency_contact', 'relatedPeople' => $data['emergency_contacts']])
+
+                        <h3 class="mt-3">保證人</h3>
+                        @include('tenants.related_people_form', ['prefix' => 'guarantor', 'relatedPeople' => $data['guarantors']])
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>

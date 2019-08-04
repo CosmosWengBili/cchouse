@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\RelatedPerson;
 use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -49,9 +50,11 @@ class TenantController extends Controller
     public function create()
     {
         $responser = new FormDataResponser();
-        $responseData = $responser->create(Tenant::class, 'tenants.store')->get();
+        $data = $responser->create(Tenant::class, 'tenants.store')->get();
+        $data['data']['emergency_contacts'] = [];
+        $data['data']['guarantors'] = [];
 
-        return view('tenants.form', $responseData);
+        return view('tenants.form', $data);
     }
 
     /**
@@ -63,7 +66,11 @@ class TenantController extends Controller
     public function edit(Tenant $tenant)
     {
         $responseData = new FormDataResponser();
-        return view('tenants.form', $responseData->edit($tenant, 'tenants.update')->get());
+        $data = $responseData->edit($tenant, 'tenants.update')->get();
+        $data['data']['emergency_contacts'] = $tenant->emergencyContacts()->get()->toArray();
+        $data['data']['guarantors'] = $tenant->guarantors()->get()->toArray();
+
+        return view('tenants.form', $data);
     }
 
     /**
@@ -85,6 +92,10 @@ class TenantController extends Controller
             'company_address' => 'required',
         ]);
         $tenant = Tenant::create($validatedData);
+        $this->updateRelatedPeople($tenant, [
+            'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
+            'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
+        ]);
 
         return redirect()->route('tenants.show', ['id' => $tenant->id]);
     }
@@ -109,6 +120,10 @@ class TenantController extends Controller
             'company_address' => 'required',
         ]);
         $tenant->update($validatedData);
+        $this->updateRelatedPeople($tenant, [
+            'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
+            'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
+        ]);
 
         return redirect()->route('tenants.show', ['id' => $tenant->id]);
     }
@@ -124,5 +139,36 @@ class TenantController extends Controller
     {
         $tenant->delete();
         return response()->json(true);
+    }
+
+    private function updateRelatedPeople(Tenant $tenant, array $relatedPeople) {
+
+        foreach($relatedPeople as $type => $relatedPersonCollection) {
+            $keepIds = array_map(function ($relatedPerson) {
+                return isset($relatedPerson['id']) ? $relatedPerson['id'] : null;
+            }, $relatedPersonCollection);
+
+            // remove removed item
+            $tenant->relatedPeople()->where('type', $type)->whereNotIn('id', $keepIds)->delete();
+
+            foreach($relatedPersonCollection as $relatedPerson) {
+                if(isset($relatedPerson['id'])) {
+                    $id = $relatedPerson['id'];
+                    $person = $tenant->relatedPeople()->find($id);
+                    $person->update($relatedPerson);
+                } else {
+                    RelatedPerson::create(
+                        array_merge(
+                            $relatedPerson,
+                            [
+                                'type' => $type,
+                                'related_person_type' => Tenant::class,
+                                'related_person_id' => $tenant->id,
+                            ]
+                        )
+                    );
+                }
+            }
+        }
     }
 }

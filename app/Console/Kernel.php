@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use App\LandlordContract;
 use App\Notifications\ContractDueInTwoMonths;
 
+use App\Services\ScheduleService;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -32,14 +34,9 @@ class Kernel extends ConsoleKernel
 
 
         // $schedule->call(new DeleteRecentUsers)->daily();
-        $schedule->call(function () {
-                    LandlordContract::where('commission_end_date', Carbon::today()->addMonth(2))
-                                    ->with('commissioner')
-                                    ->get()
-                                    ->each(function ($landlordContract) {
-                                        $landlordContract->commissioner->notify(new ContractDueInTwoMonths($landlordContract));
-                                    });
-                })->before(function () {
+        $schedule->call(ScheduleService::make('notifyContractDueInTwoMonths'))
+                ->name('Notify contract due in two months')
+                ->before(function () {
                     // Task is about to start...
                 })
                 ->after(function () {
@@ -51,18 +48,9 @@ class Kernel extends ConsoleKernel
                 // ->emailOutputOnFailure('foo@example.com');
 
 
-        $schedule->call(function () {
-                    LandlordContract::with('building.rooms')
-                                    ->where('rent_adjusted_date', Carbon::today())
-                                    ->get()
-                                    ->each(function ($landlordContract) {
-                                        $landlordContract->building->rooms->each(function ($room) use ($landlordContract) {
-                                            $room->rent_list_price = intval(round($room->rent_list_price * (100 - $landlordContract->adjust_ratio ) / 100));
-                                            $room->rent_landlord = intval(round($room->rent_landlord * (100 - $landlordContract->adjust_ratio ) / 100));
-                                            $room->save();
-                                        });
-                                    });
-                })->before(function () {
+        $schedule->call(ScheduleService::make('adjustRent'))
+                ->name('Adjust rent')
+                ->before(function () {
                     // Task is about to start...
                 })
                 ->after(function () {

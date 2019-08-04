@@ -13,6 +13,25 @@ class Tenant extends Model implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'certificate_number', 'is_legal_person', 'line_id', 'residence_address',
+        'company', 'job_position', 'company_address',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_legal_person' => 'boolean',
+    ];
+
+    /**
      * Get all the contracts of this tenant.
      */
     public function tenantContracts() {

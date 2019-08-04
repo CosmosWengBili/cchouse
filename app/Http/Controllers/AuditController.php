@@ -18,7 +18,7 @@ class AuditController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('audits', Audit::with($request->withNested)->get())
+            ->index('Audits', Audit::select($this->whitelist('audits'))->with($request->withNested)->get())
             ->relations($request->withNested);
 
         return view('audit.index', $responseData->get());

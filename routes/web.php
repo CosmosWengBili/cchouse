@@ -26,6 +26,13 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlords', 'LandlordController');
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
+            Route::resource('users', 'UserController');
+            // excels
+            Route::get('upload/{model}', 'ExcelController@upload');
+            Route::post('import/{model}', 'ExcelController@import');
+            Route::get('export/{model}', 'ExcelController@export');
+            Route::get('example/{model}', 'ExcelController@example');
+            Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
         });
     });
 

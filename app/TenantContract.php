@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class TenantContract extends Pivot
 {
-    
     use SoftDeletes;
+    use AuditableTrait;
 
     /**
      * Get the tenant of this contract.

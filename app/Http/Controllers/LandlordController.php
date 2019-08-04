@@ -23,7 +23,7 @@ class LandlordController extends Controller
             ->index('landlords', Landlord::with($request->withNested)->get())
             ->relations($request->withNested);
 
-        return view('shared.index', $responseData->get());
+        return view('landlords.index', $responseData->get());
     }
 
     /**
@@ -34,7 +34,7 @@ class LandlordController extends Controller
     public function create()
     {
         $responseData = new FormDataResponser();
-        return view('shared.form', $responseData->create(Landlord::class, 'landlords.store')->get());
+        return view('landlords.form', $responseData->create(Landlord::class, 'landlords.store')->get());
     }
 
     /**
@@ -70,7 +70,7 @@ class LandlordController extends Controller
             ->show($landlord->load($request->withNested))
             ->relations($request->withNested);
 
-        return view('shared.show', $responseData->get());
+        return view('landlords.show', $responseData->get());
     }
 
     /**
@@ -82,7 +82,7 @@ class LandlordController extends Controller
     public function edit(Landlord $landlord)
     {
         $responseData = new FormDataResponser();
-        return view('shared.form', $responseData->edit($landlord, 'landlords.update')->get());
+        return view('landlords.form', $responseData->edit($landlord, 'landlords.update')->get());
     }
 
     /**

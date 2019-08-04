@@ -7,12 +7,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements AuditableContract
 {
     use Notifiable;
     use SoftDeletes;
     use HasGroups;
+    use AuditableTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'email_verified_at', 'remember_token',
     ];
 
     /**
@@ -48,7 +51,7 @@ class User extends Authenticatable
     public function commissionBuildings() {
         return $this->hasMany('App\Building', 'commissioner_id');
     }
-    
+
     /**
      * Get the buildings this user manages.
      */
@@ -110,5 +113,11 @@ class User extends Authenticatable
      */
     public function landlordContracts() {
         return $this->hasMany('App\LandlordContract', 'commissioner_id');
+    }
+    /**
+     * Get all the audits of this user.
+     */
+    public function allAudits() {
+        return $this->hasMany('App\Audit', 'user_id')->where('user_type', static::class);
     }
 }

@@ -41,6 +41,8 @@
                             <tr>
                                 <td>@lang("model.Tenant.is_legal_person")</td>
                                 <td>
+                                    {{-- unchecked value for checkbox--}}
+                                    <input type="hidden" value="0" name="is_legal_person"/>
                                     <input
                                         type="checkbox"
                                         name="is_legal_person"

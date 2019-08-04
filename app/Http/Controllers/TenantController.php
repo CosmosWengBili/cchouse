@@ -55,6 +55,18 @@ class TenantController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\User  $User
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Tenant $tenant)
+    {
+        $responseData = new FormDataResponser();
+        return view('tenants.form', $responseData->edit($tenant, 'tenants.update')->get());
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -73,6 +85,30 @@ class TenantController extends Controller
             'company_address' => 'required',
         ]);
         $tenant = Tenant::create($validatedData);
+
+        return redirect()->route('tenants.show', ['id' => $tenant->id]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param Tenant $tenant
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Tenant $tenant)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'certificate_number' => 'required|max:255',
+            'is_legal_person' => 'required',
+            'line_id' => 'required',
+            'residence_address' => 'required',
+            'company' => 'required',
+            'job_position' => 'required',
+            'company_address' => 'required',
+        ]);
+        $tenant->update($validatedData);
 
         return redirect()->route('tenants.show', ['id' => $tenant->id]);
     }

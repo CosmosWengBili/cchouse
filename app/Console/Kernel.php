@@ -4,6 +4,11 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
+use App\LandlordContract;
+use App\Notifications\ContractDueInTwoMonths;
+
+use App\Services\ScheduleService;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,6 +31,36 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+
+        // $schedule->call(new DeleteRecentUsers)->daily();
+        $schedule->call(ScheduleService::make('notifyContractDueInTwoMonths'))
+                ->name('Notify contract due in two months')
+                ->before(function () {
+                    // Task is about to start...
+                })
+                ->after(function () {
+                    // Task is complete...
+                })
+                ->daily()
+                ->runInBackground();
+                // ->emailOutputTo('foo@example.com');
+                // ->emailOutputOnFailure('foo@example.com');
+
+
+        $schedule->call(ScheduleService::make('adjustRent'))
+                ->name('Adjust rent')
+                ->before(function () {
+                    // Task is about to start...
+                })
+                ->after(function () {
+                    // Task is complete...
+                })
+                ->daily()
+                ->runInBackground();
+                // ->emailOutputTo('foo@example.com');
+                // ->emailOutputOnFailure('foo@example.com');
+                
     }
 
     /**

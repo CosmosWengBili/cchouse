@@ -22,16 +22,16 @@ var LANGUAGE = {
 }
 var PAGELENGTH = 30
 
-function renderDataTable(selectors){
+function renderDataTable(selectors, options){
+    options = (typeof options !== 'undefined') ?  options : {};
+    options['pageLength'] = options['pageLength'] || PAGELENGTH;
+    options['language'] = options['language'] || LANGUAGE;
 
     /* DataTable Initialize */
     var tables = {}
     for( var i = 0; i < selectors.length; i++ ){
-        var table = $(`${selectors[i]}`)
-        tables[selectors[i]] = table.DataTable({
-            "pageLength": PAGELENGTH,
-            "language": LANGUAGE,
-        });
+        var table = $(`${selectors[i]}`);
+        tables[selectors[i]] = table.DataTable(options);
         var headers = $(`${selectors[i]} thead th`)
             .map(function(element, value){ if(value.innerText != "") return value.innerText})
 
@@ -90,10 +90,10 @@ function renderDataTable(selectors){
             }
             return true;
         }
-        
+
         $.fn.dataTable.ext.search = []
         $.fn.dataTable.ext.search.push(searchFunction);
-        
+
         tables[parentTable].draw();
     } );
 }
@@ -122,7 +122,7 @@ function query(column_value, rule, value){
         case '=':
             if( column_value == value ) return true
             break
-        default: 
+        default:
             return false
     }
 

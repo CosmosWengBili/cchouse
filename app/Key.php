@@ -4,14 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Key extends Model
+class Key extends Model implements AuditableContract
 {
-    
     use SoftDeletes;
+    use AuditableTrait;
 
     /**
-     * Get the key's keeper 
+     * Get the key's keeper
      */
     public function keeper() {
         return $this->belongsTo('App\User', 'keeper_id');

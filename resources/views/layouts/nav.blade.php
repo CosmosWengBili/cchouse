@@ -2,7 +2,7 @@
     <nav class="navbar top-navbar col-lg-12 col-12 p-0">
         <div class="container">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo" href="/"><img src="images/logo.png" alt="logo"/></a>
+            <a class="navbar-brand brand-logo" href="/"><img src="/images/logo.png" alt="logo"/></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end pr-0">
             <ul class="navbar-nav d-none d-lg-flex align-items-center mr-lg-2">
@@ -86,7 +86,7 @@
         <div class="container">
         <ul class="nav page-navigation">
             <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/">
                 <i class="typcn typcn-device-desktop menu-icon"></i>
                 <span class="menu-title">首頁</span>
             </a>
@@ -99,7 +99,7 @@
             </a>
             <div class="submenu">
                 <ul class="submenu-item">
-                <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
+                <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>

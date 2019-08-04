@@ -12,10 +12,11 @@ class FormDataResponser {
     private $responseData = [
         'data' => [],
         'method' => '',
-        'action' => ''
+        'action' => '',
+        'model_name' => ''
     ];
 
-    private $makeHidden = [ 'id', 'created_at', 'updated_at', 'deleted_at' ];
+    private $globalMakeHidden = [ 'id', 'created_at', 'updated_at', 'deleted_at' ];
 
     /**
      * pack data for edit page.
@@ -27,9 +28,10 @@ class FormDataResponser {
      * @param String $route
      */
     public function edit(Model $model, String $route) {
-        $this->responseData['data'] = $model->makeHidden($this->makeHidden)->toArray();
+        $this->responseData['data'] = $model->makeHidden($this->globalMakeHidden)->toArray();
         $this->responseData['method'] = 'PUT';
         $this->responseData['action'] = route($route, $model);
+        $this->responseData['model_name'] = class_basename($model);
         return $this;
     }
 
@@ -43,9 +45,14 @@ class FormDataResponser {
      * @param String $route
      */
     public function create(String $modelClass, String $route) {
-        $this->responseData['data'] = array_diff(Schema::getColumnListing((new $modelClass)->getTable()), $this->makeHidden);
+
+        $pureModelName = explode("\\", $modelClass)[1];
+        $hiddenList = array_merge($this->globalMakeHidden, config("form.{$pureModelName}"));
+
+        $this->responseData['data'] = array_diff(Schema::getColumnListing((new $modelClass)->getTable()), $hiddenList);
         $this->responseData['method'] = 'POST';
         $this->responseData['action'] = route($route);
+        $this->responseData['model_name'] = $pureModelName;
         return $this;
     }
 

@@ -4,11 +4,13 @@ namespace App;
 use App\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role as RoleBase;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Group extends RoleBase
+class Group extends RoleBase implements AuditableContract
 {
     use HasPermissions;
-
+    use AuditableTrait;
 
     public function department() {
         return $this->belongsTo('App\Department');

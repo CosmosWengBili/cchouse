@@ -4,11 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Tenant extends Model
+class Tenant extends Model implements AuditableContract
 {
-
     use SoftDeletes;
+    use AuditableTrait;
 
     /**
      * Get all the contracts of this tenant.

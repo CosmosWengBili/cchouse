@@ -7,7 +7,13 @@
 
 <div class="card">
     <div class="card-body">
-        <h2>@lang("model.{$model_name}.{$layer}")</h2>
+        <h2>
+            @if($model_name == null)
+               {{$layer}}
+            @else
+                @lang("model.{$model_name}.{$layer}")
+            @endif
+        </h2>
 
         {{-- the route to create this kind of resource --}}
         @if(Route::has(Str::camel($layer) . '.create'))

@@ -39,4 +39,36 @@ class Tenant extends Model implements AuditableContract
     public function confirmBy() {
         return $this->belongsTo('App\User', 'confirm_by');
     }
+
+    /**
+     * Get all kinds of the landlords's contact infos.
+     * 所有聯絡資訊
+     */
+    public function contactInfos() {
+        return $this->morphMany('App\ContactInfo', 'contactable');
+    }
+
+    /**
+     * Get a list of the landlords's phone numbers.
+     * 聯絡電話
+     */
+    public function phones() {
+        return $this->contactInfos()->where('info_type', 'phone');
+    }
+
+    /**
+     * Get a list of the landlords's mailing addresses.
+     * 聯絡地址
+     */
+    public function mailingAddresses() {
+        return $this->contactInfos()->where('info_type', 'mailing_address');
+    }
+
+    /**
+     * Get a list of the landlords's emails.
+     * 電子郵件
+     */
+    public function emails() {
+        return $this->contactInfos()->where('info_type', 'email');
+    }
 }

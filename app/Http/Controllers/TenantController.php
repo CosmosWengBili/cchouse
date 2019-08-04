@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
 use App\Tenant;
 
 class TenantController extends Controller
@@ -38,6 +39,42 @@ class TenantController extends Controller
         $responseData->show($tenant->load($with))->relations($with);
 
         return view('tenants.show', $responseData->get());
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $responser = new FormDataResponser();
+        $responseData = $responser->create(Tenant::class, 'tenants.store')->get();
+
+        return view('tenants.form', $responseData);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'certificate_number' => 'required|max:255',
+            'is_legal_person' => 'nullable',
+            'line_id' => 'required',
+            'residence_address' => 'required',
+            'company' => 'required',
+            'job_position' => 'required',
+            'company_address' => 'required',
+        ]);
+        $tenant = Tenant::create($validatedData);
+
+        return redirect()->route('tenants.show', ['id' => $tenant->id]);
     }
 
     /**

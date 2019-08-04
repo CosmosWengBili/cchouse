@@ -14,7 +14,13 @@
                             @continue(is_array($value))
                             <tr>
                                 <td>@lang("model.{$model_name}.{$attribute}")</td>
-                                <td>{{ $value }}</td>
+                                <td>
+                                    @if(is_bool($value))
+                                        {{ $value ? '是' : '否' }}
+                                    @else
+                                        {{ $value }}
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </table>

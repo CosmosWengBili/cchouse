@@ -14,6 +14,6 @@ class LandlordOtherSubject extends Model
      * Get the building of this landlord other subject.
      */
     public function building() {
-        return $this->belongsTo('App\Building');
+        return $this->belongsTo('App\Room');
     }
 }

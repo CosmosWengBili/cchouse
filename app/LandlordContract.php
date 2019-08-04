@@ -14,7 +14,7 @@ class LandlordContract extends Pivot
      * Get the building of this landlord contract.
      */
     public function building() {
-        return $this->hasOne('App\Building', 'landlord_contract_id');
+        return $this->belongsTo('App\Building');
     }
 
     /**

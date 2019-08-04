@@ -59,4 +59,16 @@ class Room extends Model
     public function pictures() {
         return $this->morphMany('App\Document', 'attachable');
     }
+    /**
+     * Get the landlord payments of this room.
+     */
+    public function landlordPayments() {
+        return $this->hasMany('App\LandlordPayment');
+    }
+    /**
+     * Get all landlord other subjects of this building.
+     */
+    public function landlordOtherSubjects() {
+        return $this->hasMany('App\LandlordOtherSubject');
+    }
 }

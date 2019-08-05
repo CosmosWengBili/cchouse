@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
 
         // custom middlewares
         'with.nested' => \App\Http\Middleware\FormatWithQuery::class,
+        'internal.protect' => \App\Http\Middleware\InternalProtect::class,
     ];
 
     /**

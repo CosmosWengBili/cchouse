@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class KeyRequest extends Model
+class KeyRequest extends Model implements AuditableContract
 {
-
     use SoftDeletes;
-    
+    use AuditableTrait;
+
     /**
      * Get the the user who made this request.
      */

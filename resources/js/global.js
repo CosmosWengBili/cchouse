@@ -40,7 +40,7 @@ function realtimeSelect(selectizeElements) {
             })
             .done(function (msg) {
                 if (msg !== "invalid") {
-                    const tableElements = ""
+                    var tableElements = ""
                     for (var i = 0; i < msg.length; i++) {
                         if (selected === msg[i]['id']) {
                             tableElements += `<option value="${msg[i]['id']}" selected>${msg[i][text]}</option>`

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Landlord;
+use App\LandlordAgent;
+use App\ContactInfo;
 use Illuminate\Http\Request;
 
 use App\Responser\NestedRelationResponser;
@@ -20,7 +22,7 @@ class LandlordController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('landlords', Landlord::with($request->withNested)->get())
+            ->index('landlords', Landlord::select($this->whitelist('landlords'))->with($request->withNested)->get())
             ->relations($request->withNested);
 
         return view('landlords.index', $responseData->get());
@@ -34,7 +36,10 @@ class LandlordController extends Controller
     public function create()
     {
         $responseData = new FormDataResponser();
-        return view('landlords.form', $responseData->create(Landlord::class, 'landlords.store')->get());
+        $data = $responseData->create(Landlord::class, 'landlords.store')->get();
+        $data['data']['agents'] = [];
+        $data['data']['contact_infos'] = [];
+        return view('landlords.form', $data);
     }
 
     /**
@@ -52,8 +57,17 @@ class LandlordController extends Controller
             'is_collected_by_third_party' => 'required|boolean',
         ]);
 
-        Landlord::create($validatedData);
-        return response()->json(true);
+        $landlord = Landlord::create($validatedData);
+
+
+        $this->updateAgents($landlord, [
+            'agents' => is_array($request->input('agents')) ? $request->input('agents') : []
+        ]);
+        $this->updateContactInfos($landlord, [
+            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+        ]);
+
+        return redirect()->route('landlords.index');
     }
 
     /**
@@ -82,7 +96,10 @@ class LandlordController extends Controller
     public function edit(Landlord $landlord)
     {
         $responseData = new FormDataResponser();
-        return view('landlords.form', $responseData->edit($landlord, 'landlords.update')->get());
+        $data = $responseData->edit($landlord, 'landlords.update')->get();
+        $data['data']['agents'] = $landlord->agents()->get()->toArray();
+        $data['data']['contact_infos'] = $landlord->contactInfos()->get()->toArray();
+        return view('landlords.form', $data);
     }
 
     /**
@@ -103,7 +120,15 @@ class LandlordController extends Controller
         ]);
 
         $landlord->update($validatedData);
-        return response()->json(true);
+
+        $this->updateAgents($landlord, [
+            'agents' => is_array($request->input('agents')) ? $request->input('agents') : []
+        ]);
+        $this->updateContactInfos($landlord, [
+            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+        ]);
+
+        return redirect()->route('landlords.edit', ['id' => $landlord->id]);
     }
 
     /**
@@ -116,5 +141,62 @@ class LandlordController extends Controller
     {
         $landlord->delete();
         return response()->json(true);
+    }
+    private function updateAgents(Landlord $landlord, array $agents) {
+
+        foreach($agents as $type => $agentCollection) {
+            $keepIds = array_map(function ($agent) {
+                return isset($agent['id']) ? $agent['id'] : null;
+            }, $agentCollection);
+
+            // remove removed item
+            $landlord->agents()->whereNotIn('id', $keepIds)->delete();
+
+            foreach($agentCollection as $agent) {
+                if(isset($agent['id'])) {
+                    $id = $agent['id'];
+                    $data = $landlord->agents()->find($id);
+                    $data->update($agent);
+                } else {
+                    LandlordAgent::create(
+                        array_merge(
+                            $agent,
+                            [
+                                'landlord_id' => $landlord->id,
+                            ]
+                        )
+                    );
+                }
+            }
+        }
+    }
+    private function updateContactInfos(Landlord $landlord, array $contactInfos)  {
+
+        foreach($contactInfos as $type => $contactInfoCollection) {
+            $keepIds = array_map(function ($contactInfo) {
+                return isset($contactInfo['id']) ? $contactInfo['id'] : null;
+            }, $contactInfoCollection);
+
+            // remove removed item
+            $landlord->contactInfos()->where('contactable_type', $type)->whereNotIn('id', $keepIds)->delete();
+
+            foreach($contactInfoCollection as $contactInfo) {
+                if(isset($contactInfo['id'])) {
+                    $id = $contactInfo['id'];
+                    $data = $landlord->contactInfos()->find($id);
+                    $data->update($contactInfo);
+                } else {
+                    ContactInfo::create(
+                        array_merge(
+                            $contactInfo,
+                            [
+                                'contactable_type' => Landlord::class,
+                                'contactable_id' => $landlord->id
+                            ]
+                        )
+                    );
+                }
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class LandlordContract extends Pivot
+class LandlordContract extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
@@ -16,7 +16,7 @@ class LandlordContract extends Pivot
      * Get the building of this landlord contract.
      */
     public function building() {
-        return $this->hasOne('App\Building', 'landlord_contract_id');
+        return $this->belongsTo('App\Building');
     }
 
     /**

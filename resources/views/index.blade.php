@@ -526,7 +526,6 @@
 <script>
 $(document).ready( function () {
     renderDataTable(["#dataA", "#dataB"])
-    realtimeSelect($('[data-toggle=selectize]'))
 } );
 </script>
 @endsection

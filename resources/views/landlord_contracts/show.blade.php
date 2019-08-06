@@ -1,45 +1,47 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container">
-
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-
-            {{-- for showing the target returned --}}
-            @foreach ( $data as $attribute => $value)
-                @continue(is_array($value))
-                <div> {{ $attribute }} : {{ $value }} </div>
-            @endforeach
-            <br><br>
-
-            {{-- display the next level nested resources --}}
-            <div>
-                @if (!empty($relations))
-
-                    {{-- you could propbly have many kinds of nested resources --}}
-                    @foreach($relations as $relation)
-
-                        <div class="col-md-8">
-                            {{-- handle first level of the nested resource, leave the others to recursion --}}
-                            @php
-                                $layer = explode('.', $relation)[0];
-                            @endphp
-
-                            {{-- before render: check existence of relation --}}
-                            @if (isset($data[$layer]))
-                                @include('landlord_contracts.table', ['objects' => $data[$layer], 'layer' => $layer])
-                            @else
-                                <div>no record</div>
-                            @endif
-                        </div>
-                    @endforeach
-
-                @endif
+    <div class="justify-content-center">
+        <div class="row my-3">
+            <div class="col-12 card">
+                <div class="card-body">
+                    <div class="card-title">
+                        詳細資料
+                    </div>
+                    {{-- for showing the target returned --}}
+                    <table class="table table-bordered">
+                        @foreach ( $data as $attribute => $value)
+                            @continue(is_array($value))
+                            <tr>
+                                <td>@lang("model.{$model_name}.{$attribute}")</td>
+                                <td>
+                                    @if(is_bool($value))
+                                        {{ $value ? '是' : '否' }}
+                                    @else
+                                        {{ $value }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
             </div>
 
-        </div>
+            {{-- display the next level nested resources --}}
+            @if (!empty($relations))
+                {{-- you could propbly have many kinds of nested resources --}}
+                @foreach($relations as $relation)
+                    <div class="col-6 my-3">
+                        {{-- handle first level of the nested resource, leave the others to recursion --}}
+                        @php
+                            $layer = Str::snake(explode('.', $relation)[0]);
+                        @endphp
+                        @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
+                    </div>
+                @endforeach
+            @endif
 
+        </div>
     </div>
 </div>
 @endsection

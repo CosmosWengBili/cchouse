@@ -100,7 +100,7 @@
             <div class="submenu">
                 <ul class="submenu-item">
                 <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
+                <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/text_editor.html">Text Editor</a></li>
@@ -115,9 +115,9 @@
                 <i class="menu-arrow"></i></a>
             <div class="submenu">
                 <ul class="submenu-item">
-                <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
+                <li class="nav-item"><a class="nav-link" href="/landlords">房東管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/landlordContracts">房東合約管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tenants">租客管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/text_editor.html">Text Editor</a></li>
                 <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>

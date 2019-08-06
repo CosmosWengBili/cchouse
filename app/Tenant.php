@@ -19,7 +19,7 @@ class Tenant extends Model implements AuditableContract
      */
     protected $fillable = [
         'name', 'certificate_number', 'is_legal_person', 'line_id', 'residence_address',
-        'company', 'job_position', 'company_address',
+        'company', 'job_position', 'company_address', 'confirm_by', 'confirm_at',
     ];
 
     /**

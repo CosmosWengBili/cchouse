@@ -7,6 +7,13 @@ return [
     ],
     'tenants' => [
         'id', 'name', 'certificate_number', 'is_legal_person', 'line_id', 'residence_address', 'company',
-        'job_position', 'company_address', 'confirm_by', 'confirm_at', 'created_at', 'updated_at',
+        'job_position', 'company_address', 'confirm_by', 'confirm_at',
     ],
+    'landlords' =>[
+        'id', 'name', 'certificate_number'
+    ],
+    'landlord_contracts' => [
+        'id','commission_start_date'
+    ],
+    'buildings' => []
 ];

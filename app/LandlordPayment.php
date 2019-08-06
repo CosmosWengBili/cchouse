@@ -16,6 +16,6 @@ class LandlordPayment extends Model implements AuditableContract
      * Get the building of this landlord payment.
      */
     public function building() {
-        return $this->belongsTo('App\Building');
+        return $this->belongsTo('App\Room');
     }
 }

@@ -61,22 +61,8 @@ class Building extends Model implements AuditableContract
     /**
      * Get the landlord contract of this building.
      */
-    public function landlordContract() {
-        return $this->belongsTo('App\LandlordContract', 'landlord_contract_id');
-    }
-
-    /**
-     * Get the landlord payments of this building.
-     */
-    public function landlordPayments() {
-        return $this->hasMany('App\LandlordPayment');
-    }
-
-    /**
-     * Get all landlord other subjects of this building.
-     */
-    public function landlordOtherSubjects() {
-        return $this->hasMany('App\LandlordOtherSubject');
+    public function landlordContracts() {
+        return $this->hasMany('App\LandlordContract');
     }
 
     /**

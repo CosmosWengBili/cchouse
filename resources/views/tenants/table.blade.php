@@ -1,12 +1,9 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
-    $showFunction = Route::has(Str::camel($layer) . '.show') ||
-                    Route::has(Str::camel($layer) . '.edit') ||
-                    Route::has(Str::camel($layer) . '.destroy');
 @endphp
 
 <div class="card">
-    <div class="card-body">
+    <div class="card-body table-responsive">
         <h2>
             @if($model_name == null)
                {{$layer}}
@@ -39,9 +36,7 @@
                     @foreach ( array_keys($objects[0]) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>
                     @endforeach
-                    @if($showFunction)
-                        <th>功能</th>
-                    @endif
+                    <th>功能</th>
                 </thead>
                 <tbody>
                     {{-- all the records --}}
@@ -50,27 +45,13 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                @if(is_array($value))
-                                    <td style="min-width:500px">
-                                        @include('tenants.table', ['objects' => $value, 'layer' => $key])
-                                    </td>
-                                @else
-                                    <td> {{ $value }}</td>
-                                @endif
+                                <td> {{ $value }}</td>
                             @endforeach
-                            @if($showFunction)
-                                <td>
-                                    @if(Route::has(Str::camel($layer) . '.show'))
-                                        <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                                    @endif
-                                    @if(Route::has(Str::camel($layer) . '.edit'))
-                                        <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                    @endif
-                                    @if(Route::has(Str::camel($layer) . '.destroy'))
-                                        <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
-                                    @endif
-                                </td>
-                            @endif
+                            <td>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContracts;contactInfos;emergencyContacts;guarantors">查看</a>
+                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

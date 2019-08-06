@@ -1,26 +1,43 @@
+@php
+    $tableId = "model-{$model_name}-{$layer}-" . rand();
+@endphp
+
 <div class="card">
-    <div class="card-body">
-        <h2>{{$layer}}</h2>
+    <div class="card-body table-responsive">
+        <h2>
+            @if($model_name == null)
+               {{$layer}}
+            @else
+                @lang("model.{$model_name}.{$layer}")
+            @endif
+        </h2>
+
+        {{-- the route to create this kind of resource --}}
+        @if(Route::has(Str::camel($layer) . '.create'))
+            <a class="btn btn-sm btn-success" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+        @endif
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
-            <h3>nothing here</h3>
+            <h3>Nothing here</h3>
         @else
-            <form data-target="#audit-logs" data-toggle="datatable-query">
+            <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
                 </div>
                 <i class="fa fa-plus-circle" data-toggle="datatable-query-add"></i>
                 <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
             </form>
-            <div class="table-responsive">
-                <table id="audit-logs" class="display table" style="width:100%">
-                    <thead>
-                    <?php $model_name = substr($layer, 0, -1) ?>
+
+            <table id="{{ $tableId}}" class="display table" style="width:100%">
+                <thead>
+                    @php
+                        $model_name = ucfirst(Str::camel(substr($layer, 0, -1)));
+                    @endphp
                     @foreach ( array_keys($objects[0]) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>
                     @endforeach
-                    <th>功能</th>
-                    </thead>
-                    <tbody>
+                </thead>
+                <tbody>
                     {{-- all the records --}}
                     @foreach ( $objects as $object )
                         <tr>
@@ -29,17 +46,13 @@
                                 {{-- an even nested resource array --}}
                                 <td> {{ $value }}</td>
                             @endforeach
-                            <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                            </td>
                         </tr>
                     @endforeach
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         @endif
     </div>
 </div>
 <script>
-    renderDataTable(["#audit-logs"])
+    renderDataTable(["#{{$tableId}}"]);
 </script>

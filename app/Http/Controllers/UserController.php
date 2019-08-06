@@ -109,7 +109,7 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $user->update($input);
         
-        return redirect('/users/'.$user->id);
+        return redirect()->route('users.show', ['id' => $user->id]);
     }
 
     /**

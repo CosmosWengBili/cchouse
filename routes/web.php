@@ -29,6 +29,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlordContracts', 'LandlordContractController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
+            Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
           
             // notifications

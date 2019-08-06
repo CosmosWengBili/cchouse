@@ -45,6 +45,26 @@
         </div>
         <!-- container-scroller -->
         <!-- base:js -->
+        <script>
+        $(document).ready( function () {
+
+            // Realtime search module
+            realtimeSelect($('[data-toggle=selectize]'))
+
+            // Auto assigned value on each data resource select element
+            $('select').each(function(index, element){
+            var selected_value = element.getAttribute('value')
+            var options = element.options
+            for( var i = 0 ; i < options.length; i++ ){
+                if( selected_value == options[i].value){
+                    options[i].selected = true
+                }
+            }
+        })
+
+
+        } );        
+        </script>
         <!-- endinject -->
         <!-- Plugin js for this page-->
         <!-- End plugin js for this page-->

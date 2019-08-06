@@ -112,8 +112,35 @@
                                     />
                                 </td>
                             </tr>
+                            <tr>
+                                <td>@lang("model.Tenant.confirm_by")</td>
+                                <td>
+                                    <select 
+                                        data-toggle="selectize" 
+                                        data-table="user" 
+                                        data-text="name" 
+                                        data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
+                                        name="confirm_by"
+                                        class="form-control form-control-sm" 
+                                    >
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                    <td>@lang("model.Tenant.confirm_at")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="date"
+                                            name="confirm_at"
+                                            value="{{ isset($data["confirm_at"]) ? $data['confirm_at'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
+                        <h3 class="mt-3">聯絡資料</h3>
+                        @include('tenants.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
 
                         <h3 class="mt-3">緊急聯絡人</h3>
                         @include('tenants.related_people_form', ['prefix' => 'emergency_contact', 'relatedPeople' => $data['emergency_contacts']])

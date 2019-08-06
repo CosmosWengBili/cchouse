@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\RelatedPerson;
+
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Tenant;
+use App\ContactInfo;
+use App\RelatedPerson;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class TenantController extends Controller
@@ -35,18 +37,15 @@ class TenantController extends Controller
      * @param Tenant $tenant
      * @return Response
      */
-    public function show(Tenant $tenant)
+    public function show(Request $request, Tenant $tenant)
     {
-        $with = [
-            'emergencyContacts',
-            'guarantors',
-            'tenantContracts.tenantPayments.payLog',
-            'tenantContracts.tenantElectricityPayments.payLog',
-        ];
         $responseData = new NestedRelationResponser();
-        $responseData->show($tenant->load($with))->relations($with);
+        $responseData
+            ->show($tenant->load($request->withNested))
+            ->relations($request->withNested);
 
         return view('tenants.show', $responseData->get());
+
     }
 
     /**
@@ -58,6 +57,7 @@ class TenantController extends Controller
     {
         $responser = new FormDataResponser();
         $data = $responser->create(Tenant::class, 'tenants.store')->get();
+        $data['data']['contact_infos'] = [];
         $data['data']['emergency_contacts'] = [];
         $data['data']['guarantors'] = [];
 
@@ -74,6 +74,7 @@ class TenantController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($tenant, 'tenants.update')->get();
+        $data['data']['contact_infos'] = $tenant->contactInfos()->get()->toArray();
         $data['data']['emergency_contacts'] = $tenant->emergencyContacts()->get()->toArray();
         $data['data']['guarantors'] = $tenant->guarantors()->get()->toArray();
 
@@ -99,12 +100,16 @@ class TenantController extends Controller
             'company_address' => 'required',
         ]);
         $tenant = Tenant::create($validatedData);
+
+        $this->updateContactInfos($tenant, [
+            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+        ]);
         $this->updateRelatedPeople($tenant, [
             'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
             'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
         ]);
 
-        return redirect()->route('tenants.show', ['id' => $tenant->id]);
+        return redirect()->route('tenants.index');
     }
 
     /**
@@ -125,14 +130,19 @@ class TenantController extends Controller
             'company' => 'required',
             'job_position' => 'required',
             'company_address' => 'required',
+            'confirm_by' => 'required',
+            'confirm_at' => 'required'
         ]);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [
             'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
             'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
         ]);
+        $this->updateContactInfos($tenant, [
+            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+        ]);
 
-        return redirect()->route('tenants.show', ['id' => $tenant->id]);
+        return redirect()->route('tenants.edit', ['id' => $tenant->id]);
     }
 
     /**
@@ -178,4 +188,35 @@ class TenantController extends Controller
             }
         }
     }
+
+    private function updateContactInfos(Tenant $tenant, array $contactInfos)  {
+
+        foreach($contactInfos as $type => $contactInfoCollection) {
+            $keepIds = array_map(function ($contactInfo) {
+                return isset($contactInfo['id']) ? $contactInfo['id'] : null;
+            }, $contactInfoCollection);
+
+            // remove removed item
+            $tenant->contactInfos()->where('contactable_type', $type)->whereNotIn('id', $keepIds)->delete();
+
+            foreach($contactInfoCollection as $contactInfo) {
+                if(isset($contactInfo['id'])) {
+                    $id = $contactInfo['id'];
+                    $data = $tenant->contactInfos()->find($id);
+                    $data->update($contactInfo);
+                } else {
+                    ContactInfo::create(
+                        array_merge(
+                            $contactInfo,
+                            [
+                                'contactable_type' => Tenant::class,
+                                'contactable_id' => $tenant->id
+                            ]
+                        )
+                    );
+                }
+            }
+        }
+    }
+
 }

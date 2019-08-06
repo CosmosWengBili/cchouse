@@ -11,42 +11,35 @@
                 <i class="fa fa-plus-circle" data-toggle="datatable-query-add"></i>
                 <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
             </form>
-
-            <table id="audit-logs" class="display table" style="width:100%">
-                <thead>
-                <?php $model_name = substr($layer, 0, -1) ?>
-                @foreach ( array_keys($objects[0]) as $field)
-                    <th>@lang("model.{$model_name}.{$field}")</th>
-                @endforeach
-                <th>功能</th>
-                </thead>
-                <tbody>
-                {{-- all the records --}}
-                @foreach ( $objects as $object )
-                    <tr>
-                        {{-- render all attributes --}}
-                        @foreach($object as $key => $value)
-                            {{-- an even nested resource array --}}
-                            @if(is_array($value))
-                                <td style="min-width:500px">
-                                    @include('audit.table', ['objects' => $value, 'layer' => $key])
-                                </td>
-                            @else
+            <div class="table-responsive">
+                <table id="audit-logs" class="display table" style="width:100%">
+                    <thead>
+                    <?php $model_name = substr($layer, 0, -1) ?>
+                    @foreach ( array_keys($objects[0]) as $field)
+                        <th>@lang("model.{$model_name}.{$field}")</th>
+                    @endforeach
+                    <th>功能</th>
+                    </thead>
+                    <tbody>
+                    {{-- all the records --}}
+                    @foreach ( $objects as $object )
+                        <tr>
+                            {{-- render all attributes --}}
+                            @foreach($object as $key => $value)
+                                {{-- an even nested resource array --}}
                                 <td> {{ $value }}</td>
-                            @endif
-                        @endforeach
-                        <td>
-                            <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                            @endforeach
+                            <td>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 </div>
 <script>
-    renderDataTable(["#audit-logs"], {
-        scrollX: true,
-    })
+    renderDataTable(["#audit-logs"])
 </script>

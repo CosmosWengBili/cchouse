@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
+use OwenIt\Auditing\Contracts\Auditor;
 
 class LandlordContractController extends Controller
 {
@@ -21,7 +22,7 @@ class LandlordContractController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('landlordContracts', LandlordContract::with($request->withNested)->get())
+            ->index('landlord_contracts', LandlordContract::select($this->whitelist('landlord_contracts'))->with($request->withNested)->get())
             ->relations($request->withNested);
 
         return view('landlord_contracts.index', $responseData->get());
@@ -31,11 +32,13 @@ class LandlordContractController extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */ 
     public function create()
     {
         $responseData = new FormDataResponser();
-        return view('landlord_contracts.form', $responseData->create(LandlordContract::class, 'landlordContracts.store')->get());
+        $data =$responseData->create(LandlordContract::class, 'landlordContracts.store')->get();
+
+        return view('landlord_contracts.form', $data);
     }
 
     /**
@@ -60,6 +63,7 @@ class LandlordContractController extends Controller
             'annual_service_fee_month_count' => 'required|integer|digits_between:1,11',
             'charter_fee' => 'required|integer|digits_between:1,11',
             'taxable_charter_fee' => 'required|integer|digits_between:1,11',
+            'agency_service_fee' => 'required',
             'rent_collection_frequency' => 'required|max:255',
             'rent_collection_time' => 'required|integer|digits_between:1,11',
             'rent_adjusted_date' => 'required|date',
@@ -77,8 +81,8 @@ class LandlordContractController extends Controller
         ]);
 
 
-        LandlordContract::create($validatedData);
-        return response()->json(true);
+        $landlordContract = LandlordContract::create($validatedData);
+        return redirect()->route('landlordContracts.index');
     }
 
     /**
@@ -151,7 +155,7 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract->update($validatedData);
-        return response()->json(true);
+        return redirect()->route('landlordContracts.edit', ['id' => $landlordContract->id]);
     }
 
     /**

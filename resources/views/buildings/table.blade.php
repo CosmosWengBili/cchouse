@@ -13,7 +13,7 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success" href="{{ route( 'buildings.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'buildings.create') }}">建立</a>
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))

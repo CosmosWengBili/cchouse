@@ -196,7 +196,7 @@ class BuildingController extends Controller
             'comment' => 'required|max:255',
         ]);
 
-        $landlord->update($validatedData);
+        $building->update($validatedData);
 
         return redirect()->route('buildings.show', $building);
     }

@@ -11,7 +11,7 @@ class ScheduleService {
     protected $method;
     protected $args;
 
-public function __construct($method, $args) {
+    public function __construct($method, $args) {
         $this->method = $method;
         $this->args = $args;
     }

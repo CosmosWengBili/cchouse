@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -12,6 +11,9 @@ use App\Responser\FormDataResponser;
 use App\Tenant;
 use App\ContactInfo;
 use App\RelatedPerson;
+
+use App\Services\NestedToAttributeService;
+
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class TenantController extends Controller
@@ -25,9 +27,15 @@ class TenantController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $tenants = Tenant::select($this->whitelist('tenants'))->with($request->withNested)->get();
-        $responseData->index('Tenants',$tenants)->relations($request->withNested);
+        $tenants = Tenant::select($this->whitelist('tenants'))
+            ->with($request->withNested)
+            ->get();
 
+        $tenants = NestedToAttributeService::contactInfoToAttribute($tenants);
+
+        $responseData
+            ->index('Tenants', $tenants)
+            ->relations($request->withNested);
         return view('tenants.index', $responseData->get());
     }
 
@@ -45,7 +53,6 @@ class TenantController extends Controller
             ->relations($request->withNested);
 
         return view('tenants.show', $responseData->get());
-
     }
 
     /**
@@ -74,9 +81,18 @@ class TenantController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($tenant, 'tenants.update')->get();
-        $data['data']['contact_infos'] = $tenant->contactInfos()->get()->toArray();
-        $data['data']['emergency_contacts'] = $tenant->emergencyContacts()->get()->toArray();
-        $data['data']['guarantors'] = $tenant->guarantors()->get()->toArray();
+        $data['data']['contact_infos'] = $tenant
+            ->contactInfos()
+            ->get()
+            ->toArray();
+        $data['data']['emergency_contacts'] = $tenant
+            ->emergencyContacts()
+            ->get()
+            ->toArray();
+        $data['data']['guarantors'] = $tenant
+            ->guarantors()
+            ->get()
+            ->toArray();
 
         return view('tenants.form', $data);
     }
@@ -97,16 +113,24 @@ class TenantController extends Controller
             'residence_address' => 'required',
             'company' => 'required',
             'job_position' => 'required',
-            'company_address' => 'required',
+            'company_address' => 'required'
         ]);
         $tenant = Tenant::create($validatedData);
 
         $this->updateContactInfos($tenant, [
-            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+            'contact_infos' => is_array($request->input('contact_infos'))
+                ? $request->input('contact_infos')
+                : []
         ]);
         $this->updateRelatedPeople($tenant, [
-            'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
-            'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
+            'emergency_contact' => is_array(
+                $request->input('emergency_contact')
+            )
+                ? $request->input('emergency_contact')
+                : [],
+            'guarantor' => is_array($request->input('guarantor'))
+                ? $request->input('guarantor')
+                : []
         ]);
 
         return redirect()->route('tenants.index');
@@ -135,11 +159,19 @@ class TenantController extends Controller
         ]);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [
-            'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
-            'guarantor' => is_array($request->input('guarantor')) ? $request->input('guarantor') : [],
+            'emergency_contact' => is_array(
+                $request->input('emergency_contact')
+            )
+                ? $request->input('emergency_contact')
+                : [],
+            'guarantor' => is_array($request->input('guarantor'))
+                ? $request->input('guarantor')
+                : []
         ]);
         $this->updateContactInfos($tenant, [
-            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+            'contact_infos' => is_array($request->input('contact_infos'))
+                ? $request->input('contact_infos')
+                : []
         ]);
 
         return redirect()->route('tenants.edit', ['id' => $tenant->id]);
@@ -158,65 +190,68 @@ class TenantController extends Controller
         return response()->json(true);
     }
 
-    private function updateRelatedPeople(Tenant $tenant, array $relatedPeople) {
-
-        foreach($relatedPeople as $type => $relatedPersonCollection) {
+    private function updateRelatedPeople(Tenant $tenant, array $relatedPeople)
+    {
+        foreach ($relatedPeople as $type => $relatedPersonCollection) {
             $keepIds = array_map(function ($relatedPerson) {
-                return isset($relatedPerson['id']) ? $relatedPerson['id'] : null;
+                return isset($relatedPerson['id'])
+                    ? $relatedPerson['id']
+                    : null;
             }, $relatedPersonCollection);
 
             // remove removed item
-            $tenant->relatedPeople()->where('type', $type)->whereNotIn('id', $keepIds)->delete();
+            $tenant
+                ->relatedPeople()
+                ->where('type', $type)
+                ->whereNotIn('id', $keepIds)
+                ->delete();
 
-            foreach($relatedPersonCollection as $relatedPerson) {
-                if(isset($relatedPerson['id'])) {
+            foreach ($relatedPersonCollection as $relatedPerson) {
+                if (isset($relatedPerson['id'])) {
                     $id = $relatedPerson['id'];
                     $person = $tenant->relatedPeople()->find($id);
                     $person->update($relatedPerson);
                 } else {
                     RelatedPerson::create(
-                        array_merge(
-                            $relatedPerson,
-                            [
-                                'type' => $type,
-                                'related_person_type' => Tenant::class,
-                                'related_person_id' => $tenant->id,
-                            ]
-                        )
+                        array_merge($relatedPerson, [
+                            'type' => $type,
+                            'related_person_type' => Tenant::class,
+                            'related_person_id' => $tenant->id
+                        ])
                     );
                 }
             }
         }
     }
 
-    private function updateContactInfos(Tenant $tenant, array $contactInfos)  {
-
-        foreach($contactInfos as $type => $contactInfoCollection) {
+    private function updateContactInfos(Tenant $tenant, array $contactInfos)
+    {
+        foreach ($contactInfos as $type => $contactInfoCollection) {
             $keepIds = array_map(function ($contactInfo) {
                 return isset($contactInfo['id']) ? $contactInfo['id'] : null;
             }, $contactInfoCollection);
 
             // remove removed item
-            $tenant->contactInfos()->where('contactable_type', $type)->whereNotIn('id', $keepIds)->delete();
+            $tenant
+                ->contactInfos()
+                ->where('contactable_type', $type)
+                ->whereNotIn('id', $keepIds)
+                ->delete();
 
-            foreach($contactInfoCollection as $contactInfo) {
-                if(isset($contactInfo['id'])) {
+            foreach ($contactInfoCollection as $contactInfo) {
+                if (isset($contactInfo['id'])) {
                     $id = $contactInfo['id'];
                     $data = $tenant->contactInfos()->find($id);
                     $data->update($contactInfo);
                 } else {
                     ContactInfo::create(
-                        array_merge(
-                            $contactInfo,
-                            [
-                                'contactable_type' => Tenant::class,
-                                'contactable_id' => $tenant->id
-                            ]
-                        )
+                        array_merge($contactInfo, [
+                            'contactable_type' => Tenant::class,
+                            'contactable_id' => $tenant->id
+                        ])
                     );
                 }
             }
         }
     }
-
 }

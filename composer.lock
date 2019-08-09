@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79d0a0c33278e4871ba3b953a00d5c76",
+    "content-hash": "a0b360714b5a768927960ff227759141",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -591,6 +591,57 @@
             "time": "2019-06-10T19:08:31+00:00"
         },
         {
+            "name": "google/cloud-storage",
+            "version": "v1.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/googleapis/google-cloud-php-storage.git",
+                "reference": "0db437b36ba9afd4bd4feadf96087c42c09ebd4a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/0db437b36ba9afd4bd4feadf96087c42c09ebd4a",
+                "reference": "0db437b36ba9afd4bd4feadf96087c42c09ebd4a",
+                "shasum": ""
+            },
+            "require": {
+                "google/cloud-core": "^1.28",
+                "google/crc32": "^0.1.0"
+            },
+            "require-dev": {
+                "erusev/parsedown": "^1.6",
+                "google/cloud-pubsub": "^1.0",
+                "phpdocumentor/reflection": "^3.0",
+                "phpseclib/phpseclib": "^2",
+                "phpunit/phpunit": "^4.8|^5.0",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "suggest": {
+                "google/cloud-pubsub": "May be used to register a topic to receive bucket notifications.",
+                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
+            },
+            "type": "library",
+            "extra": {
+                "component": {
+                    "id": "cloud-storage",
+                    "target": "googleapis/google-cloud-php-storage.git",
+                    "path": "Storage",
+                    "entry": "src/StorageClient.php"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Google\\Cloud\\Storage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Cloud Storage Client for PHP",
+            "time": "2019-07-25T17:46:28+00:00"
+        },
+        {
             "name": "google/common-protos",
             "version": "1.1",
             "source": {
@@ -628,6 +679,48 @@
                 "google"
             ],
             "time": "2019-07-24T01:25:25+00:00"
+        },
+        {
+            "name": "google/crc32",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/google/php-crc32.git",
+                "reference": "a8525f0dea6fca1893e1bae2f6e804c5f7d007fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/google/php-crc32/zipball/a8525f0dea6fca1893e1bae2f6e804c5f7d007fb",
+                "reference": "a8525f0dea6fca1893e1bae2f6e804c5f7d007fb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.13 || v2.14.2",
+                "paragonie/random_compat": ">=2",
+                "phpunit/phpunit": "^4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\CRC32\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Brampton",
+                    "email": "bramp@google.com"
+                }
+            ],
+            "description": "Various CRC32 implementations",
+            "homepage": "https://github.com/google/php-crc32",
+            "time": "2019-05-09T06:24:58+00:00"
         },
         {
             "name": "google/gax",
@@ -1368,6 +1461,53 @@
                 "storage"
             ],
             "time": "2019-06-18T20:09:29+00:00"
+        },
+        {
+            "name": "league/flysystem-cached-adapter",
+            "version": "1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem-cached-adapter.git",
+                "reference": "08ef74e9be88100807a3b92cc9048a312bf01d6f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-cached-adapter/zipball/08ef74e9be88100807a3b92cc9048a312bf01d6f",
+                "reference": "08ef74e9be88100807a3b92cc9048a312bf01d6f",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "~1.0",
+                "psr/cache": "^1.0.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9",
+                "phpspec/phpspec": "^3.4",
+                "phpunit/phpunit": "^5.7",
+                "predis/predis": "~1.0",
+                "tedivm/stash": "~0.12"
+            },
+            "suggest": {
+                "ext-phpredis": "Pure C implemented extension for PHP"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\Flysystem\\Cached\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "frankdejonge",
+                    "email": "info@frenky.net"
+                }
+            ],
+            "description": "An adapter decorator to enable meta-data caching.",
+            "time": "2018-07-09T20:51:04+00:00"
         },
         {
             "name": "maatwebsite/excel",
@@ -2674,6 +2814,106 @@
                 "spatie"
             ],
             "time": "2019-04-09T12:45:17+00:00"
+        },
+        {
+            "name": "superbalist/flysystem-google-storage",
+            "version": "7.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Superbalist/flysystem-google-cloud-storage.git",
+                "reference": "97cf8a5c9a9d368260b2791ec130690a1bec0cbd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Superbalist/flysystem-google-cloud-storage/zipball/97cf8a5c9a9d368260b2791ec130690a1bec0cbd",
+                "reference": "97cf8a5c9a9d368260b2791ec130690a1bec0cbd",
+                "shasum": ""
+            },
+            "require": {
+                "google/cloud-storage": "~1.0",
+                "league/flysystem": "~1.0",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Superbalist\\Flysystem\\GoogleStorage\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Superbalist.com a division of Takealot Online (Pty) Ltd",
+                    "email": "info@superbalist.com"
+                }
+            ],
+            "description": "Flysystem adapter for Google Cloud Storage",
+            "time": "2019-02-21T08:07:24+00:00"
+        },
+        {
+            "name": "superbalist/laravel-google-cloud-storage",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Superbalist/laravel-google-cloud-storage.git",
+                "reference": "249a7de0e7316f4604c9010a44abb8d19a0c7c8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Superbalist/laravel-google-cloud-storage/zipball/249a7de0e7316f4604c9010a44abb8d19a0c7c8a",
+                "reference": "249a7de0e7316f4604c9010a44abb8d19a0c7c8a",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/filesystem": "^5.1|^5.2|^5.3",
+                "illuminate/support": "^5.1|^5.2|^5.3",
+                "league/flysystem-cached-adapter": "^1.0",
+                "php": ">=5.5.9",
+                "superbalist/flysystem-google-storage": ">=3.0 <8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Superbalist\\LaravelGoogleCloudStorage\\GoogleCloudStorageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Superbalist\\LaravelGoogleCloudStorage\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Superbalist.com a division of Takealot Online (Pty) Ltd",
+                    "email": "info@superbalist.com"
+                }
+            ],
+            "description": "A Google Cloud Storage filesystem for Laravel",
+            "time": "2019-04-18T14:23:16+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

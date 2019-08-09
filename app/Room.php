@@ -26,7 +26,7 @@ class Room extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $dates = [ 'ammeter_reading_date' ];
+    protected $dates = [];
 
     /**
      * The attributes that should be cast to native types.

@@ -13,11 +13,11 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success" href="{{ route( 'landlordContracts.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordContracts.create') }}">建立</a>
 
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
-            <h3>Nothing here</h3>
+            <h3>尚無紀錄</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">

@@ -97,6 +97,23 @@ return [
         'buildings'=> '建物',
 
     ],
+    'Key' => [
+        'id' => '編號',
+        'key_name' => '鑰匙代號',
+        'room_id' => '相對應房',
+        'keeper_id' => '保管人',
+        'users' => '保管人',
+        'rooms' => '房',
+        'key_requests' => '鑰匙紀錄'
+    ],
+    'KeyRequest' => [
+        'id' => '編號',
+        'request_user_id' => '借用人',
+        'status' => '狀態',
+        'request_date' => '出借日',
+        'request_approved' => '出借允許',
+        'key_id' => '鑰匙編號'
+    ],
     'Guarantor' => [
         'id' => '編號',
         'name' => '姓名',

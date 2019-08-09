@@ -4,6 +4,10 @@ return [
     'Tenant' => [],
     'Landlord' => [],
     'LandlordContract' => [],
+    'Building' => [],
+    'Room' => [],
+    'Appliance' => [],
+    'Maintenance' => [],
     'Key' => [],
     'KeyRequest' => []
 ];

@@ -4,11 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Building;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
+use App\Services\BuildingService;
 
 class BuildingController extends Controller
 {
+
+    // protected $buildingService;
+
+    // public function __construct(BuildingService $buildingService)
+    // {
+    //     $this->buildingService = $buildingService;
+    // }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +36,7 @@ class BuildingController extends Controller
             ->index('buildings', Building::with($request->withNested)->get())
             ->relations($request->withNested);
         
-        return view('shared.index', $responseData->get());
+        return view('buildings.index', $responseData->get());
     }
 
     /**
@@ -33,9 +44,12 @@ class BuildingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $responseData = new FormDataResponser();
+        $data = $responseData->create(Building::class, 'buildings.store')->get();
+
+        return view('buildings.form', $data);
     }
 
     /**
@@ -46,7 +60,55 @@ class BuildingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'city' => [
+                'required',
+                Rule::in(array_keys(config('enums.cities'))),
+            ],
+            'district' => [
+                'bail',
+                'required_with:city',
+                Rule::in(config('enums.cities.'.$request->city)),
+            ],
+            'address' => 'required|max:255',
+            'tax_number' => 'required|max:255',
+            'building_type' => 'required|max:255',
+            'floor' => 'required|integer|digits_between:1,11',
+            'legal_usage' => 'required|max:255',
+            'has_elevator' => 'required|boolean',
+            'security_guard' => 'required|max:255',
+            'management_count' => 'required|max:255',
+            'first_floor_door_opening' => 'required|max:255',
+            'public_area_door_opening' => 'required|max:255',
+            'room_door_opening' => 'required|max:255',
+            'main_ammeter_location' => 'required|max:255',
+            'ammeter_serial_number_1' => 'required|max:255',
+            'shared_electricity' => 'required|max:255',
+            'electricity_payment_method' => 'required|max:255',
+            'private_ammeter_location' => 'required|max:255',
+            'water_meter_location' => 'required|max:255',
+            'water_meter_serial_number' => 'required|max:255',
+            'water_payment_method' => 'required|max:255',
+            'water_meter_reading_date' => 'required|date',
+            'gas_meter_location' => 'required|max:255',
+            'garbage_collection_location' => 'required|max:255',
+            'garbage_collection_time' => 'required|max:255',
+            'management_fee_payment_method' => 'required|max:255',
+            'management_fee_contact' => 'required|max:255',
+            'management_fee_contact_phone' => 'required|max:255',
+            'distribution_method' => 'required|max:255',
+            'administrative_number' => 'required|max:255',
+            'accounting_group' => 'required|max:255',
+            'rental_receipt' => 'required|max:255',
+            'commissioner_id' => 'nullable|exists:users,id',
+            'administrator_id' => 'nullable|exists:users,id',
+            'comment' => 'required|max:255',
+        ]);
+
+        $newBuilding = BuildingService::create($validatedData);
+
+        return redirect()->route('buildings.index');
     }
 
     /**
@@ -64,7 +126,7 @@ class BuildingController extends Controller
             ->show($building->load($request->withNested))
             ->relations($request->withNested);
 
-        return view('shared.show', $responseData->get());
+        return view('buildings.show', $responseData->get());
     }
 
     /**
@@ -75,7 +137,8 @@ class BuildingController extends Controller
      */
     public function edit(Building $building)
     {
-        //
+        $responseData = new FormDataResponser();
+        return view('buildings.form', $responseData->edit($building, 'buildings.update')->get());
     }
 
     /**
@@ -87,7 +150,55 @@ class BuildingController extends Controller
      */
     public function update(Request $request, Building $building)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'city' => [
+                'required',
+                Rule::in(array_keys(config('enums.cities'))),
+            ],
+            'district' => [
+                'bail',
+                'required_with:city',
+                Rule::in(config('enums.cities.'.$request->city)),
+            ],
+            'address' => 'required|max:255',
+            'tax_number' => 'required|max:255',
+            'building_type' => 'required|max:255',
+            'floor' => 'required|integer|digits_between:1,11',
+            'legal_usage' => 'required|max:255',
+            'has_elevator' => 'required|boolean',
+            'security_guard' => 'required|max:255',
+            'management_count' => 'required|max:255',
+            'first_floor_door_opening' => 'required|max:255',
+            'public_area_door_opening' => 'required|max:255',
+            'room_door_opening' => 'required|max:255',
+            'main_ammeter_location' => 'required|max:255',
+            'ammeter_serial_number_1' => 'required|max:255',
+            'shared_electricity' => 'required|max:255',
+            'electricity_payment_method' => 'required|max:255',
+            'private_ammeter_location' => 'required|max:255',
+            'water_meter_location' => 'required|max:255',
+            'water_meter_serial_number' => 'required|max:255',
+            'water_payment_method' => 'required|max:255',
+            'water_meter_reading_date' => 'required|date',
+            'gas_meter_location' => 'required|max:255',
+            'garbage_collection_location' => 'required|max:255',
+            'garbage_collection_time' => 'required|max:255',
+            'management_fee_payment_method' => 'required|max:255',
+            'management_fee_contact' => 'required|max:255',
+            'management_fee_contact_phone' => 'required|max:255',
+            'distribution_method' => 'required|max:255',
+            'administrative_number' => 'required|max:255',
+            'accounting_group' => 'required|max:255',
+            'rental_receipt' => 'required|max:255',
+            'commissioner_id' => 'nullable|exists:users,id',
+            'administrator_id' => 'nullable|exists:users,id',
+            'comment' => 'required|max:255',
+        ]);
+
+        $building->update($validatedData);
+
+        return redirect()->route('buildings.show', $building);
     }
 
     /**
@@ -98,6 +209,7 @@ class BuildingController extends Controller
      */
     public function destroy(Building $building)
     {
-        //
+        $building->delete();
+        return response()->json(true);
     }
 }

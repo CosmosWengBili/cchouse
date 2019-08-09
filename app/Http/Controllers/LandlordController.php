@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
+use App\Services\NestedToAttributeService;
+
 class LandlordController extends Controller
 {
     /**
@@ -21,8 +23,16 @@ class LandlordController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+
+        $landlords = Landlord::select($this->whitelist('landlords'))
+            ->with($request->withNested)
+            ->get();
+        $landlords = NestedToAttributeService::contactInfoToAttribute(
+            $landlords
+        );
+
         $responseData
-            ->index('landlords', Landlord::select($this->whitelist('landlords'))->with($request->withNested)->get())
+            ->index('landlords', $landlords)
             ->relations($request->withNested);
 
         return view('landlords.index', $responseData->get());
@@ -36,7 +46,9 @@ class LandlordController extends Controller
     public function create()
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->create(Landlord::class, 'landlords.store')->get();
+        $data = $responseData
+            ->create(Landlord::class, 'landlords.store')
+            ->get();
         $data['data']['agents'] = [];
         $data['data']['contact_infos'] = [];
         return view('landlords.form', $data);
@@ -53,18 +65,23 @@ class LandlordController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|max:255',
             'certificate_number' => 'required',
+            'birth' => 'required',
+            'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean',
+            'is_collected_by_third_party' => 'required|boolean'
         ]);
 
         $landlord = Landlord::create($validatedData);
 
-
         $this->updateAgents($landlord, [
-            'agents' => is_array($request->input('agents')) ? $request->input('agents') : []
+            'agents' => is_array($request->input('agents'))
+                ? $request->input('agents')
+                : []
         ]);
         $this->updateContactInfos($landlord, [
-            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+            'contact_infos' => is_array($request->input('contact_infos'))
+                ? $request->input('contact_infos')
+                : []
         ]);
 
         return redirect()->route('landlords.index');
@@ -77,7 +94,7 @@ class LandlordController extends Controller
      * @param  \App\Landlord  $landlord
      * @return \Illuminate\Http\Response
      */
-    public function show(Request  $request, Landlord $landlord)
+    public function show(Request $request, Landlord $landlord)
     {
         $responseData = new NestedRelationResponser();
         $responseData
@@ -97,8 +114,14 @@ class LandlordController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($landlord, 'landlords.update')->get();
-        $data['data']['agents'] = $landlord->agents()->get()->toArray();
-        $data['data']['contact_infos'] = $landlord->contactInfos()->get()->toArray();
+        $data['data']['agents'] = $landlord
+            ->agents()
+            ->get()
+            ->toArray();
+        $data['data']['contact_infos'] = $landlord
+            ->contactInfos()
+            ->get()
+            ->toArray();
         return view('landlords.form', $data);
     }
 
@@ -111,21 +134,26 @@ class LandlordController extends Controller
      */
     public function update(Request $request, Landlord $landlord)
     {
-
         $validatedData = $request->validate([
             'name' => 'nullable|max:255',
             'certificate_number' => 'required',
+            'birth' => 'required',
+            'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean',
+            'is_collected_by_third_party' => 'required|boolean'
         ]);
 
         $landlord->update($validatedData);
 
         $this->updateAgents($landlord, [
-            'agents' => is_array($request->input('agents')) ? $request->input('agents') : []
+            'agents' => is_array($request->input('agents'))
+                ? $request->input('agents')
+                : []
         ]);
         $this->updateContactInfos($landlord, [
-            'contact_infos' => is_array($request->input('contact_infos')) ? $request->input('contact_infos') : []
+            'contact_infos' => is_array($request->input('contact_infos'))
+                ? $request->input('contact_infos')
+                : []
         ]);
 
         return redirect()->route('landlords.edit', ['id' => $landlord->id]);
@@ -142,58 +170,59 @@ class LandlordController extends Controller
         $landlord->delete();
         return response()->json(true);
     }
-    private function updateAgents(Landlord $landlord, array $agents) {
-
-        foreach($agents as $type => $agentCollection) {
+    private function updateAgents(Landlord $landlord, array $agents)
+    {
+        foreach ($agents as $type => $agentCollection) {
             $keepIds = array_map(function ($agent) {
                 return isset($agent['id']) ? $agent['id'] : null;
             }, $agentCollection);
 
             // remove removed item
-            $landlord->agents()->whereNotIn('id', $keepIds)->delete();
+            $landlord
+                ->agents()
+                ->whereNotIn('id', $keepIds)
+                ->delete();
 
-            foreach($agentCollection as $agent) {
-                if(isset($agent['id'])) {
+            foreach ($agentCollection as $agent) {
+                if (isset($agent['id'])) {
                     $id = $agent['id'];
                     $data = $landlord->agents()->find($id);
                     $data->update($agent);
                 } else {
                     LandlordAgent::create(
-                        array_merge(
-                            $agent,
-                            [
-                                'landlord_id' => $landlord->id,
-                            ]
-                        )
+                        array_merge($agent, [
+                            'landlord_id' => $landlord->id
+                        ])
                     );
                 }
             }
         }
     }
-    private function updateContactInfos(Landlord $landlord, array $contactInfos)  {
-
-        foreach($contactInfos as $type => $contactInfoCollection) {
+    private function updateContactInfos(Landlord $landlord, array $contactInfos)
+    {
+        foreach ($contactInfos as $type => $contactInfoCollection) {
             $keepIds = array_map(function ($contactInfo) {
                 return isset($contactInfo['id']) ? $contactInfo['id'] : null;
             }, $contactInfoCollection);
 
             // remove removed item
-            $landlord->contactInfos()->where('contactable_type', $type)->whereNotIn('id', $keepIds)->delete();
+            $landlord
+                ->contactInfos()
+                ->where('contactable_type', $type)
+                ->whereNotIn('id', $keepIds)
+                ->delete();
 
-            foreach($contactInfoCollection as $contactInfo) {
-                if(isset($contactInfo['id'])) {
+            foreach ($contactInfoCollection as $contactInfo) {
+                if (isset($contactInfo['id'])) {
                     $id = $contactInfo['id'];
                     $data = $landlord->contactInfos()->find($id);
                     $data->update($contactInfo);
                 } else {
                     ContactInfo::create(
-                        array_merge(
-                            $contactInfo,
-                            [
-                                'contactable_type' => Landlord::class,
-                                'contactable_id' => $landlord->id
-                            ]
-                        )
+                        array_merge($contactInfo, [
+                            'contactable_type' => Landlord::class,
+                            'contactable_id' => $landlord->id
+                        ])
                     );
                 }
             }

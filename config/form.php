@@ -4,5 +4,7 @@ return [
     'Tenant' => [],
     'Landlord' => [],
     'LandlordContract' => [],
-    'LandlordPayment'=> []
+    'LandlordPayment'=> [],
+    'Key' => [],
+    'KeyRequest' => []
 ];

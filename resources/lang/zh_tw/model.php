@@ -39,29 +39,29 @@ return [
         'emergency_contacts' => '緊急聯絡人',
         'guarantors' => '保證人',
         'contact_infos' => '聯絡資料',
-        'tenant_contracts' => '租客合約'
-
+        'tenant_contracts' => '租客合約',
+        'residence_address' => '戶籍地址',
+        'mailing_address' => '聯絡地址',
+        'phone' => '電話',
+        'email' => '電子郵件',
+        'fax_number' => '傳真'
     ],
     'Landlord' => [
         'id' => '編號',
         'name' => '姓名',
         'certificate_number' => '證號',
         'is_legal_person' => '是否法人',
-        'line_id' => 'Line ID',
-        'residence_address' => '戶籍地址',
-        'company' => '任職公司',
-        'job_position' => '任職職位',
-        'company_address' => '任職公司地址',
-        'confirm_by' => '資料確認人員',
-        'confirm_at' => '資料確認時間',
-        'created_at' => '建立時間',
-        'updated_at' => '最後更新時間',
-        'emergency_contacts' => '緊急聯絡人',
-        'guarantors' => '保證人',
+        'birth' => '出生年月日',
+        'note' => '備註',
         'is_collected_by_third_party' => '是否第三人代收',
         'landlord_contracts' => '房東合約',
         'agents' => '代理人',
         'contact_infos'=> '聯絡資料',
+        'residence_address' => '戶籍地址',
+        'mailing_address' => '聯絡地址',
+        'phone' => '電話',
+        'email' => '電子郵件',
+        'fax_number' => '傳真'
     ],
     'LandlordContract' => [
         'id' => '編號',
@@ -110,6 +110,23 @@ return [
         'room_id' => '房編號',
         'buildings' => '建物',
         'rooms' => '房'
+    ],
+    'Key' => [
+        'id' => '編號',
+        'key_name' => '鑰匙代號',
+        'room_id' => '相對應房',
+        'keeper_id' => '保管人',
+        'users' => '保管人',
+        'rooms' => '房',
+        'key_requests' => '鑰匙紀錄'
+    ],
+    'KeyRequest' => [
+        'id' => '編號',
+        'request_user_id' => '借用人',
+        'status' => '狀態',
+        'request_date' => '出借日',
+        'request_approved' => '出借允許',
+        'key_id' => '鑰匙編號'
     ],
     'Guarantor' => [
         'id' => '編號',

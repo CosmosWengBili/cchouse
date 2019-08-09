@@ -167,6 +167,7 @@ return [
          */
         Spatie\Permission\PermissionServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
+        Superbalist\LaravelGoogleCloudStorage\GoogleCloudStorageServiceProvider::class,
 
         /*
          * Application Service Providers...

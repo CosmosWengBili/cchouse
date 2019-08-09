@@ -5,17 +5,11 @@
 <div class="card">
     <div class="card-body table-responsive">
         <h2>
-            @if($model_name == null)
-               {{$layer}}
-            @else
-                @lang("model.{$model_name}.{$layer}")
-            @endif
+            您保管的鑰匙
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        @if(Route::has(Str::camel($layer) . '.create'))
-            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
-        @endif
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keys.create') }}">建立</a>
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
@@ -41,16 +35,20 @@
                 <tbody>
                     {{-- all the records --}}
                     @foreach ( $objects as $object )
-                        <tr>
+                        @if ( in_array($object['id'], $unapproved_key) )
+                            <tr>
+                        @else
+                            <tr class="bg-warning">
+                        @endif    
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
                                 <td> {{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=room;keeper;keyRequests">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                             </td>
                         </tr>
                     @endforeach

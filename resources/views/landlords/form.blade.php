@@ -40,6 +40,28 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.Landlord.birth")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="date"
+                                            name="birth"
+                                            value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.note")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="note"
+                                            value="{{ isset($data["note"]) ? $data['note'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Landlord.is_legal_person")</td>
                                     <td>
                                         {{-- unchecked value for checkbox--}}

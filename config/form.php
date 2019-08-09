@@ -8,4 +8,6 @@ return [
     'Room' => [],
     'Appliance' => [],
     'Maintenance' => [],
+    'Key' => [],
+    'KeyRequest' => []
 ];

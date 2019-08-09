@@ -12,6 +12,9 @@ class Key extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $fillable = [
+        'room_id', 'keeper_id', 'key_name'
+    ];
     /**
      * Get the key's keeper
      */

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Key;
+use App\KeyRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
 
 class KeyController extends Controller
 {
@@ -18,11 +21,31 @@ class KeyController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $owner_data = new NestedRelationResponser();
         $responseData
-            ->index('keys', Key::with($request->withNested)->get())
+            ->index(
+                'keys',
+                Key::select($this->whitelist('keys'))
+                    ->with($request->withNested)
+                    ->get()
+            )
             ->relations($request->withNested);
 
-        return view('shared.index', $responseData->get());
+        $owner_query = Key::select($this->whitelist('keys'))->where([
+            'keeper_id' => Auth::id()
+        ]);
+        $owner_data
+            ->index('keys', $owner_query->with($request->withNested)->get())
+            ->relations($request->withNested);
+
+        $unapproved_key = KeyRequest::whereIn('id', $owner_query->pluck('id'))
+            ->denied()
+            ->pluck('key_id')
+            ->toArray();
+
+        return view('keys.index', $responseData->get())
+            ->with('owner_data', $owner_data->get())
+            ->with('unapproved_key', $unapproved_key);
     }
 
     /**
@@ -30,9 +53,13 @@ class KeyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function create()
     {
-        //
+        $responseData = new FormDataResponser();
+        $data = $responseData->create(Key::class, 'keys.store')->get();
+
+        return view('keys.form', $data);
     }
 
     /**
@@ -43,7 +70,14 @@ class KeyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'keeper_id' => 'required|exists:users,id',
+            'key_name' => 'required|max:255'
+        ]);
+
+        $key = key::create($validatedData);
+        return redirect()->route('keys.index');
     }
 
     /**
@@ -60,7 +94,7 @@ class KeyController extends Controller
             ->show($key->load($request->withNested))
             ->relations($request->withNested);
 
-        return view('shared.show', $responseData->get());
+        return view('keys.show', $responseData->get());
     }
 
     /**
@@ -71,7 +105,11 @@ class KeyController extends Controller
      */
     public function edit(Key $key)
     {
-        //
+        $responseData = new FormDataResponser();
+        return view(
+            'keys.form',
+            $responseData->edit($key, 'keys.update')->get()
+        );
     }
 
     /**
@@ -83,7 +121,14 @@ class KeyController extends Controller
      */
     public function update(Request $request, Key $key)
     {
-        //
+        $validatedData = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'keeper_id' => 'required|exists:users,id',
+            'key_name' => 'required|max:255'
+        ]);
+
+        $key->update($validatedData);
+        return redirect()->route('keys.edit', ['id' => $key->id]);
     }
 
     /**
@@ -94,6 +139,7 @@ class KeyController extends Controller
      */
     public function destroy(Key $key)
     {
-        //
+        $key->delete();
+        return response()->json(true);
     }
 }

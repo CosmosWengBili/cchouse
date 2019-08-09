@@ -131,7 +131,7 @@
                 <i class="menu-arrow"></i></a>
                 <div class="submenu">
                     <ul class="submenu-item">
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>

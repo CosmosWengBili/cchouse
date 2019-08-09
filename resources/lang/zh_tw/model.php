@@ -91,11 +91,25 @@ return [
         'invoice_collection_number' => '發票領取號碼',
         'invoice_mailing_address' => '發票寄送地址',
         'commissioner_id' => '專員',
-        'landlord_id' => '房東',
+        'landlord_id' => '房東編號',
         'landlords'=> '房東',
-        'building_id' => '建物',
+        'building_id' => '建物編號',
         'buildings'=> '建物',
 
+    ],
+    'LandlordPayment' => [
+        'id' => '編號',
+        'amount' => '費用',
+        'subject' => '科目',
+        'bill_start_date' => '帳單期末',
+        'bill_end_date' => '帳單期初',
+        'bill_serial_number' => '帳單號',
+        'billing_vendor' => '廠商',
+        'collection_date' => '收帳日',
+        'comment' => '備註',
+        'room_id' => '房編號',
+        'buildings' => '建物',
+        'rooms' => '房'
     ],
     'Guarantor' => [
         'id' => '編號',

@@ -9,7 +9,7 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
             <div class="pl-2 mr-5">
                 檔案：
                 <a
-                    href="{{ Storage::url($document->path) }}"
+                    href="{{ $document->url() }}"
                     download="{{ $document->filename }}"
                     target="_blank"
                 >

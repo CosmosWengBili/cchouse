@@ -1,7 +1,7 @@
 $(document).ready(function () {
     $.ajaxSetup({
         headers: {
-            'X-CSRF-TOKEN': $("#csrf").val()
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content
         }
     });
 });

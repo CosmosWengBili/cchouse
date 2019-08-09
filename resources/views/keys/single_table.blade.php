@@ -12,13 +12,8 @@
             @endif
         </h2>
 
-        {{-- the route to create this kind of resource --}}
-        @if(Route::has(Str::camel($layer) . '.create'))
-            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
-        @endif
-
         {{-- you should handle the empty array logic --}}
-        @if (empty($objects))
+        @if (empty($object))
             <h3>尚無紀錄</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
@@ -33,27 +28,25 @@
                     @php
                         $model_name = ucfirst(Str::camel(substr($layer, 0, -1)));
                     @endphp
-                    @foreach ( array_keys($objects[0]) as $field)
+                    @foreach ( array_keys($object) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>
                     @endforeach
                     <th>功能</th>
                 </thead>
                 <tbody>
                     {{-- all the records --}}
-                    @foreach ( $objects as $object )
-                        <tr>
-                            {{-- render all attributes --}}
-                            @foreach($object as $key => $value)
-                                {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
-                            @endforeach
-                            <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
-                            </td>
-                        </tr>
-                    @endforeach
+                    <tr>
+                        {{-- render all attributes --}}
+                        @foreach($object as $key => $value)
+                            {{-- an even nested resource array --}}
+                            <td> {{ $value }}</td>
+                        @endforeach
+                        <td>
+                            <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
+                            <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
+                            <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         @endif

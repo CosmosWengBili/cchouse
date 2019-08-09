@@ -89,15 +89,9 @@
                                             name="building_type"
                                             value="{{ $data['building_type'] ?? '' }}"
                                         />
-                                            <option value="apartment">公寓</option>
-                                            <option value="apartment_with_lift">公寓有電梯</option>
-                                            <option value="villa">別墅</option>
-                                            <option value="pending">待查</option>
-                                            <option value="house">透天</option>
-                                            <option value="top_plus">頂加</option>
-                                            <option value="huaxia">華廈</option>
-                                            <option value="elevator_building">電梯大樓</option>
-                                            <option value="elevator_apartment">電梯公寓</option>
+                                            @foreach(config('enums.buildings.building_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -120,9 +114,9 @@
                                             name="legal_usage"
                                             value="{{ $data['legal_usage'] ?? '' }}"
                                         />
-                                            <option value="house">住宅</option>
-                                            <option value="shop">店面</option>
-                                            <option value="ad">廣告外牆</option>
+                                            @foreach(config('enums.buildings.legal_usage') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -235,10 +229,9 @@
                                             name="electricity_payment_method"
                                             value="{{ $data['electricity_payment_method'] ?? '' }}"
                                         />
-                                            <option value="owner_pays">業主自付</option>
-                                            <option value="tenant_pays">房客自付</option>
-                                            <option value="company_payment">公司代繳</option>
-                                            <option value="owner_payment">業主代繳</option>
+                                            @foreach(config('enums.buildings.payment_methods') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -283,10 +276,9 @@
                                             name="water_payment_method"
                                             value="{{ $data['water_payment_method'] ?? '' }}"
                                         />
-                                            <option value="owner_pays">業主自付</option>
-                                            <option value="tenant_pays">房客自付</option>
-                                            <option value="company_payment">公司代繳</option>
-                                            <option value="owner_payment">業主代繳</option>
+                                            @foreach(config('enums.buildings.payment_methods') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -342,10 +334,9 @@
                                             name="management_fee_payment_method"
                                             value="{{ $data['management_fee_payment_method'] ?? '' }}"
                                         />
-                                            <option value="owner_pays">業主自付</option>
-                                            <option value="tenant_pays">房客自付</option>
-                                            <option value="company_payment">公司代繳</option>
-                                            <option value="owner_payment">業主代繳</option>
+                                            @foreach(config('enums.buildings.payment_methods') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>

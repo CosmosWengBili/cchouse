@@ -5,7 +5,9 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\LandlordContract;
 use App\Landlord;
+use App\TenantContract;
 use App\Notifications\LandlordContractDue;
+use App\Notifications\TenantContractDueInTwoMonths;
 
 class ScheduleService
 {
@@ -97,6 +99,19 @@ class ScheduleService
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
         }
+    }
+
+    // daily task to notify users that some tenant contracts due in 2 months
+    public function notifyTenantContractDueInTwoMonths() {
+        // escrow is 2 months
+        TenantContract::where('contract_end', Carbon::today()->addMonth(2))
+            ->with('commissioner')
+            ->get()
+            ->each(function ($tenantContract) {
+                $tenantContract->commissioner->notify(
+                    new TenantContractDueInTwoMonths($tenantContract)
+                );
+            });
     }
 
     // public function anotherNotification($data) {

@@ -9,5 +9,6 @@ return [
     'Appliance' => [],
     'Maintenance' => [],
     'Key' => [],
-    'KeyRequest' => []
+    'KeyRequest' => [],
+    'TenantContract' => [],
 ];

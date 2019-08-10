@@ -15,6 +15,26 @@ class TenantContract extends Pivot implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'set_other_rights' => 'boolean',
+        'sealed_registered' => 'boolean',
+        'effective' => 'boolean',
+    ];
+
+    /**
      * Get the tenant of this contract.
      */
     public function tenant() {

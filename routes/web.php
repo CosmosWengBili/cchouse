@@ -29,6 +29,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlordContracts', 'LandlordContractController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
+            Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
             Route::resource('buildings', 'BuildingController');

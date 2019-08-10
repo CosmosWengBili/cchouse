@@ -222,6 +222,8 @@ return [
         'administrator_id' => '管理人員',
         'comment' => '備註',
         'landlord_contract_id' => '房東合約 ID',
+        'rooms' => '房',
+        'landlordContracts' => '房東合約'
     ],
     'Room' => [
         'id' => '編號',

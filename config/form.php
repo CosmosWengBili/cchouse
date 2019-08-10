@@ -5,6 +5,10 @@ return [
     'Landlord' => [],
     'LandlordContract' => [],
     'LandlordPayment'=> [],
+    'Building' => [],
+    'Room' => [],
+    'Appliance' => [],
+    'Maintenance' => [],
     'Key' => [],
     'KeyRequest' => []
 ];

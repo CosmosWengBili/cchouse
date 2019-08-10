@@ -13,6 +13,33 @@ class Room extends Model implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+    
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'needs_decoration' => 'boolean',
+        'has_digital_tv' => 'boolean',
+        'can_keep_pets' => 'boolean',
+    ];
+
+    /**
      * Get the building that this room is in.
      */
     public function building() {
@@ -61,12 +88,14 @@ class Room extends Model implements AuditableContract
     public function pictures() {
         return $this->morphMany('App\Document', 'attachable');
     }
+
     /**
      * Get the landlord payments of this room.
      */
     public function landlordPayments() {
         return $this->hasMany('App\LandlordPayment');
     }
+    
     /**
      * Get all landlord other subjects of this building.
      */

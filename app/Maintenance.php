@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Maintenance extends Pivot
+class Maintenance extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;

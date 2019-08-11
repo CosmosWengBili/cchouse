@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\CompanyIncome;
 use App\LandlordPayment;
 use App\Maintenance;
+use App\Responser\NestedRelationResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Room;
 
@@ -97,9 +99,14 @@ class MaintenanceController extends Controller
      * @param  \App\Maintenance  $maintenance
      * @return \Illuminate\Http\Response
      */
-    public function show(Maintenance $maintenance)
+    public function show(Request $request, Maintenance $maintenance)
     {
-        //
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($maintenance->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('maintenances.show', $responseData->get());
     }
 
     /**

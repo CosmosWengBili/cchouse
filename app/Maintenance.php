@@ -64,6 +64,34 @@ class Maintenance extends Pivot implements AuditableContract
     }
 
     /**
+     * Get the tenant of this maintenance.
+     */
+    public function tenant() {
+        return $this->hasOneThrough(
+            'App\Tenant',
+            'App\TenantContract',
+            'id',
+            'id',
+            'tenant_contract_id',
+            'tenant_id'
+        );
+    }
+
+    /**
+     * Get the tenant of this maintenance.
+     */
+    public function room() {
+        return $this->hasOneThrough(
+            'App\Room',
+            'App\TenantContract',
+            'id',
+            'id',
+            'tenant_contract_id',
+            'room_id'
+        );
+    }
+
+    /**
      * Get all of the related pictures.
      * 相關照片
      */

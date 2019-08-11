@@ -99,7 +99,7 @@
                                                                     <td> {{ $value }}</td>
                                                                 @endforeach
                                                                 <td>
-                                                                    <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}">查看</a>
+                                                                    <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room.building">查看</a>
                                                                     <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
                                                                     <a class="btn btn-danger btn-xs jquery-postback" data-method="delete" href="{{ route('maintenances.show', $maintenance['id']) }}">刪除</a>
                                                                 </td>
@@ -131,7 +131,7 @@
 
                                                                const maintenanceIds = $checkboxes.map(function () { return $(this).val(); }).toArray();
                                                                $.post('/maintenances/markDone', { who: who, maintenanceIds: maintenanceIds }, function () {
-                                                                   // location.reload();
+                                                                   location.reload();
                                                                })
                                                             });
                                                         })();

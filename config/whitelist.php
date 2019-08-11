@@ -16,5 +16,6 @@ return [
         'id','commission_start_date'
     ],
     'buildings' => [],
+    'landlord_payments' => [],
     'keys' => []
 ];

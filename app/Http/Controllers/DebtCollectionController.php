@@ -99,4 +99,17 @@ class DebtCollectionController extends Controller
 
         return redirect()->route('debt_collections.show', ['id' => $debtCollection->id]);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param DebtCollection $debtCollection
+     * @return Response
+     * @throws \Exception
+     */
+    public function destroy(DebtCollection $debtCollection)
+    {
+        $debtCollection->delete();
+        return response()->json(true);
+    }
 }

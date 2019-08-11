@@ -60,31 +60,53 @@
                                     <div class="tab-pane fade {{ $loop->first ? 'show active' : ''  }}" id="{{ $statusKey }}-{{ $workTypeKey }}-pane" role="tabpanel">
                                         <div class="table-responsive">
                                             @if(count($maintenances) > 0)
-                                                <table id="users" class="display table" style="width:100%">
+                                                <table id="{{ $statusKey }}-{{ $workTypeKey }}-table" class="display table" style="width:100%">
                                                     <thead>
-                                                    @foreach ( array_keys($maintenances[0]) as $field)
-                                                        <th>@lang("model.Maintenance.{$field}")</th>
-                                                    @endforeach
+                                                        @if($statusKey == 'request')
+                                                            <th>
+                                                                <input type="checkbox" class="js-select-all">
+                                                            </th>
+                                                        @endif
+                                                        @foreach ( array_keys($maintenances[0]) as $field)
+                                                            <th>@lang("model.Maintenance.{$field}")</th>
+                                                        @endforeach
                                                     <th>功能</th>
                                                     </thead>
                                                     <tbody>
-                                                    {{-- all the records --}}
-                                                    @foreach ( $maintenances as $maintenance )
-                                                        <tr>
-                                                            {{-- render all attributes --}}
-                                                            @foreach($maintenance as $key => $value)
-                                                                {{-- an even nested resource array --}}
-                                                                <td> {{ $value }}</td>
-                                                            @endforeach
-                                                            <td>
-                                                                <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}">查看</a>
-                                                                <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
-                                                                <a class="btn btn-danger btn-xs jquery-postback" data-method="delete" href="{{ route('maintenances.show', $maintenance['id']) }}">刪除</a>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
+                                                        {{-- all the records --}}
+                                                        @foreach ( $maintenances as $maintenance )
+                                                            <tr>
+                                                                @if($statusKey == 'request')
+                                                                    <td>
+                                                                        <input type="checkbox" class="js-checkbox" value="{{ $maintenance['id'] }}">
+                                                                    </td>
+                                                                @endif
+                                                                {{-- render all attributes --}}
+                                                                @foreach($maintenance as $key => $value)
+                                                                    {{-- an even nested resource array --}}
+                                                                    <td> {{ $value }}</td>
+                                                                @endforeach
+                                                                <td>
+                                                                    <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}">查看</a>
+                                                                    <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
+                                                                    <a class="btn btn-danger btn-xs jquery-postback" data-method="delete" href="{{ route('maintenances.show', $maintenance['id']) }}">刪除</a>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
                                                     </tbody>
                                                 </table>
+                                                <script>
+                                                    renderDataTable(["#{{ $statusKey }}-{{ $workTypeKey }}-table"]);
+                                                    @if($statusKey == 'request')
+                                                        (function () {
+                                                            const $table = $("#{{ $statusKey }}-{{ $workTypeKey }}-table");
+                                                            $table.find('.js-select-all').on('change', function () {
+                                                                const checked = $(this).prop('checked');
+                                                               $table.find('.js-checkbox').prop('checked', checked);
+                                                            });
+                                                        })();
+                                                    @endif
+                                                </script>
                                             @else
                                                 <h3 class="text-center">暫無資料</h3>
                                             @endif

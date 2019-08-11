@@ -119,7 +119,27 @@ class MaintenanceController extends Controller
      */
     public function update(Request $request, Maintenance $maintenance)
     {
-        //
+        $validatedData = $request->validate([
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'closed_comment' => 'required',
+            'service_comment' => 'required',
+            'status' => 'required|max:255',
+            'incident_details' => 'required',
+            'incident_type' => 'required|max:255',
+            'work_type' => 'required|max:255',
+            'number_of_times' => 'required|integer|digits_between:1,11',
+            'closing_serial_number' => 'required|max:255',
+            'billing_details' => 'required',
+            'payment_request_serial_number' => 'required|max:255',
+            'cost' => 'required|integer|digits_between:1,11',
+            'price' => 'required|integer|digits_between:1,11',
+            'is_recorded' => 'required|boolean',
+            'invoice_serail_number' => 'required|max:255',
+            'comment' => 'required',
+        ]);
+        $maintenance = $maintenance->update($validatedData);
+
+        return redirect()->route('maintenances.index');
     }
 
     /**

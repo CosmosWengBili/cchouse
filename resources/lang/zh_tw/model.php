@@ -5,7 +5,9 @@ return [
         'name' => '姓名',
         'email' => '電子郵件',
         'mobile' => '聯絡電話',
-        'password' => '密碼'
+        'password' => '密碼',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Audit' => [
         'id' => '編號',

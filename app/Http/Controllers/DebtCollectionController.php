@@ -32,6 +32,25 @@ class DebtCollectionController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param Request $request
+     * @param DebtCollection $debtCollection
+     * @return Response
+     */
+    public function show(Request $request, DebtCollection $debtCollection)
+    {
+        $responser = new NestedRelationResponser();
+        $responser
+            ->show($debtCollection->load($request->withNested))
+            ->relations($request->withNested);
+        $data = $responser->get();
+
+        $data['collector'] = $debtCollection->collector()->first()->toArray();
+        return view('debt_collections.show', $data);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -77,7 +96,6 @@ class DebtCollectionController extends Controller
 
         return view('debt_collections.form', $data);
     }
-
 
     /**
      * Update the specified resource in storage.

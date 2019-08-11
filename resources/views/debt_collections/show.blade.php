@@ -43,12 +43,15 @@
                         @if (!empty($relations))
                             {{-- you could propbly have many kinds of nested resources --}}
                             @foreach($relations as $relation)
-                                <div class="col-6 my-3">
+                                <div class="col-10 my-3 offset-1">
                                     {{-- handle first level of the nested resource, leave the others to recursion --}}
                                     @php
                                         $layer = Str::snake(explode('.', $relation)[0]);
+                                        $isPlural = Str::plural($layer) == $layer;
+                                        $pluralName = Str::plural($layer);
+                                        $objects = $isPlural ? $data[$layer] : [$data[$layer]];
                                     @endphp
-                                    @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
+                                    @include($pluralName . '.table', ['objects' => $objects, 'layer' => $layer])
                                 </div>
                             @endforeach
                         @endif

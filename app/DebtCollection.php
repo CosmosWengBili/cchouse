@@ -34,4 +34,18 @@ class DebtCollection extends Model implements AuditableContract
     public function tenantContract() {
         return $this->belongsTo('App\TenantContract');
     }
+
+    /**
+     * Get all the tenant payments of this tenant contract.
+     */
+    public function tenantPayments() {
+        return $this->hasMany('App\TenantPayment', 'tenant_contract_id', 'tenant_contract_id');
+    }
+
+    /**
+     * Get all the tenant electricity payments of this tenant contract.
+     */
+    public function tenantElectricityPayments() {
+        return $this->hasMany('App\TenantElectricityPayment', 'tenant_contract_id', 'tenant_contract_id');
+    }
 }

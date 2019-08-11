@@ -11,6 +11,8 @@ class SystemVariable extends Model
         ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10],
     ];
 
+    protected $fillable = ['code', 'value'];
+
     public static function get(string $code) {
         $option = self::searchArray($code, 'code', self::VARIABLES);
         if (is_null($option)) {

@@ -63,4 +63,18 @@ class DebtCollectionController extends Controller
 
         return redirect()->route('debtCollections.index');
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\User  $User
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(DebtCollection $debtCollection)
+    {
+        $responseData = new FormDataResponser();
+        $data = $responseData->edit($debtCollection, 'debtCollections.update')->get();
+
+        return view('debt_collections.form', $data);
+    }
 }

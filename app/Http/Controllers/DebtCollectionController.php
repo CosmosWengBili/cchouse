@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DebtCollection;
+use App\Responser\FormDataResponser;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
@@ -27,5 +28,17 @@ class DebtCollectionController extends Controller
             ->index('DebtCollections', $debtCollections)
             ->relations($request->withNested);
         return view('debt_collections.index', $responseData->get());
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $responser = new FormDataResponser();
+        $data = $responser->create(DebtCollection::class, 'debtCollections.store')->get();
+        return view('debt_collections.form', $data);
     }
 }

@@ -154,7 +154,8 @@ class MaintenanceController extends Controller
      */
     public function destroy(Maintenance $maintenance)
     {
-        //
+        $maintenance->delete();
+        return response()->json(true);
     }
 
     public function markDone(Request $request) {

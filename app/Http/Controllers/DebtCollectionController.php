@@ -61,13 +61,13 @@ class DebtCollectionController extends Controller
         $validatedData = array_merge($validatedData, ['collector_id' => Auth::user()->id]);
         $debtCollection = DebtCollection::create($validatedData);
 
-        return redirect()->route('debtCollections.index');
+        return redirect()->route('debt_collections.show', ['id' => $debtCollection->id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $User
+     * @param DebtCollection $debtCollection
      * @return \Illuminate\Http\Response
      */
     public function edit(DebtCollection $debtCollection)
@@ -76,5 +76,27 @@ class DebtCollectionController extends Controller
         $data = $responseData->edit($debtCollection, 'debtCollections.update')->get();
 
         return view('debt_collections.form', $data);
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param DebtCollection $debtCollection
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, DebtCollection $debtCollection)
+    {
+        $validatedData = $request->validate([
+            'tenant_contract_id' => 'required',
+            'details' => 'nullable',
+            'status' => 'required|max:255',
+            'is_penalty_collected' => 'required',
+            'comment' => 'nullable',
+        ]);
+        $debtCollection->update($validatedData);
+
+        return redirect()->route('debt_collections.show', ['id' => $debtCollection->id]);
     }
 }

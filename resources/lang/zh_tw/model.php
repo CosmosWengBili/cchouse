@@ -172,6 +172,7 @@ return [
         'is_recorded' => '是否入帳',
         'invoice_serail_number' => '發票號碼',
         'comment' => '備註',
+        'created_at' => '建立時間',
     ],
     'Appliance' => [
         'id' => '',

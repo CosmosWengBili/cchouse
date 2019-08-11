@@ -24,7 +24,20 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
-        //
+        $groupedMaintenances = [];
+        $maintenances = Maintenance::all();
+        foreach ($maintenances as $maintenance) {
+            $status = $maintenance->status;
+            $workType = $maintenance->work_type;
+            if (!isset($groupedMaintances[$status])) { $groupedMaintances[$status] = []; }
+            if(!isset($groupedMaintances[$status][$workType])) { $groupedMaintances[$status][$workType] = []; }
+
+            $groupedMaintenances[$status][$workType][] = $maintenance->toArray();
+        }
+
+        return view('maintenances.index', [
+            'groupedMaintenances' => $groupedMaintenances,
+        ]);
     }
 
     /**
@@ -36,7 +49,7 @@ class MaintenanceController extends Controller
     {
         $room = isset($request->prefill['rooms']) ? Room::find($request->prefill['rooms']) : null;
         $tenant_contract_id = ($room && !$room->activeContracts->isEmpty()) ? $room->activeContracts()->first()->id : null;
-        
+
         $responseData = new FormDataResponser();
         return view('maintenances.form', $responseData->create(Maintenance::class, 'maintenances.store')->get())
                     ->with(['tenant_contract_id' => $tenant_contract_id ]);

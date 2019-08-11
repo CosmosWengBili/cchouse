@@ -36,6 +36,11 @@ class Maintenance extends Pivot implements AuditableContract
         'others' => '其它',
     ];
 
+    protected $hidden = [
+        'updated_at',
+        'deleted_at',
+    ];
+
     /**
      * Get the user who took care of this maintenance.
      */

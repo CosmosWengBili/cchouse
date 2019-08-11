@@ -1,12 +1,15 @@
 @php
     $user = Auth::user();
     $statuses = [];
+    $isAccountGroup = false;
     if ($user->belongsToGroup('帳務組')) {
         $statuses = array_filter(\App\Maintenance::STATUSES, function ($key) {
             return $key == 'done' || $key == 'request';
         }, ARRAY_FILTER_USE_KEY);;
+        $isAccountGroup = true;
     } else if ($user->belongsToGroup('管理組')){
         $statuses = \App\Maintenance::STATUSES;
+
     }
 
     $workTypes = \App\Maintenance::WORK_TYPES;
@@ -60,9 +63,18 @@
                                     <div class="tab-pane fade {{ $loop->first ? 'show active' : ''  }}" id="{{ $statusKey }}-{{ $workTypeKey }}-pane" role="tabpanel">
                                         <div class="table-responsive">
                                             @if(count($maintenances) > 0)
+                                                <div class="mb-3">
+                                                    @if($isAccountGroup && $statusKey == 'request')
+                                                        <select class="form-control d-inline-block js-who-undertake" style="width: 100px;">
+                                                            <option value="cchouse" selected>兆基負擔</option>
+                                                            <option value="landlord">房東負擔</option>
+                                                        </select>
+                                                        <button type="button" class="btn btn-info btn-xs js-apply-undertake">套用</button>
+                                                    @endif
+                                                </div>
                                                 <table id="{{ $statusKey }}-{{ $workTypeKey }}-table" class="display table" style="width:100%">
                                                     <thead>
-                                                        @if($statusKey == 'request')
+                                                        @if($isAccountGroup && $statusKey == 'request')
                                                             <th>
                                                                 <input type="checkbox" class="js-select-all">
                                                             </th>
@@ -76,7 +88,7 @@
                                                         {{-- all the records --}}
                                                         @foreach ( $maintenances as $maintenance )
                                                             <tr>
-                                                                @if($statusKey == 'request')
+                                                                @if($isAccountGroup && $statusKey == 'request')
                                                                     <td>
                                                                         <input type="checkbox" class="js-checkbox" value="{{ $maintenance['id'] }}">
                                                                     </td>
@@ -97,12 +109,30 @@
                                                 </table>
                                                 <script>
                                                     renderDataTable(["#{{ $statusKey }}-{{ $workTypeKey }}-table"]);
-                                                    @if($statusKey == 'request')
+                                                    @if($isAccountGroup && $statusKey == 'request')
                                                         (function () {
                                                             const $table = $("#{{ $statusKey }}-{{ $workTypeKey }}-table");
                                                             $table.find('.js-select-all').on('change', function () {
                                                                 const checked = $(this).prop('checked');
                                                                $table.find('.js-checkbox').prop('checked', checked);
+                                                            });
+
+                                                            const targets = {  cchouse: '兆基', landlord: '房東', };
+                                                            $('.js-apply-undertake').on('click', function () {
+                                                               const $checkboxes = $table.find('.js-checkbox:checked');
+                                                               if($checkboxes.length === 0) {
+                                                                   alert('請至少選擇一列');
+                                                                   return;
+                                                               }
+                                                               const who = $('.js-who-undertake').val();
+                                                               if (!confirm(`確定套用『${targets[who]}負擔』至所選的案件上嗎？（注意此操作不可逆）`)) {
+                                                                   return;
+                                                               }
+
+                                                               const maintenanceIds = $checkboxes.map(function () { return $(this).val(); }).toArray();
+                                                               $.post('/maintenances/markDone', { who: who, maintenanceIds: maintenanceIds }, function () {
+                                                                   // location.reload();
+                                                               })
                                                             });
                                                         })();
                                                     @endif

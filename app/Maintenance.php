@@ -70,4 +70,15 @@ class Maintenance extends Pivot implements AuditableContract
     public function pictures() {
         return $this->morphMany('App\Document', 'attachable');
     }
+
+    /**
+     * Get income amount.
+     * 取得收入金額
+     */
+    public function incomeAmount() {
+        $cost = $this->cost;
+        $price = $this->price;
+
+        return $price - $cost;
+    }
 }

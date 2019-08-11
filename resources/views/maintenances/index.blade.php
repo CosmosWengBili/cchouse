@@ -1,5 +1,14 @@
 @php
-    $statuses = \App\Maintenance::STATUSES;
+    $user = Auth::user();
+    $statuses = [];
+    if ($user->belongsToGroup('帳務組')) {
+        $statuses = array_filter(\App\Maintenance::STATUSES, function ($key) {
+            return $key == 'done' || $key == 'request';
+        }, ARRAY_FILTER_USE_KEY);;
+    } else if ($user->belongsToGroup('管理組')){
+        $statuses = \App\Maintenance::STATUSES;
+    }
+
     $workTypes = \App\Maintenance::WORK_TYPES;
 @endphp
 

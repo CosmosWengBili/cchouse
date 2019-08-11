@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Maintenance;
 use Illuminate\Http\Request;
-use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use App\Room;
 
 use App\Responser\FormDataResponser;
@@ -25,7 +26,7 @@ class MaintenanceController extends Controller
     public function index()
     {
         $groupedMaintenances = [];
-        $maintenances = Maintenance::all();
+        $maintenances = $this->getMaintenancesByGroup();
         foreach ($maintenances as $maintenance) {
             $status = $maintenance->status;
             $workType = $maintenance->work_type;
@@ -151,5 +152,29 @@ class MaintenanceController extends Controller
     public function destroy(Maintenance $maintenance)
     {
         //
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getMaintenancesByGroup()
+    {
+        $user = Auth::user();
+
+        if ($user->belongsToGroup('帳務組')) {
+            $threeMonthsAgo = Carbon::now()->subMonth(3);
+            $threeMonthsFromNow = Carbon::now()->addMonth(3);
+
+            $doneMaintenances = Maintenance::where('status', 'done')->get();
+            $requestMaintenances = Maintenance::where('status', 'request')
+                ->whereBetween('payment_request_date', [$threeMonthsAgo, $threeMonthsFromNow])
+                ->get();
+
+            return $doneMaintenances->merge($requestMaintenances);
+        } else if ($user->belongsToGroup('管理組')){
+            return Maintenance::all();
+        }
+
+        return [];
     }
 }

@@ -17,6 +17,10 @@ class DebtCollection extends Model implements AuditableContract
         'collector_id', 'tenant_contract_id', 'details', 'status', 'is_penalty_collected', 'comment'
     ];
 
+    protected $casts = [
+        'is_penalty_collected' => 'boolean',
+    ];
+
     /**
      * Get the user who made this debt collection.
      */

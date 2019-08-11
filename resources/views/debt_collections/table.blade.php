@@ -45,10 +45,16 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>
+                                    @if(is_bool($value))
+                                        {{ $value ? '是' : '否' }}
+                                    @else
+                                        {{ $value }}
+                                    @endif
+                                </td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContracts;contactInfos;emergencyContacts;guarantors">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
                             </td>

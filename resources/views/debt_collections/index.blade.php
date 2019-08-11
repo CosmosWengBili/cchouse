@@ -6,7 +6,7 @@
         <div class="col-md-12 mt-4">
             {{-- for showing multiple types of entries returned --}}
             @foreach ( $data as $type => $entries)
-                @include('tenants.table', ['objects' => $entries, 'layer' => $type])
+                @include('debt_collections.table', ['objects' => $entries, 'layer' => $type])
             @endforeach
         </div>
     </div>

@@ -7,12 +7,12 @@ use Illuminate\Support\Carbon;
 
 class SystemVariable extends Model
 {
-    const OPTIONS = [
+    const VARIABLES = [
         ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10],
     ];
 
     public static function get(string $code) {
-        $option = self::searchArray($code, 'code', self::OPTIONS);
+        $option = self::searchArray($code, 'code', self::VARIABLES);
         if (is_null($option)) {
             return null;
         }
@@ -25,7 +25,7 @@ class SystemVariable extends Model
         return self::castValue($option['type'], $variable->value);
     }
 
-    private function castValue(string $type, string $valueString) {
+    private static function castValue(string $type, string $valueString) {
         switch ($type) {
             case 'integer':
                 return intval($valueString);
@@ -41,9 +41,9 @@ class SystemVariable extends Model
     }
 
     private static function searchArray($value, $key, $array) {
-        foreach ($array as $k => $val) {
+        foreach ($array as $val) {
             if ($val[$key] == $value) {
-                return $k;
+                return $val;
             }
         }
         return null;

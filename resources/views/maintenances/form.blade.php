@@ -1,3 +1,11 @@
+@php
+    $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
+    $userIds = \App\User::select('id')->pluck('id')->toArray();
+    $statuses = \App\Maintenance::STATUSES;
+    $workTypes = \App\Maintenance::WORK_TYPES;
+    $incidentTypes = \App\Maintenance::INCIDENT_TYPES;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -19,14 +27,17 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="tenant_contract" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="tenant_contract"
+                                            data-text="id"
                                             data-selected="{{ $data['tenant_contract_id'] ?? $tenant_contract_id ?? 0 }}"
                                             name="tenant_contract_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
+                                            @foreach($tenantContractIds as $tenantContractId)
+                                                <option value="{{ $tenantContractId }}">{{ $tenantContractId }}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -77,28 +88,34 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="user" 
-                                            data-text="name" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="user"
+                                            data-text="name"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
+                                            @foreach($userIds as $userId)
+                                                <option value="{{ $userId }}">{{ $userId }}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>@lang("model.Maintenance.maintenance_staff_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="user" 
-                                            data-text="name" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="user"
+                                            data-text="name"
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                             name="maintenance_staff_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
+                                            @foreach($userIds as $userId)
+                                                <option value="{{ $userId }}">{{ $userId }}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -143,11 +160,9 @@
                                             name="status"
                                             value="{{ $data['status'] ?? '' }}"
                                         />
-                                            <option value="pending">待處理</option>
-                                            <option value="contact">聯繫中</option>
-                                            <option value="sent">已派工</option>
-                                            <option value="request">請款中</option>
-                                            <option value="done">案件完成</option>
+                                            @foreach($statuses as $value => $name)
+                                                <option value="{{$value}}">{{$name}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -170,8 +185,9 @@
                                             name="incident_type"
                                             value="{{ $data['incident_type'] ?? '' }}"
                                         />
-                                            <option value="clean">清潔</option>
-                                            <option value="repair">維修</option>
+                                            @foreach($incidentTypes as $value => $name)
+                                                <option value="{{$value}}">{{$name}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -183,16 +199,9 @@
                                             name="work_type"
                                             value="{{ $data['work_type'] ?? '' }}"
                                         />
-                                            <option value="water_and_electricity">水電</option>
-                                            <option value="paint">油漆</option>
-                                            <option value="wood">木工</option>
-                                            <option value="air_conditioning">冷氣</option>
-                                            <option value="leaking">漏水</option>
-                                            <option value="doors">門窗</option>
-                                            <option value="wallpaper">壁紙</option>
-                                            <option value="internet">網路</option>
-                                            <option value="appliance">家電</option>
-                                            <option value="others">其它</option>
+                                            @foreach($workTypes as $value => $name)
+                                                <option value="{{$value}}">{{$name}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -308,7 +317,7 @@
                                         />
                                     </td>
                                 </tr>
-                                
+
                             </tbody>
                         </table>
 

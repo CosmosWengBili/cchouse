@@ -1,9 +1,11 @@
 @php
+    $user = Auth::User();
     $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
     $userIds = \App\User::select('id')->pluck('id')->toArray();
     $statuses = \App\Maintenance::STATUSES;
     $workTypes = \App\Maintenance::WORK_TYPES;
     $incidentTypes = \App\Maintenance::INCIDENT_TYPES;
+    $isManageGroup = Auth::User()->belongsToGroup('管理組');
 @endphp
 
 @extends('layouts.app')
@@ -174,10 +176,12 @@
                                             @foreach($statuses as $value => $name)
                                                 @php
                                                     $checked = isset($data['status']) && $data['status'] == $value;
+                                                    $disabled = $value == 'done' && $isManageGroup;
                                                 @endphp
                                                 <option
                                                     value="{{$value}}"
                                                     {{ $checked ? 'selected="selected"' : '' }}
+                                                    {{ $disabled ? 'disabled="disabled"' : '' }}
                                                 >
                                                     {{$name}}
                                                 </option>
@@ -361,4 +365,17 @@
         </div>
     </div>
 </div>
+<script>
+    (function () {
+        const isManageGroup = {{ $isManageGroup ? 'true' : 'false' }};
+        if (!isManageGroup) return;
+
+        const $checkbox = $('input[name="is_recorded"][type="checkbox"]');
+        const $options = $('option[value="done"]');
+        $checkbox.on('change', function () {
+            const checked = $checkbox.prop('checked');
+            $options.prop('disabled', checked);
+        });
+    })();
+</script>
 @endsection

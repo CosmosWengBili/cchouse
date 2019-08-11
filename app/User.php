@@ -32,7 +32,7 @@ class User extends Authenticatable implements AuditableContract
      * @var array
      */
     protected $hidden = [
-        'email_verified_at', 'remember_token', 'remember_token', 'deleted_at',
+        'email_verified_at', 'remember_token', 'deleted_at',
     ];
 
     /**

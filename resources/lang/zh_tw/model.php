@@ -251,5 +251,15 @@ return [
         'can_keep_pets' => '養寵物',
         'gender_limit' => '性別限制',
         'comment' => '備註',
+    ],
+    'DebtCollection' => [
+        'id' => '編號',
+        'collector_id' => '催收人 ID',
+        'tenant_contract_id' => '租客合約 ID',
+        'details' => '催收說明',
+        'status' => '催收狀態',
+        'is_penalty_collected' => '是否收滯納金',
+        'comment' => '備註',
+        'created_at' => '建立時間',
     ]
 ];

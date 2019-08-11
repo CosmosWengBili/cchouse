@@ -28,15 +28,19 @@
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
                                         <select
-                                            data-toggle="selectize"
-                                            data-table="tenant_contract"
-                                            data-text="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? $tenant_contract_id ?? 0 }}"
                                             name="tenant_contract_id"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($tenantContractIds as $tenantContractId)
-                                                <option value="{{ $tenantContractId }}">{{ $tenantContractId }}</option>
+                                            @foreach($tenantContractIds as $value)
+                                                @php
+                                                    $checked = isset($data['tenant_contract_id']) && $data['tenant_contract_id'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$value}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -89,15 +93,19 @@
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
                                         <select
-                                            data-toggle="selectize"
-                                            data-table="user"
-                                            data-text="name"
-                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($userIds as $userId)
-                                                <option value="{{ $userId }}">{{ $userId }}</option>
+                                            @foreach($userIds as $value => $name)
+                                                @php
+                                                    $checked = isset($data['commissioner_id']) && $data['commissioner_id'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$name}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -106,15 +114,19 @@
                                     <td>@lang("model.Maintenance.maintenance_staff_id")</td>
                                     <td>
                                         <select
-                                            data-toggle="selectize"
-                                            data-table="user"
-                                            data-text="name"
-                                            data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($userIds as $userId)
-                                                <option value="{{ $userId }}">{{ $userId }}</option>
+                                            @foreach($userIds as $value => $name)
+                                                @php
+                                                    $checked = isset($data['maintenance_staff_id']) && $data['maintenance_staff_id'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$name}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -156,12 +168,19 @@
                                     <td>@lang("model.Maintenance.status")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="status"
-                                            value="{{ $data['status'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
                                             @foreach($statuses as $value => $name)
-                                                <option value="{{$value}}">{{$name}}</option>
+                                                @php
+                                                    $checked = isset($data['status']) && $data['status'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$name}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -181,12 +200,19 @@
                                     <td>@lang("model.Maintenance.incident_type")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="incident_type"
-                                            value="{{ $data['incident_type'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
                                             @foreach($incidentTypes as $value => $name)
-                                                <option value="{{$value}}">{{$name}}</option>
+                                                @php
+                                                    $checked = isset($data['incident_type']) && $data['incident_type'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$name}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -195,12 +221,19 @@
                                     <td>@lang("model.Maintenance.work_type")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="work_type"
-                                            value="{{ $data['work_type'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
                                             @foreach($workTypes as $value => $name)
-                                                <option value="{{$value}}">{{$name}}</option>
+                                                @php
+                                                    $checked = isset($data['work_type']) && $data['work_type'] == $value;
+                                                @endphp
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ $checked ? 'selected="selected"' : '' }}
+                                                >
+                                                    {{$name}}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>

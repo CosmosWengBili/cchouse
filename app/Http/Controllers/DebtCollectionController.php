@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\DebtCollection;
 use App\Responser\FormDataResponser;
+use App\Tenant;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
-use App\Services\NestedToAttributeService;
+use Illuminate\Support\Facades\Auth;
 
 class DebtCollectionController extends Controller
 {
@@ -40,5 +41,26 @@ class DebtCollectionController extends Controller
         $responser = new FormDataResponser();
         $data = $responser->create(DebtCollection::class, 'debtCollections.store')->get();
         return view('debt_collections.form', $data);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'tenant_contract_id' => 'required',
+            'details' => 'nullable',
+            'status' => 'required|max:255',
+            'is_penalty_collected' => 'required',
+            'comment' => 'nullable',
+        ]);
+        $validatedData = array_merge($validatedData, ['collector_id' => Auth::user()->id]);
+        $debtCollection = DebtCollection::create($validatedData);
+
+        return redirect()->route('debtCollections.index');
     }
 }

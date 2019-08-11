@@ -17,17 +17,6 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>@lang("model.DebtCollection.collector_id")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="collector_id"
-                                            value="{{ isset($data["collector_id"]) ? $data['collector_id'] : '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.DebtCollection.tenant_contract_id")</td>
                                     <td>
                                         <input

@@ -12,6 +12,11 @@ class DebtCollection extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+
+    protected $fillable = [
+        'collector_id', 'tenant_contract_id', 'details', 'status', 'is_penalty_collected', 'comment'
+    ];
+
     /**
      * Get the user who made this debt collection.
      */

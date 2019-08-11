@@ -16,7 +16,7 @@ class DebtCollection extends Model implements AuditableContract
      * Get the user who made this debt collection.
      */
     public function collector() {
-        return $this->belongsTo('App\User', 'colloector_id');
+        return $this->belongsTo('App\User', 'collector_id');
     }
 
     /**

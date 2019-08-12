@@ -43,7 +43,7 @@ class TenantPayment extends Model implements AuditableContract
     /**
      * Get the pay log of this tenant payment.
      */
-    public function payLog() {
-        return $this->morphOne('App\PayLog', 'loggable');
+    public function payLogs() {
+        return $this->morphMany('App\PayLog', 'loggable');
     }
 }

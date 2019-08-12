@@ -120,4 +120,26 @@ class User extends Authenticatable implements AuditableContract
     public function allAudits() {
         return $this->hasMany('App\Audit', 'user_id')->where('user_type', static::class);
     }
+
+    /**
+     * Check whether user is in the group
+     *
+     * @param string $groupName
+     * @return boolean
+     */
+    public function belongsToGroup(string $groupName) {
+        return $this->getGroupNames()->contains($groupName);
+    }
+
+    /**
+     * Check whether user is in the department
+     *
+     * @return boolean
+     */
+    public function belongsToDepartment(string $departmentName) {
+        $departmentIds = $this->groups()->pluck('department_id');
+        $departmentNames = Department::whereIn('id', $departmentIds)->pluck('name');
+
+        return $departmentNames->contains($departmentName);
+    }
 }

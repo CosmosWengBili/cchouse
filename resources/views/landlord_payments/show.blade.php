@@ -26,20 +26,13 @@
                     </table>
                 </div>
             </div>
-            {{-- display the next level nested resources --}}
-            @if (!empty($relations))
-                {{-- you could propbly have many kinds of nested resources --}}
-                @foreach($relations as $relation)
-                    <div class="col-6 my-3">
-                        {{-- handle first level of the nested resource, leave the others to recursion --}}
-                        @php
-                            $layer = Str::snake(explode('.', $relation)[0]); 
-                        @endphp
-                        {{print_r($layer)}}
-                        @include( 'rooms.table', ['objects' => $data[$layer], 'layer' => $layer])
-                    </div>
-                @endforeach
-            @endif
+
+            <div class="col-6 my-3">
+                @include('landlord_payments.single_table', ['object' => $data['room'], 'layer' => "rooms"])
+            </div>
+            <div class="col-6 my-3">
+                @include('landlord_payments.single_table', ['object' => $data['room']['building'], 'layer' => "buildings"])
+            </div>
 
         </div>
     </div>

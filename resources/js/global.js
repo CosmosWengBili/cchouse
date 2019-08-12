@@ -1,9 +1,24 @@
 $(document).ready(function () {
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content
         }
     });
+
+    // Realtime search module
+    realtimeSelect($('[data-toggle=selectize]'))
+
+    // Auto assigned value on each data resource select element
+    $('select').each(function (index, element) {
+        var selected_value = element.getAttribute('value')
+        var options = element.options
+        for (var i = 0; i < options.length; i++) {
+            if (selected_value == options[i].value) {
+                options[i].selected = true
+            }
+        }
+    })
 });
 $(document).on('click', 'a.jquery-postback', function (e) {
     e.preventDefault();
@@ -20,6 +35,7 @@ $(document).on('click', 'a.jquery-postback', function (e) {
 
 });
 
+
 function realtimeSelect(selectizeElements) {
 
     selectizeElements.each(function () {
@@ -28,6 +44,7 @@ function realtimeSelect(selectizeElements) {
         const table = select.data('table')
         const text = select.data('text')
         const selected = select.data('selected')
+        const value = select.data('value')
 
         // Call API
         $.ajax({
@@ -35,17 +52,19 @@ function realtimeSelect(selectizeElements) {
                 url: "/api/selectize",
                 data: {
                     table: table,
-                    text: text
+                    text: text,
+                    value: value
                 }
             })
             .done(function (msg) {
+                console.log(msg)
                 if (msg !== "invalid") {
                     var tableElements = ""
                     for (var i = 0; i < msg.length; i++) {
-                        if (selected === msg[i]['id']) {
-                            tableElements += `<option value="${msg[i]['id']}" selected>${msg[i][text]}</option>`
+                        if (selected === msg[i][value]) {
+                            tableElements += `<option value="${msg[i][value]}" selected>${msg[i][text]}</option>`
                         } else {
-                            tableElements += `<option value="${msg[i]['id']}">${msg[i][text]}</option>`
+                            tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
                         }
                     }
 

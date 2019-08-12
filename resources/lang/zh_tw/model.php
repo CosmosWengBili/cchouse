@@ -5,7 +5,9 @@ return [
         'name' => '姓名',
         'email' => '電子郵件',
         'mobile' => '聯絡電話',
-        'password' => '密碼'
+        'password' => '密碼',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Audit' => [
         'id' => '編號',
@@ -91,11 +93,25 @@ return [
         'invoice_collection_number' => '發票領取號碼',
         'invoice_mailing_address' => '發票寄送地址',
         'commissioner_id' => '專員',
-        'landlord_id' => '房東',
+        'landlord_id' => '房東編號',
         'landlords'=> '房東',
-        'building_id' => '建物',
+        'building_id' => '建物編號',
         'buildings'=> '建物',
 
+    ],
+    'LandlordPayment' => [
+        'id' => '編號',
+        'amount' => '費用',
+        'subject' => '科目',
+        'bill_start_date' => '帳單期末',
+        'bill_end_date' => '帳單期初',
+        'bill_serial_number' => '帳單號',
+        'billing_vendor' => '廠商',
+        'collection_date' => '收帳日',
+        'comment' => '備註',
+        'room_id' => '房編號',
+        'buildings' => '建物',
+        'rooms' => '房'
     ],
     'Key' => [
         'id' => '編號',
@@ -172,6 +188,10 @@ return [
         'is_recorded' => '是否入帳',
         'invoice_serail_number' => '發票號碼',
         'comment' => '備註',
+        'created_at' => '建立時間',
+        'tenant_contract' => '租客合約',
+        'room' => '房間',
+        'tenant' => '租客',
     ],
     'Appliance' => [
         'id' => '',
@@ -222,6 +242,8 @@ return [
         'administrator_id' => '管理人員',
         'comment' => '備註',
         'landlord_contract_id' => '房東合約 ID',
+        'rooms' => '房',
+        'landlordContracts' => '房東合約'
     ],
     'Room' => [
         'id' => '編號',
@@ -283,6 +305,18 @@ return [
         '220v_end_degree' => '220v 結度',
         'invoice_collection_method' => '發票領取方式',
         'invoice_collection_number' => '發票領取號碼',
-        'commissioner_id' => '專員',
-    ],
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'commissioner_id' => '專員 ID',
+     ]
+    'DebtCollection' => [
+        'id' => '編號',
+        'collector_id' => '催收人 ID',
+        'tenant_contract_id' => '租客合約 ID',
+        'details' => '催收說明',
+        'status' => '催收狀態',
+        'is_penalty_collected' => '是否收滯納金',
+        'comment' => '備註',
+        'created_at' => '建立時間',
+    ]
 ];

@@ -13,12 +13,11 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keyRequests.create') . '?key_id=' . $key_id }}">建立</a>
-        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
-        <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordPayments.create') }}">建立</a>
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
-            <h3>尚無紀錄</h3>
+            <h3>Nothing here</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
@@ -47,7 +46,7 @@
                                 <td> {{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=room;room.building">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                             </td>
@@ -58,7 +57,6 @@
         @endif
     </div>
 </div>
-@include('shared.import_modal', ['layer' => $layer])
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

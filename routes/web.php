@@ -27,6 +27,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
             Route::resource('landlordContracts', 'LandlordContractController');
+            Route::resource('landlordPayments', 'LandlordPaymentController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
@@ -50,6 +51,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+          
+            // resources API
+            Route::post('maintenances/markDone', 'MaintenanceController@markDone');
 
         });
     });

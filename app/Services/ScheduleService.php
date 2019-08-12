@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Maintenance;
+use App\Notifications\TextNotify;
 use Carbon\Carbon;
 use App\LandlordContract;
 use App\Landlord;
@@ -13,7 +15,7 @@ class ScheduleService
 {
     protected $method;
     protected $args;
-  
+
     public function __construct($method, $args) {
         $this->method = $method;
         $this->args = $args;
@@ -112,6 +114,17 @@ class ScheduleService
                     new TenantContractDueInTwoMonths($tenantContract)
                 );
             });
+    public function notifyMaintenanceStatus()
+    {
+        $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.
+        $limitDatetime = Carbon::now()->subDays(10);
+        $maintenances = Maintenance::where('status', '!=', 'done')->where('updated_at', '<=', $limitDatetime)->get();
+        foreach ($maintenances as $maintenance) {
+            $commissioner = $maintenance->commissioner()->first();
+            $commissioner->notify(
+                new TextNotify("維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。")
+            );
+        }
     }
 
     // public function anotherNotification($data) {

@@ -12,10 +12,14 @@ class LandlordPayment extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $fillable = [
+        'room_id', 'subject', 'bill_serial_number', 'bill_start_date', 'bill_end_date',
+        'collection_date', 'billing_vendor', 'amount', 'comment',
+    ];
     /**
-     * Get the building of this landlord payment.
+     * Get the room of this landlord payment.
      */
-    public function building() {
+    public function room() {
         return $this->belongsTo('App\Room');
     }
 }

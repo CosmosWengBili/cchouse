@@ -31,7 +31,7 @@
             <table id="{{ $tableId}}" class="display table" style="width:100%">
                 <thead>
                     @php
-                        $model_name = ucfirst(Str::camel(substr($layer, 0, -1)));
+                        $model_name = ucfirst(Str::camel(Str::singular($layer)));
                     @endphp
                     @foreach ( array_keys($objects[0]) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>

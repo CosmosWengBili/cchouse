@@ -79,6 +79,19 @@ class Kernel extends ConsoleKernel
                 ->daily()
                 ->runInBackground();
                 
+
+        $schedule->call(ScheduleService::make('notifyMaintenanceStatus'))
+            ->name('Notify if maintenance status not changed for a long time')
+            ->before(function () {
+                // Task is about to start...
+            })
+            ->after(function () {
+                // Task is complete...
+            })
+            ->daily()
+            ->runInBackground();
+            // ->emailOutputTo('foo@example.com');
+            // ->emailOutputOnFailure('foo@example.com');
     }
 
     /**

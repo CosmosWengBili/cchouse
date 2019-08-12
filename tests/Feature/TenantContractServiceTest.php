@@ -10,6 +10,7 @@ use App\TenantContract;
 
 class TenantContractServiceTest extends TestCase
 {
+    use RefreshDatabase;
 
     public function testMakeExtendedContract() {
         $service = app()->make('App\Services\TenantContractService');

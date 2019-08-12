@@ -2,9 +2,6 @@
     $user = Auth::User();
     $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
     $userIds = \App\User::select('id')->pluck('id')->toArray();
-    $statuses = \App\Maintenance::STATUSES;
-    $workTypes = \App\Maintenance::WORK_TYPES;
-    $incidentTypes = \App\Maintenance::INCIDENT_TYPES;
     $isManageGroup = Auth::User()->belongsToGroup('管理組');
 @endphp
 
@@ -29,22 +26,12 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
-                                        <select
-                                            name="tenant_contract_id"
+                                        <input
                                             class="form-control form-control-sm"
-                                        >
-                                            @foreach($tenantContractIds as $value)
-                                                @php
-                                                    $checked = isset($data['tenant_contract_id']) && $data['tenant_contract_id'] == $value;
-                                                @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                >
-                                                    {{$value}}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            type="text"
+                                            name="tenant_contract_id"
+                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
@@ -97,18 +84,11 @@
                                         <select
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
+                                            data-toggle="selectize" 
+                                            data-table="user" 
+                                            data-text="name" 
+                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                         >
-                                            @foreach($userIds as $value => $name)
-                                                @php
-                                                    $checked = isset($data['commissioner_id']) && $data['commissioner_id'] == $value;
-                                                @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -118,18 +98,11 @@
                                         <select
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
+                                            data-toggle="selectize" 
+                                            data-table="user" 
+                                            data-text="name" 
+                                            data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                         >
-                                            @foreach($userIds as $value => $name)
-                                                @php
-                                                    $checked = isset($data['maintenance_staff_id']) && $data['maintenance_staff_id'] == $value;
-                                                @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -173,18 +146,13 @@
                                             name="status"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($statuses as $value => $name)
+                                            @foreach(config('enums.maintenance.status') as $value)
                                                 @php
-                                                    $checked = isset($data['status']) && $data['status'] == $value;
                                                     $disabled = $value == 'done' && $isManageGroup;
                                                 @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                    {{ $disabled ? 'disabled="disabled"' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
+                                                <option value="{{$value}}"
+                                                {{ $disabled ? 'disabled="disabled"' : '' }}
+                                                >{{$value}}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -207,16 +175,8 @@
                                             name="incident_type"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($incidentTypes as $value => $name)
-                                                @php
-                                                    $checked = isset($data['incident_type']) && $data['incident_type'] == $value;
-                                                @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
+                                            @foreach(config('enums.maintenance.incident_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -228,16 +188,8 @@
                                             name="work_type"
                                             class="form-control form-control-sm"
                                         >
-                                            @foreach($workTypes as $value => $name)
-                                                @php
-                                                    $checked = isset($data['work_type']) && $data['work_type'] == $value;
-                                                @endphp
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ $checked ? 'selected="selected"' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
+                                            @foreach(config('enums.maintenance.work_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
                                             @endforeach
                                         </select>
                                     </td>

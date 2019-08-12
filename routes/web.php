@@ -49,6 +49,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
           
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
+            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
 
         });
     });

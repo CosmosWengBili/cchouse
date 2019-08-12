@@ -12,11 +12,20 @@ class DebtCollection extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+
+    protected $fillable = [
+        'collector_id', 'tenant_contract_id', 'details', 'status', 'is_penalty_collected', 'comment'
+    ];
+
+    protected $casts = [
+        'is_penalty_collected' => 'boolean',
+    ];
+
     /**
      * Get the user who made this debt collection.
      */
     public function collector() {
-        return $this->belongsTo('App\User', 'colloector_id');
+        return $this->belongsTo('App\User', 'collector_id');
     }
 
     /**
@@ -24,5 +33,19 @@ class DebtCollection extends Model implements AuditableContract
      */
     public function tenantContract() {
         return $this->belongsTo('App\TenantContract');
+    }
+
+    /**
+     * Get all the tenant payments of this tenant contract.
+     */
+    public function tenantPayments() {
+        return $this->hasMany('App\TenantPayment', 'tenant_contract_id', 'tenant_contract_id');
+    }
+
+    /**
+     * Get all the tenant electricity payments of this tenant contract.
+     */
+    public function tenantElectricityPayments() {
+        return $this->hasMany('App\TenantElectricityPayment', 'tenant_contract_id', 'tenant_contract_id');
     }
 }

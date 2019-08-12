@@ -27,6 +27,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
             Route::resource('landlordContracts', 'LandlordContractController');
+            Route::resource('landlordPayments', 'LandlordPaymentController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
@@ -34,7 +35,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
-            Route::post('maintenances/markDone', 'MaintenanceController@markDone');
+            Route::resource('debtCollections', 'DebtCollectionController');
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -45,6 +46,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+          
+            // resources API
+            Route::post('maintenances/markDone', 'MaintenanceController@markDone');
 
         });
     });

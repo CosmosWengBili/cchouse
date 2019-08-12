@@ -120,7 +120,8 @@
                 <li class="nav-item"><a class="nav-link" href="/tenants">租客管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/buildings">物件管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
+                <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/maintenances">清潔維修管理</a></li>
                 </ul>
             </div>
             </li>

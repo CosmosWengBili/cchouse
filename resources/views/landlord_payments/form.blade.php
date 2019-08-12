@@ -33,7 +33,6 @@
                                         data-toggle="selectize" 
                                         data-table="room" 
                                         data-text="room_code" 
-                                        data-value="id" 
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"
                                         class="form-control form-control-sm" 

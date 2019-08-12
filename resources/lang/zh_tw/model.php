@@ -308,7 +308,7 @@ return [
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'commissioner_id' => '專員 ID',
-     ]
+    ],
     'DebtCollection' => [
         'id' => '編號',
         'collector_id' => '催收人 ID',

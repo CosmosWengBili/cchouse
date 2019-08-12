@@ -172,7 +172,7 @@ return [
             '網路',
             '家電',
             '其它',
-        ],
+        ]
     ],
 
     'landlord_contract' => [

@@ -36,12 +36,15 @@
                                 <tr>
                                     <td>@lang("model.DebtCollection.status")</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
                                             name="status"
                                             value="{{ isset($data["status"]) ? $data['status'] : '' }}"
                                         />
+                                            @foreach(config('enums.debt_collections.status') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -61,6 +64,20 @@
                                     <td>@lang("model.DebtCollection.comment")</td>
                                     <td>
                                         <textarea name="comment" class="form-control" rows="15">{{ isset($data["comment"]) ? $data['comment'] : '' }}</textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.DebtCollection.collector_id")</td>
+                                    <td>
+                                        <select 
+                                            data-toggle="selectize" 
+                                            data-table="user" 
+                                            data-text="name" 
+                                            data-selected="{{ $data['collector_id'] ?? 0 }}"
+                                            name="collector_id"
+                                            class="form-control form-control-sm" 
+                                        >
+                                        </select>
                                     </td>
                                 </tr>
                             </tbody>

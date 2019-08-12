@@ -53,19 +53,25 @@
             
             @if (in_array('debtCollections', $relations))
                 <div class="col-6 my-3">
-                    @include('debt_collections.table', ['objects' => $data['debtCollections'], 'layer' => 'debtCollections'])
+                    @include('debt_collections.table', ['objects' => $data['debt_collections'], 'layer' => 'debtCollections'])
                 </div>
             @endif
 
             @if (in_array('tenantPayments', $relations))
                 <div class="col-6 my-3">
-                    @include('tenant_payments.table', ['objects' => $data['tenantPayments'], 'layer' => 'tenantPayments'])
+                    @include('tenant_payments.table', ['objects' => $data['tenant_payments'], 'layer' => 'tenantPayments'])
                 </div>
             @endif
 
             @if (in_array('tenantElectricityPayments', $relations))
                 <div class="col-6 my-3">
-                    @include('tenant_electricity_payments.table', ['objects' => $data['tenantElectricityPayments'], 'layer' => 'tenantElectricityPayments'])
+                    @include('tenant_electricity_payments.table', ['objects' => $data['tenant_electricity_payments'], 'layer' => 'tenantElectricityPayments'])
+                </div>
+            @endif
+            
+            @if (in_array('tenantPayments.payLogs', $relations))
+                <div class="col-6 my-3">
+                    @include('pay_logs.table', ['objects' => Arr::collapse(Arr::pluck($data['tenant_payments'], 'pay_logs')), 'layer' => 'payLogs'])
                 </div>
             @endif
 

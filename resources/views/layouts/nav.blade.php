@@ -122,6 +122,7 @@
                 <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/maintenances">清潔維修管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shareholders">股東管理</a></li>
                 </ul>
             </div>
             </li>

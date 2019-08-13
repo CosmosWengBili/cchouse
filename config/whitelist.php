@@ -20,5 +20,6 @@ return [
     ],
     'buildings' => [],
     'landlord_payments' => [],
-    'keys' => []
+    'keys' => [],
+    'share_holders' => []
 ];

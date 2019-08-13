@@ -44,7 +44,7 @@ function realtimeSelect(selectizeElements) {
         const table = select.data('table')
         const text = select.data('text')
         const selected = select.data('selected')
-        const value = select.data('value')
+        const value = select.data('value') || 'id'
 
         // Call API
         $.ajax({

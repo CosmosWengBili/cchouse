@@ -14,6 +14,8 @@ class TenantContract extends Pivot implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $hidden = ['deleted_at'];
+
     /**
      * Get the tenant of this contract.
      */

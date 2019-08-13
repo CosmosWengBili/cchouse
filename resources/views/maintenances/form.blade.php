@@ -1,3 +1,10 @@
+@php
+    $user = Auth::User();
+    $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
+    $userIds = \App\User::select('id')->pluck('id')->toArray();
+    $isManageGroup = Auth::User()->belongsToGroup('管理組');
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -19,15 +26,12 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="tenant_contract" 
-                                            data-text="id" 
-                                            data-selected="{{ $data['tenant_contract_id'] ?? $tenant_contract_id ?? 0 }}"
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
                                             name="tenant_contract_id"
-                                            class="form-control form-control-sm" 
-                                        >
-                                        </select>
+                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
@@ -77,13 +81,13 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
-                                        <select 
+                                        <select
+                                            name="commissioner_id"
+                                            class="form-control form-control-sm"
                                             data-toggle="selectize" 
                                             data-table="user" 
                                             data-text="name" 
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
-                                            name="commissioner_id"
-                                            class="form-control form-control-sm" 
                                         >
                                         </select>
                                     </td>
@@ -91,13 +95,13 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.maintenance_staff_id")</td>
                                     <td>
-                                        <select 
+                                        <select
+                                            name="maintenance_staff_id"
+                                            class="form-control form-control-sm"
                                             data-toggle="selectize" 
                                             data-table="user" 
                                             data-text="name" 
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
-                                            name="maintenance_staff_id"
-                                            class="form-control form-control-sm" 
                                         >
                                         </select>
                                     </td>
@@ -139,15 +143,17 @@
                                     <td>@lang("model.Maintenance.status")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="status"
-                                            value="{{ $data['status'] ?? '' }}"
-                                        />
-                                            <option value="pending">待處理</option>
-                                            <option value="contact">聯繫中</option>
-                                            <option value="sent">已派工</option>
-                                            <option value="request">請款中</option>
-                                            <option value="done">案件完成</option>
+                                            class="form-control form-control-sm"
+                                        >
+                                            @foreach(config('enums.maintenance.status') as $value)
+                                                @php
+                                                    $disabled = $value == 'done' && $isManageGroup;
+                                                @endphp
+                                                <option value="{{$value}}"
+                                                {{ $disabled ? 'disabled="disabled"' : '' }}
+                                                >{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -166,12 +172,12 @@
                                     <td>@lang("model.Maintenance.incident_type")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="incident_type"
-                                            value="{{ $data['incident_type'] ?? '' }}"
-                                        />
-                                            <option value="clean">清潔</option>
-                                            <option value="repair">維修</option>
+                                            class="form-control form-control-sm"
+                                        >
+                                            @foreach(config('enums.maintenance.incident_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -179,20 +185,12 @@
                                     <td>@lang("model.Maintenance.work_type")</td>
                                     <td>
                                         <select
-                                            class="form-control form-control-sm"
                                             name="work_type"
-                                            value="{{ $data['work_type'] ?? '' }}"
-                                        />
-                                            <option value="water_and_electricity">水電</option>
-                                            <option value="paint">油漆</option>
-                                            <option value="wood">木工</option>
-                                            <option value="air_conditioning">冷氣</option>
-                                            <option value="leaking">漏水</option>
-                                            <option value="doors">門窗</option>
-                                            <option value="wallpaper">壁紙</option>
-                                            <option value="internet">網路</option>
-                                            <option value="appliance">家電</option>
-                                            <option value="others">其它</option>
+                                            class="form-control form-control-sm"
+                                        >
+                                            @foreach(config('enums.maintenance.work_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -308,7 +306,7 @@
                                         />
                                     </td>
                                 </tr>
-                                
+
                             </tbody>
                         </table>
 
@@ -319,4 +317,17 @@
         </div>
     </div>
 </div>
+<script>
+    (function () {
+        const isManageGroup = {{ $isManageGroup ? 'true' : 'false' }};
+        if (!isManageGroup) return;
+
+        const $checkbox = $('input[name="is_recorded"][type="checkbox"]');
+        const $options = $('option[value="done"]');
+        $checkbox.on('change', function () {
+            const checked = $checkbox.prop('checked');
+            $options.prop('disabled', checked);
+        });
+    })();
+</script>
 @endsection

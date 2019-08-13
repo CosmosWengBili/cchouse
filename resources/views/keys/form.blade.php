@@ -44,6 +44,7 @@
                                         data-toggle="selectize" 
                                         data-table="user" 
                                         data-text="name" 
+                                        data-value="id"
                                         data-selected="{{ isset($data["keeper_id"]) ? $data['keeper_id'] : '0' }}"
                                         name="keeper_id"
                                         class="form-control form-control-sm" 

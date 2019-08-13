@@ -35,6 +35,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
+            Route::resource('debtCollections', 'DebtCollectionController');
+            Route::resource('shareholders', 'ShareHolderController');
             Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
@@ -48,6 +50,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+          
+            // resources API
+            Route::post('maintenances/markDone', 'MaintenanceController@markDone');
+            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
 
         });
     });

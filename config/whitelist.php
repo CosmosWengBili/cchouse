@@ -15,7 +15,11 @@ return [
     'landlord_contracts' => [
         'id','commission_start_date'
     ],
+    'debt_collections' => [
+      'id', 'collector_id', 'tenant_contract_id', 'details', 'is_penalty_collected', 'comment', 'created_at'
+    ],
     'buildings' => [],
     'landlord_payments' => [],
-    'keys' => []
+    'keys' => [],
+    'share_holders' => []
 ];

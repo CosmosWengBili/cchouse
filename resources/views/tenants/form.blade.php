@@ -119,7 +119,6 @@
                                         data-toggle="selectize" 
                                         data-table="user" 
                                         data-text="name" 
-                                        data-value="id" 
                                         data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
                                         name="confirm_by"
                                         class="form-control form-control-sm" 

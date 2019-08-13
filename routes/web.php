@@ -35,7 +35,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
-            Route::resource('system_variables', 'SystemVariableController', ['only' => ['index', 'store']]);
+            Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
+            Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
+            Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');

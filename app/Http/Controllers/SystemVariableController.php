@@ -8,27 +8,49 @@ use Illuminate\Http\Request;
 class SystemVariableController extends Controller
 {
     public function index() {
-        $systemVariables = SystemVariable::all();
-        $codeToValue = [];
-        foreach ($systemVariables as $systemVariable) {
-            $codeToValue[$systemVariable->code] = $systemVariable->value;
-        }
+        $groups = array_map(function ($group) { return $group['group']; }, SystemVariable::VARIABLES);
 
-        return view('system_variables.index', ['codeToValue' => $codeToValue]);
+        return view('system_variables.index', ['groups' => $groups]);
     }
 
-    public function store(Request $request) {
+    public function edit(string $group) {
+        $defaultVariables = array_filter(SystemVariable::VARIABLES, function ($variable) use ($group) {
+            return $variable['group'] == $group;
+        });
+        $codes = array_map(function ($group) { return $group['code']; }, $defaultVariables);
+        $existedVariables = SystemVariable::whereIn('code', $codes)->get()->toArray();
+        $codeToValue = $this->buildKeyValueArray($existedVariables, 'code', 'value');
+        $codeToOrder = $this->buildKeyValueArray($existedVariables, 'code', 'order');
+
+        return view('system_variables.edit', [
+            'group' => $group,
+            'defaultVariables' => $defaultVariables,
+            'codeToValue' => $codeToValue,
+            'codeToOrder' => $codeToOrder,
+        ]);
+    }
+
+    public function update(Request $request, string $group) {
         $systemVariables = $request->input('system_variables');
 
-        foreach ($systemVariables as $code => $value) {
-            $existed = SystemVariable::where('code', $code)->first();
+        foreach ($systemVariables as $code => $attributes) {
+            $scope = ['group' => $group, 'code' => $code];
+            $existed = SystemVariable::where($scope)->first();
             if(!is_null($existed)) {
-                $existed->update(['value' => $value]);
+                $existed->update($attributes);
             } else {
-                SystemVariable::create(['code' => $code, 'value' => $value]);
+                SystemVariable::create(array_merge($scope, $attributes));
             }
         }
 
-        return redirect()->route('system_variables.index');
+        return redirect()->route('system_variables.edit', ['group' => $group]);
+    }
+
+    private function buildKeyValueArray(array $instances, string $keyKey, string $valueKey): array {
+        $result = [];
+        foreach ($instances as $instance) {
+            $result[$instance[$keyKey]] = $instance[$valueKey];
+        }
+        return $result;
     }
 }

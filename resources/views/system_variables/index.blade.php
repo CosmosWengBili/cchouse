@@ -13,36 +13,15 @@ $systemVariables = \App\SystemVariable::VARIABLES;
                     <div class="card-title">
                         系統變數
                     </div>
-                    <form action="{{ route('system_variables.store') }}" method="POST">
-                        @csrf
-                        @method('post')
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>名稱</th>
-                                    <th>Code</th>
-                                    <th>值</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($systemVariables as $systemVariable)
-                                <tr>
-                                    <td>{{ $systemVariable['name'] }}</td>
-                                    <td>{{ $systemVariable['code'] }}</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="system_variables[{{ $systemVariable['code'] }}]"
-                                            value="{{ isset($codeToValue[$systemVariable['code']]) ? $codeToValue[$systemVariable['code']] : $systemVariable['defaultValue'] }}"
-                                        />
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                        <button class="mt-5 btn btn-success" type="submit">更新</button>
-                    </form>
+                    @foreach($groups as $group)
+                        <a
+                            href="{{ route('system_variables.edit', [ 'system_variable' => $group ]) }}"
+                            class="py-3 m-3 font-weight-bold"
+                            style="display: block; background-color: #ff4444; color: #fff; text-align: center; font-size: 36px; text-decoration: none;"
+                        >
+                            {{ $group }}
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </div>

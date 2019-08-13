@@ -8,23 +8,23 @@ use Illuminate\Support\Carbon;
 class SystemVariable extends Model
 {
     const VARIABLES = [
-        ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10],
+        ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10, 'group' => 'Maintenance', 'order' => 1],
     ];
 
-    protected $fillable = ['code', 'value'];
+    protected $fillable = ['group', 'code', 'value', 'order'];
 
-    public static function get(string $code) {
-        $option = self::searchArray($code, 'code', self::VARIABLES);
-        if (is_null($option)) {
+    public static function get(string $group, string $code) {
+        $defaultVariable = self::search($group, $code);
+        if (is_null($defaultVariable)) {
             return null;
         }
 
-        $variable = self::where('code', $code)->first();
+        $variable = self::where(['group' => $group, 'code' => $code])->first();
         if (is_null($variable)) {
-            return $option['defaultValue'];
+            return $variable['defaultValue'];
         }
 
-        return self::castValue($option['type'], $variable->value);
+        return self::castValue($defaultVariable['type'], $variable->value);
     }
 
     private static function castValue(string $type, string $valueString) {
@@ -42,12 +42,13 @@ class SystemVariable extends Model
         }
     }
 
-    private static function searchArray($value, $key, $array) {
-        foreach ($array as $val) {
-            if ($val[$key] == $value) {
-                return $val;
+    private static function search(string $group, string $code) {
+        foreach (self::VARIABLES as $variable) {
+            if ($variable['code'] == $code && $variable['group'] == $group) {
+                return $variable;
             }
         }
+
         return null;
     }
 }

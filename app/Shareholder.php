@@ -12,6 +12,7 @@ class Shareholder extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $guarded = [];
     /**
      * Get the buildings of this shareholder.
      */

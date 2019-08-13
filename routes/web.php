@@ -27,11 +27,17 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
             Route::resource('landlordContracts', 'LandlordContractController');
+            Route::resource('landlordPayments', 'LandlordPaymentController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
-          
+            Route::resource('buildings', 'BuildingController');
+            Route::resource('appliances', 'ApplianceController');
+            Route::resource('maintenances', 'MaintenanceController');
+            Route::resource('debtCollections', 'DebtCollectionController');
+            Route::resource('shareholders', 'ShareHolderController');
+
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
             Route::post('notifications/{id}', 'NotificationController@read')->name('notifications.read');
@@ -41,6 +47,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+          
+            // resources API
+            Route::post('maintenances/markDone', 'MaintenanceController@markDone');
+            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
 
         });
     });

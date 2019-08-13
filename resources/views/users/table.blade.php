@@ -4,11 +4,12 @@
         <h2>{{$layer}}</h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
-
+        <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
+        <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
-            <h3>nothing here</h3>
+            <h3>尚無紀錄</h3>
         @else
             <form data-target="#users" data-toggle="datatable-query">
                 <div class="query-box">
@@ -47,6 +48,7 @@
         @endif
     </div>
 </div>
+@include('shared.import_modal', ['layer' => $layer])
 <script>
     renderDataTable(["#users"])
 </script>

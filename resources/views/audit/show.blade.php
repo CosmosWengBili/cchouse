@@ -26,7 +26,7 @@
                     @if (!empty($relations))
                         {{-- you could propbly have many kinds of nested resources --}}
                         @foreach($relations as $relation)
-                            <div class="col-md-8">
+                            <div class="col-md-10">
                                 {{-- handle first level of the nested resource, leave the others to recursion --}}
                                 @php
                                     $layer = explode('.', $relation)[0];

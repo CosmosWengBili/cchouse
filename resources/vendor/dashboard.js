@@ -187,7 +187,7 @@
             label: 'Warning',
             data: [26, 27, 26, 22, 25, 26, 24],
             borderColor: [
-                '#ff8300',
+                '#ffc107',
             ],
             borderWidth: 3,
             fill: false,

@@ -26,7 +26,7 @@ class Building extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $dates = [ 'water_meter_reading_date' ];
+    protected $dates = [];
 
     /**
      * The attributes that should be cast to native types.

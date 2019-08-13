@@ -15,18 +15,26 @@ class FeatureController extends Controller
     public function selectize()
     {
         $table = Input::get('table');
-        $text = preg_replace("/[\'\"]+/" , '' ,Input::get('text'));
-        
+        $text = preg_replace("/[\'\"]+/", '', Input::get('text'));
+        $value = preg_replace("/[\'\"]+/", '', Input::get('value'));
+
         $whitelist = Schema::getColumnListing("{$table}s");
 
         if (in_array($text, $whitelist)) {
-            $table = ucfirst($table);
+            if (strpos($table, '_') !== false) {
+                // from landlord_payment to LandlordPayment
+                $table = str_replace("_", " ", $table);
+                $table = ucwords($table);
+                $table = str_replace(" ", "", $table);
+            } else {
+                $table = ucfirst($table);
+            }
             $model = app("App\\{$table}");
-            $data = $model::select('id', $text)->get();
+            $data = $model::select($text, $value)->get();
 
             return response()->json($data);
         } else {
-            return response("invalid");
+            return response('invalid');
         }
     }
 }

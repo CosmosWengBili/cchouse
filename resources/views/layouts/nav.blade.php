@@ -118,9 +118,11 @@
                 <li class="nav-item"><a class="nav-link" href="/landlords">房東管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/landlordContracts">房東合約管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/tenants">租客管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/text_editor.html">Text Editor</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
+                <li class="nav-item"><a class="nav-link" href="/buildings">物件管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/maintenances">清潔維修管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shareholders">股東管理</a></li>
                 </ul>
             </div>
             </li>
@@ -131,7 +133,7 @@
                 <i class="menu-arrow"></i></a>
                 <div class="submenu">
                     <ul class="submenu-item">
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>

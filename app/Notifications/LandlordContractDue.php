@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 use App\LandlordContract;
 
-class ContractDueInTwoMonths extends Notification
+class LandlordContractDue extends Notification
 {
     use Queueable;
 

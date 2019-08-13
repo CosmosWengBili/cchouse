@@ -46,7 +46,7 @@
                                     <select 
                                         data-toggle="selectize" 
                                         data-table="building" 
-                                        data-text="address" 
+                                        data-text="address"
                                         data-selected="{{ isset($data["building_id"]) ? $data['building_id'] : '0' }}"
                                         name="building_id"
                                         class="form-control form-control-sm" 
@@ -62,8 +62,9 @@
                                         name="commission_type"
                                         value="{{ isset($data["commission_type"]) ? $data['commission_type'] : '' }}"
                                     />
-                                        <option value="charter">包租</option>
-                                        <option value="escrow">代管</option>
+                                        @foreach(config('enums.landlord_contract.commission_type') as $value)
+                                            <option value="{{$value}}">{{$value}}</option>
+                                        @endforeach
                                     </select>
                                 </td>
                             </tr>
@@ -182,16 +183,18 @@
                                     />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>@lang("model.LandlordContract.rent_collection_frequency")</td>
                                 <td>
-                                    <input
+                                    <select
                                         class="form-control form-control-sm"
-                                        type="text"
                                         name="rent_collection_frequency"
                                         value="{{ isset($data["rent_collection_frequency"]) ? $data['rent_collection_frequency'] : '' }}"
                                     />
+                                        @foreach(config('enums.landlord_contract.rent_collection_frequency') as $value)
+                                            <option value="{{$value}}">{{$value}}</option>
+                                        @endforeach
+                                    </select>
                                 </td>
                             </tr>
                             <tr>
@@ -309,25 +312,17 @@
                             <tr>
                                 <td>@lang("model.LandlordContract.invoice_collection_method")</td>
                                 <td>
-                                    <input
+                                    <select
                                         class="form-control form-control-sm"
-                                        type="text"
                                         name="invoice_collection_method"
-                                        value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
+                                        value="{{ isset($data["invoice_collection_method"]) ? $data['rent_collectinvoice_collection_methodion_frequency'] : '' }}"
                                     />
+                                        @foreach(config('enums.landlord_contract.invoice_collection_method') as $value)
+                                            <option value="{{$value}}">{{$value}}</option>
+                                        @endforeach
+                                    </select>
                                 </td>
-                            </tr>  
-                            <tr>
-                                <td>@lang("model.LandlordContract.invoice_collection_number")</td>
-                                <td>
-                                    <input
-                                        class="form-control form-control-sm"
-                                        type="text"
-                                        name="invoice_collection_number"
-                                        value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
-                                    />
-                                </td>
-                            </tr> 
+                            </tr>
                             <tr>
                                 <td>@lang("model.LandlordContract.invoice_mailing_address")</td>
                                 <td>
@@ -345,7 +340,7 @@
                                     <select 
                                         data-toggle="selectize" 
                                         data-table="user" 
-                                        data-text="name" 
+                                        data-text="name"
                                         data-selected="{{ isset($data["commissioner_id"]) ? $data['commissioner_id'] : '0' }}"
                                         name="commissioner_id"
                                         class="form-control form-control-sm" 

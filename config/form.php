@@ -3,5 +3,14 @@ return [
     'User' => ['email_verified_at', 'remember_token'],
     'Tenant' => [],
     'Landlord' => [],
-    'LandlordContract' => []
+    'LandlordContract' => [],
+    'LandlordPayment'=> [],
+    'Building' => [],
+    'Room' => [],
+    'Appliance' => [],
+    'Maintenance' => [],
+    'Key' => [],
+    'KeyRequest' => [],
+    'DebtCollection' => [],
+    'Shareholder' => [],
 ];

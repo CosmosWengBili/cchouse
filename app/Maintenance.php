@@ -89,11 +89,18 @@ class Maintenance extends Model implements AuditableContract
     }
 
     /**
-     * Get all of the related pictures.
-     * 相關照片
+     * Get all of the maintenance's documents.
      */
-    public function pictures() {
+    public function documents() {
         return $this->morphMany('App\Document', 'attachable');
+    }
+    /**
+     * Get all of the maintenance's pictures.
+     * 照片
+     */
+    public function pictures()
+    {
+        return $this->documents()->where('document_type', 'picture');
     }
 
     /**

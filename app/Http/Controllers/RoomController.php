@@ -10,8 +10,11 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Services\RoomService;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class RoomController extends Controller
 {
+    use HandleDocumentsUpload;
     /**
      * Display a listing of the resource.
      *
@@ -36,6 +39,7 @@ class RoomController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->create(Room::class, 'rooms.store')->get();
+        $data['data']['pictures'] = [];
 
         return view('rooms.form', $data);
     }
@@ -90,6 +94,7 @@ class RoomController extends Controller
         ]);
 
         $newRoom = RoomService::create($validatedData);
+        $this->handleDocumentsUpload($newRoom, ['picture']);
 
         return redirect()->route('rooms.index');
     }
@@ -120,7 +125,12 @@ class RoomController extends Controller
     public function edit(Room $room)
     {
         $responseData = new FormDataResponser();
-        return view('rooms.form', $responseData->edit($room, 'rooms.update')->get());
+        $data = $responseData->edit($room, 'rooms.update')->get();
+        $data['data']['pictures'] = $room
+            ->pictures()
+            ->get();
+        
+        return view('rooms.form', $data);
     }
 
     /**
@@ -174,6 +184,7 @@ class RoomController extends Controller
         ]);
 
         $room->update($validatedData);
+        $this->handleDocumentsUpload($room, ['picture']);
 
         return redirect()->route('rooms.show', $room);
     }

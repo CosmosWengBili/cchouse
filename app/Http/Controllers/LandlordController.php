@@ -12,8 +12,11 @@ use App\Responser\FormDataResponser;
 
 use App\Services\NestedToAttributeService;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class LandlordController extends Controller
 {
+    use HandleDocumentsUpload;
     /**
      * Display a listing of the resource.
      *
@@ -49,6 +52,7 @@ class LandlordController extends Controller
         $data = $responseData
             ->create(Landlord::class, 'landlords.store')
             ->get();
+        $data['data']['third_party_files'] = [];
         $data['data']['agents'] = [];
         $data['data']['contact_infos'] = [];
         return view('landlords.form', $data);
@@ -73,6 +77,7 @@ class LandlordController extends Controller
 
         $landlord = Landlord::create($validatedData);
 
+        $this->handleDocumentsUpload($landlord, ['third_party_file']);
         $this->updateAgents($landlord, [
             'agents' => is_array($request->input('agents'))
                 ? $request->input('agents')
@@ -114,6 +119,9 @@ class LandlordController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($landlord, 'landlords.update')->get();
+        $data['data']['third_party_files'] = $landlord
+            ->thirdPartyDocuments()
+            ->get();
         $data['data']['agents'] = $landlord
             ->agents()
             ->get()
@@ -144,6 +152,8 @@ class LandlordController extends Controller
         ]);
 
         $landlord->update($validatedData);
+
+        $this->handleDocumentsUpload($landlord, ['third_party_file']);
 
         $this->updateAgents($landlord, [
             'agents' => is_array($request->input('agents'))

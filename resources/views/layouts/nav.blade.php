@@ -118,6 +118,7 @@
                 <li class="nav-item"><a class="nav-link" href="/landlords">房東管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/landlordContracts">房東合約管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/tenants">租客管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tenantContracts">租客合約管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/buildings">物件管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>

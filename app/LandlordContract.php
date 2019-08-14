@@ -27,11 +27,19 @@ class LandlordContract extends Pivot implements AuditableContract
     }
 
     /**
-     * Get all contract files.
-     */
-    public function contractFiles()
-    {
+    * Get all of the landlords's documents.
+    */
+    public function documents() {
         return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get landlords's thirdPartyDocuments.
+     * 原檔
+     */
+    public function originalFiles()
+    {
+        return $this->documents()->where('document_type', 'original_file');
     }
 
     /**

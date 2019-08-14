@@ -15,8 +15,12 @@ use App\Room;
 use App\Responser\FormDataResponser;
 use Illuminate\Support\Facades\DB;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class MaintenanceController extends Controller
 {
+    use HandleDocumentsUpload;
+
     public function __construct()
     {
         $this->middleware('with.prefill')->only(['create', 'edit']);
@@ -67,11 +71,14 @@ class MaintenanceController extends Controller
                 : null;
 
         $responseData = new FormDataResponser();
+        $data = $responseData
+            ->create(Maintenance::class, 'maintenances.store')
+            ->get();
+        $data['data']['pictures'] = [];
+
         return view(
             'maintenances.form',
-            $responseData
-                ->create(Maintenance::class, 'maintenances.store')
-                ->get()
+            $data
         )->with(['tenant_contract_id' => $tenant_contract_id]);
     }
 
@@ -111,6 +118,7 @@ class MaintenanceController extends Controller
         ]);
 
         $maintenance = Maintenance::create($validatedData);
+        $this->handleDocumentsUpload($maintenance, ['picture']);
 
         return redirect()->route('maintenances.index');
     }
@@ -140,9 +148,14 @@ class MaintenanceController extends Controller
     public function edit(Request $request, Maintenance $maintenance)
     {
         $responseData = new FormDataResponser();
+        $data = $responseData->edit($maintenance, 'maintenances.update')->get();
+        $data['data']['pictures'] = $maintenance
+            ->pictures()
+            ->get();
+
         return view(
             'maintenances.form',
-            $responseData->edit($maintenance, 'maintenances.update')->get()
+            $data
         );
     }
 
@@ -181,7 +194,9 @@ class MaintenanceController extends Controller
             'invoice_serail_number' => 'required|max:255',
             'comment' => 'required'
         ]);
+        $this->handleDocumentsUpload($maintenance, ['picture']);
         $maintenance = $maintenance->update($validatedData);
+
 
         return redirect()->route('maintenances.index');
     }

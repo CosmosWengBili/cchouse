@@ -16,7 +16,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -309,7 +309,8 @@
 
                             </tbody>
                         </table>
-
+                        <h3 class="mt-3">照片</h3>
+                        @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
                 </div>
@@ -317,6 +318,7 @@
         </div>
     </div>
 </div>
+
 <script>
     (function () {
         const isManageGroup = {{ $isManageGroup ? 'true' : 'false' }};

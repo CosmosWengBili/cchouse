@@ -11,12 +11,6 @@
                 @lang("model.{$model_name}.{$layer}")
             @endif
         </h2>
-
-        {{-- the route to create this kind of resource --}}
-        @if(Route::has(Str::camel($layer) . '.create'))
-            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
-        @endif
-
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -45,18 +39,11 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td>
-                                    @if(is_bool($value))
-                                        {{ $value ? '是' : '否' }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                </td>
+                                <td> {{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) . '?with=tenantContract.room;tenantPayments.payLog;tenantElectricityPayments.payLog;documents' }}">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                             </td>
                         </tr>
                     @endforeach
@@ -65,6 +52,7 @@
         @endif
     </div>
 </div>
+@include('shared.import_modal', ['layer' => $layer])
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

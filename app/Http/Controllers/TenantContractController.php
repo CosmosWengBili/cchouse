@@ -13,9 +13,12 @@ use Illuminate\Validation\Rule;
 use App\Services\TenantContractService;
 use App\TenantContract;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class TenantContractController extends Controller
 {
 
+    use HandleDocumentsUpload;
     protected $tenantContractService;
 
     public function __construct(TenantContractService $tenantContractService) {
@@ -47,6 +50,8 @@ class TenantContractController extends Controller
     {
         $responseData = new FormDataResponser();
         $data =$responseData->create(TenantContract::class, 'tenantContracts.store')->get();
+        $data['data']['original_files'] = [];
+        $data['data']['carrier_files'] = [];
 
         return view('tenant_contracts.form', $data);
     }
@@ -124,6 +129,7 @@ class TenantContractController extends Controller
 
 
         $tenantContract = $this->tenantContractService->create($validatedData, $validatedPaymentData['payments']);
+        $this->handleDocumentsUpload($tenantContract, ['original_file', 'carrier_file']);
         return redirect()->route('tenantContracts.index');
     }
 
@@ -153,7 +159,14 @@ class TenantContractController extends Controller
     public function edit(TenantContract $tenantContract)
     {
         $responseData = new FormDataResponser();
-        return view('tenant_contracts.form', $responseData->edit($tenantContract, 'tenantContracts.update')->get());
+        $data = $responseData->edit($tenantContract, 'tenantContracts.update')->get();
+        $data['data']['original_files'] = $tenantContract
+            ->originalFiles()
+            ->get();
+        $data['data']['carrier_files'] = $tenantContract
+            ->carrierFiles()
+            ->get();
+        return view('tenant_contracts.form', $data);
     }
 
     /**
@@ -228,6 +241,7 @@ class TenantContractController extends Controller
         ]);
 
         $tenantContract->update($validatedData);
+        $this->handleDocumentsUpload($tenantContract, ['original_file', 'carrier_file']);
         return redirect()->route('tenantContracts.show', $tenantContract);
     }
 

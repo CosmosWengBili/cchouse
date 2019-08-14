@@ -82,11 +82,19 @@ class Room extends Model implements AuditableContract
     }
 
     /**
+     * Get all of the room's documents.
+     * 照片
+     */
+    public function documents() {
+        return $this->morphMany('App\Document', 'attachable');
+    }
+    /**
      * Get all of the room's pictures.
      * 照片
      */
-    public function pictures() {
-        return $this->morphMany('App\Document', 'attachable');
+    public function pictures()
+    {
+        return $this->documents()->where('document_type', 'picture');
     }
 
     /**

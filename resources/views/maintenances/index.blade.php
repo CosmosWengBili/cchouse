@@ -71,6 +71,7 @@
                                                         </select>
                                                         <button type="button" class="btn btn-info btn-xs js-apply-undertake">套用</button>
                                                     @endif
+                                                    <a class="btn btn-sm btn-success my-3" href="{{ route( 'maintenances.create') }}">建立</a>
                                                 </div>
                                                 <form data-target="#{{ $statusKey }}-{{ $workTypeKey }}-table" data-toggle="datatable-query">
                                                     <div class="query-box">

@@ -19,7 +19,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -315,7 +315,7 @@
                                     <select
                                         class="form-control form-control-sm"
                                         name="invoice_collection_method"
-                                        value="{{ isset($data["invoice_collection_method"]) ? $data['rent_collectinvoice_collection_methodion_frequency'] : '' }}"
+                                        value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
                                     />
                                         @foreach(config('enums.landlord_contract.invoice_collection_method') as $value)
                                             <option value="{{$value}}">{{$value}}</option>
@@ -331,6 +331,17 @@
                                         type="text"
                                         name="invoice_mailing_address"
                                         value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
+                                    />
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td>@lang("model.LandlordContract.invoice_collection_number")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="invoice_collection_number"
+                                        value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
                                     />
                                 </td>
                             </tr>                          
@@ -351,7 +362,10 @@
                             </tbody>
                         </table>
 
+                        <h3 class="mt-3">合約原檔</h3>
+                        @include('documents.inputs', ['documentType' => 'original_file', 'documents' => $data['original_files']])
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
+
                     </form>
                 </div>
             </div>

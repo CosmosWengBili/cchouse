@@ -5,41 +5,40 @@ namespace App\Services;
 use App\Room;
 use App\Appliance;
 
-class RoomService{
-
-    public static function make($data) {
+class RoomService
+{
+    public static function make($data)
+    {
         return Room::make($data);
     }
 
-    public static function create($data, $appiances) {
-
+    public static function create($data, $appiances)
+    {
         $roomId = Room::insertGetId($data);
         $room = Room::find($roomId);
         $new_appliances = [];
         // generates all of appliances
         foreach ($appiances as $appiance) {
             $new_appliance = Appliance::make([
-                    'subject'       => $appiance['subject'],
-                    'spec_code'     => $appiance['spec_code'],
-                    'count'        => $appiance['count'],
-                    'vendor'        => $appiance['vendor'],
-                    'maintenance_phone'  => $appiance['maintenance_phone'],
-                    'comment'        => $appiance['comment']       
+                'subject' => $appiance['subject'],
+                'spec_code' => $appiance['spec_code'],
+                'count' => $appiance['count'],
+                'vendor' => $appiance['vendor'],
+                'maintenance_phone' => $appiance['maintenance_phone'],
+                'comment' => $appiance['comment']
             ]);
             array_push($new_appliances, $new_appliance);
         }
-            
+
         // link these appliances to the newly created room
         $room->appliances()->saveMany($new_appliances);
         return $room;
     }
 
-    public static function update($room, $data, $appliances) {
-        
+    public static function update($room, $data, $appliances)
+    {
         $keepIds = array_map(function ($appliance) {
-            return isset($appliance['id'])
-                ? $appliance['id']
-                : null;
+            return isset($appliance['id']) ? $appliance['id'] : null;
         }, $appliances);
 
         // remove removed item
@@ -62,18 +61,19 @@ class RoomService{
             }
         }
 
-        
         return $room->update($data);
     }
 
     // alias to make, but do it with custom data
-    public static function makeEmptyRoom() {
+    public static function makeEmptyRoom()
+    {
         return Room::make([
-            'room_code' => '公用',
+            'room_code' => '公用'
         ]);
     }
 
-    public function belongsToBuilding($room, $building) {
+    public function belongsToBuilding($room, $building)
+    {
         $building->rooms()->save($room);
     }
 }

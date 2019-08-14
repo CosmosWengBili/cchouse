@@ -17,7 +17,7 @@ class Maintenance extends Model implements AuditableContract
         'contact' => '聯繫中',
         'sent' => '已派工',
         'request' => '請款中',
-        'done' => '案件完成',
+        'done' => '案件完成'
     ];
     const WORK_TYPES = [
         'water_and_electricity' => '水電',
@@ -29,26 +29,25 @@ class Maintenance extends Model implements AuditableContract
         'wallpaper' => '壁紙',
         'internet' => '網路',
         'appliance' => '家電',
-        'others' => '其它',
+        'others' => '其它'
     ];
 
-    protected $hidden = [
-        'updated_at',
-        'deleted_at',
-    ];
+    protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $guarded = [];
     /**
      * Get the user who took care of this maintenance.
      */
-    public function commissioner() {
+    public function commissioner()
+    {
         return $this->belongsTo('App\User', 'commissioner_id');
     }
 
     /**
      * Get the user who went for the maintenance service.
      */
-    public function maintenanceStaff() {
+    public function maintenanceStaff()
+    {
         return $this->belongsTo('App\User', 'maintenance_staff_id');
     }
 
@@ -63,7 +62,8 @@ class Maintenance extends Model implements AuditableContract
     /**
      * Get the tenant of this maintenance.
      */
-    public function tenant() {
+    public function tenant()
+    {
         return $this->hasOneThrough(
             'App\Tenant',
             'App\TenantContract',
@@ -77,7 +77,8 @@ class Maintenance extends Model implements AuditableContract
     /**
      * Get the tenant of this maintenance.
      */
-    public function room() {
+    public function room()
+    {
         return $this->hasOneThrough(
             'App\Room',
             'App\TenantContract',
@@ -91,7 +92,8 @@ class Maintenance extends Model implements AuditableContract
     /**
      * Get all of the maintenance's documents.
      */
-    public function documents() {
+    public function documents()
+    {
         return $this->morphMany('App\Document', 'attachable');
     }
     /**
@@ -107,7 +109,8 @@ class Maintenance extends Model implements AuditableContract
      * Get income amount.
      * 取得收入金額
      */
-    public function incomeAmount() {
+    public function incomeAmount()
+    {
         $cost = $this->cost;
         $price = $this->price;
 

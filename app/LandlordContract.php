@@ -15,21 +15,24 @@ class LandlordContract extends Pivot implements AuditableContract
     /**
      * Get the building of this landlord contract.
      */
-    public function building() {
+    public function building()
+    {
         return $this->belongsTo('App\Building');
     }
 
     /**
      * Get the landlord of this contract.
      */
-    public function landlord() {
+    public function landlord()
+    {
         return $this->belongsTo('App\Landlord');
     }
 
     /**
-    * Get all of the landlords's documents.
-    */
-    public function documents() {
+     * Get all of the landlords's documents.
+     */
+    public function documents()
+    {
         return $this->morphMany('App\Document', 'attachable');
     }
 
@@ -45,8 +48,8 @@ class LandlordContract extends Pivot implements AuditableContract
     /**
      * Get the commissioner of this contract.
      */
-    public function commissioner() {
+    public function commissioner()
+    {
         return $this->belongsTo('App\User', 'commissioner_id');
     }
-
 }

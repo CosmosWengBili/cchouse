@@ -14,11 +14,10 @@ class Department extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-    ];
+    protected $fillable = ['name'];
 
-    public function groups() {
+    public function groups()
+    {
         return $this->hasMany('App\Group', 'department_id');
     }
 }

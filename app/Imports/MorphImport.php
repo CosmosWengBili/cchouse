@@ -11,17 +11,18 @@ class MorphImport implements ToModel, WithHeadingRow
 {
     private $model;
 
-    public function __construct(String $model) {
+    public function __construct(string $model)
+    {
         $this->model = $model;
     }
-
 
     /**
      * @param array $row
      *
      * @return Model|null
      */
-    public function model(array $row) {
+    public function model(array $row)
+    {
         return $this->model::create($row);
     }
 }

@@ -76,10 +76,9 @@ class MaintenanceController extends Controller
             ->get();
         $data['data']['pictures'] = [];
 
-        return view(
-            'maintenances.form',
-            $data
-        )->with(['tenant_contract_id' => $tenant_contract_id]);
+        return view('maintenances.form', $data)->with([
+            'tenant_contract_id' => $tenant_contract_id
+        ]);
     }
 
     /**
@@ -149,14 +148,9 @@ class MaintenanceController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($maintenance, 'maintenances.update')->get();
-        $data['data']['pictures'] = $maintenance
-            ->pictures()
-            ->get();
+        $data['data']['pictures'] = $maintenance->pictures()->get();
 
-        return view(
-            'maintenances.form',
-            $data
-        );
+        return view('maintenances.form', $data);
     }
 
     /**
@@ -196,7 +190,6 @@ class MaintenanceController extends Controller
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
         $maintenance = $maintenance->update($validatedData);
-
 
         return redirect()->route('maintenances.index');
     }
@@ -242,11 +235,9 @@ class MaintenanceController extends Controller
         foreach ($room->tenantContracts as $contractKey => $contract) {
             $maintenances = array_merge(
                 $maintenances,
-                $contract->maintenances->where(
-                    'payment_request_date',
-                    '>',
-                    $threeMonthsAgo
-                )->toArray()
+                $contract->maintenances
+                    ->where('payment_request_date', '>', $threeMonthsAgo)
+                    ->toArray()
             );
         }
 

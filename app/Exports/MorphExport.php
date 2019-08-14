@@ -8,7 +8,6 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class MorphExport implements FromCollection, WithHeadings
 {
-
     private $model;
     private $isExample;
     private $makeHidden = [
@@ -21,15 +20,17 @@ class MorphExport implements FromCollection, WithHeadings
         'remember_token'
     ];
 
-    public function __construct(String $model, bool $isExample = false) {
+    public function __construct(string $model, bool $isExample = false)
+    {
         $this->model = $model;
         $this->isExample = $isExample;
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection() {
+     * @return \Illuminate\Support\Collection
+     */
+    public function collection()
+    {
         if ($this->isExample) {
             return collect([]);
         }
@@ -38,6 +39,11 @@ class MorphExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return array_values(array_diff(Schema::getColumnListing((new $this->model)->getTable()), $this->makeHidden));
+        return array_values(
+            array_diff(
+                Schema::getColumnListing((new $this->model())->getTable()),
+                $this->makeHidden
+            )
+        );
     }
 }

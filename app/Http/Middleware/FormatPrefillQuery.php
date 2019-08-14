@@ -16,9 +16,19 @@ class FormatPrefillQuery
     public function handle($request, Closure $next)
     {
         $request->prefill = [];
-        $prefills = preg_split('/;/', $request->query('prefill'), null, PREG_SPLIT_NO_EMPTY);
+        $prefills = preg_split(
+            '/;/',
+            $request->query('prefill'),
+            null,
+            PREG_SPLIT_NO_EMPTY
+        );
         foreach ($prefills as $pair) {
-            [$relation, $id] = preg_split('/:/', $pair, null, PREG_SPLIT_NO_EMPTY);
+            [$relation, $id] = preg_split(
+                '/:/',
+                $pair,
+                null,
+                PREG_SPLIT_NO_EMPTY
+            );
             $request->prefill[$relation] = $id;
         }
 

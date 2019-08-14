@@ -12,7 +12,6 @@ class Permission extends PermissionBase implements AuditableContract
     use HasGroups;
     use AuditableTrait;
 
-
     /**
      * A permission can be applied to roles.
      */

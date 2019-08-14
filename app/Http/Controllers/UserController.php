@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
-
 class UserController extends Controller
 {
     /**
@@ -22,7 +21,12 @@ class UserController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('Users', User::select($this->whitelist('users'))->with($request->withNested)->get())
+            ->index(
+                'Users',
+                User::select($this->whitelist('users'))
+                    ->with($request->withNested)
+                    ->get()
+            )
             ->relations($request->withNested);
 
         return view('users.index', $responseData->get());
@@ -36,7 +40,10 @@ class UserController extends Controller
     public function create()
     {
         $responseData = new FormDataResponser();
-        return view('users.form', $responseData->create(User::class, 'users.store')->get());
+        return view(
+            'users.form',
+            $responseData->create(User::class, 'users.store')->get()
+        );
     }
 
     /**
@@ -51,7 +58,7 @@ class UserController extends Controller
             'name' => 'nullable|max:255',
             'mobile' => 'nullable',
             'email' => 'required',
-            'password' => 'required' 
+            'password' => 'required'
         ]);
 
         User::create($validatedData);
@@ -85,7 +92,10 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $responseData = new FormDataResponser();
-        return view('users.form', $responseData->edit($user, 'users.update')->get());
+        return view(
+            'users.form',
+            $responseData->edit($user, 'users.update')->get()
+        );
     }
 
     /**
@@ -97,18 +107,17 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-
         $input = $request->input();
 
         $request->validate([
             'name' => 'nullable|max:255',
             'mobile' => 'nullable',
-            'email' => 'required',
+            'email' => 'required'
         ]);
 
         $input['password'] = Hash::make($input['password']);
         $user->update($input);
-        
+
         return redirect()->route('users.show', ['id' => $user->id]);
     }
 

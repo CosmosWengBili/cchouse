@@ -12,13 +12,16 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function whitelist($model){
-        if( config("whitelist.{$model}") != null ){
+    public function whitelist($model)
+    {
+        if (config("whitelist.{$model}") != null) {
             return config("whitelist.{$model}");
-        }
-        else{
-            return array_diff(Schema::getColumnListing($model), ['created_at', 'deleted_at', 'updated_at']);
+        } else {
+            return array_diff(Schema::getColumnListing($model), [
+                'created_at',
+                'deleted_at',
+                'updated_at'
+            ]);
         }
     }
-
 }

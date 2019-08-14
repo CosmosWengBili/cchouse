@@ -119,9 +119,9 @@ class LandlordController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($landlord, 'landlords.update')->get();
-        $data['data']['third_party_files'] = $landlord
-            ->thirdPartyDocuments()
-            ->get();
+        $data['data'][
+            'third_party_files'
+        ] = $landlord->thirdPartyDocuments()->get();
         $data['data']['agents'] = $landlord
             ->agents()
             ->get()

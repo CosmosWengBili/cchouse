@@ -25,13 +25,11 @@ class LandlordPaymentController extends Controller
         $responseData = new NestedRelationResponser();
 
         $whitelist = $this->whitelist('landlord_payments');
-        foreach($whitelist as $key => $value){
-            $whitelist[$key] = 'landlord_payments.'.$value;
+        foreach ($whitelist as $key => $value) {
+            $whitelist[$key] = 'landlord_payments.' . $value;
         }
 
-        $landlordPayment = LandlordPayment::select(
-            $whitelist
-        )
+        $landlordPayment = LandlordPayment::select($whitelist)
             ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
             ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
             ->rightJoin(
@@ -158,7 +156,7 @@ class LandlordPaymentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    { 
+    {
         $landlord_payment = LandlordPayment::find($id);
         $landlord_payment->delete();
         return response()->json(true);

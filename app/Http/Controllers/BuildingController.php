@@ -12,7 +12,6 @@ use App\Services\BuildingService;
 
 class BuildingController extends Controller
 {
-
     // protected $buildingService;
 
     // public function __construct(BuildingService $buildingService)
@@ -35,7 +34,7 @@ class BuildingController extends Controller
         $responseData
             ->index('buildings', Building::with($request->withNested)->get())
             ->relations($request->withNested);
-        
+
         return view('buildings.index', $responseData->get());
     }
 
@@ -47,7 +46,9 @@ class BuildingController extends Controller
     public function create(Request $request)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->create(Building::class, 'buildings.store')->get();
+        $data = $responseData
+            ->create(Building::class, 'buildings.store')
+            ->get();
 
         return view('buildings.form', $data);
     }
@@ -64,12 +65,12 @@ class BuildingController extends Controller
             'title' => 'required|max:255',
             'city' => [
                 'required',
-                Rule::in(array_keys(config('enums.cities'))),
+                Rule::in(array_keys(config('enums.cities')))
             ],
             'district' => [
                 'bail',
                 'required_with:city',
-                Rule::in(config('enums.cities.'.$request->city)),
+                Rule::in(config('enums.cities.' . $request->city))
             ],
             'address' => 'required|max:255',
             'tax_number' => 'required|max:255',
@@ -103,7 +104,7 @@ class BuildingController extends Controller
             'rental_receipt' => 'required|max:255',
             'commissioner_id' => 'nullable|exists:users,id',
             'administrator_id' => 'nullable|exists:users,id',
-            'comment' => 'required|max:255',
+            'comment' => 'required|max:255'
         ]);
 
         $newBuilding = BuildingService::create($validatedData);
@@ -120,7 +121,6 @@ class BuildingController extends Controller
      */
     public function show(Request $request, Building $building)
     {
-
         $responseData = new NestedRelationResponser();
         $responseData
             ->show($building->load($request->withNested))
@@ -138,7 +138,10 @@ class BuildingController extends Controller
     public function edit(Building $building)
     {
         $responseData = new FormDataResponser();
-        return view('buildings.form', $responseData->edit($building, 'buildings.update')->get());
+        return view(
+            'buildings.form',
+            $responseData->edit($building, 'buildings.update')->get()
+        );
     }
 
     /**
@@ -154,12 +157,12 @@ class BuildingController extends Controller
             'title' => 'required|max:255',
             'city' => [
                 'required',
-                Rule::in(array_keys(config('enums.cities'))),
+                Rule::in(array_keys(config('enums.cities')))
             ],
             'district' => [
                 'bail',
                 'required_with:city',
-                Rule::in(config('enums.cities.'.$request->city)),
+                Rule::in(config('enums.cities.' . $request->city))
             ],
             'address' => 'required|max:255',
             'tax_number' => 'required|max:255',
@@ -193,7 +196,7 @@ class BuildingController extends Controller
             'rental_receipt' => 'required|max:255',
             'commissioner_id' => 'nullable|exists:users,id',
             'administrator_id' => 'nullable|exists:users,id',
-            'comment' => 'required|max:255',
+            'comment' => 'required|max:255'
         ]);
 
         $building->update($validatedData);

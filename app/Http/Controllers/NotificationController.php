@@ -33,9 +33,13 @@ class NotificationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function read($id) {
-        $notification = auth()->user()->notifications()->find($id);
-        if($notification) {
+    public function read($id)
+    {
+        $notification = auth()
+            ->user()
+            ->notifications()
+            ->find($id);
+        if ($notification) {
             $notification->markAsRead();
             return response()->json(true);
         }

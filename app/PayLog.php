@@ -15,7 +15,8 @@ class PayLog extends Model implements AuditableContract
     /**
      * Get the owning loggable model.
      */
-    public function loggable() {
+    public function loggable()
+    {
         return $this->morphTo();
     }
 }

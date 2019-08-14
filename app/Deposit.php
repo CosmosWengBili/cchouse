@@ -15,7 +15,8 @@ class Deposit extends Model implements AuditableContract
     /**
      * Get the tenant contract of deposit.
      */
-    public function tenantContract() {
+    public function tenantContract()
+    {
         return $this->belongsTo('App\TenantContract');
     }
 }

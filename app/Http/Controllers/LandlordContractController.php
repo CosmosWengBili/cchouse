@@ -25,7 +25,12 @@ class LandlordContractController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('landlord_contracts', LandlordContract::select($this->whitelist('landlord_contracts'))->with($request->withNested)->get())
+            ->index(
+                'landlord_contracts',
+                LandlordContract::select($this->whitelist('landlord_contracts'))
+                    ->with($request->withNested)
+                    ->get()
+            )
             ->relations($request->withNested);
 
         return view('landlord_contracts.index', $responseData->get());
@@ -35,11 +40,14 @@ class LandlordContractController extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
-     */ 
+     */
+
     public function create()
     {
         $responseData = new FormDataResponser();
-        $data =$responseData->create(LandlordContract::class, 'landlordContracts.store')->get();
+        $data = $responseData
+            ->create(LandlordContract::class, 'landlordContracts.store')
+            ->get();
         $data['data']['original_files'] = [];
         return view('landlord_contracts.form', $data);
     }
@@ -63,7 +71,8 @@ class LandlordContractController extends Controller
             'warranty_end_date' => 'required|date',
             'rental_decoration_free_start_date' => 'required|date',
             'rental_decoration_free_end_date' => 'required|date',
-            'annual_service_fee_month_count' => 'required|integer|digits_between:1,11',
+            'annual_service_fee_month_count' =>
+                'required|integer|digits_between:1,11',
             'charter_fee' => 'required|integer|digits_between:1,11',
             'taxable_charter_fee' => 'required|integer|digits_between:1,11',
             'agency_service_fee' => 'required',
@@ -80,9 +89,8 @@ class LandlordContractController extends Controller
             'account_number' => 'required|max:255',
             'invoice_collection_method' => 'required|max:255',
             'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
-
 
         $landlordContract = LandlordContract::create($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
@@ -96,7 +104,7 @@ class LandlordContractController extends Controller
      * @param  \App\LandlordContract  $landlordContract
      * @return \Illuminate\Http\Response
      */
-    public function show(Request  $request, LandlordContract $landlordContract)
+    public function show(Request $request, LandlordContract $landlordContract)
     {
         $responseData = new NestedRelationResponser();
         $responseData
@@ -115,10 +123,12 @@ class LandlordContractController extends Controller
     public function edit(LandlordContract $landlordContract)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->edit($landlordContract, 'landlordContracts.update')->get();
-        $data['data']['original_files'] = $landlordContract
-            ->originalFiles()
+        $data = $responseData
+            ->edit($landlordContract, 'landlordContracts.update')
             ->get();
+        $data['data'][
+            'original_files'
+        ] = $landlordContract->originalFiles()->get();
         return view('landlord_contracts.form', $data);
     }
 
@@ -131,7 +141,6 @@ class LandlordContractController extends Controller
      */
     public function update(Request $request, LandlordContract $landlordContract)
     {
-
         $validatedData = $request->validate([
             'building_id' => 'required|exists:buildings,id',
             'landlord_id' => 'required|exists:landlords,id',
@@ -143,7 +152,8 @@ class LandlordContractController extends Controller
             'warranty_end_date' => 'required|date',
             'rental_decoration_free_start_date' => 'required|date',
             'rental_decoration_free_end_date' => 'required|date',
-            'annual_service_fee_month_count' => 'required|integer|digits_between:1,11',
+            'annual_service_fee_month_count' =>
+                'required|integer|digits_between:1,11',
             'charter_fee' => 'required|integer|digits_between:1,11',
             'taxable_charter_fee' => 'required|integer|digits_between:1,11',
             'rent_collection_frequency' => 'required|max:255',
@@ -159,12 +169,14 @@ class LandlordContractController extends Controller
             'account_number' => 'required|max:255',
             'invoice_collection_method' => 'required|max:255',
             'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         $landlordContract->update($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
-        return redirect()->route('landlordContracts.edit', ['id' => $landlordContract->id]);
+        return redirect()->route('landlordContracts.edit', [
+            'id' => $landlordContract->id
+        ]);
     }
 
     /**

@@ -34,34 +34,38 @@ class Building extends Model implements AuditableContract
      * @var array
      */
     protected $casts = [
-        'has_elevator' => 'boolean',
+        'has_elevator' => 'boolean'
     ];
 
     /**
      * Get the user who is the commissioner of this building.
      */
-    public function commissioner() {
+    public function commissioner()
+    {
         return $this->belongsTo('App\User', 'commissioner_id');
     }
 
     /**
      * Get the user who is the administrator of this building.
      */
-    public function administrator() {
+    public function administrator()
+    {
         return $this->belongsTo('App\User', 'administrator_id');
     }
 
     /**
      * Get the rooms of this building.
      */
-    public function rooms() {
+    public function rooms()
+    {
         return $this->hasMany('App\Room');
     }
 
     /**
      * Get the landlord contract of this building.
      */
-    public function landlordContracts() {
+    public function landlordContracts()
+    {
         return $this->hasMany('App\LandlordContract');
     }
 

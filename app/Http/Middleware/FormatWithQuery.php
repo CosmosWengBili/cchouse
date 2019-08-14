@@ -17,7 +17,12 @@ class FormatWithQuery
     {
         // verify with query first!
 
-        $request->withNested = preg_split('/;/', $request->query('with'), null, PREG_SPLIT_NO_EMPTY);
+        $request->withNested = preg_split(
+            '/;/',
+            $request->query('with'),
+            null,
+            PREG_SPLIT_NO_EMPTY
+        );
         return $next($request);
     }
 }

@@ -17,11 +17,11 @@ use App\Traits\Controllers\HandleDocumentsUpload;
 
 class TenantContractController extends Controller
 {
-
     use HandleDocumentsUpload;
     protected $tenantContractService;
 
-    public function __construct(TenantContractService $tenantContractService) {
+    public function __construct(TenantContractService $tenantContractService)
+    {
         $this->tenantContractService = $tenantContractService;
     }
 
@@ -35,7 +35,10 @@ class TenantContractController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('tenant_contracts', TenantContract::with($request->withNested)->get())
+            ->index(
+                'tenant_contracts',
+                TenantContract::with($request->withNested)->get()
+            )
             ->relations($request->withNested);
 
         return view('tenant_contracts.index', $responseData->get());
@@ -45,11 +48,14 @@ class TenantContractController extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
-     */ 
+     */
+
     public function create()
     {
         $responseData = new FormDataResponser();
-        $data =$responseData->create(TenantContract::class, 'tenantContracts.store')->get();
+        $data = $responseData
+            ->create(TenantContract::class, 'tenantContracts.store')
+            ->get();
         $data['data']['original_files'] = [];
         $data['data']['carrier_files'] = [];
 
@@ -64,7 +70,6 @@ class TenantContractController extends Controller
      */
     public function store(Request $request)
     {
-
         $validatedData = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'tenant_id' => 'required|exists:tenants,id',
@@ -75,12 +80,13 @@ class TenantContractController extends Controller
             'car_parking_floor' => 'required|max:255',
             'car_parking_type' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.car_parking_type')),
+                Rule::in(config('enums.tenant_contract.car_parking_type'))
             ],
             'car_parking_space_number' => 'required|max:255',
             'motorcycle_parking_floor' => 'required|max:255',
             'motorcycle_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_count' => 'required|integer|digits_between:1,11',
+            'motorcycle_parking_count' =>
+                'required|integer|digits_between:1,11',
             'effective' => 'required|boolean',
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
@@ -90,46 +96,60 @@ class TenantContractController extends Controller
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.electricity_payment_method')),
+                Rule::in(
+                    config('enums.tenant_contract.electricity_payment_method')
+                )
             ],
             'electricity_calculate_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.electricity_calculate_method')),
+                Rule::in(
+                    config('enums.tenant_contract.electricity_calculate_method')
+                )
             ],
-            'electricity_price_per_degree' => 'required|numeric|between:0,99.99',
-            'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
+            'electricity_price_per_degree' =>
+                'required|numeric|between:0,99.99',
+            'electricity_price_per_degree_summer' =>
+                'required|numeric|between:0,99.99',
             '110v_start_degree' => 'required|integer|digits_between:1,11',
             '220v_start_degree' => 'required|integer|digits_between:1,11',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
             '220v_end_degree' => 'required|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.invoice_collection_method')),
+                Rule::in(
+                    config('enums.tenant_contract.invoice_collection_method')
+                )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id',
+            'commissioner_id' => 'exists:users,id'
         ]);
 
         $validatedPaymentData = $request->validate([
             'payments' => 'nullable|array',
             'payments.*.subject' => [
                 'required_with:payments',
-                Rule::in(config('enums.tenant_payments.subject')),
+                Rule::in(config('enums.tenant_payments.subject'))
             ],
             'payments.*.period' => [
                 'required_with:payments',
-                Rule::in(config('enums.tenant_payments.period')),
+                Rule::in(config('enums.tenant_payments.period'))
             ],
-            'payments.*.amount' => 'required_with:payments|integer|digits_between:1,11',
+            'payments.*.amount' =>
+                'required_with:payments|integer|digits_between:1,11',
             'payments.*.collected_by' => [
                 'required_with:payments',
-                Rule::in(config('enums.tenant_payments.collected_by')),
-            ],
+                Rule::in(config('enums.tenant_payments.collected_by'))
+            ]
         ]);
 
-
-        $tenantContract = $this->tenantContractService->create($validatedData, $validatedPaymentData['payments']);
-        $this->handleDocumentsUpload($tenantContract, ['original_file', 'carrier_file']);
+        $tenantContract = $this->tenantContractService->create(
+            $validatedData,
+            $validatedPaymentData['payments']
+        );
+        $this->handleDocumentsUpload($tenantContract, [
+            'original_file',
+            'carrier_file'
+        ]);
         return redirect()->route('tenantContracts.index');
     }
 
@@ -140,7 +160,7 @@ class TenantContractController extends Controller
      * @param  \App\TenantContract  $tenantContract
      * @return \Illuminate\Http\Response
      */
-    public function show(Request  $request, TenantContract $tenantContract)
+    public function show(Request $request, TenantContract $tenantContract)
     {
         $responseData = new NestedRelationResponser();
         $responseData
@@ -159,13 +179,13 @@ class TenantContractController extends Controller
     public function edit(TenantContract $tenantContract)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->edit($tenantContract, 'tenantContracts.update')->get();
-        $data['data']['original_files'] = $tenantContract
-            ->originalFiles()
+        $data = $responseData
+            ->edit($tenantContract, 'tenantContracts.update')
             ->get();
-        $data['data']['carrier_files'] = $tenantContract
-            ->carrierFiles()
-            ->get();
+        $data['data'][
+            'original_files'
+        ] = $tenantContract->originalFiles()->get();
+        $data['data']['carrier_files'] = $tenantContract->carrierFiles()->get();
         return view('tenant_contracts.form', $data);
     }
 
@@ -177,9 +197,13 @@ class TenantContractController extends Controller
      */
     public function extend(TenantContract $tenantContract)
     {
-        $tempContract = $this->tenantContractService->makeExtendedContract($tenantContract);
+        $tempContract = $this->tenantContractService->makeExtendedContract(
+            $tenantContract
+        );
         $responseData = new FormDataResponser();
-        $data = $responseData->edit($tempContract, 'tenantContracts.create')->get();
+        $data = $responseData
+            ->edit($tempContract, 'tenantContracts.create')
+            ->get();
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
         return view('tenant_contracts.form', $data);
@@ -194,7 +218,6 @@ class TenantContractController extends Controller
      */
     public function update(Request $request, TenantContract $tenantContract)
     {
-
         $validatedData = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'tenant_id' => 'required|exists:tenants,id',
@@ -205,12 +228,13 @@ class TenantContractController extends Controller
             'car_parking_floor' => 'required|max:255',
             'car_parking_type' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.car_parking_type')),
+                Rule::in(config('enums.tenant_contract.car_parking_type'))
             ],
             'car_parking_space_number' => 'required|max:255',
             'motorcycle_parking_floor' => 'required|max:255',
             'motorcycle_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_count' => 'required|integer|digits_between:1,11',
+            'motorcycle_parking_count' =>
+                'required|integer|digits_between:1,11',
             'effective' => 'required|boolean',
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
@@ -220,28 +244,39 @@ class TenantContractController extends Controller
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.electricity_payment_method')),
+                Rule::in(
+                    config('enums.tenant_contract.electricity_payment_method')
+                )
             ],
             'electricity_calculate_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.electricity_calculate_method')),
+                Rule::in(
+                    config('enums.tenant_contract.electricity_calculate_method')
+                )
             ],
-            'electricity_price_per_degree' => 'required|numeric|between:0,99.99',
-            'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
+            'electricity_price_per_degree' =>
+                'required|numeric|between:0,99.99',
+            'electricity_price_per_degree_summer' =>
+                'required|numeric|between:0,99.99',
             '110v_start_degree' => 'required|integer|digits_between:1,11',
             '220v_start_degree' => 'required|integer|digits_between:1,11',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
             '220v_end_degree' => 'required|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
-                Rule::in(config('enums.tenant_contract.invoice_collection_method')),
+                Rule::in(
+                    config('enums.tenant_contract.invoice_collection_method')
+                )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id',
+            'commissioner_id' => 'exists:users,id'
         ]);
 
         $tenantContract->update($validatedData);
-        $this->handleDocumentsUpload($tenantContract, ['original_file', 'carrier_file']);
+        $this->handleDocumentsUpload($tenantContract, [
+            'original_file',
+            'carrier_file'
+        ]);
         return redirect()->route('tenantContracts.show', $tenantContract);
     }
 
@@ -257,4 +292,3 @@ class TenantContractController extends Controller
         return response()->json(true);
     }
 }
-

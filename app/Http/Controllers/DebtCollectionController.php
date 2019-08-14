@@ -22,7 +22,7 @@ class DebtCollectionController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
-        
+
         $debtCollections = DebtCollection::select(
             $this->whitelist('debt_collections')
         )

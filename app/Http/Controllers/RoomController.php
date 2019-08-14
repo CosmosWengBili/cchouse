@@ -26,7 +26,7 @@ class RoomController extends Controller
         $responseData
             ->index('rooms', Room::with($request->withNested)->get())
             ->relations($request->withNested);
-        
+
         return view('rooms.index', $responseData->get());
     }
 
@@ -60,12 +60,12 @@ class RoomController extends Controller
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
-                Rule::in(config('enums.rooms.room_status')),
+                Rule::in(config('enums.rooms.room_status'))
             ],
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout')),
+                Rule::in(config('enums.rooms.room_layout'))
             ],
             'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
@@ -80,7 +80,7 @@ class RoomController extends Controller
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
-                Rule::in(config('enums.rooms.management_fee_mode')),
+                Rule::in(config('enums.rooms.management_fee_mode'))
             ],
             'management_fee' => 'required|numeric|between:0,99.99',
             'wifi_account' => 'required|max:255',
@@ -89,9 +89,9 @@ class RoomController extends Controller
             'can_keep_pets' => 'required|boolean',
             'gender_limit' => [
                 'required',
-                Rule::in(config('enums.rooms.gender_limit')),
+                Rule::in(config('enums.rooms.gender_limit'))
             ],
-            'comment' => 'required',
+            'comment' => 'required'
         ]);
 
         $validatedApplianceData = $request->validate([
@@ -99,11 +99,15 @@ class RoomController extends Controller
             'appliances.*.subject' => 'required',
             'appliances.*.spec_code' => 'required',
             'appliances.*.maintenance_phone' => 'required',
-            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.count' =>
+                'required_with:appliances|integer|digits_between:1,11',
             'appliances.*.vendor' => 'required'
         ]);
 
-        $room = RoomService::create($validatedData, $validatedApplianceData['appliances']);
+        $room = RoomService::create(
+            $validatedData,
+            $validatedApplianceData['appliances']
+        );
         $this->handleDocumentsUpload($room, ['picture']);
 
         return redirect()->route('rooms.index');
@@ -136,13 +140,9 @@ class RoomController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($room, 'rooms.update')->get();
-        $data['data']['pictures'] = $room
-            ->pictures()
-            ->get();
-        $data['data']['appliances'] = $room
-            ->appliances()
-            ->get();
-        
+        $data['data']['pictures'] = $room->pictures()->get();
+        $data['data']['appliances'] = $room->appliances()->get();
+
         return view('rooms.form', $data);
     }
 
@@ -162,12 +162,12 @@ class RoomController extends Controller
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
-                Rule::in(config('enums.rooms.room_status')),
+                Rule::in(config('enums.rooms.room_status'))
             ],
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout')),
+                Rule::in(config('enums.rooms.room_layout'))
             ],
             'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
@@ -182,7 +182,7 @@ class RoomController extends Controller
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
-                Rule::in(config('enums.rooms.management_fee_mode')),
+                Rule::in(config('enums.rooms.management_fee_mode'))
             ],
             'management_fee' => 'required|numeric|between:0,99.99',
             'wifi_account' => 'required|max:255',
@@ -191,9 +191,9 @@ class RoomController extends Controller
             'can_keep_pets' => 'required|boolean',
             'gender_limit' => [
                 'required',
-                Rule::in(config('enums.rooms.gender_limit')),
+                Rule::in(config('enums.rooms.gender_limit'))
             ],
-            'comment' => 'required',
+            'comment' => 'required'
         ]);
 
         $validatedApplianceData = $request->validate([
@@ -201,11 +201,16 @@ class RoomController extends Controller
             'appliances.*.subject' => 'required',
             'appliances.*.spec_code' => 'required',
             'appliances.*.maintenance_phone' => 'required',
-            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.count' =>
+                'required_with:appliances|integer|digits_between:1,11',
             'appliances.*.vendor' => 'required'
         ]);
 
-        RoomService::update($room, $validatedData, $validatedApplianceData['appliances']);
+        RoomService::update(
+            $room,
+            $validatedData,
+            $validatedApplianceData['appliances']
+        );
         $this->handleDocumentsUpload($room, ['picture']);
 
         return redirect()->route('rooms.show', $room);

@@ -9,7 +9,6 @@ use App\Responser\FormDataResponser;
 
 class ApplianceController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('with.prefill')->only('create');
@@ -33,8 +32,10 @@ class ApplianceController extends Controller
     public function create(Request $request)
     {
         $responseData = new FormDataResponser();
-        return view('appliances.form', $responseData->create(Appliance::class, 'appliances.store')->get())
-                    ->with(['room_id' => $request->prefill['rooms'] ?? null ]);
+        return view(
+            'appliances.form',
+            $responseData->create(Appliance::class, 'appliances.store')->get()
+        )->with(['room_id' => $request->prefill['rooms'] ?? null]);
     }
 
     /**
@@ -52,7 +53,7 @@ class ApplianceController extends Controller
             'vendor' => 'required|max:255',
             'count' => 'required|integer|digits_between:1,11',
             'maintenance_phone' => 'required|max:255',
-            'comment' => 'nullable',
+            'comment' => 'nullable'
         ]);
 
         $appliance = Appliance::create($validatedData);
@@ -80,7 +81,10 @@ class ApplianceController extends Controller
     public function edit(Request $request, Appliance $appliance)
     {
         $responseData = new FormDataResponser();
-        return view('appliances.form', $responseData->edit($appliance, 'appliances.update')->get());
+        return view(
+            'appliances.form',
+            $responseData->edit($appliance, 'appliances.update')->get()
+        );
     }
 
     /**

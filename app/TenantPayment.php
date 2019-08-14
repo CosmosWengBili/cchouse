@@ -20,7 +20,6 @@ class TenantPayment extends Model implements AuditableContract
     protected $guarded = [];
 
     protected $hidden = ['pivot'];
-    
 
     /**
      * The attributes that should be cast to native types.
@@ -30,20 +29,22 @@ class TenantPayment extends Model implements AuditableContract
     protected $casts = [
         'is_charge_off_done' => 'boolean',
         'is_visible_at_report' => 'boolean',
-        'is_pay_off' => 'boolean',
+        'is_pay_off' => 'boolean'
     ];
 
     /**
      * Get the tenant contract of this tenant payment.
      */
-    public function tenantContract() {
+    public function tenantContract()
+    {
         return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
     }
 
     /**
      * Get the pay log of this tenant payment.
      */
-    public function payLogs() {
+    public function payLogs()
+    {
         return $this->morphMany('App\PayLog', 'loggable');
     }
 }

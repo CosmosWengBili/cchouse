@@ -16,7 +16,8 @@ class ScheduleService
     protected $method;
     protected $args;
 
-    public function __construct($method, $args) {
+    public function __construct($method, $args)
+    {
         $this->method = $method;
         $this->args = $args;
     }
@@ -104,7 +105,8 @@ class ScheduleService
     }
 
     // daily task to notify users that some tenant contracts due in 2 months
-    public function notifyTenantContractDueInTwoMonths() {
+    public function notifyTenantContractDueInTwoMonths()
+    {
         // escrow is 2 months
         TenantContract::where('contract_end', Carbon::today()->addMonth(2))
             ->with('commissioner')
@@ -119,11 +121,15 @@ class ScheduleService
     {
         $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.
         $limitDatetime = Carbon::now()->subDays(10);
-        $maintenances = Maintenance::where('status', '!=', 'done')->where('updated_at', '<=', $limitDatetime)->get();
+        $maintenances = Maintenance::where('status', '!=', 'done')
+            ->where('updated_at', '<=', $limitDatetime)
+            ->get();
         foreach ($maintenances as $maintenance) {
             $commissioner = $maintenance->commissioner()->first();
             $commissioner->notify(
-                new TextNotify("維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。")
+                new TextNotify(
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。"
+                )
             );
         }
     }

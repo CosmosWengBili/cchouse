@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Audit;
-use \Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 
 class AuditController extends Controller
@@ -18,7 +18,12 @@ class AuditController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('Audits', Audit::select($this->whitelist('audits'))->with($request->withNested)->get())
+            ->index(
+                'Audits',
+                Audit::select($this->whitelist('audits'))
+                    ->with($request->withNested)
+                    ->get()
+            )
             ->relations($request->withNested);
 
         return view('audit.index', $responseData->get());

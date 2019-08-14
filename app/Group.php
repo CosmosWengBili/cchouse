@@ -12,7 +12,8 @@ class Group extends RoleBase implements AuditableContract
     use HasPermissions;
     use AuditableTrait;
 
-    public function department() {
+    public function department()
+    {
         return $this->belongsTo('App\Department');
     }
 

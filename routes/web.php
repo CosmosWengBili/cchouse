@@ -30,14 +30,19 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('landlordPayments', 'LandlordPaymentController');
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
+            Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
             Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
+            Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
+            Route::resource('payLogs', 'PayLogController');
+            Route::resource('tenantPayments', 'TenantPaymentController');
+            Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             Route::resource('shareholders', 'ShareHolderController');
-
+          
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
             Route::post('notifications/{id}', 'NotificationController@read')->name('notifications.read');

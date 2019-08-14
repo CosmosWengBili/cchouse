@@ -13,6 +13,27 @@ class TenantPayment extends Model implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+    
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_charge_off_done' => 'boolean',
+        'is_visible_at_report' => 'boolean',
+        'is_pay_off' => 'boolean',
+    ];
+
+    /**
      * Get the tenant contract of this tenant payment.
      */
     public function tenantContract() {
@@ -22,7 +43,7 @@ class TenantPayment extends Model implements AuditableContract
     /**
      * Get the pay log of this tenant payment.
      */
-    public function payLog() {
-        return $this->morphOne('App\PayLog', 'loggable');
+    public function payLogs() {
+        return $this->morphMany('App\PayLog', 'loggable');
     }
 }

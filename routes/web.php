@@ -35,11 +35,12 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
+            Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
+            Route::resource('payLogs', 'PayLogController');
+            Route::resource('tenantPayments', 'TenantPaymentController');
+            Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             Route::resource('shareholders', 'ShareHolderController');
-            Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
-            Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
-            Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -54,7 +55,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
             Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
-
+            Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
+            Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
+            Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
+            Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
         });
     });
 

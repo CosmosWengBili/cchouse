@@ -11,6 +11,7 @@ return [
     'Maintenance' => [],
     'Key' => [],
     'KeyRequest' => [],
+    'TenantContract' => [],
     'DebtCollection' => [],
     'Shareholder' => [],
 ];

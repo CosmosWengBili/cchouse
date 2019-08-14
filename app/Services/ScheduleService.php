@@ -7,7 +7,9 @@ use App\Notifications\TextNotify;
 use Carbon\Carbon;
 use App\LandlordContract;
 use App\Landlord;
+use App\TenantContract;
 use App\Notifications\LandlordContractDue;
+use App\Notifications\TenantContractDueInTwoMonths;
 
 class ScheduleService
 {
@@ -101,6 +103,17 @@ class ScheduleService
         }
     }
 
+    // daily task to notify users that some tenant contracts due in 2 months
+    public function notifyTenantContractDueInTwoMonths() {
+        // escrow is 2 months
+        TenantContract::where('contract_end', Carbon::today()->addMonth(2))
+            ->with('commissioner')
+            ->get()
+            ->each(function ($tenantContract) {
+                $tenantContract->commissioner->notify(
+                    new TenantContractDueInTwoMonths($tenantContract)
+                );
+            });
     public function notifyMaintenanceStatus()
     {
         $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.

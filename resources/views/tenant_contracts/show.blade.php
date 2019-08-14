@@ -42,7 +42,7 @@
                         @elseif ( $layer == 'payLogs' )
                             @include($layer . '.table', ['objects' => Arr::collapse(Arr::pluck($data['tenant_payments'], 'pay_logs')), 'layer' => $layer."s"])
                         @else
-                            @include($layer . '.table', ['object' => $data[$layer], 'layer' => $layer])
+                            @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
                         @endif
                     </div>
                 @endforeach

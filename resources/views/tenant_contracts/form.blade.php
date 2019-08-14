@@ -388,53 +388,7 @@
                             </tbody>
                         </table>
 
-                        <div>
-                            {{-- generate the following block to have more payments --}}
-                            {{-- important: specify the id increment using js or whatever way you like in name attribute --}}
-                            {{-- payments[0][subject], payments[1][subject], payments[2][subject] ... --}}
-                            <div class="each kind of payment">
-                                <span>科目</span>
-                                <select
-                                    class="form-control form-control-sm"
-                                    name="payments[0][subject]"
-                                    value=""
-                                />
-                                    @foreach(config('enums.tenant_payments.subject') as $value)
-                                        <option value="{{$value}}">{{$value}}</option>
-                                    @endforeach
-                                </select>
-
-                                <span>頻率</span>
-                                <select
-                                    class="form-control form-control-sm"
-                                    name="payments[0][period]"
-                                    value=""
-                                />
-                                    @foreach(config('enums.tenant_payments.period') as $value)
-                                        <option value="{{$value}}">{{$value}}</option>
-                                    @endforeach
-                                </select>
-                                
-                                <span>費用</span>
-                                <input
-                                    class="form-control form-control-sm"
-                                    type="number"
-                                    name="payments[0][amount]"
-                                    value="{{ $data['invoice_collection_number'] ?? '' }}"
-                                />
-
-                                <span>收取</span>
-                                <select
-                                    class="form-control form-control-sm"
-                                    name="payments[0][collected_by]"
-                                    value=""
-                                />
-                                    @foreach(config('enums.tenant_payments.collected_by') as $value)
-                                        <option value="{{$value}}">{{$value}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                        @include('tenant_contracts.payment')
 
                         <h3 class="mt-3">發票載具檔案</h3>
                         @include('documents.inputs', ['documentType' => 'carrier_file', 'documents' => $data['carrier_files']])

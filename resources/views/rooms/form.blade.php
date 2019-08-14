@@ -343,6 +343,9 @@
                         <h3 class="mt-3">照片</h3>
                         @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
 
+                        <h3 class="mt-3">附屬設備</h3>
+                        @include('rooms.appliance', ['appliances' => $data['appliances']])
+
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
                 </div>

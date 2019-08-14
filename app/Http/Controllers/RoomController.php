@@ -40,6 +40,7 @@ class RoomController extends Controller
         $responseData = new FormDataResponser();
         $data = $responseData->create(Room::class, 'rooms.store')->get();
         $data['data']['pictures'] = [];
+        $data['data']['appliances'] = [];
 
         return view('rooms.form', $data);
     }
@@ -93,8 +94,17 @@ class RoomController extends Controller
             'comment' => 'required',
         ]);
 
-        $newRoom = RoomService::create($validatedData);
-        $this->handleDocumentsUpload($newRoom, ['picture']);
+        $validatedApplianceData = $request->validate([
+            'appliances' => 'nullable|array',
+            'appliances.*.subject' => 'required',
+            'appliances.*.spec_code' => 'required',
+            'appliances.*.maintenance_phone' => 'required',
+            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.vendor' => 'required'
+        ]);
+
+        $room = RoomService::create($validatedData, $validatedApplianceData['appliances']);
+        $this->handleDocumentsUpload($room, ['picture']);
 
         return redirect()->route('rooms.index');
     }
@@ -128,6 +138,9 @@ class RoomController extends Controller
         $data = $responseData->edit($room, 'rooms.update')->get();
         $data['data']['pictures'] = $room
             ->pictures()
+            ->get();
+        $data['data']['appliances'] = $room
+            ->appliances()
             ->get();
         
         return view('rooms.form', $data);
@@ -183,7 +196,16 @@ class RoomController extends Controller
             'comment' => 'required',
         ]);
 
-        $room->update($validatedData);
+        $validatedApplianceData = $request->validate([
+            'appliances' => 'nullable|array',
+            'appliances.*.subject' => 'required',
+            'appliances.*.spec_code' => 'required',
+            'appliances.*.maintenance_phone' => 'required',
+            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.vendor' => 'required'
+        ]);
+
+        RoomService::update($room, $validatedData, $validatedApplianceData['appliances']);
         $this->handleDocumentsUpload($room, ['picture']);
 
         return redirect()->route('rooms.show', $room);

@@ -12,6 +12,7 @@ class Appliance extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $guarded = [];
     /**
      * Get the room this appliance belongs to.
      */

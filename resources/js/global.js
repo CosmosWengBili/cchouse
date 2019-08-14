@@ -7,7 +7,7 @@ $(document).ready(function () {
     });
 
     // Realtime search module
-    realtimeSelect($('[data-toggle=selectize]'))
+    window.realtimeSelect($('[data-toggle=selectize]'))
 
     // Auto assigned value on each data resource select element
     $('select').each(function (index, element) {
@@ -36,7 +36,7 @@ $(document).on('click', 'a.jquery-postback', function (e) {
 });
 
 
-function realtimeSelect(selectizeElements) {
+window.realtimeSelect = function (selectizeElements) {
 
     selectizeElements.each(function () {
         // Set data

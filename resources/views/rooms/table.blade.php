@@ -47,7 +47,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ print_r($value) }}</td>
+                                <td> {{$value}}</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=tenantContracts;keys;appliances;landlordPayments;landlordOtherSubjects;documents">查看</a>

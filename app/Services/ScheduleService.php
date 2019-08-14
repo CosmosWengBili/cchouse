@@ -114,6 +114,7 @@ class ScheduleService
                     new TenantContractDueInTwoMonths($tenantContract)
                 );
             });
+    }
     public function notifyMaintenanceStatus()
     {
         $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.

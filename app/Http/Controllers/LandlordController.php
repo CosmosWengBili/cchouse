@@ -89,7 +89,7 @@ class LandlordController extends Controller
                 : []
         ]);
 
-        return redirect()->route('landlords.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -166,7 +166,7 @@ class LandlordController extends Controller
                 : []
         ]);
 
-        return redirect()->route('landlords.edit', ['id' => $landlord->id]);
+        return redirect($request->_redirect);
     }
 
     /**

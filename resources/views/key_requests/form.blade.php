@@ -49,6 +49,7 @@
                                         data-toggle="selectize" 
                                         data-table="user" 
                                         data-text="name" 
+                                        data-value="id"
                                         data-selected="{{ isset($data["request_user_id"]) ? $data['request_user_id'] : \Auth::user()->id }}"
                                         name="request_user_id"
                                         class="form-control form-control-sm" 
@@ -64,10 +65,10 @@
                                         class="form-control form-control-sm" 
                                         value="{{ isset($data["status"]) ? $data['status'] : 'reserved' }}"
                                     >
-                                        <option value="reserved">預約中</option>
-                                        <option value="using">使用中</option>
+                                        <option value="預約中">預約中</option>
+                                        <option value="使用中">使用中</option>
                                         @if ( $keeper_id == \Auth::user()->id )
-                                            <option value="finished">已完成</option>
+                                            <option value="已完成">已完成</option>
                                         @endif
                                     </select>
                                 </td>

@@ -308,7 +308,7 @@ return [
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'commissioner_id' => '專員 ID',
-     ]
+    ],
     'DebtCollection' => [
         'id' => '編號',
         'collector_id' => '催收人 ID',
@@ -318,5 +318,22 @@ return [
         'is_penalty_collected' => '是否收滯納金',
         'comment' => '備註',
         'created_at' => '建立時間',
+    ],
+    'Shareholder' => [
+        'id' => '編號',
+        'name' => '姓名',
+        'email' => 'email',
+        'bank_name' => '銀行名稱',
+        'bank_code'=> '銀行代碼',
+        'account_number' => '銀行號碼',
+        'account_name' => '銀行戶名',
+        'is_remittance_fee_collected' => '是否收取匯費',
+        'transfer_from' => '匯出銀行',
+        'bill_delivery' => '帳單寄送方式',
+        'distribution_method' => '分配方式',
+        'distribution_start_date' => '分配起',
+        'distribution_end_date' => '分配迄',
+        'distribution_rate' => '分配費率',
+        'investment_amount' => '投資額'
     ]
 ];

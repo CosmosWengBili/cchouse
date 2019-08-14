@@ -21,14 +21,34 @@ class DebtCollectionController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $debtCollections = DebtCollection::select($this->whitelist('debt_collections'))
+        $owner_data = new NestedRelationResponser();
+        
+        $debtCollections = DebtCollection::select(
+            $this->whitelist('debt_collections')
+        )
             ->with($request->withNested)
             ->get();
 
         $responseData
             ->index('DebtCollections', $debtCollections)
             ->relations($request->withNested);
-        return view('debt_collections.index', $responseData->get());
+
+        $owner_query = DebtCollection::select(
+            $this->whitelist('debt_collections')
+        )->where([
+            'collector_id' => Auth::id()
+        ]);
+        $owner_data
+            ->index(
+                'DebtCollections',
+                $owner_query->with($request->withNested)->get()
+            )
+            ->relations($request->withNested);
+
+        return view('debt_collections.index', $responseData->get())->with(
+            'owner_data',
+            $owner_data->get()
+        );
     }
 
     /**
@@ -46,7 +66,6 @@ class DebtCollectionController extends Controller
             ->relations($request->withNested);
         $data = $responser->get();
 
-        $data['collector'] = $debtCollection->collector()->first()->toArray();
         return view('debt_collections.show', $data);
     }
 
@@ -58,7 +77,9 @@ class DebtCollectionController extends Controller
     public function create()
     {
         $responser = new FormDataResponser();
-        $data = $responser->create(DebtCollection::class, 'debtCollections.store')->get();
+        $data = $responser
+            ->create(DebtCollection::class, 'debtCollections.store')
+            ->get();
         return view('debt_collections.form', $data);
     }
 
@@ -76,11 +97,13 @@ class DebtCollectionController extends Controller
             'status' => 'required|max:255',
             'is_penalty_collected' => 'required',
             'comment' => 'nullable',
+            'collector_id' => 'nullable'
         ]);
-        $validatedData = array_merge($validatedData, ['collector_id' => Auth::user()->id]);
         $debtCollection = DebtCollection::create($validatedData);
 
-        return redirect()->route('debt_collections.show', ['id' => $debtCollection->id]);
+        return redirect()->route('debtCollections.show', [
+            'id' => $debtCollection->id
+        ]);
     }
 
     /**
@@ -92,7 +115,9 @@ class DebtCollectionController extends Controller
     public function edit(DebtCollection $debtCollection)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->edit($debtCollection, 'debtCollections.update')->get();
+        $data = $responseData
+            ->edit($debtCollection, 'debtCollections.update')
+            ->get();
 
         return view('debt_collections.form', $data);
     }
@@ -112,10 +137,13 @@ class DebtCollectionController extends Controller
             'status' => 'required|max:255',
             'is_penalty_collected' => 'required',
             'comment' => 'nullable',
+            'collector_id' => 'nullable'
         ]);
         $debtCollection->update($validatedData);
 
-        return redirect()->route('debt_collections.show', ['id' => $debtCollection->id]);
+        return redirect()->route('debtCollections.show', [
+            'id' => $debtCollection->id
+        ]);
     }
 
     /**

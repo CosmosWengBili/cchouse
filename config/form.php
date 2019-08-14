@@ -13,4 +13,5 @@ return [
     'KeyRequest' => [],
     'TenantContract' => [],
     'DebtCollection' => [],
+    'Shareholder' => [],
 ];

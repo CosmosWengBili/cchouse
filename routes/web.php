@@ -41,6 +41,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('payLogs', 'PayLogController');
             Route::resource('tenantPayments', 'TenantPaymentController');
             Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
+            Route::resource('shareholders', 'ShareHolderController');
           
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -54,6 +55,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
           
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
+            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
 
         });
     });

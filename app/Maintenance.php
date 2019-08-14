@@ -2,12 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Maintenance extends Pivot implements AuditableContract
+class Maintenance extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
@@ -18,10 +18,6 @@ class Maintenance extends Pivot implements AuditableContract
         'sent' => '已派工',
         'request' => '請款中',
         'done' => '案件完成',
-    ];
-    const INCIDENT_TYPES = [
-        'clean' => '清潔',
-        'repair' => '維修',
     ];
     const WORK_TYPES = [
         'water_and_electricity' => '水電',
@@ -41,6 +37,7 @@ class Maintenance extends Pivot implements AuditableContract
         'deleted_at',
     ];
 
+    protected $guarded = [];
     /**
      * Get the user who took care of this maintenance.
      */

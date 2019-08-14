@@ -21,5 +21,6 @@ return [
     'buildings' => [],
     'tenant_contracts' => [],
     'landlord_payments' => [],
-    'keys' => []
+    'keys' => [],
+    'share_holders' => []
 ];

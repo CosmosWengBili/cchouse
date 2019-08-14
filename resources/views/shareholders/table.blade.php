@@ -1,4 +1,7 @@
 
+@php
+$tableId = "model-{$model_name}-{$layer}-" . rand();
+@endphp
 <div class="card">
     <div class="card-body table-responsive">
         <h2>{{$layer}}</h2>
@@ -11,16 +14,18 @@
         @if (empty($objects))
             <h3>尚無紀錄</h3>
         @else
-            <form data-target="#users" data-toggle="datatable-query">
+            <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
                 </div>
                 <i class="fa fa-plus-circle" data-toggle="datatable-query-add"></i>
                 <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
             </form>
             <div class="table-responsive">
-                <table id="users" class="display table" style="width:100%">
+                <table id="{{$tableId}}" class="display table" style="width:100%">
                     <thead>
-                        <?php $model_name = substr($layer, 0, -1) ?>
+                        @php
+                            $model_name = ucfirst(Str::camel(Str::Singular($layer)));
+                        @endphp
                         @foreach ( array_keys($objects[0]) as $field)
                             <th>@lang("model.{$model_name}.{$field}")</th>
                         @endforeach
@@ -36,7 +41,7 @@
                                     <td> {{ $value }}</td>
                                 @endforeach
                                 <td>
-                                    <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
+                                    <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=buildings">查看</a>
                                     <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                     <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                                 </td>
@@ -50,5 +55,5 @@
 </div>
 @include('shared.import_modal', ['layer' => $layer])
 <script>
-    renderDataTable(["#users"])
+    renderDataTable(["#{{$tableId}}"]);
 </script>

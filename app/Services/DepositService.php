@@ -23,7 +23,7 @@ class DepositService
                 // make new company income
                 CompanyIncome::create([
                     'tenant_contract_id' => $deposit->tenantContract->id,
-                    'subject' => '沒定',
+                    'subject' => '訂金',
                     'income_date' => Carbon::today(),
                     'amount' => $newValues['deposit_confiscated_amount'],
                 ]);

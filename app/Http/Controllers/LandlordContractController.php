@@ -10,8 +10,11 @@ use App\Responser\FormDataResponser;
 
 use OwenIt\Auditing\Contracts\Auditor;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class LandlordContractController extends Controller
 {
+    use HandleDocumentsUpload;
     /**
      * Display a listing of the resource.
      *
@@ -37,7 +40,7 @@ class LandlordContractController extends Controller
     {
         $responseData = new FormDataResponser();
         $data =$responseData->create(LandlordContract::class, 'landlordContracts.store')->get();
-
+        $data['data']['original_files'] = [];
         return view('landlord_contracts.form', $data);
     }
 
@@ -82,6 +85,7 @@ class LandlordContractController extends Controller
 
 
         $landlordContract = LandlordContract::create($validatedData);
+        $this->handleDocumentsUpload($landlordContract, ['original_file']);
         return redirect()->route('landlordContracts.index');
     }
 
@@ -111,7 +115,11 @@ class LandlordContractController extends Controller
     public function edit(LandlordContract $landlordContract)
     {
         $responseData = new FormDataResponser();
-        return view('landlord_contracts.form', $responseData->edit($landlordContract, 'landlordContracts.update')->get());
+        $data = $responseData->edit($landlordContract, 'landlordContracts.update')->get();
+        $data['data']['original_files'] = $landlordContract
+            ->originalFiles()
+            ->get();
+        return view('landlord_contracts.form', $data);
     }
 
     /**
@@ -155,6 +163,7 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract->update($validatedData);
+        $this->handleDocumentsUpload($landlordContract, ['original_file']);
         return redirect()->route('landlordContracts.edit', ['id' => $landlordContract->id]);
     }
 

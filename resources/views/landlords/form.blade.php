@@ -9,7 +9,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -89,6 +89,9 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <h3 class="mt-3">第三方代理文件</h3>
+                        @include('documents.inputs', ['documentType' => 'third_party_file', 'documents' => $data['third_party_files']])
 
                         <h3 class="mt-3">聯絡資料</h3>
                         @include('Landlords.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])

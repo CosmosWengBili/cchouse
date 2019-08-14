@@ -28,13 +28,10 @@ return [
     ],
 
     'documents' => [
-        'type' => [
-            '照片',
-            '載具檔案',
-            '合約檔案',
-            '代收文件',
-            '合約原檔',
-        ],
+        'third_party_file' => '第三方代收文件',
+        'original_file' => '合約原檔',
+        'carrier_file' => '發票載具',
+        'picture' => '相關照片'
     ],
 
     'cities' => [

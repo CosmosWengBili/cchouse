@@ -6,7 +6,7 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
 <div class="{{ $fileInputsClassName }}">
     @foreach($documents as $idx => $document)
         <div class="form-group position-relative">
-            <div class="pl-2 mr-5">
+            <div class="d-inline-block w-75">
                 檔案：
                 <a
                     href="{{ $document->url() }}"
@@ -18,7 +18,7 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
                 <input type="hidden" name="documents[{{ $documentType }}][{{$idx}}][id]" value="{{$document->id}}" />
                 <input type="hidden" name="documents[{{ $documentType }}][{{$idx}}][_delete]" value="0" />
             </div>
-            <button class="btn btn-danger btn-xs js-delete-btn" type="button" style="position: absolute; right: -3rem; top: 0;">
+            <button class="mt-2 btn btn-danger btn-xs js-delete-btn" type="button">
                 <span class="fa fa-times"></span>
             </button>
         </div>
@@ -64,7 +64,7 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
         $addRow.on('click', function () {
             const template = `
                 <div class="form-group position-relative">
-                    <div class="custom-file mr-5">
+                    <div class="custom-file w-75">
                         <input
                             type="file"
                             name="documents[${documentType}][${idx}]"
@@ -72,7 +72,7 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
                             id="documents-${documentType}-${idx}" />
                         <label class="custom-file-label" for="documents-${documentType}-${idx}" data-browse="瀏覽">選擇檔案</label>
                     </div>
-                    <button class="btn btn-danger btn-xs js-delete-btn" type="button"  style="position: absolute; right: -3rem; top: 0;">
+                    <button class="mt-2 btn btn-danger btn-xs js-delete-btn" type="button">
                         <span class="fa fa-times"></span>
                     </button>
                 </div>`;

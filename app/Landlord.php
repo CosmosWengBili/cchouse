@@ -46,12 +46,19 @@ class Landlord extends Model implements AuditableContract
     }
 
     /**
-     * Get all of the landlords's documents.
+    * Get all of the landlords's documents.
+    */
+    public function documents() {
+        return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get landlords's thirdPartyDocuments.
      * 代收文件
      */
     public function thirdPartyDocuments()
     {
-        return $this->morphMany('App\Document', 'attachable');
+        return $this->documents()->where('document_type', 'third_party_file');
     }
 
     /**

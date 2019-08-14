@@ -36,7 +36,11 @@
                         @php
                             $layer = Str::snake(explode('.', $relation)[0]);
                         @endphp
-                        @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
+                        @if ( $layer == 'documents' )
+                            @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
+                        @else
+                            @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
+                        @endif
                     </div>
                 @endforeach
             @endif

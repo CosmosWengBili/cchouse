@@ -23,7 +23,6 @@ class TenantContract extends Pivot implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
 
     /**
      * The attributes that should be cast to native types.
@@ -93,6 +92,13 @@ class TenantContract extends Pivot implements AuditableContract
     }
 
     /**
+     * Get all the pay logs of this tenant contract.
+     */
+    public function payLogs() {
+        return $this->hasMany('App\PayLog', 'tenant_contract_id');
+    }
+
+    /**
      * Get all the tenant electricity payments of this tenant contract.
      */
     public function tenantElectricityPayments() {
@@ -106,25 +112,23 @@ class TenantContract extends Pivot implements AuditableContract
      */
     public function carrierFiles()
     {
-        return $this->morphMany('App\Document', 'attachable')->where('document_type', 'carrier_file');
+        return $this->documents()->where('document_type', 'carrier_file');
     }
 
     /**
-     * Get all the contract documents of the tenant contract.
-     * contract_file
-     * 合約檔案
-     */
-    public function contractFiles()
-    {
-        return $this->morphMany('App\Document', 'attachable')->where('document_type', 'contract_file');
-    }
-
-    /**
-     * Get all kinds of documents.
-     */
-    public function allDocuments()
-    {
+    * Get all of the landlords's documents.
+    */
+    public function documents() {
         return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get landlords's thirdPartyDocuments.
+     * 原檔
+     */
+    public function originalFiles()
+    {
+        return $this->documents()->where('document_type', 'original_file');
     }
 
     /**

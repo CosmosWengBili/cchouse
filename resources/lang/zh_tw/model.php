@@ -273,6 +273,11 @@ return [
         'can_keep_pets' => '養寵物',
         'gender_limit' => '性別限制',
         'comment' => '備註',
+        'tenant_contracts' => '租客合約',
+        'keys' => '鑰匙',
+        'appliances' => '附屬設備',
+        'landlord_payments' => '房東應付帳單',
+        'landlord_other_subjects' => '房東其他科目'
     ],
     'TenantContract' => [
         'id' => '編號',

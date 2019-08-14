@@ -19,7 +19,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST"  enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -435,6 +435,12 @@
                                 </select>
                             </div>
                         </div>
+
+                        <h3 class="mt-3">發票載具檔案</h3>
+                        @include('documents.inputs', ['documentType' => 'carrier_file', 'documents' => $data['carrier_files']])
+
+                        <h3 class="mt-3">合約原檔</h3>
+                        @include('documents.inputs', ['documentType' => 'original_file', 'documents' => $data['original_files']])
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>

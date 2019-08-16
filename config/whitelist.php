@@ -19,7 +19,7 @@ return [
       'id', 'collector_id', 'tenant_contract_id', 'details', 'is_penalty_collected', 'comment', 'created_at'
     ],
     'buildings' => [],
-    'tenant_contracts' => [],
+    'tenant_contracts' => ['id', 'contract_start', 'contract_end'],
     'landlord_payments' => [],
     'keys' => [],
     'share_holders' => []

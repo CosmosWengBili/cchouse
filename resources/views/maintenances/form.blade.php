@@ -285,17 +285,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Maintenance.invoice_serail_number")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="invoice_serail_number"
-                                            value="{{ $data['invoice_serail_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.comment")</td>
                                     <td>
                                         <input

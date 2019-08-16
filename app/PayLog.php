@@ -12,6 +12,9 @@ class PayLog extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $casts = [
+        'paid_at' => 'datetime:Y-m-d',
+    ];
     /**
      * Get the owning loggable model.
      */

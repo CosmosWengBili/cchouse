@@ -13,5 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(DepartmentsGroupsSeeder::class);
         $this->command->info('departments and groups table seeded!');
+        $this->call(SystemVariablesSeeder::class);
+        $this->command->info('generate init system variables!');
     }
 }

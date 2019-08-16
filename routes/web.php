@@ -43,6 +43,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             Route::resource('shareholders', 'ShareHolderController');
 
+            // comprehensive resource
+            Route::resource('receipts', 'ReceiptController');
+
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
             Route::post('notifications/{id}', 'NotificationController@read')->name('notifications.read');

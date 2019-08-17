@@ -340,5 +340,19 @@ return [
         'distribution_end_date' => '分配迄',
         'distribution_rate' => '分配費率',
         'investment_amount' => '投資額'
-    ]
+    ],
+    'Deposit' => [
+        'id' => '編號',
+        'tenant_contract_id' => '租客合約 ID',
+        'deposit_collection_date' => '收訂日期',
+        'deposit_collection_serial_number' => '收訂單號',
+        'deposit_confiscated_amount' => '沒定金額',
+        'deposit_returned_amount' => '退訂金額',
+        'confiscated_or_returned_date' => '沒/退訂日期',
+        'invoicing_amount' => '應開立金額',
+        'invoice_date' => '發票日期',
+        'invoice_serial_number' => '發票號碼',
+        'is_deposit_collected' => '已收訂',
+        'comment' => '備註',
+    ],
 ];

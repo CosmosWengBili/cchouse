@@ -43,7 +43,7 @@
                                     <td>
                                         <select
                                             class="form-control form-control-sm"
-                                            name="tenant_contract_id"
+                                            name="subject"
                                         >
                                             @foreach($subjects as $subject)
                                                 <option
@@ -105,7 +105,7 @@
                                     <td>發票號碼</td>
                                     <td>
                                         <input
-                                            type="number"
+                                            type="text"
                                             name="invoice_serial_number"
                                             class="form-control form-control-sm"
                                             value="{{ $data['invoice_serial_number'] ?? '' }}"

@@ -29,6 +29,24 @@ class TenantPaymentController extends Controller
         return view('tenant_payments.form', $data);
     }
 
+    public function store(Request $request) {
+        $validatedData = $request->validate([
+            'tenant_contract_id' => 'required',
+            'due_time' => 'required',
+            'amount' => 'required',
+            'is_charge_off_done' => 'required',
+            'charge_off_date' => 'required',
+            'invoice_serial_number' => 'required',
+            'collected_by' => 'required',
+            'is_visible_at_report' => 'required',
+            'is_pay_off' => 'required',
+            'comment' => 'required',
+        ]);
+        $tenantPayment = TenantPayment::create($validatedData);
+
+        return redirect()->route('tenantPayments.index');
+    }
+
     private function indexByTime(Request $request) {
         return $this->indexByContract($request);
     }

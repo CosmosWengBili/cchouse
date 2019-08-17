@@ -2,25 +2,6 @@
     $tableId = "model-{$model_name}-{$layer}-" . rand();
 @endphp
 
-<a class="btn btn-sm btn-success my-3" href="{{ route( 'tenantPayments.create') }}">建立</a>
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a
-            class="nav-link {{ $by == 'contract' ? 'active' : '' }}"
-            href="{{ route('tenantPayments.index', ['by' => 'contract']) }}"
-        >
-            By Contract
-        </a>
-    </li>
-    <li class="nav-item">
-        <a
-            class="nav-link {{ $by == 'time' ? 'active' : '' }}"
-            href="{{ route('tenantPayments.index', ['by' => 'time']) }}"
-        >
-            By Time
-        </a>
-    </li>
-</ul>
 <div class="card">
     <div class="card-body table-responsive">
         <h2>
@@ -30,6 +11,11 @@
                 @lang("model.{$model_name}.{$layer}")
             @endif
         </h2>
+
+        @if(Route::has(Str::camel($layer) . '.create'))
+            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+        @endif
+
         @if (empty($objects))
             <h3>尚無紀錄</h3>
         @else
@@ -68,7 +54,7 @@
                                 @endif
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=tenantContracts;contactInfos;emergencyContacts;guarantors">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=room;tenantPayments;tenantElectricityPayments;payLogs">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel(Str::plural($layer)) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel(Str::plural($layer)) . '.destroy', $object['id']) }}">刪除</a>
                             </td>

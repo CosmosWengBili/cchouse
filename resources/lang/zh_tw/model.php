@@ -370,4 +370,17 @@ return [
         "is_pay_off" => "是否為點交",
         "comment" => "備註",
     ],
+    'TenantElectricityPayment' => [
+        "id" => '編號',
+        "tenant_contract_id" => "租客合約ID",
+        "ammeter_read_date" => "抄表時間",
+        "110v_start_degree" => "110v起",
+        "110v_end_degree" => "110v迄",
+        "220v_start_degree" => "220v起",
+        "220v_end_degree" => "220v迄",
+        "amount" => "費用",
+        "invoice_serial_number" => "發票號碼",
+        "is_charge_off_done" => "是否已沖銷",
+        "comment" => "備註",
+    ]
 ];

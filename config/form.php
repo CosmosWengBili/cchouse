@@ -16,4 +16,5 @@ return [
     'Shareholder' => [],
     'Deposit' => [],
     'TenantPayment' => [],
+    'TenantElectricityPayment' => [],
 ];

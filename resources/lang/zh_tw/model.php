@@ -356,4 +356,18 @@ return [
         'is_deposit_collected' => '已收訂',
         'comment' => '備註',
     ],
+    'TenantPayment' => [
+        "id" => '編號',
+        "tenant_contract_id" => "租客合約ID",
+        "subject" => "科目",
+        "due_time" => "應繳時間",
+        "amount" => "費用",
+        "is_charge_off_done" => "是否已沖銷",
+        "charge_off_date" => "沖銷日期",
+        "invoice_serial_numner" => "發票號碼",
+        "collected_by" => "收取者",
+        "is_visible_at_report" => "是否顯示在報表",
+        "is_pay_off" => "是否為點交",
+        "comment" => "備註",
+    ],
 ];

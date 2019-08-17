@@ -103,6 +103,17 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>應繳時間</td>
+                                    <td>
+                                        <input
+                                            type="date"
+                                            name="due_time"
+                                            class="form-control form-control-sm"
+                                            value="{{ $data['due_time'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>發票號碼</td>
                                     <td>
                                         <input

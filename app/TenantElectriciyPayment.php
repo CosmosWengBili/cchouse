@@ -25,6 +25,10 @@ class TenantElectricityPayment extends Model implements AuditableContract
         "comment",
     ];
 
+    protected $casts = [
+        'is_charge_off_done' => 'boolean',
+    ];
+
     /**
      * Get the tenant contract of this electricity payment.
      */

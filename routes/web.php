@@ -62,9 +62,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
             Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
             Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
-            Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
-            Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
-            Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
+            Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
+            Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
+            Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
         });
     });
 

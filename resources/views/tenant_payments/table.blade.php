@@ -1,6 +1,8 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
 @endphp
+
+<a class="btn btn-sm btn-success my-3" href="{{ route( 'tenantPayments.create') }}">建立</a>
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a

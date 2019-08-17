@@ -3,7 +3,7 @@
 <input id="csrf" type="hidden" value={{ csrf_token() }}>
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-12 mt-4">
+        <div class="col-md-12 my-4">
             {{-- for showing multiple types of entries returned --}}
             @foreach ( $data as $type => $entries)
                 @include('tenant_payments.table', ['objects' => $entries, 'layer' => $type])

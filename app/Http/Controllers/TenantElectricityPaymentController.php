@@ -18,7 +18,6 @@ class TenantElectricityPaymentController extends Controller
     }
 
     public function store(Request $request) {
-
         $validatedData = $request->validate([
             "tenant_contract_id" => "required",
             "ammeter_read_date" => "required",
@@ -48,6 +47,33 @@ class TenantElectricityPaymentController extends Controller
         $data = $responseData->edit($tenantElectricityPayment, 'tenant_electricity_payments.update')->get();
 
         return view('tenant_electricity_payments.form', $data);
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param TenantElectricityPayment $tenantElectricityPayment
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, TenantElectricityPayment $tenantElectricityPayment)
+    {
+        $validatedData = $request->validate([
+            "tenant_contract_id" => "required",
+            "ammeter_read_date" => "required",
+            "110v_start_degree" => "required",
+            "110v_end_degree" => "required",
+            "220v_start_degree" => "required",
+            "220v_end_degree" => "required",
+            "amount" => "required",
+            "invoice_serial_number" => "required",
+            "is_charge_off_done" => "required",
+            "comment" => "required",
+        ]);
+        $tenantElectricityPayment->update($validatedData);
+
+        return redirect()->route('tenantPayments.index');
     }
 
     /**

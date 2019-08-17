@@ -61,6 +61,32 @@ class TenantPaymentController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param TenantPayment $tenantPayment
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, TenantPayment $tenantPayment)
+    {
+        $validatedData = $request->validate([
+            'tenant_contract_id' => 'required',
+            'due_time' => 'required',
+            'amount' => 'required',
+            'is_charge_off_done' => 'required',
+            'charge_off_date' => 'required',
+            'invoice_serial_number' => 'required',
+            'collected_by' => 'required',
+            'is_visible_at_report' => 'required',
+            'is_pay_off' => 'required',
+            'comment' => 'required',
+        ]);
+        $tenantPayment->update($validatedData);
+
+        return redirect()->route('tenantPayments.index');
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param TenantPayment $tenantPayment

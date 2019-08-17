@@ -110,16 +110,9 @@ class TenantPaymentController extends Controller
     }
 
     private function indexByDate(Request $request) {
-        $responseData = new NestedRelationResponser();
-        $tenantContracts = TenantContract::where('contract_end', '>', Carbon::now())
-            ->with($request->withNested)
-            ->get();
-        $data = $responseData
-            ->index('TenantContracts', $tenantContracts)
-            ->relations($request->withNested)
-            ->get();
 
-        return view('tenant_payments.index_by_date', $data);
+
+        return view('tenant_payments.index_by_date');
     }
 
     private function indexByContract(Request $request) {

@@ -48,7 +48,14 @@ class CheckPaymentLock
             }
 
             $dueTime = Carbon::Parse($dueTimeStr);
-            $limit = (new Carbon('first day of this month'))->startOfDay();
+            $nowDayOrdinal = (new Carbon())->day;
+
+            // 超過三號僅可建立本月資料
+            if ($nowDayOrdinal > 3) {
+                $limit = (new Carbon('first day of this month'))->startOfDay();
+            } else {
+                $limit = (new Carbon('first day of last month'))->startOfDay();
+            }
 
             if ($dueTime->isBefore($limit)) {
                 return false;

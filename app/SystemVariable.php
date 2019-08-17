@@ -15,6 +15,14 @@ class SystemVariable extends Model
             'defaultValue' => 10,
             'group' => 'Maintenance',
             'order' => 1
+        ],
+        [
+            'name' => '結帳鎖',
+            'code' => 'PaymentLock',
+            'type' => 'boolean',
+            'defaultValue' => true,
+            'group' => 'Payment',
+            'order' => 1
         ]
     ];
 
@@ -29,7 +37,7 @@ class SystemVariable extends Model
 
         $variable = self::where(['group' => $group, 'code' => $code])->first();
         if (is_null($variable)) {
-            return $variable['defaultValue'];
+            return $defaultVariable['defaultValue'];
         }
 
         return self::castValue($defaultVariable['type'], $variable->value);

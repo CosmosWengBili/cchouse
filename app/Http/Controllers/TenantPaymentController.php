@@ -47,6 +47,20 @@ class TenantPaymentController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param TenantPayment $tenantPayment
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(TenantPayment $tenantPayment)
+    {
+        $responseData = new FormDataResponser();
+        $data = $responseData->edit($tenantPayment, 'tenantPayments.update')->get();
+
+        return view('tenant_payments.form', $data);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param TenantPayment $tenantPayment

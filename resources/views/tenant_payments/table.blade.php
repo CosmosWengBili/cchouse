@@ -1,7 +1,6 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
 @endphp
-
 <div class="card">
     <div class="card-body table-responsive">
         <h2>

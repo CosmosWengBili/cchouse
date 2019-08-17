@@ -16,8 +16,8 @@ class TenantPaymentController extends Controller
     public function index(Request $request) {
         $by = $request->input('by');
 
-        if ($by == 'time') {
-            return $this->indexByTime($request);
+        if ($by == 'date') {
+            return $this->indexByDate($request);
         }
         return $this->indexByContract($request);
     }
@@ -47,8 +47,17 @@ class TenantPaymentController extends Controller
         return redirect()->route('tenantPayments.index');
     }
 
-    private function indexByTime(Request $request) {
-        return $this->indexByContract($request);
+    private function indexByDate(Request $request) {
+        $responseData = new NestedRelationResponser();
+        $tenantContracts = TenantContract::where('contract_end', '>', Carbon::now())
+            ->with($request->withNested)
+            ->get();
+        $data = $responseData
+            ->index('TenantContracts', $tenantContracts)
+            ->relations($request->withNested)
+            ->get();
+
+        return view('tenant_payments.index_by_date', $data);
     }
 
     private function indexByContract(Request $request) {
@@ -61,6 +70,6 @@ class TenantPaymentController extends Controller
                     ->relations($request->withNested)
                     ->get();
 
-        return view('tenant_payments.index_by_contract', array_merge($data, ['by' => 'contract']));
+        return view('tenant_payments.index_by_contract', $data);
     }
 }

@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 my-4">
-            @include('tenant_payments.tabs', ['by' => 'contract'])
+            @include('tenant_payments.tabs', ['by' => 'date'])
             {{-- for showing multiple types of entries returned --}}
             @foreach ( $data as $type => $entries)
                 @include('tenant_payments.table', ['objects' => $entries, 'layer' => $type])

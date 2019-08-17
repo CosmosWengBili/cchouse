@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use phpDocumentor\Reflection\Types\Integer;
 
 class TenantContract extends Pivot implements AuditableContract
 {
@@ -33,6 +34,17 @@ class TenantContract extends Pivot implements AuditableContract
         'sealed_registered' => 'boolean',
         'effective' => 'boolean'
     ];
+
+    protected $attributes = [
+        'id',
+    ];
+
+
+    protected $appends = array('currentBalance');
+
+    public function getCurrentBalanceAttribute() {
+        return $this->calculateCurrentBalance();
+    }
 
     /**
      * Get the tenant of this contract.
@@ -142,6 +154,15 @@ class TenantContract extends Pivot implements AuditableContract
     public function originalFiles()
     {
         return $this->documents()->where('document_type', 'original_file');
+    }
+
+    public function calculateCurrentBalance() {
+
+        $unpaid = $this->tenantPayments()->sum('amount');
+        $electricityUnpaid = $this->tenantElectricityPayments()->sum('amount');
+        $paid = $this->payLogs()->sum('amount');
+
+        return $paid - $unpaid - $electricityUnpaid;
     }
 
     /**

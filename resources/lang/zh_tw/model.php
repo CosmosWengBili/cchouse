@@ -313,6 +313,7 @@ return [
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'commissioner_id' => '專員 ID',
+        'currentBalance' => '目前餘額',
     ],
     'DebtCollection' => [
         'id' => '編號',

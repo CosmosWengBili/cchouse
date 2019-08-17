@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Responser\FormDataResponser;
 use App\TenantElectricityPayment;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class TenantElectricityPaymentController extends Controller
 {
@@ -32,7 +34,18 @@ class TenantElectricityPaymentController extends Controller
         $tenantPayment = TenantElectricityPayment::create($validatedData);
 
         return redirect()->route('tenantPayments.index');
+    }
 
-
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param TenantElectricityPayment $tenantElectricityPayment
+     * @return Response
+     * @throws Exception
+     */
+    public function destroy(TenantElectricityPayment $tenantElectricityPayment)
+    {
+        $tenantElectricityPayment->delete();
+        return response()->json(true);
     }
 }

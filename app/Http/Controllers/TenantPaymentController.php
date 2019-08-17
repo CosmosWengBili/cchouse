@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
-use App\Services\NestedToAttributeService;
-use App\Tenant;
 use App\TenantContract;
 use App\TenantPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class TenantPaymentController extends Controller
 {
@@ -45,6 +44,18 @@ class TenantPaymentController extends Controller
         $tenantPayment = TenantPayment::create($validatedData);
 
         return redirect()->route('tenantPayments.index');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param TenantPayment $tenantPayment
+     * @return Response
+     */
+    public function destroy(TenantPayment $tenantPayment)
+    {
+        $tenantPayment->delete();
+        return response()->json(true);
     }
 
     private function indexByDate(Request $request) {

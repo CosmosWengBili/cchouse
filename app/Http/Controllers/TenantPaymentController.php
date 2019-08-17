@@ -21,6 +21,17 @@ class TenantPaymentController extends Controller
         return $this->indexByContract($request);
     }
 
+    public function show(Request $request, TenantPayment $tenantPayment)
+    {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($tenantPayment->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('tenant_payments.show', $responseData->get());
+    }
+
+
     public function create() {
         $responser = new FormDataResponser();
         $data = $responser->create(TenantPayment::class, 'tenantPayments.store')->get();

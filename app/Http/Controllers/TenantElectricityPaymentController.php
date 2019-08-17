@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Responser\FormDataResponser;
+use App\Responser\NestedRelationResponser;
 use App\TenantElectricityPayment;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,6 +50,15 @@ class TenantElectricityPaymentController extends Controller
         return view('tenant_electricity_payments.form', $data);
     }
 
+    public function show(TenantElectricityPayment $tenantElectricityPayment)
+    {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($tenantElectricityPayment->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('tenant_electricity_payments.show', $responseData->get());
+    }
 
     /**
      * Update the specified resource in storage.

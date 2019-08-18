@@ -37,10 +37,6 @@ class TenantContract extends Pivot implements AuditableContract
         'effective' => 'boolean'
     ];
 
-    protected $attributes = [
-        'id',
-    ];
-
 
     protected $appends = array('currentBalance');
 
@@ -193,7 +189,7 @@ class TenantContract extends Pivot implements AuditableContract
 
     public function sendElectricityPaymentReportSMS(int $year, int $month) {
         $smsService = resolve(SmsService::class);
-        $mobile =  $this->tenant()->first()->phones()->first()->value;
+        $mobile = $this->tenant()->first()->phones()->first()->value;
         $url = route('tenantContracts.electricityPaymentReport', [
             'tenantContract' => $this->id,
             'year' => $year,

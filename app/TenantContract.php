@@ -62,6 +62,17 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->belongsTo('App\Room');
     }
 
+    public function building() {
+        return $this->hasOneThrough(
+            'App\Building',
+            'App\Room',
+            'id',
+            'id',
+            'room_id',
+            'building_id'
+        );
+    }
+
     /**
      * Get the user who is the commissioner of this tenant contract.
      */

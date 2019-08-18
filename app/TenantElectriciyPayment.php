@@ -23,6 +23,7 @@ class TenantElectricityPayment extends Model implements AuditableContract
         "invoice_serial_number",
         "is_charge_off_done",
         "comment",
+        "due_time",
     ];
 
     protected $casts = [

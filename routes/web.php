@@ -20,6 +20,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
         // should be in auth
         Route::group(['middleware' => ['with.nested']], function () {
             Route::resource('buildings', 'BuildingController');
+            Route::get(
+                'buildings/{building}/electricityPaymentReport/{year}/{month}',
+                'BuildingController@electricityPaymentReport'
+            )->name('buildings.electricityPaymentReport');
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
@@ -33,7 +37,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
-            Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
             Route::resource('deposits', 'DepositController');

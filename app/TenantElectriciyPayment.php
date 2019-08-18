@@ -28,6 +28,7 @@ class TenantElectricityPayment extends Model implements AuditableContract
 
     protected $casts = [
         'is_charge_off_done' => 'boolean',
+        'due_time' => 'date',
     ];
 
     /**

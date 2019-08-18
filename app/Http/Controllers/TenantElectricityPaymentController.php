@@ -4,13 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
+use App\TenantContract;
 use App\TenantElectricityPayment;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class TenantElectricityPaymentController extends Controller
 {
+    public function index(Request $request) {
+        $responseData = new NestedRelationResponser();
+
+        $tenantContracts = TenantContract::where('contract_end', '>', Carbon::now())
+            ->where('electricity_payment_method', '公司代付')
+            ->with($request->withNested)
+            ->get();
+
+        $data = $responseData
+            ->index('TenantContracts', $tenantContracts)
+            ->relations($request->withNested)
+            ->get();
+
+        return view('tenant_electricity_payments.index', $data);
+    }
+
     public function create() {
         $responser = new FormDataResponser();
         $data = $responser->create(TenantElectricityPayment::class, 'tenantElectricityPayments.store')->get();

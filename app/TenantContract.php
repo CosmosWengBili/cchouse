@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use phpDocumentor\Reflection\Types\Integer;
@@ -191,6 +192,7 @@ class TenantContract extends Pivot implements AuditableContract
     }
 
     public function sendElectricityPaymentReportSMS(int $year, int $month) {
+        $smsService = resolve(SmsService::class);
         $mobile =  $this->tenant()->first()->phones()->first()->value;
         $url = route('tenantContracts.electricityPaymentReport', [
             'tenantContract' => $this->id,
@@ -198,7 +200,7 @@ class TenantContract extends Pivot implements AuditableContract
             'month' => $month
         ]);
         $shouldPay = $this->electricityPaymentAmount($year, $month);
-        SmsService::send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+        $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
     }
 
     private function electricityPaymentAmount($year, $month) {

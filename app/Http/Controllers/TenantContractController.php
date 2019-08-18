@@ -314,4 +314,12 @@ class TenantContractController extends Controller
         $tenantContract->sendElectricityPaymentReportSMS($year, $month);
         return response()->json(true);
     }
+
+    public function electricityDegree(TenantContract $tenantContract) {
+        return response()->json([
+            'method' => $tenantContract->electricity_calculate_method,
+            'pricePerDegree' => $tenantContract->electricity_price_per_degree,
+            'pricePerDegreeSummer' => $tenantContract->electricity_price_per_degree_summer,
+        ]);
+    }
 }

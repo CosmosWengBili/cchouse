@@ -158,7 +158,7 @@ class TenantPaymentController extends Controller
 
         $payLogs = $tenantPayments->flatMap(function ($p) { return $p->payLogs()->get(); })
                     ->concat(
-                        $tenantElectricityPayments->flatMap(function ($p) { return $p->payLog()->get(); })
+                        $tenantElectricityPayments->flatMap(function ($p) { return $p->payLogs()->get(); })
                     )
                     ->sortByDesc('paid_at');
 

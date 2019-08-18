@@ -38,10 +38,10 @@ class TenantElectricityPayment extends Model implements AuditableContract
     }
 
     /**
-     * Get the pay log of this electricity payment.
+     * Get the pay log of this tenant payment.
      */
-    public function payLog()
+    public function payLogs()
     {
-        return $this->morphOne('App\PayLog', 'loggable');
+        return $this->morphMany('App\PayLog', 'loggable');
     }
 }

@@ -17,4 +17,5 @@ return [
     'Deposit' => [],
     'TenantPayment' => [],
     'TenantElectricityPayment' => [],
+    'PayLog' => [],
 ];

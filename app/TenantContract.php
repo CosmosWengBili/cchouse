@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\SmsService;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -187,5 +188,21 @@ class TenantContract extends Pivot implements AuditableContract
         return $query
             ->where('contract_end', '>=', Carbon::today())
             ->where('contract_start', '<=', Carbon::today());
+    }
+
+    public function sendElectricityPaymentReportSMS(int $year, int $month) {
+        $mobile =  $this->tenant()->first()->phones()->first()->value;
+        $url = route('tenantContracts.electricityPaymentReport', [
+            'tenantContract' => $this->id,
+            'year' => $year,
+            'month' => $month
+        ]);
+        $shouldPay = $this->electricityPaymentAmount($year, $month);
+        SmsService::send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+    }
+
+    private function electricityPaymentAmount($year, $month) {
+        $data = $this->room()->first()->buildElectricityPaymentData($year, $month);
+        return $data['本期應付金額'];
     }
 }

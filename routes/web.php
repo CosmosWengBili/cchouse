@@ -36,6 +36,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
+            Route::post(
+                'tenantContracts/sendElectricityPaymentReportSMS',
+                'TenantContractController@sendElectricityPaymentReportSMS'
+            )->name('tenantContracts.sendElectricityPaymentReportSMS');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
@@ -76,7 +80,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
     Route::get(
         'tenantContracts/{tenantContract}/electricityPaymentReport/{year}/{month}',
         'TenantContractController@electricityPaymentReport'
-    )->name('buildings.electricityPaymentReport');
+    )->name('tenantContracts.electricityPaymentReport');
 });
 
 

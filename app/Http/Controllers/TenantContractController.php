@@ -304,4 +304,14 @@ class TenantContractController extends Controller
             'month' => $month,
         ]);
     }
+
+    public function sendElectricityPaymentReportSMS(Request $request) {
+        $tenantContractId = intval($request->input('tenantContractId'));
+        $year = intval($request->input('year'));
+        $month = intval($request->input('month'));
+
+        $tenantContract = TenantContract::find($tenantContractId);
+        $tenantContract->sendElectricityPaymentReportSMS($year, $month);
+        return response()->json(true);
+    }
 }

@@ -8,6 +8,11 @@ use Mitake\Message\Response;
 
 class SmsService {
     public static function send(string $mobile, string $content): Response {
+        \Log::info("===========SMS Message==========");
+        \Log::info($mobile);
+        \Log::info($content);
+        \Log::info("================================");
+
         $message = (new Message())->setDstaddr($mobile)->setSmbody($content);
         return self::client()->send($message);
     }

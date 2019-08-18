@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Building;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -290,5 +291,17 @@ class TenantContractController extends Controller
     {
         $tenantContract->delete();
         return response()->json(true);
+    }
+
+    public function electricityPaymentReport(TenantContract $tenantContract, int $year, int $month)
+    {
+        $room =$tenantContract->room()->first();
+        $row = $room->buildElectricityPaymentData($year, $month);
+
+        return view('buildings.electricity_payment_report', [
+            'reportRows' => [$row],
+            'year' => $year,
+            'month' => $month,
+        ]);
     }
 }

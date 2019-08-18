@@ -72,6 +72,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
     });
 
     Auth::routes();
+
+    Route::get(
+        'tenantContracts/{tenantContract}/electricityPaymentReport/{year}/{month}',
+        'TenantContractController@electricityPaymentReport'
+    )->name('buildings.electricityPaymentReport');
 });
 
 

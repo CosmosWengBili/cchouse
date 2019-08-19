@@ -62,7 +62,6 @@ class LandlordContractController extends Controller
     {
         $validatedData = $request->validate([
             'building_id' => 'required|exists:buildings,id',
-            'landlord_id' => 'required|exists:landlords,id',
             'commissioner_id' => 'required|exists:users,id',
             'commission_type' => 'required|max:255',
             'commission_start_date' => 'required|date',
@@ -82,19 +81,12 @@ class LandlordContractController extends Controller
             'adjust_ratio' => 'required|numeric|between:0,99.99',
             'deposit_month_count' => 'required|integer|digits_between:1,11',
             'is_collected_by_third_party' => 'required|boolean',
-            'is_notarized' => 'required|boolean',
-            'bank_code' => 'required|integer|digits_between:1,11',
-            'branch_code' => 'required|integer|digits_between:1,11',
-            'account_name' => 'required|max:255',
-            'account_number' => 'required|max:255',
-            'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255'
+            'is_notarized' => 'required|boolean'
         ]);
 
         $landlordContract = LandlordContract::create($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
-        return redirect()->route('landlordContracts.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -143,7 +135,6 @@ class LandlordContractController extends Controller
     {
         $validatedData = $request->validate([
             'building_id' => 'required|exists:buildings,id',
-            'landlord_id' => 'required|exists:landlords,id',
             'commissioner_id' => 'required|exists:users,id',
             'commission_type' => 'required|max:255',
             'commission_start_date' => 'required|date',
@@ -163,20 +154,11 @@ class LandlordContractController extends Controller
             'deposit_month_count' => 'required|integer|digits_between:1,11',
             'is_collected_by_third_party' => 'required|boolean',
             'is_notarized' => 'required|boolean',
-            'bank_code' => 'required|integer|digits_between:1,11',
-            'branch_code' => 'required|integer|digits_between:1,11',
-            'account_name' => 'required|max:255',
-            'account_number' => 'required|max:255',
-            'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         $landlordContract->update($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
-        return redirect()->route('landlordContracts.edit', [
-            'id' => $landlordContract->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

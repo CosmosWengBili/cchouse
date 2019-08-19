@@ -33,10 +33,10 @@ class LandlordPaymentController extends Controller
             ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
             ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
             ->rightJoin(
-                'landlord_contract',
+                'landlord_contracts',
                 'buildings.id',
                 '=',
-                'landlord_contract.building_id'
+                'landlord_contracts.building_id'
             )
             ->where('commission_end_date', '>', Carbon::today())
             ->get();

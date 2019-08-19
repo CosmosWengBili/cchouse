@@ -172,7 +172,7 @@ return [
         ]
     ],
 
-    'landlord_contract' => [
+    'landlord_contracts' => [
         'commission_type' => [
             '包租',
             '代管',

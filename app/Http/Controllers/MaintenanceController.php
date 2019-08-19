@@ -118,7 +118,7 @@ class MaintenanceController extends Controller
         $maintenance = Maintenance::create($validatedData);
         $this->handleDocumentsUpload($maintenance, ['picture']);
 
-        return redirect()->route('maintenances.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -189,7 +189,7 @@ class MaintenanceController extends Controller
         $this->handleDocumentsUpload($maintenance, ['picture']);
         $maintenance = $maintenance->update($validatedData);
 
-        return redirect()->route('maintenances.index');
+        return redirect($request->_redirect);
     }
 
     /**

@@ -27,26 +27,23 @@
                 </div>
             </div>
 
-            {{-- display the next level nested resources --}}
-            @if (!empty($relations))
-                {{-- you could propbly have many kinds of nested resources --}}
-                @foreach($relations as $relation)
-                    <div class="col-6 my-3">
-                        {{-- handle first level of the nested resource, leave the others to recursion --}}
-                        @php
-                            $layer = Str::snake(explode('.', $relation)[0]);
-                        @endphp
-                        @if ( $layer == 'documents' )
-                            @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @elseif ( $layer == 'landlords' )
-                        @include('landlords.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @else
-                            @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
-                        @endif
-                    </div>
-                @endforeach
+            @if (in_array('tenantContract', $relations))
+                <div class="col-6 my-3">
+                    @include('tenant_contracts.table', ['objects' => [Arr::except($data['tenant_contract'], 'room')], 'layer' => 'tenantContracts'])
+                </div>
             @endif
 
+            @if (in_array('tenantContract.room', $relations))
+                <div class="col-6 my-3">
+                    @include('rooms.table', ['objects' => [Arr::except($data['tenant_contract']['room'], 'building')], 'layer' => 'rooms'])
+                </div>
+            @endif
+
+            @if (in_array('tenantContract.room.building', $relations))
+                <div class="col-6 my-3">
+                    @include('buildings.table', ['objects' => [$data['tenant_contract']['room']['building']], 'layer' => 'buildings'])
+                </div>
+            @endif
         </div>
     </div>
 </div>

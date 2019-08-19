@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'with.nested' => \App\Http\Middleware\FormatWithQuery::class,
         'with.prefill' => \App\Http\Middleware\FormatPrefillQuery::class,
         'internal.protect' => \App\Http\Middleware\InternalProtect::class,
+        'redirect.nested' => \App\Http\Middleware\RedirectToParent::class,
     ];
 
     /**

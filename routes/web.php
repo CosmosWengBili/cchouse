@@ -18,7 +18,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
         });
         Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
         // should be in auth
-        Route::group(['middleware' => ['with.nested']], function () {
+        Route::group(['middleware' => ['with.nested', 'redirect.nested']], function () {
             Route::resource('buildings', 'BuildingController');
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
@@ -42,6 +42,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenantPayments', 'TenantPaymentController');
             Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             Route::resource('shareholders', 'ShareHolderController');
+            Route::resource('deposits', 'DepositController');
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');

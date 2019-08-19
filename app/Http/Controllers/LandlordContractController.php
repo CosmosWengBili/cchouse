@@ -86,7 +86,7 @@ class LandlordContractController extends Controller
 
         $landlordContract = LandlordContract::create($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
-        return redirect()->route('landlordContracts.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -158,9 +158,7 @@ class LandlordContractController extends Controller
 
         $landlordContract->update($validatedData);
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
-        return redirect()->route('landlordContracts.edit', [
-            'id' => $landlordContract->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

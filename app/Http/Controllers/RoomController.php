@@ -110,7 +110,7 @@ class RoomController extends Controller
         );
         $this->handleDocumentsUpload($room, ['picture']);
 
-        return redirect()->route('rooms.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -213,7 +213,7 @@ class RoomController extends Controller
         );
         $this->handleDocumentsUpload($room, ['picture']);
 
-        return redirect()->route('rooms.show', $room);
+        return redirect($request->_redirect);
     }
 
     /**

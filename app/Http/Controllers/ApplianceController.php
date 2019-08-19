@@ -58,7 +58,7 @@ class ApplianceController extends Controller
 
         $appliance = Appliance::create($validatedData);
 
-        return redirect()->route('appliances.index');
+        return redirect($request->_redirect);
     }
 
     /**

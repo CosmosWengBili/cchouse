@@ -150,7 +150,7 @@ class TenantContractController extends Controller
             'original_file',
             'carrier_file'
         ]);
-        return redirect()->route('tenantContracts.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -277,7 +277,7 @@ class TenantContractController extends Controller
             'original_file',
             'carrier_file'
         ]);
-        return redirect()->route('tenantContracts.show', $tenantContract);
+        return redirect($request->_redirect);
     }
 
     /**

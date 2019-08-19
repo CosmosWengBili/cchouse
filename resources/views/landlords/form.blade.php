@@ -87,6 +87,86 @@
                                         />
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.bank_code")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="bank_code"
+                                            value="{{ isset($data["bank_code"]) ? $data['bank_code'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>@lang("model.Landlord.branch_code")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="branch_code"
+                                            value="{{ isset($data["branch_code"]) ? $data['branch_code'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>@lang("model.Landlord.account_name")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="account_name"
+                                            value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>   
+                                <tr>
+                                    <td>@lang("model.Landlord.account_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="account_number"
+                                            value="{{ isset($data["account_number"]) ? $data['account_number'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>   
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_collection_method")</td>
+                                    <td>
+                                        <select
+                                            class="form-control form-control-sm"
+                                            name="invoice_collection_method"
+                                            value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
+                                        />
+                                            @foreach(config('enums.landlord_contracts.invoice_collection_method') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_mailing_address")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_mailing_address"
+                                            value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>  
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_collection_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_collection_number"
+                                            value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
                             </tbody>
                         </table>
 

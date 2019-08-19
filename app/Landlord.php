@@ -36,15 +36,7 @@ class Landlord extends Model implements AuditableContract
      */
     public function landlordContracts()
     {
-        return $this->hasMany('App\LandlordContract');
-    }
-
-    /**
-     * Get all the buildings through the contracts that this landlord owns.
-     */
-    public function buildings()
-    {
-        return $this->belongsToMany('App\Building', 'landlord_contract');
+        return $this->belongsToMany('App\LandlordContract');
     }
 
     /**

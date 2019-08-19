@@ -72,7 +72,14 @@ class LandlordController extends Controller
             'birth' => 'required',
             'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean'
+            'is_collected_by_third_party' => 'required|boolean',
+            'bank_code' => 'required|integer|digits_between:1,11',
+            'branch_code' => 'required|integer|digits_between:1,11',
+            'account_name' => 'required|max:255',
+            'account_number' => 'required|max:255',
+            'invoice_collection_method' => 'required|max:255',
+            'invoice_collection_number' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         $landlord = Landlord::create($validatedData);
@@ -148,7 +155,14 @@ class LandlordController extends Controller
             'birth' => 'required',
             'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean'
+            'is_collected_by_third_party' => 'required|boolean',
+            'bank_code' => 'required|integer|digits_between:1,11',
+            'branch_code' => 'required|integer|digits_between:1,11',
+            'account_name' => 'required|max:255',
+            'account_number' => 'required|max:255',
+            'invoice_collection_method' => 'required|max:255',
+            'invoice_collection_number' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         $landlord->update($validatedData);

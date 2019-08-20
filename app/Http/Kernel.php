@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         'with.prefill' => \App\Http\Middleware\FormatPrefillQuery::class,
         'internal.protect' => \App\Http\Middleware\InternalProtect::class,
         'payment.lock' => \App\Http\Middleware\CheckPaymentLock::class,
+        'redirect.nested' => \App\Http\Middleware\RedirectToParent::class,
     ];
 
     /**

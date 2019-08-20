@@ -38,6 +38,8 @@
                         @endphp
                         @if ( $layer == 'documents' )
                             @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
+                        @elseif ( $layer == 'landlords' )
+                        @include('landlords.table', ['objects' => $data[$layer], 'layer' => $layer])
                         @else
                             @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
                         @endif

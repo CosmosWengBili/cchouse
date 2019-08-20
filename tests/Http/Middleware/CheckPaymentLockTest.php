@@ -1,11 +1,17 @@
 <?php
 namespace Tests\Http\Middleware;
 
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Middleware\CheckPaymentLock;
 
+class DummyController extends Controller {
+    public function store() {
+        return response('OK');
+    }
+}
 
 class CheckPaymentLockTest extends TestCase
 {
@@ -18,25 +24,23 @@ class CheckPaymentLockTest extends TestCase
         \Route::get('/previousPage', function () {
             return 'previousPage';
         });
-        \Route::middleware('payment.lock')->any('/_test/payments', function () {
-            return 'OK';
-        });
+
+        $this->app->bind('DummyController', DummyController::class);
+        \Route::middleware('payment.lock')->post('/_test/payments', 'DummyController@store');
         $this->defaultHeaders = ['HTTP_REFERER' => '/previousPage'];
     }
 
     /** @test */
     public function it_redirect_back_when_invalid_date()
     {
-        $methods = CheckPaymentLock::CHECK_METHODS;
         $keys = CheckPaymentLock::CHECK_KEYS;
         $invalidDate = (new Carbon('3 months ago'))->toDateString();
         foreach ($keys as $key) {
-            foreach ($methods as $method) {
-                $response = $this->followingRedirects()
-                                 ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
-                $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-                $this->assertEquals('previousPage', $response->getContent());
-            }
+            $response = $this->followingRedirects()
+                             ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
+
+            $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+            $this->assertEquals('previousPage', $response->getContent());
         }
     }
 
@@ -46,16 +50,13 @@ class CheckPaymentLockTest extends TestCase
         $thirdDay = Carbon::create(2019, 8, 3, 23, 59, 59);
         Carbon::setTestNow($thirdDay);
 
-        $methods = CheckPaymentLock::CHECK_METHODS;
         $keys = CheckPaymentLock::CHECK_KEYS;
         $invalidDate = (new Carbon('1 months ago'))->toDateString();
         foreach ($keys as $key) {
-            foreach ($methods as $method) {
-                $response = $this->followingRedirects()
-                                 ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
-                $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-                $this->assertEquals('OK', $response->getContent());
-            }
+            $response = $this->followingRedirects()
+                             ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
+            $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+            $this->assertEquals('OK', $response->getContent());
         }
     }
 
@@ -65,16 +66,13 @@ class CheckPaymentLockTest extends TestCase
         $thirdDay = Carbon::create(2019, 8, 4, 0, 0, 0);
         Carbon::setTestNow($thirdDay);
 
-        $methods = CheckPaymentLock::CHECK_METHODS;
         $keys = CheckPaymentLock::CHECK_KEYS;
         $invalidDate = (new Carbon('1 months ago'))->toDateString();
         foreach ($keys as $key) {
-            foreach ($methods as $method) {
-                $response = $this->followingRedirects()
-                                 ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
-                $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-                $this->assertEquals('previousPage', $response->getContent());
-            }
+            $response = $this->followingRedirects()
+                             ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
+            $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+            $this->assertEquals('previousPage', $response->getContent());
         }
     }
 }

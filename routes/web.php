@@ -18,7 +18,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
         });
         Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
         // should be in auth
-        Route::group(['middleware' => ['with.nested']], function () {
+        Route::group(['middleware' => ['with.nested', 'redirect.nested']], function () {
             Route::resource('buildings', 'BuildingController');
             Route::get(
                 'buildings/{building}/electricityPaymentReport/{year}/{month}',

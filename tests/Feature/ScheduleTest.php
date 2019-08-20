@@ -112,9 +112,8 @@ class ScheduleTest extends TestCase
             'comment' => '',
         ]);
 
-        $landlordContractId = DB::table('landlord_contract')->insertGetId([
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
             'building_id' => $buildingId,
-            'landlord_id' => $landlordId,
             'commissioner_id' => $userId,
             'commission_end_date' => Carbon::now()->addMonths(2),
             'rent_adjusted_date' => Carbon::now(),

@@ -113,6 +113,17 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>@lang("model.Tenant.birth")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="birth"
+                                        value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>@lang("model.Tenant.confirm_by")</td>
                                 <td>
                                     <select 
@@ -127,16 +138,16 @@
                                 </td>
                             </tr>
                             <tr>
-                                    <td>@lang("model.Tenant.confirm_at")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="confirm_at"
-                                            value="{{ isset($data["confirm_at"]) ? $data['confirm_at'] : '' }}"
-                                        />
-                                    </td>
-                                </tr>
+                                <td>@lang("model.Tenant.confirm_at")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="confirm_at"
+                                        value="{{ isset($data["confirm_at"]) ? $data['confirm_at'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                         <h3 class="mt-3">聯絡資料</h3>

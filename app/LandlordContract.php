@@ -2,16 +2,17 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class LandlordContract extends Pivot implements AuditableContract
+class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $hidden = ['pivot'];
     /**
      * Get the building of this landlord contract.
      */
@@ -23,9 +24,9 @@ class LandlordContract extends Pivot implements AuditableContract
     /**
      * Get the landlord of this contract.
      */
-    public function landlord()
+    public function landlords()
     {
-        return $this->belongsTo('App\Landlord');
+        return $this->belongsToMany('App\Landlord');
     }
 
     /**

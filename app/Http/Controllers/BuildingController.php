@@ -110,7 +110,7 @@ class BuildingController extends Controller
 
         $newBuilding = BuildingService::create($validatedData);
 
-        return redirect()->route('buildings.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -202,7 +202,7 @@ class BuildingController extends Controller
 
         $building->update($validatedData);
 
-        return redirect()->route('buildings.show', $building);
+        return redirect($request->_redirect);
     }
 
     /**

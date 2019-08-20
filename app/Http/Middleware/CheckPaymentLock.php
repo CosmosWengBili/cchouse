@@ -10,7 +10,6 @@ use App\SystemVariable;
 
 class CheckPaymentLock
 {
-    const CHECK_METHODS = ['POST', 'PATCH', 'PUT'];
     const CHECK_KEYS = [
         'due_time', # 應繳時間
         'paid_at',  # 匯款時間
@@ -36,8 +35,7 @@ class CheckPaymentLock
     }
 
     public function checkIsValid(Request $request) {
-        $method = $request->method();
-        if (!in_array($method, self::CHECK_METHODS)) {
+        if (!$this->needToCheck($request)) {
             return true;
         }
 
@@ -63,5 +61,20 @@ class CheckPaymentLock
         }
 
         return true;
+    }
+
+    private function needToCheck(Request $request) {
+        $action = $request->route()->getActionMethod();
+
+        switch ($action) {
+            case 'update':
+            case 'store':
+                return true;
+                break;
+            case 'index':
+            case 'show':
+            default:
+                return false;
+        }
     }
 }

@@ -21,6 +21,19 @@ class TenantPayment extends Model implements AuditableContract
 
     protected $hidden = ['pivot'];
 
+    protected $fillable = [
+        "tenant_contract_id",
+        "due_time",
+        "amount",
+        "is_charge_off_done",
+        "charge_off_date",
+        "invoice_serial_number",
+        "collected_by",
+        "is_visible_at_report",
+        "is_pay_off",
+        "comment",
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *

@@ -23,10 +23,12 @@ class TenantElectricityPayment extends Model implements AuditableContract
         "invoice_serial_number",
         "is_charge_off_done",
         "comment",
+        "due_time",
     ];
 
     protected $casts = [
         'is_charge_off_done' => 'boolean',
+        'due_time' => 'date',
     ];
 
     /**
@@ -38,10 +40,10 @@ class TenantElectricityPayment extends Model implements AuditableContract
     }
 
     /**
-     * Get the pay log of this electricity payment.
+     * Get the pay log of this tenant payment.
      */
-    public function payLog()
+    public function payLogs()
     {
-        return $this->morphOne('App\PayLog', 'loggable');
+        return $this->morphMany('App\PayLog', 'loggable');
     }
 }

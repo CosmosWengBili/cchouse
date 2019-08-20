@@ -166,5 +166,50 @@
     $(document).ready(function() {
         $('form select').select2();
     });
+
+    (function() {
+        let method = null;
+        let pricePerDegree = 0;
+        let pricePerDegreeSummer = 0;
+        const $tenantContractIdInput = $('select[name="tenant_contract_id"]');
+
+        function calculatePrice() {
+            if (method !== '固定') return;
+
+            const startOf110v = Number($('input[name="110v_start_degree"]').val());
+            const endOf110v = Number($('input[name="110v_end_degree"]').val());
+            const startOf220v = Number($('input[name="220v_start_degree"]').val());
+            const endOf220v = Number($('input[name="220v_end_degree"]').val());
+            const readDate = new Date($('input[name="ammeter_read_date"]').val());
+            const readMonth = readDate.getMonth() + 1;
+            const ratio = [7, 8, 9, 10].includes(readMonth) ? pricePerDegreeSummer : pricePerDegree;
+            const amount = Math.round((endOf110v + endOf220v - startOf110v - startOf220v) * ratio);
+
+            console.log(method, pricePerDegree, pricePerDegreeSummer);
+
+            $('input[name="amount"]').val(amount);
+        }
+        function getDegree() {
+            const tenantContractsId = $tenantContractIdInput.val();
+            $.get('/tenantContracts/' + tenantContractsId + '/electricityDegree', function (data) {
+                method = data.method;
+                pricePerDegree = data.pricePerDegree;
+                pricePerDegreeSummer = data.pricePerDegreeSummer;
+
+                calculatePrice();
+            });
+        }
+
+        $tenantContractIdInput.on('change', getDegree);
+
+        $(
+          'input[name="110v_start_degree"],' +
+          'input[name="110v_end_degree"],' +
+          'input[name="220v_start_degree"],' +
+          'input[name="220v_end_degree"],' +
+          'input[name="ammeter_read_date"]'
+        ).on('change', calculatePrice);
+        getDegree();
+    })();
 </script>
 @endsection

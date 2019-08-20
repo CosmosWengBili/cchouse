@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Building;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -290,5 +291,35 @@ class TenantContractController extends Controller
     {
         $tenantContract->delete();
         return response()->json(true);
+    }
+
+    public function electricityPaymentReport(TenantContract $tenantContract, int $year, int $month)
+    {
+        $room =$tenantContract->room()->first();
+        $row = $room->buildElectricityPaymentData($year, $month);
+
+        return view('buildings.electricity_payment_report', [
+            'reportRows' => [$row],
+            'year' => $year,
+            'month' => $month,
+        ]);
+    }
+
+    public function sendElectricityPaymentReportSMS(Request $request) {
+        $tenantContractId = intval($request->input('tenantContractId'));
+        $year = intval($request->input('year'));
+        $month = intval($request->input('month'));
+
+        $tenantContract = TenantContract::find($tenantContractId);
+        $tenantContract->sendElectricityPaymentReportSMS($year, $month);
+        return response()->json(true);
+    }
+
+    public function electricityDegree(TenantContract $tenantContract) {
+        return response()->json([
+            'method' => $tenantContract->electricity_calculate_method,
+            'pricePerDegree' => $tenantContract->electricity_price_per_degree,
+            'pricePerDegreeSummer' => $tenantContract->electricity_price_per_degree_summer,
+        ]);
     }
 }

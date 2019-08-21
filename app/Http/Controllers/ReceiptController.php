@@ -61,7 +61,17 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+    public function update_receipt()
+    {
+        $start_date = Input::get('start_date');
+        $end_date = Input::get('end_date');
+        $invoiceData = [];
+        if(isset($start_date) && isset($end_date)){
+            $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+        }
+        return view('receipts.update_receipt')
+            ->with('invoiceData', $invoiceData);
+    }
 
     /**
      * Store a newly created resource in storage.

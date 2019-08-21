@@ -2,12 +2,15 @@
 
 namespace App;
 
+use App\Services\SmsService;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use phpDocumentor\Reflection\Types\Integer;
 
 class TenantContract extends Pivot implements AuditableContract
 {
@@ -34,6 +37,13 @@ class TenantContract extends Pivot implements AuditableContract
         'effective' => 'boolean'
     ];
 
+
+    protected $appends = array('currentBalance');
+
+    public function getCurrentBalanceAttribute() {
+        return $this->calculateCurrentBalance();
+    }
+
     /**
      * Get the tenant of this contract.
      */
@@ -48,6 +58,17 @@ class TenantContract extends Pivot implements AuditableContract
     public function room()
     {
         return $this->belongsTo('App\Room');
+    }
+
+    public function building() {
+        return $this->hasOneThrough(
+            'App\Building',
+            'App\Room',
+            'id',
+            'id',
+            'room_id',
+            'building_id'
+        );
     }
 
     /**
@@ -144,6 +165,15 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->documents()->where('document_type', 'original_file');
     }
 
+    public function calculateCurrentBalance() {
+
+        $unpaid = $this->tenantPayments()->sum('amount');
+        $electricityUnpaid = $this->tenantElectricityPayments()->sum('amount');
+        $paid = $this->payLogs()->sum('amount');
+
+        return $paid - $unpaid - $electricityUnpaid;
+    }
+
     /**
      * Scope a query to only include active tenant contracts.
      *
@@ -165,4 +195,20 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->morphToMany('App\Receipt', 'receiptable');
     }
 
+    public function sendElectricityPaymentReportSMS(int $year, int $month) {
+        $smsService = resolve(SmsService::class);
+        $mobile = $this->tenant()->first()->phones()->first()->value;
+        $url = route('tenantContracts.electricityPaymentReport', [
+            'tenantContract' => $this->id,
+            'year' => $year,
+            'month' => $month
+        ]);
+        $shouldPay = $this->electricityPaymentAmount($year, $month);
+        $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+    }
+
+    private function electricityPaymentAmount($year, $month) {
+        $data = $this->room()->first()->buildElectricityPaymentData($year, $month);
+        return $data['本期應付金額'];
+    }
 }

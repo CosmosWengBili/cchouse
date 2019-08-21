@@ -73,12 +73,12 @@ class Kernel extends ConsoleKernel
                 ->runInBackground();
                 // ->emailOutputTo('foo@example.com');
                 // ->emailOutputOnFailure('foo@example.com');
-                
+
         $schedule->call(ScheduleService::make('notifyTenantContractDueInTwoMonths'))
                 ->name('Notify tenant contract due in two months')
                 ->daily()
                 ->runInBackground();
-                
+
 
         $schedule->call(ScheduleService::make('notifyMaintenanceStatus'))
             ->name('Notify if maintenance status not changed for a long time')
@@ -92,6 +92,20 @@ class Kernel extends ConsoleKernel
             ->runInBackground();
             // ->emailOutputTo('foo@example.com');
             // ->emailOutputOnFailure('foo@example.com');
+
+        $schedule->call(ScheduleService::make('notifyTenantElectricityPaymentReport'))
+            ->name('Notify Tenant for electricity payment report every month')
+            ->before(function () {
+                // Task is about to start...
+            })
+            ->after(function () {
+                // Task is complete...
+            })
+            ->dailyAt('00:30')
+            ->when(function () {
+                return Carbon::now()->endOfMonth()->isToday();
+            })
+            ->runInBackground();
     }
 
     /**

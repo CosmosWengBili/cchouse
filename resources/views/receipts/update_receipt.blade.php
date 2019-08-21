@@ -1,10 +1,9 @@
 <div class="card">
     <div class="card-body table-responsive">
         <h2>
-            發票報表 <a class="btn btn-success" href="{{ route( 'receipts.update_receipt') }}">更新發票</a>
+            發票更新
         </h2>
-        <form action="/receipts" meth="GET">
-            <input type="hidden" name="type" value="invoice">
+        <form action="/update_receipt" meth="GET">
             開始日期 <input type="date" name="start_date">
             結束日期 <input type="date" name="end_date">
             <input class="btn btn-primary"  type="submit" value="送出">
@@ -78,5 +77,8 @@
     </div>
 </div>
 <script>
-    renderDataTable(["#invoice-table"]);
+    renderDataTable(["#invoice-table"], {
+        'pageLength' : 500
+    });
 </script>
+    

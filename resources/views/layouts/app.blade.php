@@ -9,7 +9,7 @@
 
         <title>{{ config('app.name', 'CCHouse') }}</title>
         <!-- base:css -->
-        
+
         <link rel="stylesheet" href={{ asset('vendors/typicons/font/typicons.css') }}>
         <link rel="stylesheet" href={{ asset('vendors/css/vendor.bundle.base.css') }}>
         <!-- endinject -->
@@ -18,6 +18,7 @@
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
         <link rel="stylesheet" href={{ asset('css/datatables.css') }}>
+        <link rel="stylesheet" href={{ asset('css/select2.css') }}>
         <link rel="stylesheet" href={{ asset('css/vendor.css') }}>
         <!-- End plugin css for this page -->
         <!-- inject:css -->
@@ -33,7 +34,7 @@
     </head>
     <body>
         <div class="container-scroller">
-            <?php if(Auth::check()): ?> 
+            <?php if(Auth::check()): ?>
                 @include('layouts.nav')
             <?php endif; ?>
             <div class="container-fluid page-body-wrapper">
@@ -49,7 +50,7 @@
         <!-- Plugin js for this page-->
         <!-- End plugin js for this page-->
         <!-- inject:js -->
-    
+
         <!-- endinject -->
         <!-- plugin js for this page -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

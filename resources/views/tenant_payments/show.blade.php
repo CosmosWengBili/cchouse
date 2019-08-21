@@ -27,6 +27,7 @@
                 </div>
             </div>
 
+            {{-- display the next level nested resources --}}
             @if (!empty($relations))
                 {{-- you could propbly have many kinds of nested resources --}}
                 @foreach($relations as $relation)
@@ -35,18 +36,11 @@
                         @php
                             $layer = Str::snake(explode('.', $relation)[0]);
                         @endphp
-                        @if ( $layer == 'documents')
-                            @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @elseif ( in_array( $layer , ['tenant', 'room', 'building']) )
-                            @include('tenant_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer])
-                        @elseif ( $layer == 'payLogs' )
-                            @include($layer . '.table', ['objects' => Arr::collapse(Arr::pluck($data['tenant_payments'], 'pay_logs')), 'layer' => $layer."s"])
-                        @else
-                            @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @endif
+                        @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
                     </div>
                 @endforeach
             @endif
+
         </div>
     </div>
 </div>

@@ -15,6 +15,17 @@ class PayLog extends Model implements AuditableContract
     protected $casts = [
         'paid_at' => 'datetime:Y-m-d',
     ];
+    protected $fillable = [
+        'loggable_type',
+        'loggable_id',
+        'subject',
+        'payment_type',
+        'amount',
+        'virtual_account',
+        'paid_at',
+        'tenant_contract_id',
+    ];
+
     /**
      * Get the owning loggable model.
      */

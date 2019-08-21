@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\LandlordContract;
 use App\Landlord;
 use App\TenantContract;
+use App\TenantPayment;
 use App\Notifications\LandlordContractDue;
 use App\Notifications\TenantContractDueInTwoMonths;
 
@@ -131,6 +132,21 @@ class ScheduleService
                     "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。"
                 )
             );
+        }
+    }
+
+    public function genarateDebtCollections()
+    {
+        
+        $delay = App\SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
+        $delay = $delay ? intval($delay->value) : config('finance.debt_collection_delay_days');
+        $notifyAt = Carbon::today()->subDays($delay);
+        $tenantPayments = TenantPayment::with('payLogs')->where('is_charge_off_done', false)->where('due_time', $notifyAt)->get();
+        
+        foreach ($tenantPayments as $tenantPayment) {
+            $tenantPayment->tenantContract->debtCollections()->create([
+                'status' => '催收中'
+            ]);
         }
     }
 

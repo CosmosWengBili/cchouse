@@ -92,6 +92,12 @@ class Kernel extends ConsoleKernel
             ->runInBackground();
             // ->emailOutputTo('foo@example.com');
             // ->emailOutputOnFailure('foo@example.com');
+
+        $schedule->call(ScheduleService::make('genarateDebtCollections'))
+            ->name('Genarate debt collections')
+            ->dailyAt('07:00')
+            ->runInBackground();
+            
     }
 
     /**

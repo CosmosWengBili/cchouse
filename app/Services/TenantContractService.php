@@ -47,7 +47,8 @@ class TenantContractService
                             'subject' => $payment['subject'],
                             'due_time' => $date,
                             'amount' => $payment['amount'],
-                            'collected_by' => $payment['collected_by']
+                            'collected_by' => $payment['collected_by'],
+                            'period' => $payment['period'],
                         ]);
                     }
                 );

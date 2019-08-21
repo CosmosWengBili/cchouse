@@ -61,4 +61,16 @@ class SystemVariable extends Model
 
         return null;
     }
+
+    /**
+     * Scope a query to only include variables of a given group.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  mixed  $group
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOfGroup($query, $group)
+    {
+        return $query->where('group', $group)->orderBy('order');
+    }
 }

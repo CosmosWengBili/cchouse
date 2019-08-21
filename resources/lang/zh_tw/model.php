@@ -350,7 +350,6 @@ return [
         'confiscated_or_returned_date' => '沒/退訂日期',
         'invoicing_amount' => '應開立金額',
         'invoice_date' => '發票日期',
-        'invoice_serial_number' => '發票號碼',
         'is_deposit_collected' => '已收訂',
         'comment' => '備註',
     ],

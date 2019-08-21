@@ -53,7 +53,6 @@ class DepositController extends Controller
             'confiscated_or_returned_date' => 'required|date',
             'invoicing_amount' => 'required|integer|digits_between:1,11',
             'invoice_date' => 'required|date',
-            'invoice_serial_number' => 'required|max:255',
             'is_deposit_collected' => 'required|boolean',
             'comment' => 'required',
         ]);
@@ -110,7 +109,6 @@ class DepositController extends Controller
             'confiscated_or_returned_date' => 'nullable|date',
             'invoicing_amount' => 'required|integer|digits_between:1,11',
             'invoice_date' => 'required|date',
-            'invoice_serial_number' => 'required|max:255',
             'is_deposit_collected' => 'required|boolean',
             'comment' => 'required',
         ]);

@@ -16,8 +16,8 @@ class AddColumnsForReceiptUsage extends Migration
         Schema::table('debt_collections', function (Blueprint $table) {
             $table->string('invoice_serail_number')->comment('發票號碼')->after('is_penalty_collected');
         });
-        Schema::table('landlord_payment', function (Blueprint $table) {
-            $table->string('invoice_serail_number')->comment('發票號碼')->after('is_penalty_collected');
+        Schema::table('landlord_payments', function (Blueprint $table) {
+            $table->string('invoice_serail_number')->comment('發票號碼');
         });
         Schema::table('maintenances', function (Blueprint $table) {
             $table->dropColumn('invoice_serail_number');

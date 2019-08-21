@@ -27,7 +27,9 @@ class ReceiptController extends Controller
         $responseData = new NestedRelationResponser();
         $start_date = Input::get('start_date');
         $end_date = Input::get('end_date');
+        $type= Input::get('type')? Input::get('type') : 'invoice';
         $invoiceData = [];
+        $receiptData = [];
         $tenant_contracts = $responseData
             ->index(
                 'tenant_contracts',
@@ -39,28 +41,27 @@ class ReceiptController extends Controller
             ->relations($request->withNested)->get();
             
         if(isset($start_date) && isset($end_date)){
-            $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+            if( $type == 'invoice'){
+                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+            }
+            else if( $type == 'receipt' ){
+                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+            }
+
         }
 
         return view('receipts.index', $tenant_contracts)
-            ->with('receiptData', $invoiceData);
+            ->with('invoiceData', $invoiceData)
+            ->with('receiptData', $receiptData)
+            ->with('type', $type);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * show all receipts with specific period and invoice serial number input
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        $responseData = new FormDataResponser();
-        return view(
-            'tenant_contracts.form',
-            $responseData
-                ->create(TenantContract::class, 'tenant_contracts.store')
-                ->get()
-        );
-    }
+
 
     /**
      * Store a newly created resource in storage.

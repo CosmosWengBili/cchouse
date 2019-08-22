@@ -93,6 +93,11 @@ class Kernel extends ConsoleKernel
             // ->emailOutputTo('foo@example.com');
             // ->emailOutputOnFailure('foo@example.com');
 
+        $schedule->call(ScheduleService::make('genarateDebtCollections'))
+            ->name('Genarate debt collections')
+            ->dailyAt('07:00')
+            ->runInBackground();
+            
         $schedule->call(ScheduleService::make('notifyTenantElectricityPaymentReport'))
             ->name('Notify Tenant for electricity payment report every month')
             ->before(function () {

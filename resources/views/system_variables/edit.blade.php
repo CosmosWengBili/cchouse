@@ -33,12 +33,23 @@
                                     <td>{{ $name }}</td>
                                     <td>{{ $code }}</td>
                                     <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="system_variables[{{ $code }}][value]"
-                                            value="{{ isset($codeToValue[$code]) ? $codeToValue[$code] : $defaultValue}}"
-                                        />
+                                        @if($defaultVariable['type'] == 'boolean')
+                                            {{-- unchecked value for checkbox--}}
+                                            <input type="hidden" value="0" name="system_variables[{{ $code }}][value]" />
+                                            <input
+                                                type="checkbox"
+                                                name="system_variables[{{ $code }}][value]"
+                                                value="1"
+                                                {{ ($codeToValue[$code] ?? $defaultValue) ? 'checked' : '' }}
+                                            />
+                                        @else
+                                            <input
+                                                class="form-control form-control-sm"
+                                                type="text"
+                                                name="system_variables[{{ $code }}][value]"
+                                                value="{{ isset($codeToValue[$code]) ? $codeToValue[$code] : $defaultValue}}"
+                                            />
+                                        @endif
                                     </td>
                                     <td>
                                         <input

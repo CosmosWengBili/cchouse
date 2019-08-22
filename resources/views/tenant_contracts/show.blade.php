@@ -37,8 +37,8 @@
                         @endphp
                         @if ( $layer == 'documents')
                             @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @elseif ( in_array( $layer , ['tenant', 'room']) )
-                            @include('tenant_contracts.single_table', ['objects' => $data[$layer], 'layer' => $layer])
+                        @elseif ( in_array( $layer , ['tenant', 'room', 'building']) )
+                            @include('tenant_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer])
                         @elseif ( $layer == 'payLogs' )
                             @include($layer . '.table', ['objects' => Arr::collapse(Arr::pluck($data['tenant_payments'], 'pay_logs')), 'layer' => $layer."s"])
                         @else

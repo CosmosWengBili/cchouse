@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Building;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -109,7 +110,7 @@ class BuildingController extends Controller
 
         $newBuilding = BuildingService::create($validatedData);
 
-        return redirect()->route('buildings.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -201,7 +202,7 @@ class BuildingController extends Controller
 
         $building->update($validatedData);
 
-        return redirect()->route('buildings.show', $building);
+        return redirect($request->_redirect);
     }
 
     /**
@@ -214,5 +215,30 @@ class BuildingController extends Controller
     {
         $building->delete();
         return response()->json(true);
+    }
+
+    public function electricityPaymentReport(Building $building, int $year, int $month) {
+        $reportRows = $this->buildElectricityPaymentReportData($building, $year, $month);
+
+        return view('buildings.electricity_payment_report', [
+            'reportRows' => $reportRows,
+            'year' => $year,
+            'month' => $month,
+        ]);
+    }
+
+    /**
+     * 組前三個月的租客電費報表資料
+     *
+     * @param Building $building
+     * @param int $year
+     * @param int $month \
+     *
+     * @return array
+     */
+    private function buildElectricityPaymentReportData(Building $building, int $year, int $month): Collection {
+        $rooms = $building->rooms()->get();
+
+        return $rooms->map(function ($room) use ($year, $month) { return $room->buildElectricityPaymentData($year, $month); });
     }
 }

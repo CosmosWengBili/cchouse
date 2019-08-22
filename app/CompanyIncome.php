@@ -12,6 +12,15 @@ class CompanyIncome extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
     /**
      * The attributes that aren't mass assignable.
      *

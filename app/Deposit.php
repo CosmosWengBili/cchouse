@@ -13,6 +13,24 @@ class Deposit extends Model implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_deposit_collected' => 'boolean',
+    ];
+
+    /**
      * Get the tenant contract of deposit.
      */
     public function tenantContract()

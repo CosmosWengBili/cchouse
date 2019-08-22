@@ -14,4 +14,8 @@ return [
     'TenantContract' => [],
     'DebtCollection' => [],
     'Shareholder' => [],
+    'Deposit' => [],
+    'TenantPayment' => [],
+    'TenantElectricityPayment' => [],
+    'PayLog' => [],
 ];

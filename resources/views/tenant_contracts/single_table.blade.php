@@ -1,5 +1,6 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $pluralLayer = Str::plural($layer);
 @endphp
 
 <div class="card">
@@ -26,7 +27,7 @@
             <table id="{{ $tableId}}" class="display table" style="width:100%">
                 <thead>
                     @php
-                        $model_name = ucfirst(Str::camel(substr($layer, 0, -1)));
+                        $model_name = ucfirst(Str::camel(Str::singular($layer)));
                     @endphp
                     @foreach ( array_keys($object) as $field)
                         @if ( $field != 'building' )
@@ -42,13 +43,21 @@
                         @foreach($object as $key => $value)
                             {{-- an even nested resource array --}}
                             @if ( $key != 'building' )
-                            <td> {{ $value }}</td>
+                                <td> {{ $value }}</td>
                             @endif
                         @endforeach
                         <td>
-                            <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                            <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                            <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
+                            @if ($layer == 'building')
+                                @php
+                                    $now = \Carbon\Carbon::now();
+                                    $year = $now->year;
+                                    $month = $now->month;
+                                @endphp
+                                <a class="btn btn-info" href="{{ route('buildings.electricityPaymentReport', ['building' => $object['id'], 'year' => $year, 'month' => $month])}}">顯示電費報表</a>
+                            @endif
+                            <a class="btn btn-success" href="{{ route( Str::camel($pluralLayer) . '.show', $object['id']) }}">查看</a>
+                            <a class="btn btn-primary" href="{{ route( Str::camel($pluralLayer) . '.edit', $object['id']) }}">編輯</a>
+                            <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($pluralLayer) . '.show', $object['id']) }}">刪除</a>
                         </td>
                     </tr>
                 </tbody>

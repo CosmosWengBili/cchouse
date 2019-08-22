@@ -18,8 +18,12 @@ Route::group(['middleware' => 'internal.protect'], function () {
         });
         Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
         // should be in auth
-        Route::group(['middleware' => ['with.nested']], function () {
+        Route::group(['middleware' => ['with.nested', 'redirect.nested']], function () {
             Route::resource('buildings', 'BuildingController');
+            Route::get(
+                'buildings/{building}/electricityPaymentReport/{year}/{month}',
+                'BuildingController@electricityPaymentReport'
+            )->name('buildings.electricityPaymentReport');
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
@@ -32,16 +36,25 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
+            Route::get('tenantContracts/{tenantContract}/electricityDegree', 'TenantContractController@electricityDegree');
+            Route::post(
+                'tenantContracts/sendElectricityPaymentReportSMS',
+                'TenantContractController@sendElectricityPaymentReportSMS'
+            )->name('tenantContracts.sendElectricityPaymentReportSMS');
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
-            Route::resource('buildings', 'BuildingController');
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
-            Route::resource('payLogs', 'PayLogController');
-            Route::resource('tenantPayments', 'TenantPaymentController');
-            Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
+
+            Route::group(['middleware' => 'payment.lock'], function () {
+                Route::resource('payLogs', 'PayLogController');
+                Route::resource('tenantPayments', 'TenantPaymentController');
+                Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
+            });
+
             Route::resource('shareholders', 'ShareHolderController');
+            Route::resource('deposits', 'DepositController');
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -52,18 +65,23 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
-          
+
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
             Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
             Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
-            Route::get('system_variables', 'SystemVariableController@index')->name('system_variables.index');
-            Route::get('system_variables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
-            Route::put('system_variables/{group}', 'SystemVariableController@update')->name('system_variables.update');
+            Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
+            Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
+            Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
         });
     });
 
     Auth::routes();
+
+    Route::get(
+        'tenantContracts/{tenantContract}/electricityPaymentReport/{year}/{month}',
+        'TenantContractController@electricityPaymentReport'
+    )->name('tenantContracts.electricityPaymentReport');
 });
 
 

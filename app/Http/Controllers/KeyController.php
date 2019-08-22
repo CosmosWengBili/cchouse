@@ -77,7 +77,7 @@ class KeyController extends Controller
         ]);
 
         $key = key::create($validatedData);
-        return redirect()->route('keys.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -128,7 +128,7 @@ class KeyController extends Controller
         ]);
 
         $key->update($validatedData);
-        return redirect()->route('keys.edit', ['id' => $key->id]);
+        return redirect($request->_redirect);
     }
 
     /**

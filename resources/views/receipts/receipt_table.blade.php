@@ -11,7 +11,7 @@
         </form>
 
         {{-- you should handle the empty array logic --}}
-        @if (empty($receiptData))
+        @if (empty($objects))
             <h3>查無紀錄</h3>
         @else
             <form data-target="#receipts-table" data-toggle="datatable-query">

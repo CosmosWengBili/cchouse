@@ -24,6 +24,7 @@ class PayLog extends Model implements AuditableContract
         'virtual_account',
         'paid_at',
         'tenant_contract_id',
+        'receipt_type'
     ];
 
     /**

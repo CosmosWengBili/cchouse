@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body table-responsive">
         <h2>
-            發票報表 <a class="btn btn-success" href="{{ route( 'receipts.update_receipt') }}">更新發票</a>
+            發票報表 <a class="btn btn-success" href="{{ route( 'receipts.edit_invoice') }}">更新發票</a>
         </h2>
         <form action="/receipts" meth="GET">
             <input type="hidden" name="type" value="invoice">
@@ -11,7 +11,7 @@
         </form>
 
         {{-- you should handle the empty array logic --}}
-        @if (empty($invoiceData))
+        @if (empty($objects))
             <h3>查無紀錄</h3>
         @else
             <form data-target="#invoice-table" data-toggle="datatable-query">

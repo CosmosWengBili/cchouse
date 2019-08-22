@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Support\Collection;
 
 use App\Maintenance;
 use App\Notifications\TextNotify;
@@ -146,6 +147,56 @@ class ScheduleService
             ->each(function ($tenantContract) use ($year, $month) {
                 $tenantContract->sendElectricityPaymentReportSMS($year, $month);
             });
+    }
+
+    public static function setReceiptType(){
+
+        $landlord_contracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+                                                ->where('commission_end_date', '>', Carbon::today())
+                                                ->with(['building.rooms.activeContracts.payLogs'])->get();
+
+        foreach($landlord_contracts as $contract_key => $landlord_contract){
+            if(
+                $landlord_contract->commission_type == '包租' &&
+                !in_array(
+                    true,
+                    $landlord_contract->landlords
+                        ->pluck('is_legal_person')
+                        ->toArray()
+                ) 
+            ){
+                $landlord_pay_logs = new Collection();
+                $rooms = $landlord_contract->building->rooms;
+
+                foreach($rooms as $room_key => $room){
+                    if( isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person){
+                        $landlord_pay_logs = $landlord_pay_logs->merge($room->activeContracts->first()->payLogs->where('subject', '=', '租金'));
+                    }
+                }
+    
+                $first_day_of_last_month = Carbon::today()->subMonth()->startOfMonth();
+                $first_day_of_this_month = Carbon::today()->startOfMonth();
+                $last_month_pay = 0;
+                $this_month_pay = 0;
+
+                foreach($landlord_pay_logs as $pay_log_key => $landlord_pay_log){
+                    if( $landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month ){
+                        $last_month_pay += $landlord_pay_log['amount'];
+                    }
+                    else if( $landlord_pay_log['paid_at'] >= $first_day_of_this_month  ){
+                        $this_month_pay += $landlord_pay_log['amount'];
+                    }
+
+                    if($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
+                        $landlord_pay_log->update(['receipt_type'=>'發票']);
+                    }
+                    else{
+                        $landlord_pay_log->update(['receipt_type'=>'收據']);
+                    }
+                }
+
+            }
+        }
     }
 
     // public function anotherNotification($data) {

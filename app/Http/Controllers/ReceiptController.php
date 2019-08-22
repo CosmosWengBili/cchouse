@@ -61,7 +61,7 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update_receipt()
+    public function edit_invoice()
     {
         $start_date = Input::get('start_date');
         $end_date = Input::get('end_date');
@@ -69,45 +69,22 @@ class ReceiptController extends Controller
         if(isset($start_date) && isset($end_date)){
             $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
         }
-        return view('receipts.update_receipt')
+        return view('receipts.edit_invoice')
             ->with('invoiceData', $invoiceData);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * update and create invoice number.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function update_invoice(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'nullable|max:255',
-            'mobile' => 'nullable',
-            'email' => 'required',
-            'password' => 'required'
-        ]);
+        $receipts = Input::get('receipts');
+        ReceiptService::updateInvoiceNumber($receipts);
 
-        TenantContract::create($validatedData);
-
-        return redirect('tenant_contracts');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TenantContract  $TenantContract
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, TenantContract $user)
-    {
-        $responseData = new NestedRelationResponser();
-        $responseData
-            ->show($user->load($request->withNested))
-            ->relations($request->withNested);
-
-        return view('tenant_contracts.show', $responseData->get());
+        return redirect($request->_redirect);
     }
 
     /**

@@ -106,6 +106,7 @@ class ReceiptService
             // Set value for maping relative payment model
             $data['data_table'] = $pay_log->loggable->getTable();
             $data['data_table_id'] = $pay_log->loggable->id;
+            $data['data_receipt_id'] = $pay_log->loggable->receipts->first()['id'];
 
             $subtotal += $pay_log->loggable->amount;
             $comment =
@@ -135,6 +136,7 @@ class ReceiptService
                 );
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
+                $data['invoice_serial_number'] = $pay_log->loggable->receipts->first()['invoice_serial_number'];
                 $data['invoice_price'] = round($subtotal * $data['tax_rate']);
                 $data['subtotal'] = $subtotal;
                 $subtotal = 0;
@@ -285,6 +287,8 @@ class ReceiptService
                 );
                 $data['data_table'] = $tenant_contract->getTable();
                 $data['data_table_id'] = $tenant_contract->id;
+                $data['data_receipt_id'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['id'];
+
                 if ($tenant_contract->tenant->is_legal_person) {
                     $data['company_number'] =
                         $tenant_contract->tenant->certificate_number;
@@ -300,7 +304,7 @@ class ReceiptService
                 $data['invoice_price'] = round(
                     $data['amount'] * $data['tax_rate']
                 );
-
+                $data['invoice_serial_number'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
                 array_push($invoiceData, $data);
             }
         }
@@ -327,6 +331,7 @@ class ReceiptService
             // Set value for maping relative payment model
             $data['data_table'] = $collection->getTable();
             $data['data_table_id'] = $collection->id;
+            $data['data_receipt_id'] = $collection->receipts->first()['id'];
 
             if ($collection->tenant_contract->tenant->is_legal_person) {
                 $data['company_number'] =
@@ -343,6 +348,7 @@ class ReceiptService
             $data['invoice_collection_number'] =
                 $tenant_contract->invoice_collection_number;
             $data['invoice_price'] = round($data['amount'] * $data['tax_rate']);
+            $data['invoice_serial_number'] = $collection->receipts->first()['invoice_serial_number'];
 
             array_push($collection_data, $data);
         }
@@ -375,6 +381,7 @@ class ReceiptService
                 // Set value for maping relative payment model
                 $data['data_table'] = $landlord_payment->getTable();
                 $data['data_table_id'] = $landlord_payment->id;
+                $data['data_receipt_id'] = $landlord_payment->receipts->first()['id'];
 
                 if ($landlord->is_legal_person) {
                     $data['company_number'] = $landlord->certificate_number;
@@ -394,6 +401,7 @@ class ReceiptService
                 $data['invoice_price'] = round(
                     $data['amount'] * $data['tax_rate']
                 );
+                $data['invoice_serial_number'] = $landlord_payment->receipts->first()['invoice_serial_number'];
 
                 array_push($maintenance_data, $data);
             }
@@ -425,6 +433,7 @@ class ReceiptService
                 // Set value for maping relative payment model
                 $data['data_table'] = $deposit->getTable();
                 $data['data_table_id'] = $deposit->id;
+                $data['data_receipt_id'] = $deposit->receipts->first()['id'];
 
                 if ($landlord->is_legal_person) {
                     $data['company_number'] = $landlord->certificate_number;
@@ -444,6 +453,7 @@ class ReceiptService
                 $data['invoice_price'] = round(
                     $data['amount'] * $data['tax_rate']
                 );
+                $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
 
                 array_push($deposit_data, $data);
             }
@@ -509,21 +519,30 @@ class ReceiptService
     public static function updateInvoiceNumber($receipts)
     {
         foreach ($receipts as $class => $receipt) {
-            $model = studly_case(str_singular($class));
+            $model_name = studly_case(str_singular($class));
             foreach ($receipt as $receipt_key => $receipt_row) {
-                $id = array_keys($receipt_row)->first();
-                $model = $model::find($id);
-
-                if (Receipt::find($receipt_row['receipt_id'])) {
+                $id = array_keys($receipt_row)[0];
+                $model = app("App\\".$model_name)::find($id);
+                if ($receipt_row[$id]['receipt_id'] == null) {
+                    if( $receipt_row[$id]['invoice_serial_number'] == '' ){
+                        continue;
+                    }
                     $receipt = new Receipt();
+                    $receipt->invoice_serial_number = $receipt_row[$id]['invoice_serial_number'];
+                    $receipt->date = $receipt_row[$id]['invoice_date'];
+                    $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
+                    $model->receipts()->save($receipt);
                 }
-                $receipt->invoice_serial_number =
-                    $receipt_row['invoice_serial_number'];
-                $receipt->date = $receipt_row['invoice_date'];
-                $receipt->invoice_price = $receipt_row['invoice_price'];
-
-                $model->receipts()->save($receipt);
+                else{
+                    $receipt = Receipt::find($receipt_row[$id]['receipt_id']);
+                    $receipt->invoice_serial_number = $receipt_row[$id]['invoice_serial_number'];
+                    $receipt->date = $receipt_row[$id]['invoice_date'];
+                    $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
+                    $receipt->save();
+                }
+                
             }
+
         }
     }
 }

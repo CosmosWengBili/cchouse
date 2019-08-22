@@ -56,8 +56,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('shareholders', 'ShareHolderController');
             Route::resource('deposits', 'DepositController');
 
-            // comprehensive resource
-            Route::resource('receipts', 'ReceiptController');
+            // receipts
+            Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;
+            Route::get('receipts/edit_invoice', 'ReceiptController@edit_invoice')->name('receipts.edit_invoice');
+            Route::post('receipts/update_invoice', 'ReceiptController@update_invoice')->name('receipts.update_invoice');;
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -76,6 +78,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
+            
         });
     });
 

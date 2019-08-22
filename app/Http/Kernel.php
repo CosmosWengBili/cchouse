@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'internal.protect' => \App\Http\Middleware\InternalProtect::class,
         'payment.lock' => \App\Http\Middleware\CheckPaymentLock::class,
         'redirect.nested' => \App\Http\Middleware\RedirectToParent::class,
+        'cors' => \App\Http\Middleware\CORS::class
     ];
 
     /**

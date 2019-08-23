@@ -42,7 +42,7 @@ class ReceiptService
 
         // Generate invoice data
         foreach ($pay_logs as $pay_log_key => $pay_log) {
-            // Check whether the payments could be add to invoice data
+            // Check whether the payments could be added to invoice data
             if (
                 $pay_log['loggable']['collected_by'] != '公司' &&
                 $pay_log['loggable']['subject'] != '電費'
@@ -65,6 +65,7 @@ class ReceiptService
 
                 $tenantContract = $pay_log->loggable->tenantContract;
 
+                // Set payment count to know when to make subtotal row
                 $payment_models = [
                     'App\TenantPayment',
                     'App\TenantElectricityPayment'
@@ -115,6 +116,7 @@ class ReceiptService
                     ';' .
                     $pay_log->loggable->tenantContract->room->comment);
 
+            // Make subtotal row
             if ($payment_count == $invoice_item_count) {
                 $data['invoice_item_idx'] = $data['invoice_item_idx'] + 1;
                 if (
@@ -145,11 +147,8 @@ class ReceiptService
             array_push($invoice_data, $data);
         }
 
-        // Generate deposit interest, collection data
-        $deposit_interest_data = self::makeDepositInterest(
-            $start_date,
-            $end_date
-        );
+        // Generate deposit interest, maintenance data and collection data
+        $deposit_interest_data = self::makeDepositInterest($start_date, $end_date);
         $maintenance_data = self::makeMaintenance($start_date, $end_date);
         $deposit_data = self::makeDeposits($start_date, $end_date);
 
@@ -176,6 +175,7 @@ class ReceiptService
                     ])
                     ->get();
 
+        // Set every receipt's actual pay amount
         foreach($pay_logs as $log_key => $pay_log){
             $current_landlord_contract = $pay_log->loggable->tenantContract->room->building->activeContracts->first();
             array_push($landlord_contract_ids, $current_landlord_contract->id);
@@ -197,7 +197,7 @@ class ReceiptService
             }
         }
         
-
+        // Query all landlord contract which have relationship with pay logs
         $landlord_contract_ids = array_unique($landlord_contract_ids);
         $landlord_contracts = LandlordContract::whereIn(
             'id',
@@ -205,8 +205,11 @@ class ReceiptService
         )
             ->with(['landlords', 'building.rooms'])
             ->get();
+
+        // Set normal value
         foreach ($landlord_contracts as $contract_key => $landlord_contract) {
             $data = array();
+            // Combine relative room_code value
             $data['room_code'] = implode(
                 ',',
                 $landlord_contract->building->rooms
@@ -218,6 +221,7 @@ class ReceiptService
             $data['district'] = $landlord_contract->building->district;
             $data['address'] = $landlord_contract->building->address;
             $data['tax_number'] = $landlord_contract->building->tax_number;
+            // Combine relative landlord name value
             $data['landlord_name'] = implode(
                 ',',
                 $landlord_contract->landlords->pluck('name')->toArray()
@@ -321,6 +325,7 @@ class ReceiptService
             ->whereBetween(['received_at', [$start_date, $end_date]])
             ->with(['tenantContract.tenant', 'tenantContract.room']);
 
+        // Genenate collection interest data
         $collection_data = array();
         foreach ($collections as $collection_key => $collection) {
             $data = self::makeInvoiceMockData();
@@ -358,6 +363,7 @@ class ReceiptService
 
     public static function makeMaintenance($start_date, $end_date)
     {
+        // Retrieve data from LandlordPayment not Maintenance 
         $landlord_payments = LandlordPayment::where(
             'subject',
             'like',
@@ -366,6 +372,8 @@ class ReceiptService
             ->whereBetween('collection_date', [$start_date, $end_date])
             ->with(['room.building.landlordContracts'])
             ->get();
+
+        // Genenate maintenance data
         $maintenance_data = array();
         foreach ($landlord_payments as $payment_key => $landlord_payment) {
             $landlords = $landlord_payment->room->building->landlordContracts->last()
@@ -418,6 +426,7 @@ class ReceiptService
             ->with(['tenantContract.room.building.landlordContracts'])
             ->get();
 
+        // Genenate deposit data
         $deposit_data = array();
         foreach ($deposits as $deposit_key => $deposit) {
             $landlords = $deposit->tenantContract->room->building->landlordContracts->last()
@@ -462,6 +471,7 @@ class ReceiptService
         return $deposit_data;
     }
 
+    // Turn resources title to invoice item name
     public static function makeInvoiceItemName($object, $type)
     {
         if ($type == 'payment') {
@@ -494,6 +504,8 @@ class ReceiptService
             }
         }
     }
+
+    // Create basic data structure for excel export module usage
     public static function makeInvoiceMockData()
     {
         return [
@@ -523,7 +535,9 @@ class ReceiptService
             foreach ($receipt as $receipt_key => $receipt_row) {
                 $id = array_keys($receipt_row)[0];
                 $model = app("App\\".$model_name)::find($id);
+                // Check whether this model has generate receipt 
                 if ($receipt_row[$id]['receipt_id'] == null) {
+                    // Check whether invoice_serial_number exist to avoid generating redundant receipt
                     if( $receipt_row[$id]['invoice_serial_number'] == '' ){
                         continue;
                     }
@@ -536,6 +550,7 @@ class ReceiptService
                 else{
                     $receipt = Receipt::find($receipt_row[$id]['receipt_id']);
 
+                    // If the invoice_serial_number from user is different with receipt, notify invoice group users
                     if( $receipt->invoice_serial_number != $receipt_row[$id]['invoice_serial_number']){
                         NotificationService::notifyReceiptUpdated($model);
                     }
@@ -547,6 +562,9 @@ class ReceiptService
             }
         }
     }
+
+    // If specific columns from user is different with receipt, notify invoice group users
+    // Divided by model
     public static function compareReceipt($model, $data){
         if($model->receipts->isNotEmpty()){
             switch (class_basename($model)) {

@@ -14,11 +14,10 @@ class TenantPaymentService
         $payments = $tenantPayments->concat($tenantElectricityPayments)->sortByDesc('due_time');
 
         foreach ($payments as $payment) {
-            $isTenantElectricityPayment = get_class($payment) == \App\TenantElectricityPayment::class;
 
             $rows[] = [
-                '應繳科目ID' => '',
-                '應繳科目' =>  $isTenantElectricityPayment ? '電費' : $payment->subject,
+                '應繳科目ID' => $payment->id,
+                '應繳科目' =>  $payment->subject,
                 '應繳費用' => $payment->amount,
                 '應繳日期' => $payment->due_time,
                 '是否已沖銷' => $payment->is_charge_off_done,
@@ -37,7 +36,7 @@ class TenantPaymentService
                 '繳費科目' => $payLog->subject,
                 '繳費費用' => $payLog->amount,
                 '繳費日期' => Carbon::parse($payLog->paid_at)->toDateString(),
-                '繳納科目ID' => '',
+                '繳納科目ID' => $payLog->loggable->id,
             ];
 
             if(isset($rows[$idx])) {

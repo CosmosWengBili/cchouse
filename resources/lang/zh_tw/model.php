@@ -314,6 +314,11 @@ return [
         'updated_at' => '更新時間',
         'commissioner_id' => '專員 ID',
         'currentBalance' => '目前餘額',
+        'building' => '物件',
+        'room' => '房',
+        'tenant_payments' => '租客帳單',
+        'tenant_electricity_payments' => '租客電費',
+        'pay_logs' => '繳款紀錄'
     ],
     'DebtCollection' => [
         'id' => '編號',
@@ -340,7 +345,8 @@ return [
         'distribution_start_date' => '分配起',
         'distribution_end_date' => '分配迄',
         'distribution_rate' => '分配費率',
-        'investment_amount' => '投資額'
+        'investment_amount' => '投資額',
+        'buildings' => '物件'
     ],
     'Deposit' => [
         'id' => '編號',
@@ -355,6 +361,9 @@ return [
         'invoice_serial_number' => '發票號碼',
         'is_deposit_collected' => '已收訂',
         'comment' => '備註',
+        'tenantContracts' => '租客合約',
+        'rooms' => '房',
+        'buildings' => '物件'
     ],
     'TenantPayment' => [
         "id" => '編號',
@@ -372,6 +381,7 @@ return [
     ],
     'TenantElectricityPayment' => [
         "id" => '編號',
+        "subject" => '科目',
         "tenant_contract_id" => "租客合約ID",
         "ammeter_read_date" => "抄表時間",
         "110v_start_degree" => "110v起",
@@ -381,6 +391,7 @@ return [
         "amount" => "費用",
         "invoice_serial_number" => "發票號碼",
         "is_charge_off_done" => "是否已沖銷",
+        "due_time" => '應繳時間',
         "comment" => "備註",
     ]
 ];

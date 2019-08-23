@@ -55,7 +55,7 @@ class TenantPaymentController extends Controller
         ]);
         $tenantPayment = TenantPayment::create($validatedData);
 
-        return redirect()->route('tenantPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -95,7 +95,7 @@ class TenantPaymentController extends Controller
         ]);
         $tenantPayment->update($validatedData);
 
-        return redirect()->route('tenantPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**

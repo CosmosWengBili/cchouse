@@ -40,23 +40,29 @@
                                 <tr>
                                     <td>@lang("model.Building.city")</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
                                             name="city"
                                             value="{{ $data['city'] ?? '' }}"
                                         />
+                                            @foreach(config('enums.cities') as $key => $value)
+                                                <option value="{{$key}}">{{$key}}</option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>@lang("model.Building.district")</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
                                             name="district"
                                             value="{{ $data['district'] ?? '' }}"
                                         />
+                                            @foreach(config('enums.cities')[$data['city']] as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -455,4 +461,24 @@
         </div>
     </div>
 </div>
+<script>
+    const addressObject = {}
+    var array = []
+    @foreach(config('enums.cities') as $city_key => $districts)
+        array = []
+        @foreach($districts as $index_key => $value)
+        array.push('{{$value}}')
+        @endforeach
+        addressObject['{{$city_key}}'] = array
+    @endforeach
+
+    $('[name=city]').on('change', function(){
+        let city = $(this).val()
+        let districts = addressObject[city]
+        $('[name=district]').html('')
+        districts.forEach(function(value, idx){
+            $('[name=district]').append(`<option value='${value}'>${value}</option>`)
+        })
+    })
+</script>
 @endsection

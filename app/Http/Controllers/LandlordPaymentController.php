@@ -84,7 +84,7 @@ class LandlordPaymentController extends Controller
         ]);
 
         $landlordPayment = LandlordPayment::create($validatedData);
-        return redirect()->route('landlordPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -144,9 +144,7 @@ class LandlordPaymentController extends Controller
         ]);
 
         $landlordPayment->update($validatedData);
-        return redirect()->route('landlordPayments.edit', [
-            'id' => $landlordPayment->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

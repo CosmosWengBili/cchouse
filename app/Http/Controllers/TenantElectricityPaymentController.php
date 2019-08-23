@@ -52,7 +52,7 @@ class TenantElectricityPaymentController extends Controller
         ]);
         $tenantPayment = TenantElectricityPayment::create($validatedData);
 
-        return redirect()->route('tenantPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -103,7 +103,7 @@ class TenantElectricityPaymentController extends Controller
         ]);
         $tenantElectricityPayment->update($validatedData);
 
-        return redirect()->route('tenantPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**

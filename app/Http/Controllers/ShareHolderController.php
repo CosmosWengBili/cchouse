@@ -75,7 +75,7 @@ class ShareholderController extends Controller
 
         Shareholder::create($validatedData);
 
-        return redirect('shareholders');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -140,9 +140,7 @@ class ShareholderController extends Controller
 
         $shareholder->update($input);
 
-        return redirect()->route('shareholders.show', [
-            'id' => $shareholder->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

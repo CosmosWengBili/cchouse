@@ -73,9 +73,7 @@ class KeyRequestController extends Controller
         ]);
 
         $key_requests = KeyRequest::create($validatedData);
-        $route = 'keys/' . $request->key_id . '?with=room;keeper;keyRequests';
-
-        return redirect($route);
+        return redirect($request->_redirect);
     }
 
     /**
@@ -130,8 +128,7 @@ class KeyRequestController extends Controller
             'request_user_id' => 'required|exists:users,id',
             'key_id' => 'required|exists:keys,id',
             'request_date' => 'required|max:255',
-            'status' => 'required',
-            'request_approved' => 'required'
+            'status' => 'required'
         ]);
 
         $key_request->update($validatedData);
@@ -141,10 +138,7 @@ class KeyRequestController extends Controller
             );
         }
 
-        $route =
-            'keys/' . $key_request->key_id . '?with=room;keeper;keyRequests';
-
-        return redirect($route);
+        return redirect($request->_redirect);
     }
 
     /**

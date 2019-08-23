@@ -70,6 +70,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+            Route::get('export/function/{function}', 'ExcelController@export_by_function');
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');

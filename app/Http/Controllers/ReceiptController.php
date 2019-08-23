@@ -47,13 +47,14 @@ class ReceiptController extends Controller
             else if( $type == 'receipt' ){
                 $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
             }
-
         }
 
         return view('receipts.index', $tenant_contracts)
             ->with('invoiceData', $invoiceData)
             ->with('receiptData', $receiptData)
-            ->with('type', $type);
+            ->with('type', $type)
+            ->with('start_date', $start_date)
+            ->with('end_date', $end_date);
     }
 
     /**

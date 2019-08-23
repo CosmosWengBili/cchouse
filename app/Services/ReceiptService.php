@@ -104,7 +104,7 @@ class ReceiptService
             $data['tax_rate'] = 0.05;
 
             // Set value for maping relative payment model
-            $data['data_table'] = $pay_log->loggable->getTable();
+            $data['data_table'] = __('general.' . $pay_log->loggable->getTable()); 
             $data['data_table_id'] = $pay_log->loggable->id;
             $data['data_receipt_id'] = $pay_log->loggable->receipts->first()['id'];
 
@@ -285,7 +285,7 @@ class ReceiptService
                 $data['amount'] = round(
                     $tenant_contract->deposit_paid * $deposit_interest
                 );
-                $data['data_table'] = $tenant_contract->getTable();
+                $data['data_table'] = $data['data_table'] =  __('general.' . $tenant_contract->getTable()); 
                 $data['data_table_id'] = $tenant_contract->id;
                 $data['data_receipt_id'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['id'];
 
@@ -329,7 +329,7 @@ class ReceiptService
             $data['amount'] = 300;
 
             // Set value for maping relative payment model
-            $data['data_table'] = $collection->getTable();
+            $data['data_table'] = __('general.' . $collection->getTable());  
             $data['data_table_id'] = $collection->id;
             $data['data_receipt_id'] = $collection->receipts->first()['id'];
 
@@ -379,7 +379,7 @@ class ReceiptService
                 $data['amount'] = $landlord_payment->amount;
 
                 // Set value for maping relative payment model
-                $data['data_table'] = $landlord_payment->getTable();
+                $data['data_table'] = __('general.' . $landlord_payment->getTable()); 
                 $data['data_table_id'] = $landlord_payment->id;
                 $data['data_receipt_id'] = $landlord_payment->receipts->first()['id'];
 
@@ -431,7 +431,7 @@ class ReceiptService
                 $data['amount'] = $deposit->deposit_confiscated_amount;
 
                 // Set value for maping relative payment model
-                $data['data_table'] = $deposit->getTable();
+                $data['data_table'] =  __('general.' . $deposit->getTable()); 
                 $data['data_table_id'] = $deposit->id;
                 $data['data_receipt_id'] = $deposit->receipts->first()['id'];
 

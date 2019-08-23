@@ -2,6 +2,7 @@
     <div class="card-body table-responsive">
         <h2>
             收據報表
+            <a class="btn btn-sm btn-success" href="export/function/{{$type}}/?start_date={{$start_date}}&end_date={{$end_date}}">輸出報表</a>
         </h2>
         <form action="/receipts" meth="GET">
             <input type="hidden" name="type" value="receipt">
@@ -23,35 +24,17 @@
 
             <table id="receipts-table" class="display table" style="width:100%">
                 <thead>
-                    <th>物件代碼</th>
-                    <th>組別</th>
-                    <th>縣市</th>
-                    <th>區</th>
-                    <th>地址</th>
-                    <th>稅籍編號</th>
-                    <th>大房東</th>
-                    <th>應該給大房東租金</th>
-                    <th>可認列租金支出</th>
-                    <th>每月付款日</th>
-                    <th>支出年</th>
-                    <th>租金票到期日</th>
+                    @foreach(config('enums.receipt') as $receipt_column)
+                        <th>{{$receipt_column}}</th>
+                    @endforeach
                 </thead>
                 <tbody>
                     {{-- all the records --}}
                     @foreach ( $objects as $object )
                         <tr>
-                            <td>{{ $object['room_code']}}</td>
-                            <td>{{ $object['group']}}</td>
-                            <td>{{ $object['city']}}</td>
-                            <td>{{ $object['district']}}</td>
-                            <td>{{ $object['address']}}</td>
-                            <td>{{ $object['tax_number']}}</td>
-                            <td>{{ $object['landlord_name']}}</td>
-                            <td>{{ $object['taxable_charter_fee']}}</td>
-                            <td>{{ $object['actual_charter_fee']}}</td>
-                            <td>{{ $object['rent_collection_time']}}</td>
-                            <td>{{ $object['rent_collection_year']}}</td>
-                            <td>{{ $object['commission_end_date']}}</td>
+                            @foreach(config('enums.receipt_en') as $receipt_key)
+                                <td>{{ $object[$receipt_key]}}</td>
+                            @endforeach
                         </tr>
                     @endforeach
                 </tbody>

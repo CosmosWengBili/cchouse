@@ -535,14 +535,55 @@ class ReceiptService
                 }
                 else{
                     $receipt = Receipt::find($receipt_row[$id]['receipt_id']);
+
+                    if( $receipt->invoice_serial_number != $receipt_row[$id]['invoice_serial_number']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }
                     $receipt->invoice_serial_number = $receipt_row[$id]['invoice_serial_number'];
                     $receipt->date = $receipt_row[$id]['invoice_date'];
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->save();
-                }
-                
+                }   
             }
-
         }
     }
+    public static function compareReceipt($model, $data){
+        if($model->receipts->isNotEmpty()){
+            switch (class_basename($model)) {
+                case 'TenantContract':
+                    if($model['deposit_paid'] != $data['deposit_paid']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }
+                    break;
+                case 'DebtCollection':
+                    if($model['is_penalty_collected'] != $data['is_penalty_collected']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }  
+                    break; 
+                case 'Deposit':
+                    if($model['deposit_confiscated_amount'] != $data['deposit_confiscated_amount'] || $model['confiscated_or_returned_date'] != $data['confiscated_or_returned_date']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }   
+                    break;       
+                case 'LandlordPayment':
+                    if(!strpos($model['subject'], "維修案件") && ($model['amount'] != $data['amount'] || $model['collection_date'] != $data['collection_date'])){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }   
+                    break;
+                case 'TenantPayment':
+                    if($model['amount'] != $data['amount'] || $model['due_time'] != $data['due_time'] || $model['subject'] != $data['subject']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    } 
+                    break;
+                case 'TenantElectricityPayment':
+                    if($model['amount'] != $data['amount']){
+                        NotificationService::notifyReceiptUpdated($model);
+                    }   
+                    break;                          
+                default:
+                    break;
+            }
+        }
+    }
+
 }

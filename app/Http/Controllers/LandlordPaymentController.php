@@ -12,6 +12,8 @@ use App\Responser\FormDataResponser;
 
 use OwenIt\Auditing\Contracts\Auditor;
 
+use App\Services\ReceiptService;
+
 class LandlordPaymentController extends Controller
 {
     /**
@@ -143,6 +145,7 @@ class LandlordPaymentController extends Controller
             'comment' => 'required'
         ]);
 
+        ReceiptService::compareReceipt($landlordPayment, $validatedData);
         $landlordPayment->update($validatedData);
         return redirect()->route('landlordPayments.edit', [
             'id' => $landlordPayment->id

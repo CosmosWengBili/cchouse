@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
+use App\Services\ReceiptService;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use Carbon\Carbon;
@@ -46,7 +47,6 @@ class TenantElectricityPaymentController extends Controller
             "220v_end_degree" => "required",
             "amount" => "required",
             "due_time" => "required",
-            "invoice_serial_number" => "required",
             "is_charge_off_done" => "required",
             "comment" => "required",
         ]);
@@ -97,10 +97,10 @@ class TenantElectricityPaymentController extends Controller
             "220v_end_degree" => "required",
             "amount" => "required",
             "due_time" => "required",
-            "invoice_serial_number" => "required",
             "is_charge_off_done" => "required",
             "comment" => "required",
         ]);
+        ReceiptService::compareReceipt($tenantElectricityPayment, $validatedData);
         $tenantElectricityPayment->update($validatedData);
 
         return redirect()->route('tenantPayments.index');

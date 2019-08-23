@@ -6,6 +6,7 @@ use App\KeyRequest;
 use App\User;
 use App\Notifications\KeyRequestFinished;
 use App\Notifications\LandlordIdentityUpdated;
+use App\Notifications\ReceiptUpdated;
 
 class NotificationService
 {
@@ -23,5 +24,10 @@ class NotificationService
     public static function notifyLandlordIdentityUpdated($landlord)
     {
         User::first()->notify(new LandlordIdentityUpdated($landlord));
+    }
+
+    public static function notifyReceiptUpdated($model)
+    {
+        User::first()->notify(new ReceiptUpdated($model));
     }
 }

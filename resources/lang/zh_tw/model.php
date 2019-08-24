@@ -382,5 +382,13 @@ return [
         "invoice_serial_number" => "發票號碼",
         "is_charge_off_done" => "是否已沖銷",
         "comment" => "備註",
+    ],
+    'CompanyIncome' => [
+        "id" => '編號',
+        "tenant_contract_id" => "租客合約ID",
+        "subject" => "項目",
+        "income_date" => "收入時間",
+        "amount" => "費用",
+        "comment" => "備註",
     ]
 ];

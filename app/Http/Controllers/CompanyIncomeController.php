@@ -4,10 +4,20 @@ namespace App\Http\Controllers;
 
 use App\CompanyIncome;
 use App\Responser\FormDataResponser;
+use App\Responser\NestedRelationResponser;
 use Illuminate\Http\Request;
 
 class CompanyIncomeController extends Controller
 {
+    public function show(Request $request, CompanyIncome $companyIncome) {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($companyIncome->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('company_incomes.show', $responseData->get());
+    }
+
     public function create() {
         $responser = new FormDataResponser();
         $data = $responser->create(CompanyIncome::class, 'companyIncomes.store')->get();

@@ -15,6 +15,13 @@ class CompanyIncomeController extends Controller
         return view('company_incomes.form', $data);
     }
 
+    public function edit(CompanyIncome $companyIncome) {
+        $responser = new FormDataResponser();
+        $data = $responser->edit($companyIncome, 'companyIncomes.update')->get();
+
+        return view('company_incomes.form', $data);
+    }
+
     public function store(Request $request) {
         $validatedData = $this->fetchValidateData($request);
         CompanyIncome::create($validatedData);

@@ -7,6 +7,7 @@ use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\TenantContract;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class PayLogController extends Controller
 {
@@ -20,6 +21,23 @@ class PayLogController extends Controller
             ->relations($request->withNested);
 
         return view('pay_logs.index', $responseData->get());
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Request $request
+     * @param PayLog $payLog
+     * @return Response
+     */
+    public function show(Request $request, PayLog $payLog)
+    {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($payLog->load($request->withNested))
+            ->relations($request->withNested);
+
+        return view('pay_logs.show', $responseData->get());
     }
 
     public function create() {

@@ -18,4 +18,5 @@ return [
     'TenantPayment' => [],
     'TenantElectricityPayment' => [],
     'PayLog' => [],
+    'CompanyIncome' => [],
 ];

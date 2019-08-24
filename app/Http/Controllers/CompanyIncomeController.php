@@ -5,10 +5,25 @@ namespace App\Http\Controllers;
 use App\CompanyIncome;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CompanyIncomeController extends Controller
 {
+    public function index() {
+        $endAt = Carbon::now();
+        $startAt = $endAt->copy()->subMonth(5)->startOfMonth(); // 近六個月（含本月）
+
+        $companyIncomes = CompanyIncome::whereBetween('income_date', [$startAt, $endAt])
+                    ->get()
+                    ->groupBy(function ($companyIncome) {
+                        return $companyIncome->income_date->month;
+                    })
+                    ->toArray();
+
+        return view('company_incomes.index', ['companyIncomes' => $companyIncomes]);
+    }
+
     public function show(Request $request, CompanyIncome $companyIncome) {
         $responseData = new NestedRelationResponser();
         $responseData

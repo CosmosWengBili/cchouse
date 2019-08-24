@@ -384,11 +384,15 @@ return [
         "comment" => "備註",
     ],
     'CompanyIncome' => [
+        'company_incomes' => 'Company Incomes',
         "id" => '編號',
         "tenant_contract_id" => "租客合約ID",
         "subject" => "項目",
         "income_date" => "收入時間",
         "amount" => "費用",
         "comment" => "備註",
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'deleted_at' => '刪除時間',
     ]
 ];

@@ -53,6 +53,21 @@ class PayLogController extends Controller
         return redirect()->route('tenantPayments.index');
     }
 
+    public function update(Request $request, PayLog $payLog) {
+        $validatedData = $request->validate([
+            'loggable_type' => 'required',
+            'loggable_id' => 'required',
+            'subject' => 'required',
+            'payment_type' => 'required',
+            'amount' => 'required',
+            'virtual_account' => 'required',
+            'paid_at' => 'required',
+        ]);
+        $payLog->update($validatedData);
+
+        return redirect()->route('tenantPayments.index');
+    }
+
     /**
      * Remove the specified resource from storage.
      *

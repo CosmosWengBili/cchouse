@@ -29,6 +29,13 @@ class PayLogController extends Controller
         return view('pay_logs.form', $data);
     }
 
+    public function edit(PayLog $payLog) {
+        $responser = new FormDataResponser();
+        $data = $responser->edit($payLog, 'payLogs.update')->get();
+
+        return view('pay_logs.form', $data);
+    }
+
     public function store(Request $request) {
         $validatedData = $request->validate([
             'loggable_type' => 'required',

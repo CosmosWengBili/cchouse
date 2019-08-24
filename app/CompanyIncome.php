@@ -22,15 +22,6 @@ class CompanyIncome extends Model implements AuditableContract
     protected $hidden = ['pivot'];
 
     /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    protected $hidden = ['pivot'];
-
-    /**
      * Get the tenant contract that this income is made from.
      */
     public function tenantContract()

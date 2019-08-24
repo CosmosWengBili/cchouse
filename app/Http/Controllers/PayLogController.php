@@ -45,4 +45,17 @@ class PayLogController extends Controller
 
         return redirect()->route('tenantPayments.index');
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param PayLog $payLog
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
+    public function destroy(PayLog $payLog)
+    {
+        $payLog->delete();
+        return response()->json(true);
+    }
 }

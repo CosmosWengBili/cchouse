@@ -4,10 +4,24 @@ namespace App\Http\Controllers;
 
 use App\PayLog;
 use App\Responser\FormDataResponser;
+use App\Responser\NestedRelationResponser;
+use App\TenantContract;
 use Illuminate\Http\Request;
 
 class PayLogController extends Controller
 {
+    public function index(Request $request) {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->index(
+                'tenant_contracts',
+                TenantContract::with($request->withNested)->active()->get()
+            )
+            ->relations($request->withNested);
+
+        return view('pay_logs.index', $responseData->get());
+    }
+
     public function create() {
         $responser = new FormDataResponser();
         $data = $responser->create(PayLog::class, 'payLogs.store')->get();

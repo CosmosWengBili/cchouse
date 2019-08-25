@@ -394,5 +394,16 @@ return [
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'deleted_at' => '刪除時間',
+    ],
+    'PayLog' => [
+        "id" => '編號',
+        "loggable_type" => "紀錄類型",
+        "loggable_id" => "紀錄 ID",
+        "subject" => "科目",
+        "payment_type" => "繳費類別",
+        "amount" => "費用",
+        "virtual_account" => "虛擬帳號",
+        "paid_at" => "匯款時間",
+        "tenant_contract_id" => "租客合約ID",
     ]
 ];

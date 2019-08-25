@@ -43,6 +43,7 @@ class TenantPaymentController extends Controller
     public function store(Request $request) {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required',
+            'subject' => 'required',
             'due_time' => 'required',
             'amount' => 'required',
             'is_charge_off_done' => 'required',
@@ -83,6 +84,7 @@ class TenantPaymentController extends Controller
     {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required',
+            'subject' => 'required',
             'due_time' => 'required',
             'amount' => 'required',
             'is_charge_off_done' => 'required',

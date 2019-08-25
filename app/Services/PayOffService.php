@@ -31,7 +31,7 @@ class PayOffService
         ];
 
         // 未繳納的電費
-        if(!$electricityPayment->is_charge_off_done) {
+        if($electricityPayment && !$electricityPayment->is_charge_off_done) {
             $fees[] = ['subject' => '電費', 'amount' => -($electricityPayment->amount), 'comment' => ''];
         }
 

@@ -38,7 +38,7 @@ class PayOffController extends Controller
         return view('pay_offs.show', [
             'tenantContract' => $tenantContract,
             'payOffDate' => $payOffDate,
-            'payOffData' => $payOffData,
+            'payOffData' => $payOffData ?? null,
         ]);
     }
 

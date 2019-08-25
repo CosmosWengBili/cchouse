@@ -77,6 +77,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             // pay off
             Route::get('payOffs', 'PayOffController@index')->name('payOffs.index');
             Route::get('payOffs/{tenant_contract}', 'PayOffController@show')->name('payOffs.show');
+            Route::post('payOffs/{tenant_contract}/storePayOffPayments', 'PayOffController@storePayOffPayments')->name('payOffs.storePayOffPayments');
         });
     });
 

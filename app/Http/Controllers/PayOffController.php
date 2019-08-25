@@ -8,6 +8,7 @@ use App\Responser\NestedRelationResponser;
 use App\Services\PayOffService;
 use App\Tenant;
 use App\TenantContract;
+use App\TenantPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -35,8 +36,36 @@ class PayOffController extends Controller
         }
 
         return view('pay_offs.show', [
+            'tenantContract' => $tenantContract,
             'payOffDate' => $payOffDate,
             'payOffData' => $payOffData,
         ]);
+    }
+
+    public function storePayOffPayments(Request $request, TenantContract $tenantContract) {
+        $payments = $request->input('payments');
+        $tenantPayments = array_map(function ($payment) use ($tenantContract) {
+            $payOffDate = $payment['payOffDate'];
+            $subject = $payment['subject'];
+            $amount = -($payment['amount']);
+            $comment = $payment['comment'];
+
+            return new TenantPayment([
+                'tenant_contract_id' => $tenantContract->id,
+                'due_time' => $payOffDate,
+                'subject' => $subject,
+                'amount' => $amount,
+                'is_charge_off_done' => true,
+                'charge_off_date' => $payOffDate,
+                'invoice_serial_number' => '',
+                'collected_by' => '公司',
+                'is_visible_at_report' =>false,
+                'is_pay_off' => true,
+                'comment' => $comment,
+            ]);
+        }, $payments);
+
+        $tenantContract->tenantPayments()->saveMany($tenantPayments);
+        return response()->json(true);
     }
 }

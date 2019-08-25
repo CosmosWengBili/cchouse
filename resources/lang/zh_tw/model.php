@@ -382,5 +382,16 @@ return [
         "invoice_serial_number" => "發票號碼",
         "is_charge_off_done" => "是否已沖銷",
         "comment" => "備註",
+    ],
+    'PayLog' => [
+        "id" => '編號',
+        "loggable_type" => "紀錄類型",
+        "loggable_id" => "紀錄 ID",
+        "subject" => "科目",
+        "payment_type" => "繳費類別",
+        "amount" => "費用",
+        "virtual_account" => "虛擬帳號",
+        "paid_at" => "匯款時間",
+        "tenant_contract_id" => "租客合約ID",
     ]
 ];

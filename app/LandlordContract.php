@@ -12,6 +12,7 @@ class LandlordContract extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $guarded = [];
     protected $hidden = ['pivot'];
     /**
      * Get the building of this landlord contract.

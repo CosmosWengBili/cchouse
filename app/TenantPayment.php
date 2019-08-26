@@ -22,6 +22,7 @@ class TenantPayment extends Model implements AuditableContract
     protected $hidden = ['pivot'];
 
     protected $fillable = [
+        "subject",
         "tenant_contract_id",
         "due_time",
         "amount",

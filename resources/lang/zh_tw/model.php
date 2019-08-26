@@ -97,7 +97,7 @@ return [
         'landlords'=> '房東',
         'building_id' => '建物編號',
         'buildings'=> '建物',
-
+        'landlord_ids' => '房東編號'
     ],
     'LandlordPayment' => [
         'id' => '編號',
@@ -346,7 +346,8 @@ return [
         'distribution_end_date' => '分配迄',
         'distribution_rate' => '分配費率',
         'investment_amount' => '投資額',
-        'buildings' => '物件'
+        'buildings' => '物件',
+        'building_ids' => '物件編號'
     ],
     'Deposit' => [
         'id' => '編號',

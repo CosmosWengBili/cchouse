@@ -265,6 +265,17 @@
                                     </select>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>@lang("model.LandlordContract.landlord_ids")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="landlord_ids"
+                                        value="{{ isset($data["landlord_ids"]) ? $data['landlord_ids'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
 
@@ -278,4 +289,16 @@
         </div>
     </div>
 </div>
+<script>
+    $('[name="landlord_ids"]').selectize({
+        delimiter: ',',
+        persist: false,
+        create: function(input) {
+            return {
+                value: input,
+                text: input
+            }
+        }
+    });
+</script>
 @endsection

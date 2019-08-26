@@ -14,6 +14,13 @@ class LandlordContract extends Model implements AuditableContract
 
     protected $guarded = [];
     protected $hidden = ['pivot'];
+
+    protected $appends = array('landlord_ids');
+
+    public function getLandlordIdsAttribute() {
+        return implode(",",$this->landlords()->get()->pluck('id')->toArray());
+    }
+
     /**
      * Get the building of this landlord contract.
      */

@@ -85,6 +85,12 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract = LandlordContract::create($validatedData);
+        if($request->landlord_ids != ''){
+            $landlordContract->landlords()->sync(explode(",",$request->landlord_ids));
+        }
+        else{
+            $landlordContract->landlords()->sync(array());
+        }
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
         return redirect($request->_redirect);
     }
@@ -157,6 +163,12 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract->update($validatedData);
+        if($request->landlord_ids != ''){
+            $landlordContract->landlords()->sync(explode(",",$request->landlord_ids));
+        }
+        else{
+            $landlordContract->landlords()->sync(array());
+        }
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
         return redirect($request->_redirect);
     }

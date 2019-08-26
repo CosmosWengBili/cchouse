@@ -19,16 +19,9 @@ class CompanyIncome extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    protected $hidden = ['pivot'];
+    protected $casts = ['income_date' => 'date'];
 
     /**
      * Get the tenant contract that this income is made from.

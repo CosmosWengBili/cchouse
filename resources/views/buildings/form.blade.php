@@ -59,9 +59,15 @@
                                             name="district"
                                             value="{{ $data['district'] ?? '' }}"
                                         />
-                                            @foreach(config('enums.cities')[$data['city']] as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
+                                            @if(isset($data['city']))
+                                                @foreach(config('enums.cities')[$data['city']] as $value)
+                                                    <option value="{{$value}}">{{$value}}</option>
+                                                @endforeach
+                                            @else
+                                                @foreach(config('enums.cities')['臺北市'] as $value)
+                                                    <option value="{{$value}}">{{$value}}</option>
+                                                @endforeach                                                
+                                            @endif
                                         </select>
                                     </td>
                                 </tr>

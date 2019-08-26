@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use Carbon\Carbon;
 
 class LandlordContract extends Model implements AuditableContract
 {
@@ -52,5 +53,17 @@ class LandlordContract extends Model implements AuditableContract
     public function commissioner()
     {
         return $this->belongsTo('App\User', 'commissioner_id');
+    }
+
+    /**
+     * Scope a query to only include active landlord contracts.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query
+            ->where('commission_end_date', '>', Carbon::today());
     }
 }

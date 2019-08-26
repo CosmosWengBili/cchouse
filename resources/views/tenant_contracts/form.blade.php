@@ -31,7 +31,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="room" 
                                             data-text="id" 
                                             data-selected="{{ $data['room_id'] ?? 0 }}"
                                             name="room_id"
@@ -45,7 +45,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="tenant" 
                                             data-text="id" 
                                             data-selected="{{ $data['tenant_id'] ?? 0 }}"
                                             name="tenant_id"

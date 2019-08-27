@@ -42,7 +42,7 @@ class DebtCollection extends Model implements AuditableContract
     }
 
     /**
-     * Get all the tenant payments of this tenant contract.
+     * Get all the tenant payments of this debt collection.
      */
     public function tenantPayments()
     {
@@ -54,7 +54,7 @@ class DebtCollection extends Model implements AuditableContract
     }
 
     /**
-     * Get all the tenant electricity payments of this tenant contract.
+     * Get all the tenant electricity payments of this debt collection.
      */
     public function tenantElectricityPayments()
     {
@@ -64,4 +64,13 @@ class DebtCollection extends Model implements AuditableContract
             'tenant_contract_id'
         );
     }
+
+    /**
+     * Get the receipts of this debt collection.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
+    }
+
 }

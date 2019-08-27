@@ -124,17 +124,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>發票號碼</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="invoice_serial_number"
-                                            class="form-control form-control-sm"
-                                            value="{{ $data['invoice_serial_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>是否已沖銷</td>
                                     <td>
                                         <input type="hidden" value="0" name="is_charge_off_done"/>

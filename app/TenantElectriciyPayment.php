@@ -45,5 +45,14 @@ class TenantElectricityPayment extends Model implements AuditableContract
     public function payLogs()
     {
         return $this->morphMany('App\PayLog', 'loggable');
+
+    }
+
+    /**
+     * Get the receipts of this electricity payment.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
     }
 }

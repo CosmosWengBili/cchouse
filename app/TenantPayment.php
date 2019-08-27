@@ -61,4 +61,12 @@ class TenantPayment extends Model implements AuditableContract
     {
         return $this->morphMany('App\PayLog', 'loggable');
     }
+
+    /**
+     * Get the receipts of this tenant payment.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
+    }
 }

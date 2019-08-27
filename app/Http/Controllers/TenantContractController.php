@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Building;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use App\Responser\NestedRelationResponser;
-use App\Responser\FormDataResponser;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Validation\Rule;
-use App\Services\TenantContractService;
-use App\TenantContract;
 
+use App\TenantContract;
+use App\Building;
 use App\Traits\Controllers\HandleDocumentsUpload;
+use App\Services\TenantContractService;
+use App\Services\ReceiptService;
+use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
 
 class TenantContractController extends Controller
 {
@@ -272,6 +273,8 @@ class TenantContractController extends Controller
             'invoice_collection_number' => 'required|max:255',
             'commissioner_id' => 'exists:users,id'
         ]);
+        
+        ReceiptService::compareReceipt($tenantContract, $validatedData);
 
         $tenantContract->update($validatedData);
         $this->handleDocumentsUpload($tenantContract, [

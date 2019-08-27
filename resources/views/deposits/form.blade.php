@@ -119,17 +119,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Deposit.invoice_serial_number")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="invoice_serial_number"
-                                            value="{{ $data['invoice_serial_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.is_deposit_collected")</td>
                                     <td>
 

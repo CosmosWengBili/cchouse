@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
+use Carbon\Carbon;
+
 class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;
@@ -60,5 +62,13 @@ class LandlordContract extends Model implements AuditableContract
     public function commissioner()
     {
         return $this->belongsTo('App\User', 'commissioner_id');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query
+            ->where('commission_start_date', '<', Carbon::today())
+            ->where('commission_end_date', '>', Carbon::today())
+            ->first();
     }
 }

@@ -13,13 +13,19 @@ class MonthlyReportService
     /**
      * Get all data that monthly report needs.
      */
-    public function getMonthlyReport(LandlordContract $landlordContract) {
+    public function getMonthlyReport(LandlordContract $landlordContract, $month) {
         $data = [
             'meta'         => [],
             'rooms'        => [],
             'details'      => [],
             'shareholders' => [],
         ];
+        
+        // Set query date
+        $month - Carbon::now()->month > 1 ? $year = Carbon::now()->year-1 : $year=Carbon::now()->year;
+        $start_date = Carbon::create($year, $month);
+        $end_date = $start_date->copy()->endOfMonth();
+
 
         // TODO: loading these relations are probably better using repository
 
@@ -43,8 +49,12 @@ class MonthlyReportService
 
         // section : meta
         $data['meta']['landlord_name'] = $landlordContract->landlords->pluck('name');
-        // TODO: period calculation
-        $data['meta']['period'] = 'TODO';
+        // period calculation
+        $relative_landlordContracts = $landlordContract->landlords->first()->landlordContracts->where('commission_end_date', '>', $start_date);
+        $period_start = $relative_landlordContracts->first()->commission_start_date->format('Y-m-d');
+        $period_end = $relative_landlordContracts->last()->commission_end_date->format('Y-m-d');
+
+        $data['meta']['period'] = $period_start.' ~ '.$period_end;
         $data['meta']['building_name'] = $landlordContract->building->name;
         $data['meta']['building_address'] = $landlordContract->building->address;
         $data['meta']['rooms_count'] = $landlordContract->building->rooms->count() - 1;
@@ -76,34 +86,37 @@ class MonthlyReportService
                 'expenses' => []
             ];
 
+            // section : details
+            $landlordPayments = $room->landlordPayments->whereBetween('collection_date', [$start_date, $end_date]);
+            $landlordOtherSubjects = $room->landlordPayments->whereBetween('expense_date', [$start_date, $end_date]);
+            
+            foreach ($landlordPayments as $landlordPayment) {
+                $data['details'][] = [
+                    'type'               => 'expense',
+                    'room_code'          => $room->room_code,
+                    'subject'            => $landlordPayment->subject,
+                    'bill_serial_number' => $landlordPayment->bill_serial_number,
+                    'bill_start_date'    => $landlordPayment->bill_start_date,
+                    'bill_end_date'      => $landlordPayment->bill_end_date,
+                    'paid_at'            => $landlordPayment->collection_date,
+                    'amount'             => $landlordPayment->amount,
+                ];
+            }
+
+            foreach ($landlordOtherSubjects as $landlordOtherSubject) {
+                $data['details'][] = [
+                    'type'               => $landlordOtherSubject->income_or_expense === '收入' ? 'income' : 'expense',
+                    'room_code'          => $room->room_code,
+                    'subject'            => $landlordOtherSubject->subject,
+                    'bill_serial_number' => '',
+                    'bill_start_date'    => '',
+                    'bill_end_date'      => '',
+                    'paid_at'            => $landlordOtherSubject->expense_date,
+                    'amount'             => $landlordOtherSubject->amount,
+                ];
+            }
+            // end section : details
             if ($room->room_code === '公用') {
-                // section : details
-
-                foreach ($room->landlordPayments as $landlordPayment) {
-                    $data['details'][] = [
-                        'type'               => 'expense',
-                        'subject'            => $landlordPayment->subject,
-                        'bill_serial_number' => $landlordPayment->bill_serial_number,
-                        'bill_start_date'    => $landlordPayment->bill_start_date,
-                        'bill_end_date'      => $landlordPayment->bill_end_date,
-                        'paid_at'            => $landlordPayment->collection_date,
-                        'amount'             => $landlordPayment->amount,
-                    ];
-                }
-
-                foreach ($room->landlordOtherSubjects as $landlordOtherSubject) {
-                    $data['details'][] = [
-                        'type'               => $landlordOtherSubject->income_or_expense === '收入' ? 'income' : 'expense',
-                        'subject'            => $landlordOtherSubject->subject,
-                        'bill_serial_number' => '',
-                        'bill_start_date'    => '',
-                        'bill_end_date'      => '',
-                        'paid_at'            => $landlordOtherSubject->expense_date,
-                        'amount'             => $landlordOtherSubject->amount,
-                    ];
-                }
-                // end section : details
-
                 continue;
             }
 
@@ -115,59 +128,78 @@ class MonthlyReportService
             if (is_null($tenantContract)) {
                 // there are no active contracts
             } else {
-                foreach ($tenantContract->tenantPayments as $tenantPayment) {
-                    foreach ($tenantPayment->payLogs as $payLog) {
-                        $roomData['incomes'][] = [
-                            'subject' => $payLog->subject,
-                            'month'   => Carbon::parse($tenantPayment->due_time)->month . '月',
-                            'paid_at' => $payLog->paid_at,
-                            'amount'  => $payLog->amount,
-                        ];
-    
-                        $roomData['meta']['room_total_income'] += $payLog->amount;
-                    }
-                }
-
-                if ($room->management_fee_mode === '比例') {
-                    $rentPayLogs = $tenantContract->tenantPayments->where('subject', '租金')->pluck('payLogs')->flatten();
-                    $total_management_fee = 0;
-    
-                    foreach ($rentPayLogs as $payLog) {
-                        $total_management_fee += intval(round($payLog->amount * $room->management_fee / 100));
-                        $roomData['expenses'][] = [
-                            'subject' => '管理服務費',
-                            'paid_at' => $payLog->paid_at,
-                            'amount'  => $payLog->amount,
-                        ];
-                    }
-    
-                    $roomData['meta']['room_total_expense'] += $total_management_fee;
-                } else {
-                    // TODO: date of fixed management fee income
-                    $management_fee = intval($room->management_fee);
-                    $roomData['expenses'][] = [
-                        'subject' => '管理服務費',
-                        'paid_at' => 'TODO',
-                        'amount'  => $management_fee,
+                $payLogs = $tenantContract->payLogs->whereBetween('paid_at', [$start_date, $end_date]);
+                foreach ($payLogs as $payLog) {
+                    $roomData['incomes'][] = [
+                        'subject' => $payLog->subject,
+                        'month'   => Carbon::parse($payLog->loggable->due_time)->month . '月',
+                        'paid_at' => $payLog->paid_at,
+                        'amount'  => $payLog->amount,
                     ];
-                    $roomData['meta']['room_total_expense'] += $management_fee;
-                }
+                    $roomData['meta']['room_total_income'] += $payLog->amount;
+
+                    // pack expense data relative '租金'
+                    if($payLog->subject == '租金'){
+                        if ($room->management_fee_mode === '比例') {
+                            $total_management_fee = 0;
+                            $total_management_fee += intval(round($payLog->amount * $room->management_fee / 100));
+                            $roomData['expenses'][] = [
+                                'subject' => '管理服務費',
+                                'paid_at' => $payLog->paid_at,
+                                'amount'  => $payLog->amount,
+                            ];
+            
+                            $roomData['meta']['room_total_expense'] += $total_management_fee;
+                        } else if( $room->management_fee_mode === '固定' ) {
+                            $management_fee = intval($room->management_fee);
+                            $roomData['expenses'][] = [
+                                'subject' => '管理服務費',
+                                'paid_at' => $start_date,
+                                'amount'  => $management_fee,
+                            ];
+                            $roomData['meta']['room_total_expense'] += $management_fee;
+                        }
+                        $firstRentPayment = $tenantContract->tenantPayments->where('subject', '租金')->sortBy('due_time',)->first();
+                        if ($payLog->loggable->id == $firstRentPayment->id) {
+                            $agency_fee = intval(round($payLog->amount * $landlordContract->taxable_charter_fee));
+                            $roomData['expenses'][] = [
+                                'subject' => '仲介費',
+                                'paid_at' => $payLog->paid_at,
+                                'amount'  => $agency_fee,
+                            ];
+            
+                            $roomData['meta']['room_total_expense'] += $total_management_fee;
+                        }                        
+                        
+                    }
+                }         
             }
-
-            // TODO: pack other expenses
-
             $data['rooms'][] = $roomData;
         }
         // end section : rooms
 
         // section : shareholders
         foreach ($landlordContract->building->shareholders as $shareholder) {
+            $max_period = $shareholder->distribution_start_date->diffInMonths($shareholder->distribution_end_date)+1;
+            $current_period = $shareholder->distribution_start_date->diffInMonths($start_date)+1;
+
+            $distribution_fee = 0;
+            if( $shareholder->distribution_method == '浮動' ){
+                $distribution_fee = $data['meta']['total_income'] * $shareholder->investment_amount;
+            }
+            else if ( $shareholder->distribution_method == '固定' ){
+                $distribution_fee = $shareholder->investment_amount;
+            }
+
             $data['shareholders'][] = [
                 'name' => $shareholder->name,
-                // TODO: pack other fields
+                'current_period' => $current_period,
+                'max_period' => $max_period,
+                'distribution_fee' => $distribution_fee
             ];
         }
         // end section : shareholders
         return collect($data);
     }
+
 }

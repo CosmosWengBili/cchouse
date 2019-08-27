@@ -44,7 +44,7 @@ class ScheduleService
         // escrow is 2 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(2),
-            'commission_type' => 'escrow'
+            'commission_type' => '代管'
         ])
             ->with('commissioner')
             ->get()
@@ -56,7 +56,7 @@ class ScheduleService
         // charter is 6 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(6),
-            'commission_type' => 'charter'
+            'commission_type' => '包租'
         ])
             ->with('commissioner')
             ->get()

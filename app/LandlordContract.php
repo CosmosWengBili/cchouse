@@ -8,8 +8,6 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Carbon\Carbon;
 
-use Carbon\Carbon;
-
 class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;

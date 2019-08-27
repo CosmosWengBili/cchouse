@@ -423,7 +423,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
@@ -437,7 +437,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['administrator_id'] ?? 0 }}"
                                             name="administrator_id"

@@ -85,7 +85,7 @@
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                         >
@@ -99,7 +99,7 @@
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                         >

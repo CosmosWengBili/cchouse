@@ -21,7 +21,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="room" 
+                                            data-table="rooms" 
                                             data-text="id" 
                                             data-selected="{{ $data['room_id'] ?? $room_id ?? '0' }}"
                                             name="room_id"
@@ -35,7 +35,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="appliance" 
+                                            data-table="appliances" 
                                             data-text="subject" 
                                             data-value="subject" 
                                             data-selected="{{ $data['subject'] ?? '0' }}"
@@ -50,7 +50,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="appliance" 
+                                            data-table="appliances" 
                                             data-text="spec_code" 
                                             data-value="spec_code" 
                                             data-selected="{{ $data['spec_code'] ?? 0 }}"
@@ -65,7 +65,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="appliance" 
+                                            data-table="appliances" 
                                             data-text="vendor" 
                                             data-value="vendor" 
                                             data-selected="{{ $data['vendor'] ?? 0 }}"

@@ -3,7 +3,7 @@
 <input id="csrf" type="hidden" value={{ csrf_token() }}>
 <div class="container">
     <div class="row justify-content-center">
-        <ul class="nav nav-tabs justify-content-center">
+        <ul class="nav nav-tabs justify-content-center col-12">
             <li class="nav-item active"
                 ><a class="nav-link active" href="#all" data-toggle="tab">全部催收案件</a>
             </li>

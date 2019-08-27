@@ -7,7 +7,7 @@ use App\Building;
 use App\LandlordContract;
 use Carbon\Carbon;
 
-class ReportService
+class MonthlyReportService
 {
 
     /**
@@ -168,15 +168,6 @@ class ReportService
             ];
         }
         // end section : shareholders
-        return $data;
-    }
-
-    public function getAllMonthlyReports() {
-        $activeContracts = LandlordContract::with('building.rooms')->active()->get();
-        $data = collect([]);
-        foreach ($activeContracts as $c) {
-            $data->push($this->getMonthlyReport($c));
-        }
-        return $data;
+        return collect($data);
     }
 }

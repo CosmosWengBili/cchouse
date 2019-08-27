@@ -45,7 +45,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="landlord_payment" 
+                                        data-table="landlord_payments" 
                                         data-text="subject" 
                                         data-value="subject"
                                         data-selected="{{ isset($data["subject"]) ? $data['subject'] : '0' }}"

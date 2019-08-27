@@ -32,13 +32,14 @@ class LandlordPaymentController extends Controller
         $landlordPayment = LandlordPayment::select($whitelist)
             ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
             ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-            ->rightJoin(
+            ->join(
                 'landlord_contracts',
                 'buildings.id',
                 '=',
                 'landlord_contracts.building_id'
             )
             ->where('commission_end_date', '>', Carbon::today())
+            ->groupBy('id')
             ->get();
         $responseData
             ->index('landlord_payments', $landlordPayment)

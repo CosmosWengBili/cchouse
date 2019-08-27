@@ -13,6 +13,12 @@ class Shareholder extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
+
+    protected $appends = array('building_ids');
+
+    public function getBuildingIdsAttribute() {
+        return implode(",",$this->buildings()->get()->pluck('id')->toArray());
+    }
     /**
      * Get the buildings of this shareholder.
      */

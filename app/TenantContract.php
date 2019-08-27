@@ -34,7 +34,8 @@ class TenantContract extends Pivot implements AuditableContract
     protected $casts = [
         'set_other_rights' => 'boolean',
         'sealed_registered' => 'boolean',
-        'effective' => 'boolean'
+        'effective' => 'boolean',
+        'contract_end' => 'date',
     ];
 
 
@@ -185,6 +186,14 @@ class TenantContract extends Pivot implements AuditableContract
         return $query
             ->where('contract_end', '>=', Carbon::today())
             ->where('contract_start', '<=', Carbon::today());
+    }
+    
+    /**
+     * Get the receipts of this tenant contracts.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
     }
 
     public function sendElectricityPaymentReportSMS(int $year, int $month) {

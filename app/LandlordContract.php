@@ -8,12 +8,22 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Carbon\Carbon;
 
+use Carbon\Carbon;
+
 class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $guarded = [];
     protected $hidden = ['pivot'];
+
+    protected $appends = array('landlord_ids');
+
+    public function getLandlordIdsAttribute() {
+        return implode(",",$this->landlords()->get()->pluck('id')->toArray());
+    }
+
     /**
      * Get the building of this landlord contract.
      */
@@ -64,6 +74,8 @@ class LandlordContract extends Model implements AuditableContract
     public function scopeActive($query)
     {
         return $query
-            ->where('commission_end_date', '>', Carbon::today());
+            ->where('commission_start_date', '<', Carbon::today())
+            ->where('commission_end_date', '>', Carbon::today())
+            ->first();
     }
 }

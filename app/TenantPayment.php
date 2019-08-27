@@ -22,6 +22,7 @@ class TenantPayment extends Model implements AuditableContract
     protected $hidden = ['pivot'];
 
     protected $fillable = [
+        "subject",
         "tenant_contract_id",
         "due_time",
         "amount",
@@ -59,5 +60,13 @@ class TenantPayment extends Model implements AuditableContract
     public function payLogs()
     {
         return $this->morphMany('App\PayLog', 'loggable');
+    }
+
+    /**
+     * Get the receipts of this tenant payment.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
     }
 }

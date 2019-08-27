@@ -97,7 +97,7 @@ return [
         'landlords'=> '房東',
         'building_id' => '建物編號',
         'buildings'=> '建物',
-
+        'landlord_ids' => '房東編號'
     ],
     'LandlordPayment' => [
         'id' => '編號',
@@ -186,7 +186,6 @@ return [
         'cost' => '成本',
         'price' => '複價',
         'is_recorded' => '是否入帳',
-        'invoice_serail_number' => '發票號碼',
         'comment' => '備註',
         'created_at' => '建立時間',
         'tenant_contract' => '租客合約',
@@ -314,6 +313,11 @@ return [
         'updated_at' => '更新時間',
         'commissioner_id' => '專員 ID',
         'currentBalance' => '目前餘額',
+        'building' => '物件',
+        'room' => '房',
+        'tenant_payments' => '租客帳單',
+        'tenant_electricity_payments' => '租客電費',
+        'pay_logs' => '繳款紀錄'
     ],
     'DebtCollection' => [
         'id' => '編號',
@@ -340,7 +344,9 @@ return [
         'distribution_start_date' => '分配起',
         'distribution_end_date' => '分配迄',
         'distribution_rate' => '分配費率',
-        'investment_amount' => '投資額'
+        'investment_amount' => '投資額',
+        'buildings' => '物件',
+        'building_ids' => '物件編號'
     ],
     'Deposit' => [
         'id' => '編號',
@@ -352,9 +358,11 @@ return [
         'confiscated_or_returned_date' => '沒/退訂日期',
         'invoicing_amount' => '應開立金額',
         'invoice_date' => '發票日期',
-        'invoice_serial_number' => '發票號碼',
         'is_deposit_collected' => '已收訂',
         'comment' => '備註',
+        'tenantContracts' => '租客合約',
+        'rooms' => '房',
+        'buildings' => '物件'
     ],
     'TenantPayment' => [
         "id" => '編號',
@@ -372,6 +380,7 @@ return [
     ],
     'TenantElectricityPayment' => [
         "id" => '編號',
+        "subject" => '科目',
         "tenant_contract_id" => "租客合約ID",
         "ammeter_read_date" => "抄表時間",
         "110v_start_degree" => "110v起",
@@ -381,7 +390,20 @@ return [
         "amount" => "費用",
         "invoice_serial_number" => "發票號碼",
         "is_charge_off_done" => "是否已沖銷",
+        "due_time" => '應繳時間',
         "comment" => "備註",
+    ],
+    'CompanyIncome' => [
+        'company_incomes' => 'Company Incomes',
+        "id" => '編號',
+        "tenant_contract_id" => "租客合約ID",
+        "subject" => "項目",
+        "income_date" => "收入時間",
+        "amount" => "費用",
+        "comment" => "備註",
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'deleted_at' => '刪除時間',
     ],
     'PayLog' => [
         "id" => '編號',

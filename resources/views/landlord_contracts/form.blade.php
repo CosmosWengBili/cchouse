@@ -31,7 +31,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="building" 
+                                        data-table="buildings" 
                                         data-text="address"
                                         data-selected="{{ isset($data["building_id"]) ? $data['building_id'] : '0' }}"
                                         name="building_id"
@@ -256,13 +256,24 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="user" 
+                                        data-table="users" 
                                         data-text="name"
                                         data-selected="{{ isset($data["commissioner_id"]) ? $data['commissioner_id'] : '0' }}"
                                         name="commissioner_id"
                                         class="form-control form-control-sm" 
                                     >
                                     </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@lang("model.LandlordContract.landlord_ids")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="landlord_ids"
+                                        value="{{ isset($data["landlord_ids"]) ? $data['landlord_ids'] : '' }}"
+                                    />
                                 </td>
                             </tr>
                             </tbody>
@@ -278,4 +289,16 @@
         </div>
     </div>
 </div>
+<script>
+    $('[name="landlord_ids"]').selectize({
+        delimiter: ',',
+        persist: false,
+        create: function(input) {
+            return {
+                value: input,
+                text: input
+            }
+        }
+    });
+</script>
 @endsection

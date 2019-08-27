@@ -40,6 +40,14 @@ class Landlord extends Model implements AuditableContract
     }
 
     /**
+     * Get all the landlord's contracts.
+     */
+    public function activeContracts()
+    {
+        return $this->landlordContracts()->active();
+    }
+
+    /**
      * Get all of the landlords's documents.
      */
     public function documents()

@@ -174,10 +174,10 @@
                         @include('documents.inputs', ['documentType' => 'third_party_file', 'documents' => $data['third_party_files']])
 
                         <h3 class="mt-3">聯絡資料</h3>
-                        @include('Landlords.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
+                        @include('landlords.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
 
                         <h3 class="mt-3">代理人</h3>
-                        @include('Landlords.agent_form', ['prefix' => 'agents', 'agents' => $data['agents']])
+                        @include('landlords.agent_form', ['prefix' => 'agents', 'agents' => $data['agents']])
 
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>

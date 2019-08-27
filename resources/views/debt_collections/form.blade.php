@@ -71,7 +71,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['collector_id'] ?? 0 }}"
                                             name="collector_id"

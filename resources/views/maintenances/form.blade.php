@@ -85,7 +85,7 @@
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                         >
@@ -99,7 +99,7 @@
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                         >
@@ -281,17 +281,6 @@
                                             name="is_recorded"
                                             value="1"
                                             {{ isset($data["is_recorded"]) ? ($data['is_recorded'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Maintenance.invoice_serail_number")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="invoice_serail_number"
-                                            value="{{ $data['invoice_serail_number'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>

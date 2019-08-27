@@ -36,6 +36,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('users', 'UserController');
             Route::resource('tenants', 'TenantController');
             Route::resource('tenantContracts', 'TenantContractController');
+            Route::resource('companyIncomes', 'CompanyIncomeController');
             Route::get('tenantContracts/{tenantContract}/electricityDegree', 'TenantContractController@electricityDegree');
             Route::post(
                 'tenantContracts/sendElectricityPaymentReportSMS',
@@ -56,6 +57,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('shareholders', 'ShareHolderController');
             Route::resource('deposits', 'DepositController');
 
+            // receipts
+            Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;
+            Route::get('receipts/edit_invoice', 'ReceiptController@edit_invoice')->name('receipts.edit_invoice');
+            Route::post('receipts/update_invoice', 'ReceiptController@update_invoice')->name('receipts.update_invoice');;
+
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
             Route::post('notifications/{id}', 'NotificationController@read')->name('notifications.read');
@@ -65,6 +71,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('example/{model}', 'ExcelController@example');
+            Route::get('export/function/{function}', 'ExcelController@export_by_function');
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
@@ -73,6 +80,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
+          
+            // pay off
+            Route::get('payOffs', 'PayOffController@index')->name('payOffs.index');
+            Route::get('payOffs/{tenant_contract}', 'PayOffController@show')->name('payOffs.show');
+            Route::post('payOffs/{tenant_contract}/storePayOffPayments', 'PayOffController@storePayOffPayments')->name('payOffs.storePayOffPayments');
         });
     });
 

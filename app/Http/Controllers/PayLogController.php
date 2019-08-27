@@ -68,7 +68,7 @@ class PayLogController extends Controller
         $tenantContractId = $payment->tenant_contract_id;
         $payLog = PayLog::create(array_merge($validatedData, ['tenant_contract_id' => $tenantContractId]));
 
-        return redirect()->route('tenantPayments.index');
+        return redirect($request->_redirect);
     }
 
     public function update(Request $request, PayLog $payLog) {

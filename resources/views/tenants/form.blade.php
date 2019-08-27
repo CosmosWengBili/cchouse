@@ -128,7 +128,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="user" 
+                                        data-table="users" 
                                         data-text="name" 
                                         data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
                                         name="confirm_by"

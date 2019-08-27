@@ -6,7 +6,7 @@
     <div class="card-body table-responsive">
         <h2>
             @if($model_name == null)
-               {{$layer}}
+                {{$layer}}
             @else
                 @lang("model.{$model_name}.{$layer}")
             @endif

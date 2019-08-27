@@ -42,7 +42,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="user" 
+                                        data-table="users" 
                                         data-text="name" 
                                         data-value="id"
                                         data-selected="{{ isset($data["keeper_id"]) ? $data['keeper_id'] : '0' }}"
@@ -57,7 +57,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="room" 
+                                        data-table="rooms" 
                                         data-text="room_code" 
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"

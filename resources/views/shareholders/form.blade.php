@@ -182,6 +182,17 @@
                                     />
                                 </td>
                             </tr>
+                            <tr>
+                                <td>@lang("model.Shareholder.building_ids")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="building_ids"
+                                        value="{{ isset($data["building_ids"]) ? $data['building_ids'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
@@ -191,4 +202,16 @@
         </div>
     </div>
 </div>
+<script>
+$('[name="building_ids"]').selectize({
+    delimiter: ',',
+    persist: false,
+    create: function(input) {
+        return {
+            value: input,
+            text: input
+        }
+    }
+});
+</script>
 @endsection

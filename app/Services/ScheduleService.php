@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\LandlordContract;
 use App\Landlord;
 use App\TenantContract;
+use App\TenantPayment;
 use App\Notifications\LandlordContractDue;
 use App\Notifications\TenantContractDueInTwoMonths;
 
@@ -135,6 +136,20 @@ class ScheduleService
         }
     }
 
+    public function genarateDebtCollections()
+    {
+        
+        $delay = App\SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
+        $delay = $delay ? intval($delay->value) : config('finance.debt_collection_delay_days');
+        $notifyAt = Carbon::today()->subDays($delay);
+        $tenantPayments = TenantPayment::with('payLogs')->where('is_charge_off_done', false)->where('due_time', $notifyAt)->get();
+        
+        foreach ($tenantPayments as $tenantPayment) {
+            $tenantPayment->tenantContract->debtCollections()->create([
+                'status' => '催收中'
+            ]);
+        }
+    }
     public function notifyTenantElectricityPaymentReport()
     {
         $now = Carbon::now();

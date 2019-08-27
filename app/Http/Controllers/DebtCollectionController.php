@@ -104,9 +104,7 @@ class DebtCollectionController extends Controller
         ]);
         $debtCollection = DebtCollection::create($validatedData);
 
-        return redirect()->route('debtCollections.show', [
-            'id' => $debtCollection->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**
@@ -145,9 +143,7 @@ class DebtCollectionController extends Controller
         ReceiptService::compareReceipt($debtCollection, $validatedData);
         $debtCollection->update($validatedData);
 
-        return redirect()->route('debtCollections.show', [
-            'id' => $debtCollection->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

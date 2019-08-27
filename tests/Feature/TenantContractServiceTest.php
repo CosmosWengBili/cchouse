@@ -133,6 +133,7 @@ class TenantContractServiceTest extends TestCase
                 'due_time' => $date,
                 'amount' => $newContract->rent,
                 'collected_by' => '公司',
+                'period' => '月',
             ]);
         }
         // and the number shuld also match
@@ -147,6 +148,7 @@ class TenantContractServiceTest extends TestCase
                 'due_time' => $date,
                 'amount' => $payments[0]['amount'],
                 'collected_by' => $payments[0]['collected_by'],
+                'period' => $payments[0]['period'],
             ]);
         }
         // and the number shuld also match

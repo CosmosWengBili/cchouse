@@ -56,7 +56,6 @@
                                 @endif
                             @endforeach
                             <td>
-                                <a class="btn btn-info" href="#" data-toggle="modal" data-target="#send-electricity-payment-report-sms-model" data-tenant-contract-id="{{ $object['id'] }}">發送電費報表</a>
                                 <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=building;room;tenantPayments;tenantElectricityPayments;payLogs">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel(Str::plural($layer)) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel(Str::plural($layer)) . '.destroy', $object['id']) }}">刪除</a>

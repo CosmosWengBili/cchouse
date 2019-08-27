@@ -22,7 +22,7 @@ class MovePaymentColumnFromLandlordContractToLandlord extends Migration
             $table->string('invoice_collection_number')->comment('發票領取號碼');
             $table->string('invoice_mailing_address')->comment('發票寄送地址');
         });
-        Schema::table('landlord_contract', function (Blueprint $table) {
+        Schema::table('landlord_contracts', function (Blueprint $table) {
             $table->dropColumn('bank_code');
             $table->dropColumn('branch_code');
             $table->dropColumn('account_name');
@@ -31,9 +31,9 @@ class MovePaymentColumnFromLandlordContractToLandlord extends Migration
             $table->dropColumn('invoice_collection_number');
             $table->dropColumn('invoice_mailing_address');
 
-            $table->dropForeign(['landlord_id']);
+            $table->dropForeign('landlord_contract_landlord_id_foreign');
             $table->dropColumn('landlord_id');
-            
+
         });
         Schema::table('tenants', function (Blueprint $table) {
             $table->date('birth')->comment('出生年月日');
@@ -65,7 +65,7 @@ class MovePaymentColumnFromLandlordContractToLandlord extends Migration
             $table->string('invoice_collection_number')->comment('發票領取號碼');
             $table->string('invoice_mailing_address')->comment('發票寄送地址');
 
-            $table->foreign('landlord_id') 
+            $table->foreign('landlord_id')
             ->references('id')
             ->on('landlords');
         });

@@ -28,6 +28,16 @@ class PayLog extends Model implements AuditableContract
     ];
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+
+    /**
      * Get the owning loggable model.
      */
     public function loggable()

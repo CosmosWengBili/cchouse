@@ -34,7 +34,8 @@ class TenantContract extends Pivot implements AuditableContract
     protected $casts = [
         'set_other_rights' => 'boolean',
         'sealed_registered' => 'boolean',
-        'effective' => 'boolean'
+        'effective' => 'boolean',
+        'contract_end' => 'date',
     ];
 
 

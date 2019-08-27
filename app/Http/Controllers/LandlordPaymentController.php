@@ -34,13 +34,14 @@ class LandlordPaymentController extends Controller
         $landlordPayment = LandlordPayment::select($whitelist)
             ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
             ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-            ->rightJoin(
+            ->join(
                 'landlord_contracts',
                 'buildings.id',
                 '=',
                 'landlord_contracts.building_id'
             )
             ->where('commission_end_date', '>', Carbon::today())
+            ->groupBy('id')
             ->get();
         $responseData
             ->index('landlord_payments', $landlordPayment)
@@ -86,7 +87,7 @@ class LandlordPaymentController extends Controller
         ]);
 
         $landlordPayment = LandlordPayment::create($validatedData);
-        return redirect()->route('landlordPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -147,9 +148,7 @@ class LandlordPaymentController extends Controller
 
         ReceiptService::compareReceipt($landlordPayment, $validatedData);
         $landlordPayment->update($validatedData);
-        return redirect()->route('landlordPayments.edit', [
-            'id' => $landlordPayment->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

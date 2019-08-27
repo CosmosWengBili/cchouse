@@ -15,7 +15,7 @@
                             class="form-control form-control-sm"
                             name="{{ "appliances[{$idx}][subject]" }}"
                             data-toggle="selectize" 
-                            data-table="appliance" 
+                            data-table="appliances" 
                             data-text="subject" 
                             data-value="subject" 
                             data-selected="{{ $appliance['subject'] }}" 
@@ -29,7 +29,7 @@
                             class="form-control form-control-sm"
                             name="{{ "appliances[{$idx}][spec_code]" }}"
                             data-toggle="selectize" 
-                            data-table="appliance" 
+                            data-table="appliances" 
                             data-text="spec_code" 
                             data-value="spec_code" 
                             data-selected="{{ $appliance['spec_code'] }}" 
@@ -44,7 +44,7 @@
                             class="form-control form-control-sm"
                             name="{{ "appliances[{$idx}][vendor]" }}"
                             data-toggle="selectize" 
-                            data-table="appliance" 
+                            data-table="appliances" 
                             data-text="vendor" 
                             data-value="vendor" 
                             data-selected="{{ $appliance['vendor'] }}" 
@@ -70,7 +70,7 @@
                             class="form-control form-control-sm"
                             name="{{ "appliances[{$idx}][maintenance_phone]" }}"
                             data-toggle="selectize" 
-                            data-table="appliance" 
+                            data-table="appliances" 
                             data-text="maintenance_phone" 
                             data-value="maintenance_phone" 
                             data-selected="{{ $appliance['maintenance_phone'] }}" 
@@ -105,13 +105,13 @@
                     '    </td>'+
                     '    <td style="width:35%">' +
                     '        <select class="form-control form-control-sm" name="appliances[' + idx + '][subject]"' +
-                    '           data-toggle="selectize" data-table="appliance" data-text="subject" data-value="subject" >'+
+                    '           data-toggle="selectize" data-table="appliances" data-text="subject" data-value="subject" >'+
                     '        </select>'+
                     '    </td>' +
                     '    <td style="width:15%">型號</td>'+
                     '    <td style="width:35%">' +
                     '        <select class="form-control form-control-sm" name="appliances[' + idx + '][spec_code]"' +
-                    '           data-toggle="selectize" data-table="appliance" data-text="spec_code" data-value="spec_code" >'+
+                    '           data-toggle="selectize" data-table="appliances" data-text="spec_code" data-value="spec_code" >'+
                     '        </select>'+
                     '    </td>' +
                     '</tr>' +
@@ -119,7 +119,7 @@
                     '    <td style="width:15%">廠商</td>'+
                     '    <td style="width:35%">' +
                     '        <select class="form-control form-control-sm" name="appliances[' + idx + '][vendor]"' +
-                    '           data-toggle="selectize" data-table="appliance" data-text="vendor" data-value="vendor" >'+
+                    '           data-toggle="selectize" data-table="appliances" data-text="vendor" data-value="vendor" >'+
                     '        </select>'+
                     '    </td>' +
                     '    <td style="width:15%">個數</td>'+
@@ -134,7 +134,7 @@
                     '    <td style="width:15%">廠商電話</td>' + 
                     '    <td style="width:35%">' +
                     '        <select class="form-control form-control-sm" name="appliances[' + idx + '][maintenance_phone]"' +
-                    '           data-toggle="selectize" data-table="appliance" data-text="maintenance_phone" data-value="maintenance_phone" >'+
+                    '           data-toggle="selectize" data-table="appliances" data-text="maintenance_phone" data-value="maintenance_phone" >'+
                     '        </select>'+
                     '    </td>' +
                     '    <td style="width:15%">備註</td>' + 

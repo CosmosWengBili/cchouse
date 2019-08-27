@@ -17,18 +17,11 @@ class FeatureController extends Controller
         $table = Input::get('table');
         $text = preg_replace("/[\'\"]+/", '', Input::get('text'));
         $value = preg_replace("/[\'\"]+/", '', Input::get('value'));
-
-        $whitelist = Schema::getColumnListing("{$table}s");
+        
+        $whitelist = Schema::getColumnListing($table);
 
         if (in_array($text, $whitelist)) {
-            if (strpos($table, '_') !== false) {
-                // from landlord_payment to LandlordPayment
-                $table = str_replace("_", " ", $table);
-                $table = ucwords($table);
-                $table = str_replace(" ", "", $table);
-            } else {
-                $table = ucfirst($table);
-            }
+            $table = ucfirst(camel_case(str_singular($table)));
             $model = app("App\\{$table}");
             $data = $model::select($text, $value)->get();
 

@@ -73,9 +73,14 @@ class ShareholderController extends Controller
             'investment_amount' => 'required'
         ]);
 
-        Shareholder::create($validatedData);
-
-        return redirect('shareholders');
+        $shareholder = Shareholder::create($validatedData);
+        if($request->building_ids != ''){
+            $shareholder->buildings()->sync(explode(",", $request->building_ids));
+        }
+        else{
+            $shareholder->buildings()->sync(array());
+        }
+        return redirect($request->_redirect);
     }
 
     /**
@@ -119,9 +124,7 @@ class ShareholderController extends Controller
      */
     public function update(Request $request, Shareholder $shareholder)
     {
-        $input = $request->input();
-
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required',
             'bank_name' => 'required',
@@ -138,11 +141,15 @@ class ShareholderController extends Controller
             'investment_amount' => 'required'
         ]);
 
-        $shareholder->update($input);
-
-        return redirect()->route('shareholders.show', [
-            'id' => $shareholder->id
-        ]);
+        $shareholder->update($validatedData);
+        if($request->building_ids != ''){
+            $shareholder->buildings()->sync(explode(",", $request->building_ids));
+        }
+        else{
+            $shareholder->buildings()->sync(array());
+        }
+        
+        return redirect($request->_redirect);
     }
 
     /**

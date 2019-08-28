@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\RoomService;
 use App\Building;
 use App\LandlordContract;
+use App\MonthlyReport;
 use Carbon\Carbon;
 
 class MonthlyReportService
@@ -177,8 +178,35 @@ class MonthlyReportService
                 }         
             }
             $data['rooms'][] = $roomData;
+            $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
+            $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
         }
         // end section : rooms
+
+        // section: add carry forward
+        $carry_forward = MonthlyReport::where('year', $year)
+                                        ->where('month', $month-1)
+                                        ->where('landlord_contract_id', $landlordContract->id)
+                                        ->get()->first()['carry_forward'] ?: 0;
+        if( $carry_forward < 0 ){
+            $detail_data = [
+                'type'               => '',
+                'room_code'          => '',
+                'subject'            => '結轉上期',
+                'bill_serial_number' => '',
+                'bill_start_date'    => '',
+                'bill_end_date'      => '',
+                'paid_at'            => $end_date,
+                'amount'             => $carry_forward,
+            ];
+            $data['details']['data'][] = $detail_data;
+            $data['details']['meta']['total_expenses'] += -$carry_forward;
+        }
+        // end section: add carry forward
+
+        // add detail total after room section
+        $data['meta']['total_income'] += $data['details']['meta']['total_incomes'];
+        $data['meta']['total_expense'] += $data['details']['meta']['total_expenses'];
 
         // section : payoffs
         foreach ($landlordContract->building->rooms as $room) {
@@ -223,6 +251,8 @@ class MonthlyReportService
                     $data['payoffs'][] = $roomData;
                 }
             }
+            $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
+            $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
         }
         // end section : payoffs
 
@@ -234,10 +264,14 @@ class MonthlyReportService
 
             $distribution_fee = 0;
             if( $shareholder->distribution_method == '浮動' ){
-                $distribution_fee = $data['meta']['total_income'] * $shareholder->investment_amount;
+                $total_revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+                if( $total_revenue > 0 ){
+                    $distribution_fee = $total_revenue * $shareholder->investment_amount;
+                }
             }
             else if ( $shareholder->distribution_method == '固定' ){
                 $distribution_fee = $shareholder->investment_amount;
+                $data['meta']['total_expense'] += $distribution_fee;
             }
 
             $data['shareholders'][] = [

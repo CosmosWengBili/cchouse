@@ -59,6 +59,8 @@ class MonthlyReportService
         $data['meta']['invoice_mailing_addresses'] = $landlordContract->landlords->pluck('invoice_mailing_address');
         $data['meta']['fax_numbers'] = $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten();
         $data['meta']['agency_service_fee'] = $landlordContract->agency_service_fee;
+        $data['meta']['total_management_fee'] = 0;
+        $data['meta']['total_agency_fee'] = 0;
         $data['meta']['total_income'] = 0;
         $data['meta']['total_expense'] = 0;
         // TODO: calculation of incomes and expenses
@@ -153,6 +155,7 @@ class MonthlyReportService
                             ];
             
                             $roomData['meta']['room_total_expense'] += $total_management_fee;
+                            $data['meta']['total_management_fee'] += $total_management_fee;;
                         } else if( $room->management_fee_mode === '固定' ) {
                             $management_fee = intval($room->management_fee);
                             $roomData['expenses'][] = [
@@ -161,6 +164,7 @@ class MonthlyReportService
                                 'amount'  => $management_fee,
                             ];
                             $roomData['meta']['room_total_expense'] += $management_fee;
+                            $data['meta']['total_management_fee'] += $management_fee;;
                         }
                         $firstRentPayment = $tenantContract->tenantPayments->where('subject', '租金')->sortBy('due_time')->first();
                         if ($payLog->loggable->id == $firstRentPayment->id) {
@@ -170,8 +174,8 @@ class MonthlyReportService
                                 'paid_at' => $payLog->paid_at,
                                 'amount'  => $agency_fee,
                             ];
-            
-                            $roomData['meta']['room_total_expense'] += $total_management_fee;
+                            $data['meta']['total_agency_fee'] += $agency_fee;;
+                            $roomData['meta']['room_total_expense'] += $agency_fee;
                         }                        
                         
                     }

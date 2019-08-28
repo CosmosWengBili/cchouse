@@ -2,16 +2,20 @@
 
 namespace App\Services;
 use Illuminate\Support\Collection;
-
-use App\Maintenance;
-use App\Notifications\TextNotify;
 use Carbon\Carbon;
+
 use App\LandlordContract;
 use App\Landlord;
 use App\TenantContract;
 use App\TenantPayment;
+use App\Maintenance;
+use App\MonthlyReport;
+
 use App\Notifications\LandlordContractDue;
 use App\Notifications\TenantContractDueInTwoMonths;
+use App\Notifications\TextNotify;
+
+use App\Services\MonthlyReportService;
 
 class ScheduleService
 {
@@ -214,6 +218,26 @@ class ScheduleService
         }
     }
 
+    public static function setMonthlyReportCarryFoward()
+    {
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+        $service = new MonthlyReportService();
+
+        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+                                            ->where('commission_end_date', '>', Carbon::today())
+                                            ->get();
+
+        foreach( $landlordContracts as $landlordContract ){
+            $data = $service->getMonthlyReport( $landlordContract, $month );
+            $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+            $monthlyReport = MonthlyReport::create(['year' => $year, 
+                                                    'month' => $month, 
+                                                    'carry_forward' => $revenue, 
+                                                    'landlord_contract_id' => $landlordContract->id]);
+        }
+    }
     // public function anotherNotification($data) {
     //     //
     // }

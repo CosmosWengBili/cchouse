@@ -68,6 +68,13 @@ class LandlordContract extends Model implements AuditableContract
     }
 
     /**
+     * Get the monthlyReports of this contract.
+     */
+    public function monthlyReports()
+    {
+        return $this->hasMany('App\MonthlyReport');
+    }
+    /**
      * Scope a query to only include active landlord contracts.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query

@@ -121,7 +121,7 @@
                                     <td>
                                         @php
                                             $paid_at = '';
-                                            if($data['paid_at']) $paid_at = (new \Carbon\Carbon($data['paid_at']))->format('Y-m-d');
+                                            isset($data['paid_at']) ?? $paid_at = (new \Carbon\Carbon($data['paid_at']))->format('Y-m-d');
                                         @endphp
                                         <input
                                             type="date"

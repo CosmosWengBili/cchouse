@@ -318,7 +318,11 @@ return [
         'room' => '房',
         'tenant_payments' => '租客帳單',
         'tenant_electricity_payments' => '租客電費',
-        'pay_logs' => '繳款紀錄'
+        'debt_collections' => '催收',
+        'pay_logs' => '繳款紀錄',
+        'deposits' => '訂金',
+        'maintenances' => '清潔維修',
+        'tenant' => '租客'
     ],
     'DebtCollection' => [
         'id' => '編號',
@@ -378,6 +382,7 @@ return [
         "collected_by" => "收取者",
         "is_visible_at_report" => "是否顯示在報表",
         "is_pay_off" => "是否為點交",
+        "period" => '期數',
         "comment" => "備註",
     ],
     'TenantElectricityPayment' => [

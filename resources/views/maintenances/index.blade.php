@@ -107,7 +107,7 @@
                                                                     <td> {{ $value }}</td>
                                                                 @endforeach
                                                                 <td>
-                                                                    <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room.building">查看</a>
+                                                                    <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room">查看</a>
                                                                     <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
                                                                     <a class="btn btn-danger btn-xs jquery-postback" data-method="delete" href="{{ route('maintenances.show', $maintenance['id']) }}">刪除</a>
                                                                     <a class="btn btn-success btn-xs js-get-record" href="#" data-id="{{$maintenance['id']}}" data-toggle="modal" data-target="#maintenance-record-model">查看記錄</a>

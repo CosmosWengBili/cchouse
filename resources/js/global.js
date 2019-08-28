@@ -57,17 +57,11 @@ window.realtimeSelect = function (selectizeElements) {
                 }
             })
             .done(function (msg) {
-                console.log(msg)
                 if (msg !== "invalid") {
                     var tableElements = ""
                     for (var i = 0; i < msg.length; i++) {
-                        if (selected === msg[i][value]) {
-                            tableElements += `<option value="${msg[i][value]}" selected>${msg[i][text]}</option>`
-                        } else {
-                            tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
-                        }
+                        tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
                     }
-
                     // Render HTML code
                     select.append(tableElements)
                     select.selectize({

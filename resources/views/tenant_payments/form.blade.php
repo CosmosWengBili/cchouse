@@ -112,17 +112,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>發票號碼</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="invoice_serial_number"
-                                            class="form-control form-control-sm"
-                                            value="{{ $data['invoice_serial_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>收取者</td>
                                     <td>
                                         <select

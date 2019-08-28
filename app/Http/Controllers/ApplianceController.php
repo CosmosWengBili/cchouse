@@ -96,7 +96,19 @@ class ApplianceController extends Controller
      */
     public function update(Request $request, Appliance $appliance)
     {
-        //
+        $validatedData = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'subject' => 'required|max:255',
+            'spec_code' => 'required|max:255',
+            'vendor' => 'required|max:255',
+            'count' => 'required|integer|digits_between:1,11',
+            'maintenance_phone' => 'required|max:255',
+            'comment' => 'nullable'
+        ]);
+
+        $appliance = $appliance->update($validatedData);
+
+        return redirect($request->_redirect);
     }
 
     /**

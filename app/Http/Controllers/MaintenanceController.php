@@ -134,7 +134,6 @@ class MaintenanceController extends Controller
         $responseData
             ->show($maintenance->load($request->withNested))
             ->relations($request->withNested);
-
         return view('maintenances.show', $responseData->get());
     }
 

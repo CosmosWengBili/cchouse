@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\Services\TenantPaymentService;
+use App\Services\ReceiptService;
 use App\TenantContract;
 use App\TenantPayment;
 use Carbon\Carbon;
@@ -93,6 +94,7 @@ class TenantPaymentController extends Controller
             'is_pay_off' => 'required',
             'comment' => 'required',
         ]);
+        ReceiptService::compareReceipt($tenantPayment, $validatedData);
         $tenantPayment->update($validatedData);
 
         return redirect($request->_redirect);

@@ -186,6 +186,14 @@ class TenantContract extends Pivot implements AuditableContract
             ->where('contract_end', '>=', Carbon::today())
             ->where('contract_start', '<=', Carbon::today());
     }
+    
+    /**
+     * Get the receipts of this tenant contracts.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
+    }
 
     public function sendElectricityPaymentReportSMS(int $year, int $month) {
         $smsService = resolve(SmsService::class);

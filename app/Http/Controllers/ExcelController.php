@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Input;
 
 use App\Exports\MorphExport;
+use App\Exports\ReceiptExport;
 use App\Imports\MorphImport;
+
+use App\Services\ReceiptService;
 
 class ExcelController extends Controller
 {
@@ -57,5 +62,35 @@ class ExcelController extends Controller
             new MorphExport('App\\' . $model, true),
             $model . '.xlsx'
         );
+    }
+
+    // download specific table file
+    public function export_by_function($function)
+    {
+        switch($function){
+            case 'invoice':
+                $start_date = Input::get('start_date');
+                $end_date = Input::get('end_date');
+                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+
+                return Excel::download(
+                    new ReceiptExport($invoiceData, 'invoice'),
+                    '發票報表.xlsx'
+                );
+            case 'receipt':
+                $start_date = Input::get('start_date');
+                $end_date = Input::get('end_date');
+                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+
+                return Excel::download(
+                    new ReceiptExport($receiptData, 'receipt'),
+                    '收據報表.xlsx'
+                );
+                
+
+                break;
+            default: 
+                break;
+        }
     }
 }

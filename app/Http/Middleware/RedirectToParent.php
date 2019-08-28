@@ -22,6 +22,7 @@ class RedirectToParent
         switch ($action) {
             case 'update':
             case 'store':
+            case 'update_invoice':
                 // a form was sent and needs the page to be redirected.
                 // in order to avoid messing up the controller functions, an additional parameter is passed through request
                 // rather than make an after middleware and do auto redirect.
@@ -33,6 +34,7 @@ class RedirectToParent
 
             case 'index':
             case 'show':
+            case 'edit_invoice':
                 // remember which page to redirect to
                 session(['_redirect' => $uri]);
                 break;

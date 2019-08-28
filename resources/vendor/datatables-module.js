@@ -62,12 +62,14 @@ function renderDataTable(selectors, options) {
             </div>`
         $(`[data-target="${selectors[i]}"]`).find('.query-box').append(queryElement)
         $(`[data-target="${selectors[i]}"]`).find('[data-toggle="datatable-query-delete"]').remove()
-    }
 
-    /* Add query row to query-box */
-    $('[data-toggle="datatable-query-add"]').on('click', function () {
-        $(this).parent().find('.query-box').append(queryElement)
-    })
+        /* Add query row to query-box */
+        $(`[data-target="${selectors[i]}"] [data-toggle="datatable-query-add"]`).on('click', function () {
+            $(this).parent().find('.query-box').append(queryElement)
+        })
+
+
+    }
 
     /* Delete query row in query-box */
     $('body').on('click', '[data-toggle="datatable-query-delete"]', function () {

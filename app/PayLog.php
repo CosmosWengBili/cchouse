@@ -12,6 +12,9 @@ class PayLog extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $casts = [
+        'paid_at' => 'datetime:Y-m-d',
+    ];
     protected $fillable = [
         'loggable_type',
         'loggable_id',
@@ -21,10 +24,7 @@ class PayLog extends Model implements AuditableContract
         'virtual_account',
         'paid_at',
         'tenant_contract_id',
-    ];
-
-    protected $casts = [
-        'paid_at' => 'datetime',
+        'receipt_type'
     ];
 
     /**

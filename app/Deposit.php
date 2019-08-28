@@ -28,6 +28,7 @@ class Deposit extends Model implements AuditableContract
      */
     protected $casts = [
         'is_deposit_collected' => 'boolean',
+        'confiscated_or_returned_date' => 'datetime:Y-m-d'
     ];
 
     /**
@@ -36,5 +37,13 @@ class Deposit extends Model implements AuditableContract
     public function tenantContract()
     {
         return $this->belongsTo('App\TenantContract');
+    }
+
+    /**
+     * Get the receipts of this deposit.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
     }
 }

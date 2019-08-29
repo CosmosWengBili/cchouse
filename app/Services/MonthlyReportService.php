@@ -51,13 +51,14 @@ class MonthlyReportService
         $period_end = $relative_landlordContracts->last()->commission_end_date->format('Y-m-d');
 
         $data['meta']['period'] = $period_start.' ~ '.$period_end;
-        $data['meta']['building_name'] = $landlordContract->building->name;
-        $data['meta']['building_address'] = $landlordContract->building->address;
+        $data['meta']['building_code'] = $landlordContract->building->rooms->pluck('room_code');
+        $data['meta']['building_location'] = $landlordContract->building->location;
         $data['meta']['rooms_count'] = $landlordContract->building->rooms->count() - 1;
         $data['meta']['landlords_phones'] = $landlordContract->landlords->pluck('phones.*.value')->flatten();
         $data['meta']['account_numbers'] = $landlordContract->landlords->pluck('account_number');
-        $data['meta']['invoice_mailing_addresses'] = $landlordContract->landlords->pluck('invoice_mailing_address');
-        $data['meta']['fax_numbers'] = $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten();
+        $data['meta']['account_address'] = array_merge($landlordContract->landlords->pluck('invoice_mailing_address')->toArray(), 
+                                                        $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten()->toArray());
+        $data['meta']['rent_collection_time'] = $landlordContract->rent_collection_time;
         $data['meta']['agency_service_fee'] = $landlordContract->agency_service_fee;
         $data['meta']['total_management_fee'] = 0;
         $data['meta']['total_agency_fee'] = 0;
@@ -150,10 +151,9 @@ class MonthlyReportService
                             $total_management_fee += intval(round($payLog->amount * $room->management_fee / 100));
                             $roomData['expenses'][] = [
                                 'subject' => '管理服務費',
-                                'paid_at' => $payLog->paid_at,
-                                'amount'  => $payLog->amount,
+                                'paid_at' => $start_date,
+                                'amount'  => $total_management_fee
                             ];
-            
                             $roomData['meta']['room_total_expense'] += $total_management_fee;
                             $data['meta']['total_management_fee'] += $total_management_fee;;
                         } else if( $room->management_fee_mode === '固定' ) {
@@ -168,7 +168,7 @@ class MonthlyReportService
                         }
                         $firstRentPayment = $tenantContract->tenantPayments->where('subject', '租金')->sortBy('due_time')->first();
                         if ($payLog->loggable->id == $firstRentPayment->id) {
-                            $agency_fee = intval(round($payLog->amount * $landlordContract->taxable_charter_fee));
+                            $agency_fee = intval(round($payLog->amount * $landlordContract->agency_service_fee));
                             $roomData['expenses'][] = [
                                 'subject' => '仲介費',
                                 'paid_at' => $payLog->paid_at,

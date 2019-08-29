@@ -37,6 +37,11 @@ class Building extends Model implements AuditableContract
         'has_elevator' => 'boolean'
     ];
 
+    protected $appends = array('location');
+
+    public function getLocationAttribute() {
+        return $this->city.$this->district.$this->address;
+    }
     /**
      * Get the user who is the commissioner of this building.
      */

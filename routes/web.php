@@ -73,6 +73,15 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('example/{model}', 'ExcelController@example');
             Route::get('export/function/{function}', 'ExcelController@export_by_function');
 
+            // pay off
+            Route::get('payOffs', 'PayOffController@index')->name('payOffs.index');
+            Route::get('payOffs/{tenant_contract}', 'PayOffController@show')->name('payOffs.show');
+            Route::post('payOffs/{tenant_contract}/storePayOffPayments', 'PayOffController@storePayOffPayments')->name('payOffs.storePayOffPayments');
+
+            // monthly report
+            Route::get('monthlyReports', 'MonthlyReportController@index')->name('monthlyReports.index');
+            Route::get('monthlyReports/{landlord_contract}', 'MonthlyReportController@show')->name('monthlyReports.show');
+
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
             Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
@@ -81,10 +90,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
           
-            // pay off
-            Route::get('payOffs', 'PayOffController@index')->name('payOffs.index');
-            Route::get('payOffs/{tenant_contract}', 'PayOffController@show')->name('payOffs.show');
-            Route::post('payOffs/{tenant_contract}/storePayOffPayments', 'PayOffController@storePayOffPayments')->name('payOffs.storePayOffPayments');
         });
     });
 

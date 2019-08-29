@@ -14,7 +14,7 @@ class MonthlyReportService
     /**
      * Get all data that monthly report needs.
      */
-    public function getMonthlyReport(LandlordContract $landlordContract, $month) {
+    public function getMonthlyReport(LandlordContract $landlordContract, $month, $year) {
         $data = [
             'meta'         => [],
             'rooms'        => [],
@@ -23,8 +23,6 @@ class MonthlyReportService
             'shareholders' => [],
         ];
         
-        // Set query date
-        $month - Carbon::now()->month > 1 ? $year = Carbon::now()->year-1 : $year=Carbon::now()->year;
         $start_date = Carbon::create($year, $month);
         $end_date = $start_date->copy()->endOfMonth();
 

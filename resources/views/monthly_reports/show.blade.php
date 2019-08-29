@@ -17,7 +17,8 @@
 <div class="container">
     <div class="card">
         <div class="card-body table-responsive">
-            <div class="row justify-content-center monthly-report">
+            @include('monthly_reports.tabs', ['by' => 'contract'])
+            <div class="row justify-content-center monthly-report mt-3">
                 {{-- Header --}}
                 <div class="col-3">
                     <img src="/images/monthly_report_logo.png" style="width: 100%;">
@@ -28,7 +29,7 @@
                 <div class="col-3"></div>
                 <div class="col-12 text-right border-bottom border-dark">
                     <p class="mr-4">
-                        108年 <span class="bg-highlight px-3 text-center">8</span>月份
+                        {{$report_used_date['year'] - 1911}}年 <span class="bg-highlight px-3 text-center">{{$report_used_date['month']}}</span>月份
                     </p>   
                 </div>
                 {{-- Header end --}}
@@ -72,7 +73,7 @@
                 <div class="col-2">帳單郵寄或傳真</div>
                 <div class="col-7">{{implode(",", $data['meta']['account_address'])}}</div>
                 <div class="col-1 px-1 text-center bg-gray">約定入帳日</div>
-                <div class="col-2 bg-highlight px-3 text-center">9月{{$data['meta']['rent_collection_time']}}日</div>
+                <div class="col-2 bg-highlight px-3 text-center">{{$report_used_date['next_month']}}月{{$data['meta']['rent_collection_time']}}日</div>
                 {{-- Meta data end --}}
                 {{-- Room data --}}
                 <div class="col-6 text-center border-top border-dark">租約起迄日及租金條件</div>

@@ -39,7 +39,7 @@ class AddReceiptTableAndRemoveOtherTableInvoiceSerialNumber extends Migration
             $table->dropColumn('invoice_serial_number');
         });
         Schema::table('tenant_payments', function (Blueprint $table) {
-            $table->dropColumn('invoice_serial_numner');
+            $table->dropColumn('invoice_serial_number');
         });
         Schema::table('debt_collections', function (Blueprint $table) {
             $table->dropColumn('invoice_serail_number');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -45,8 +46,7 @@ class MonthlyReportController extends Controller
             'month' => $month,
             'year' => Input::get('year') ?? Carbon::now()->year,
             'next_month' => ( $month == 12 )? 1 : $month + 1,
-        ]
-        ;
+        ];
         $month_counter = Carbon::now()->subMonth();
         $month_options = [];
         for( $k=0; $k < 3; $k ++ ){
@@ -86,6 +86,27 @@ class MonthlyReportController extends Controller
             }
         }
         LandlordOtherSubject::destroy($delete_ids);
+    }
+
+    public function print(building $building){
+
+        $month = Input::get('month');
+        $report_used_date = [
+            'month' => $month,
+            'year' => Input::get('year'),
+            'next_month' => ( $month == 12 )? 1 : $month + 1,
+        ];
+        $service = new MonthlyReportService();
+        $landlord_contract = $building->activeContracts();
+        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $data['report_used_date'] = $report_used_date;
+        
+        $pdf_data = [
+            'data' => $data
+        ];
+
+        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);  
+        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');        
     }
 
 }

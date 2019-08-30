@@ -80,7 +80,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
 
             // monthly report
             Route::get('monthlyReports', 'MonthlyReportController@index')->name('monthlyReports.index');
-            Route::get('monthlyReports/{landlord_contract}', 'MonthlyReportController@show')->name('monthlyReports.show');
+            Route::get('monthlyReports/{building}', 'MonthlyReportController@show')->name('monthlyReports.show');
+            Route::post('monthlyReports/{building}/storeOtherSubjects', 'MonthlyReportController@storeOtherSubjects')->name('monthlyReports.storeOtherSubjects');
+            
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');

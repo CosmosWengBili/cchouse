@@ -18,7 +18,7 @@ class MonthlyReportService
         $data = [
             'meta'         => [],
             'rooms'        => [],
-            'details'      => ['data'=>[], 'meta'=>[ 'total_incomes'=>0, 'total_expenses'=>0]],
+            'details'      => ['data'=>[], 'meta'=>[ 'total_incomes'=>0, 'total_expenses'=>0, 'total_landlord_other_subject_id'=>[]]],
             'payoffs'      => [],
             'shareholders' => [],
         ];
@@ -85,7 +85,7 @@ class MonthlyReportService
 
             // section : details
             $landlordPayments = $room->landlordPayments->whereBetween('collection_date', [$start_date, $end_date]);
-            $landlordOtherSubjects = $room->landlordPayments->whereBetween('expense_date', [$start_date, $end_date]);
+            $landlordOtherSubjects = $room->landlordOtherSubjects->whereBetween('expense_date', [$start_date, $end_date]);
             
             foreach ($landlordPayments as $landlordPayment) {
                 $data['details']['data'][] = [
@@ -111,7 +111,9 @@ class MonthlyReportService
                     'bill_end_date'      => '',
                     'paid_at'            => $landlordOtherSubject->expense_date,
                     'amount'             => $landlordOtherSubject->amount,
+                    'landlord_other_subject_id' => $landlordOtherSubject->id,
                 ];
+                array_push($data['details']['meta']['total_landlord_other_subject_id'], $landlordOtherSubject->id);
                 if($landlordOtherSubject->income_or_expense === '收入'){
                     $data['details']['meta']['total_incomes'] += $landlordOtherSubject->amount;
                 }

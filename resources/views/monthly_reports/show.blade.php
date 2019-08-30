@@ -13,10 +13,20 @@
     bottom: 0px;
     left: 40%;
 }
+.monthly-report .add-subject{
+    position: absolute;
+    top: -10%;
+    left: 95%
+}
+.monthly-report .delete-subject{
+    position: absolute;
+    top: -10%;
+    left: 140%
+}
 </style>
-<div class="container">
+<div class="container-fluid">
     <div class="card">
-        <div class="card-body table-responsive">
+        <div class="card-body table-responsive" style="padding: 5rem;">
             @include('monthly_reports.tabs', ['by' => 'contract'])
             <div class="row justify-content-center monthly-report mt-3">
                 {{-- Header --}}
@@ -104,7 +114,7 @@
                         @endphp
                         @foreach( $room['incomes'] as $income )
                             <div class="col-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
-                            <div class="col-2 text-center">{{ $income['paid_at']->format('m/d') }}</div>
+                            <div class="col-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
                             <div class="col-1 text-center">{{ $income['amount'] }}</div>
                             <div class="col-1 text-center"></div>
                         @endforeach
@@ -113,7 +123,7 @@
                         @endif
                         @foreach( $room['expenses'] as $expense )
                             <div class="col-8 px-5">{{ $expense['subject'] }}</div>
-                            <div class="col-2 text-center">{{ $expense['paid_at']->format('m/d') }}</div>
+                            <div class="col-2 text-center">{{ $expense['paid_at']->format('m-d') }}</div>
                             <div class="col-1 text-center"></div>
                             <div class="col-1 text-center">{{ $expense['amount'] }}</div>
                         @endforeach
@@ -141,7 +151,7 @@
                     <div class="col-10 row px-0">
                         @foreach( $payoff['incomes'] as $income )
                             <div class="col-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
-                            <div class="col-2 text-center">{{ $income['paid_at']->format('m/d') }}</div>
+                            <div class="col-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
                             <div class="col-1 text-center">{{ $income['amount'] }}</div>
                             <div class="col-1 text-center"></div>
                         @endforeach
@@ -151,7 +161,7 @@
 
                         @foreach( $payoff['expenses'] as $expense )
                             <div class="col-8 px-5">{{ $expense['subject'] }}</div>
-                            <div class="col-2 text-center">{{ $expense['paid_at']->format('m/d') }}</div>
+                            <div class="col-2 text-center">{{ $expense['paid_at']->format('m-d') }}</div>
                             <div class="col-1 text-center"></div>
                             <div class="col-1 text-center">{{ $expense['amount'] }}</div>
                         @endforeach
@@ -171,9 +181,18 @@
                     <div class="col-2 text-center border border-dark py-5 my-0">
                         費用明細
                     </div>
-                    <div class="col-10 align-self-start row px-0">
+                    <div id="detail-data" class="col-10 align-self-start row px-0">
+                        <input type="hidden" 
+                               id="total_landlord_other_subject_id" 
+                               value={{ implode(',', $data['details']['meta']['total_landlord_other_subject_id']) }}
+                        >
                         @foreach( $data['details']['data'] as $detail_data )
                             <div class="col-8 px-5">
+                                @if( array_key_exists('landlord_other_subject_id', $detail_data) )
+                                    <span class="badge badge-pill badge-danger delete-real-subject" 
+                                          style="cursor:pointer"
+                                          data-id={{ $detail_data['landlord_other_subject_id'] }}>-</span>
+                                @endif                                
                                 {{ $detail_data['subject'] }}
                                 @if( $detail_data['bill_serial_number'] != '' )
                                     (帳單號:{{ $detail_data['bill_serial_number'] }})
@@ -183,14 +202,24 @@
                                 @endif
                             </div>
                             <div class="col-2 text-center">{{ substr(strval($detail_data['paid_at']),5,5) }}</div>
-                            @if( $detail_data['amount'] > 0 )
+                            @if( $detail_data['type'] == '收入' )
                                 <div class="col-1 text-center">{{ $detail_data['amount'] }}</div>
                                 <div class="col-1 text-center"></div>
                             @else
                                 <div class="col-1 text-center"></div>
-                                <div class="col-1 text-center">{{ -$detail_data['amount'] }}</div>
+                                <div class="col-1 text-center">{{ abs($detail_data['amount']) }}</div>
                             @endif
                         @endforeach
+                        <div class="col-8 px-5">
+                            <input class="w-100 landlord-other-subject">
+                        </div>
+                        <div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>
+                        <div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>
+                        <div class="col-1 text-center position-relative">
+                            <input class="w-100 landlord-other-expense">
+                            <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>
+                            <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>
+                        </div>
                    </div>
                 </div>                
                 {{-- Detail data end --}}
@@ -238,10 +267,78 @@
                         <div class="col-1">{{$data['meta']['total_agency_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
-                </div>                              
+                </div>    
+                <div class="col-3">
+                    <button id="save-other-subjects" class="btn btn-block btn-success">儲存</button>
+                </div>                          
                 {{-- Footer end --}}
             </div>
         </div>
     </div>
 </div>
+<script>
+    $('body').on('click', '.add-subject', function(){
+        const $buttons = $(this).parent().find('button')
+        $buttons.remove()
+
+        const element = 
+        '<div class="col-8 px-5">' +
+        '   <input class="w-100 landlord-other-subject">' +
+        '</div>' +
+        '<div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>' +
+        '<div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>' +
+        '<div class="col-1 text-center position-relative">' +
+        '   <input class="w-100 landlord-other-expense">' +
+        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
+        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>' +
+        '</div>'
+        
+        $('#detail-data').append(element)
+    })
+    $('body').on('click', '.delete-subject', function(){
+        const element =
+        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
+        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>'
+
+        // delete one by one bacause of element structure
+        $(this).parent().prev().prev().prev().prev().append(element)
+        $(this).parent().prev().prev().prev().remove()
+        $(this).parent().prev().prev().remove()
+        $(this).parent().prev().remove()
+        $(this).parent().remove()
+    })
+
+    $('#save-other-subjects').on('click', function(){
+        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $public_room->id) }}';
+
+        // add new landlord other subject data
+        const addedData = $.map($('.landlord-other-subject'), function(subject, index){
+            var tmpData = {
+                'subject' : subject.value,
+                'date' : $('.landlord-other-date')[index].value,
+                'income' : $('.landlord-other-income')[index].value,
+                'expense' : $('.landlord-other-expense')[index].value,
+            }
+            return tmpData;
+        })
+
+        // delete deleted subjects
+        const totalIds = $('#total_landlord_other_subject_id').val().split(',')
+        const keepIds = $.map($('.delete-real-subject'), function(subject, index){
+            return subject.dataset.id
+        })
+        const deleteIds = totalIds.filter(x => !keepIds.includes(x));
+
+        $.post(apiURL, { data: addedData, deleteIds:  deleteIds}, function (data) {
+            location.reload();
+        })
+    })
+
+    $('.delete-real-subject').on('click', function(){
+        $(this).parent().next().next().next().remove()
+        $(this).parent().next().next().remove()
+        $(this).parent().next().remove()
+        $(this).parent().remove()
+    })
+</script>
 @endsection

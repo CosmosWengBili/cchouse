@@ -37,7 +37,7 @@
                             @endforeach
                             <td>
                                 <a class="btn btn-info" href="{{ route( 'monthlyReports.show', $object['id']) }}">查看月結單</a>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=landlords;building;documents">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 
                             </td>

@@ -67,6 +67,14 @@ class Building extends Model implements AuditableContract
     }
 
     /**
+     * Get the rooms of this building.
+     */
+    public function publicRoom()
+    {
+        return $this->rooms()->where('room_code', '公用')->first();
+    }
+
+    /**
      * Get the landlord contract of this building.
      */
     public function landlordContracts()
@@ -78,7 +86,7 @@ class Building extends Model implements AuditableContract
      */
     public function activeContracts()
     {
-        return $this->hasMany('App\LandlordContract');
+        return $this->hasMany('App\LandlordContract')->active();
     }
 
     /**

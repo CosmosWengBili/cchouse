@@ -90,7 +90,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(ScheduleService::make('setMonthlyReportCarryFoward'))
                 ->name('Set Monthly Report CarryFoward')
-                ->monthlyOn(date('t'), '5:00')
+                ->dailyAt('05:00')
                 ->runInBackground();
     }
 

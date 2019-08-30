@@ -9,7 +9,7 @@
 
         <title>{{ config('app.name', 'CCHouse') }}</title>
         <!-- base:css -->
-
+        <link rel="shortcut icon" href="/images/logo.png" type="image/x-icon" />
         <link rel="stylesheet" href={{ asset('vendors/typicons/font/typicons.css') }}>
         <!-- endinject -->
         <!-- plugin css for this page -->

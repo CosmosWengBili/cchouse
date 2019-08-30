@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Redis;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
@@ -37,10 +38,14 @@ class Building extends Model implements AuditableContract
         'has_elevator' => 'boolean'
     ];
 
-    protected $appends = array('location');
+    protected $appends = array('location', 'carry');
 
     public function getLocationAttribute() {
         return $this->city.$this->district.$this->address;
+    }
+
+    public function getCarryAttribute() {
+        return Redis::get('monthlyRepost:carry:'.$this->activeContracts()->id);
     }
     /**
      * Get the user who is the commissioner of this building.

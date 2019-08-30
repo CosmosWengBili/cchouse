@@ -42,11 +42,16 @@ class MonthlyReportController extends Controller
     public function show(building $building)
     { 
         $month = Input::get('month') ?? Carbon::now()->month;
+
+        // set object which would be used on blade date data
         $report_used_date = [
             'month' => $month,
             'year' => Input::get('year') ?? Carbon::now()->year,
             'next_month' => ( $month == 12 )? 1 : $month + 1,
         ];
+
+        // generate the month before, current, and the month after data
+        // eg: current 2019/08, generate 2019/07, 2019/08, 2019/09
         $month_counter = Carbon::now()->subMonth();
         $month_options = [];
         for( $k=0; $k < 3; $k ++ ){
@@ -59,6 +64,7 @@ class MonthlyReportController extends Controller
 
         $public_room = $building->publicRoom();
 
+        // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
         $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']); 
@@ -91,16 +97,19 @@ class MonthlyReportController extends Controller
     public function print(building $building){
 
         $month = Input::get('month');
+
+        // set object which would be used on blade date data
         $report_used_date = [
             'month' => $month,
             'year' => Input::get('year'),
             'next_month' => ( $month == 12 )? 1 : $month + 1,
         ];
+
+        // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
         $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
         $data['report_used_date'] = $report_used_date;
-        
         $pdf_data = [
             'data' => $data
         ];

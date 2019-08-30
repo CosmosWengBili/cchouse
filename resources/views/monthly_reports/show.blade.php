@@ -337,6 +337,7 @@
         })
     })
 
+    // delete one by one bacause of element structure
     $('.delete-real-subject').on('click', function(){
         $(this).parent().next().next().next().remove()
         $(this).parent().next().next().remove()

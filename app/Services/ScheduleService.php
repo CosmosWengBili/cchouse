@@ -233,12 +233,16 @@ class ScheduleService
         foreach( $landlordContracts as $landlordContract ){
             $data = $service->getMonthlyReport( $landlordContract, $month, $year );
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+
+            // store carry forward if current day it the last day of the month
             if( Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d') ){
                 $monthlyReport = MonthlyReport::create(['year' => $year, 
                     'month' => $month, 
                     'carry_forward' => $revenue, 
                     'landlord_contract_id' => $landlordContract->id]);
             }
+
+            // store to Redis each time
             Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
         }
     }

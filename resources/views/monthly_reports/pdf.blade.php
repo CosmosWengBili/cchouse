@@ -6,17 +6,10 @@
 </head>
 <body>
     <style>
-    body{
-        font-size: 12px;
-    }
     .monthly-report div{
         margin-top: 0.2rem;
         margin-bottom: 0.25rem;
     }
-    .monthly-report .flex{
-        display: -webkit-box;
-    }
-
     .monthly-report .room > div{
         min-height: 100px;
     }
@@ -34,6 +27,14 @@
         position: absolute;
         top: -10%;
         left: 140%
+    }
+
+    /* use for only pdf format */
+    body{
+        font-size: 12px;
+    }
+    .monthly-report .flex{
+        display: -webkit-box;
     }
     .row{
         display: flex;

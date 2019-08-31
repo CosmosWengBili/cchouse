@@ -18,7 +18,8 @@
         "minchao/mitake-php": "^0.3.0",
         "owen-it/laravel-auditing": "^9.2",
         "spatie/laravel-permission": "^2.37",
-        "superbalist/laravel-google-cloud-storage": "^2.2"
+        "superbalist/laravel-google-cloud-storage": "^2.2",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

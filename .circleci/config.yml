@@ -7,24 +7,13 @@ jobs:
   phpunit:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.1-node-browsers
+      - image: msglight4874/ci-laravel-php:7.1-node-browsers-0.0.1
       - image: circleci/mysql:5.7-ram
         environment:
           MYSQL_ROOT_PASSWORD: ''
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 
     steps:
-      - run: sudo apt-get install -y libpng-dev
-      # Install php extensions that laravel required
-      - run: sudo docker-php-ext-install mbstring
-      - run: sudo docker-php-ext-install gd
-      - run: sudo docker-php-ext-install tokenizer
-      - run: sudo docker-php-ext-install pdo
-      - run: sudo docker-php-ext-install json
-      - run: sudo docker-php-ext-install bcmath
-      - run: sudo docker-php-ext-install ctype
-      - run: sudo docker-php-ext-install xml
-
       - checkout
 
       - run: mv .env.circleci .env

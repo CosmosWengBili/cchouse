@@ -39,8 +39,29 @@ jobs:
       # run tests with phpunit or codecept
       - run: ./vendor/bin/phpunit --exclude-group ignore
 
+  deploy-staging:
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data git pull"
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data npm install"
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data npm run prod"
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data composer install"
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan migrate"
+            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan cache:clear"
+
 workflows:
   version: 2
   pr-build:
     jobs:
       - phpunit
+
+  deploy-staging:
+    jobs:
+      - deploy-staging:
+          filters:
+            branches:
+              only: develop

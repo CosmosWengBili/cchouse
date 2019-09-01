@@ -9,10 +9,7 @@ class SystemVariableController extends Controller
 {
     public function index()
     {
-        $groups = array_map(function ($group) {
-            return $group['group'];
-        }, SystemVariable::VARIABLES);
-
+        $groups = SystemVariable::groups();
         return view('system_variables.index', ['groups' => $groups]);
     }
 

@@ -47,12 +47,12 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data git pull"
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data npm install"
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data npm run prod"
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && sudo -g www-data composer install"
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan migrate"
-            ssh circleci@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan cache:clear"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && git pull"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && npm install"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && npm run prod"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && composer install"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan migrate"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan cache:clear"
 
 workflows:
   version: 2

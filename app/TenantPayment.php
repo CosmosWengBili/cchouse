@@ -33,6 +33,7 @@ class TenantPayment extends Model implements AuditableContract
         "is_visible_at_report",
         "is_pay_off",
         "comment",
+        "period",
     ];
 
     /**

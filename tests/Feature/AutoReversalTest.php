@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\CompanyIncome;
 use App\TenantElectricityPayment;
 use App\TenantPayment;
 use Tests\TestCase;
@@ -120,14 +121,14 @@ class AutoReversalTest extends TestCase
             'amount' => 5000,
             'virtual_account' => '9529216813322423450',
         ]);
-//        $this->assertDatabaseHas('pay_logs', [
-//            'loggable_type' => 'App\TenantPayment',
-//            'loggable_id' => $firstOfEachPayments->where('subject','電費')->first()->id,
-//            'subject' => '電費',
-//            'payment_type' => '電費',
-//            'amount' => 100,
-//            'virtual_account' => '9529216813322423450',
-//        ]);
+        $this->assertDatabaseHas('pay_logs', [
+            'loggable_type' => 'App\TenantElectricityPayment',
+            'loggable_id' => TenantElectricityPayment::first()->id,
+            'subject' => '電費',
+            'payment_type' => '電費',
+            'amount' => 100,
+            'virtual_account' => '9529216813322423450',
+        ]);
 
         $this->assertDatabaseHas('company_incomes', [
             'tenant_contract_id' => $newContract->id,
@@ -135,12 +136,13 @@ class AutoReversalTest extends TestCase
             'income_date' => '2019-08-10',
             'amount' => 150,
         ]);
-//        $this->assertDatabaseHas('company_incomes', [
-//            'tenant_contract_id' => $newContract->id,
-//            'subject' => '電費',
-//            'income_date' => '2019-08-10',
-//            'amount' => 100,
-//        ]);
+
+        $this->assertDatabaseHas('company_incomes', [
+            'tenant_contract_id' => $newContract->id,
+            'subject' => '電費',
+            'income_date' => '2019-08-10',
+            'amount' => 100,
+        ]);
 
         $this->assertDatabaseHas('landlord_other_subjects', [
             'subject' => '水雜費',

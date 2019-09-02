@@ -7,7 +7,7 @@
                 bg-primary
             @endif
             "
-            href="{{ route('monthlyReports.show', ['landlord_contract' => 1]) }}?month={{ $option['month'] }}&year={{ $option['year'] }}"
+            href="{{ route('monthlyReports.show', ['landlord_contract' => $data['building_id']]) }}?month={{ $option['month'] }}&year={{ $option['year'] }}"
         >
             {{ $option['year'] }}/{{ $option['month'] }}
         </a>

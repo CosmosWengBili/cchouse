@@ -43,9 +43,9 @@ class TenantPayment extends Model implements AuditableContract
     protected $casts = [
         'is_charge_off_done' => 'boolean',
         'is_visible_at_report' => 'boolean',
-        'is_pay_off' => 'boolean'
+        'is_pay_off' => 'boolean',
+        'due_time' => 'datetime:Y-m-d'
     ];
-
     /**
      * Get the tenant contract of this tenant payment.
      */

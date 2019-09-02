@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-
 use Carbon\Carbon;
 
 class LandlordContract extends Model implements AuditableContract
@@ -15,7 +14,11 @@ class LandlordContract extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
+
     protected $hidden = ['pivot'];
+
+    protected $casts = ['commission_start_date' => 'date',
+                        'commission_end_date' => 'date'];
 
     protected $appends = array('landlord_ids');
 
@@ -64,6 +67,19 @@ class LandlordContract extends Model implements AuditableContract
         return $this->belongsTo('App\User', 'commissioner_id');
     }
 
+    /**
+     * Get the monthlyReports of this contract.
+     */
+    public function monthlyReports()
+    {
+        return $this->hasMany('App\MonthlyReport');
+    }
+    /**
+     * Scope a query to only include active landlord contracts.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeActive($query)
     {
         return $query

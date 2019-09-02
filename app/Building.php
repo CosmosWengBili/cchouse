@@ -45,7 +45,7 @@ class Building extends Model implements AuditableContract
     }
 
     public function getCarryAttribute() {
-        return Redis::get('monthlyRepost:carry:'.$this->activeContracts()->id);
+        return Redis::get('monthlyRepost:carry:'.$this->activeContracts()->first()['id']) ?? 0;
     }
     /**
      * Get the user who is the commissioner of this building.

@@ -29,7 +29,7 @@
         left: 140%
     }
 
-    /* use for only pdf format */
+    /* used for only pdf format */
     body{
         font-size: 12px;
     }

@@ -27,7 +27,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body table-responsive" style="padding: 5rem;">
-            <a href="{{route('monthlyReports.print', $public_room->id)}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
+            <a href="{{route('monthlyReports.print', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
                 輸出為 PDF
             </a>
             @include('monthly_reports.tabs', ['by' => 'contract'])

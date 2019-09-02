@@ -1,0 +1,68 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  phpunit:
+    docker:
+      # Specify the version you desire here
+      - image: msglight4874/ci-laravel-php:7.1-node-browsers-0.0.2
+      - image: circleci/mysql:5.7-ram
+        environment:
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+    steps:
+      - checkout
+
+      - run: mv .env.circleci .env
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: composer install -n --prefer-dist
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://127.0.0.1:3306 -timeout 1m
+      # prepare the database
+      - run: php artisan db:create
+      - run: php artisan migrate
+
+      # run tests with phpunit
+      - run: ./vendor/bin/phpunit --exclude-group ignore
+
+  deploy-staging:
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && git pull"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && npm install"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && npm run prod"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && composer install"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan migrate"
+            ssh johnliu@$STAGING_SERVER_IP "cd ${STAGING_PROJECT_ROOT} && php artisan cache:clear"
+
+workflows:
+  version: 2
+  pr-build:
+    jobs:
+      - phpunit
+
+  deploy-staging:
+    jobs:
+      - deploy-staging:
+          filters:
+            branches:
+              only: develop

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Redis;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
@@ -34,35 +35,63 @@ class Building extends Model implements AuditableContract
      * @var array
      */
     protected $casts = [
-        'has_elevator' => 'boolean',
+        'has_elevator' => 'boolean'
     ];
 
+    protected $appends = array('location', 'carry');
+
+    public function getLocationAttribute() {
+        return $this->city.$this->district.$this->address;
+    }
+
+    public function getCarryAttribute() {
+        return Redis::get('monthlyRepost:carry:'.$this->activeContracts()->first()['id']) ?? 0;
+    }
     /**
      * Get the user who is the commissioner of this building.
      */
-    public function commissioner() {
+    public function commissioner()
+    {
         return $this->belongsTo('App\User', 'commissioner_id');
     }
 
     /**
      * Get the user who is the administrator of this building.
      */
-    public function administrator() {
+    public function administrator()
+    {
         return $this->belongsTo('App\User', 'administrator_id');
     }
 
     /**
      * Get the rooms of this building.
      */
-    public function rooms() {
+    public function rooms()
+    {
         return $this->hasMany('App\Room');
+    }
+
+    /**
+     * Get the rooms of this building.
+     */
+    public function publicRoom()
+    {
+        return $this->rooms()->where('room_code', '公用')->first();
     }
 
     /**
      * Get the landlord contract of this building.
      */
-    public function landlordContracts() {
+    public function landlordContracts()
+    {
         return $this->hasMany('App\LandlordContract');
+    }
+    /**
+     * Get the landlord contract of this building.
+     */
+    public function activeContracts()
+    {
+        return $this->hasMany('App\LandlordContract')->active();
     }
 
     /**

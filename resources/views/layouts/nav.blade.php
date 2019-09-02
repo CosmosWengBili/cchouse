@@ -101,10 +101,6 @@
                 <ul class="submenu-item">
                 <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/text_editor.html">Text Editor</a></li>
-                <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
                 </ul>
             </div>
             </li>
@@ -118,6 +114,7 @@
                 <li class="nav-item"><a class="nav-link" href="/landlords">房東管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/landlordContracts">房東合約管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/tenants">租客管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tenantContracts">租客合約管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/buildings">物件管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>
@@ -133,11 +130,12 @@
                 <i class="menu-arrow"></i></a>
                 <div class="submenu">
                     <ul class="submenu-item">
+                    <li class="nav-item"><a class="nav-link" href="/deposits">訂金管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/tenantElectricityPayments">電費管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/tenantPayments">租客應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Validation</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/text_editor.html">Text Editor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/receipts">發票單據管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
                     </ul>
                 </div>

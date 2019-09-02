@@ -13,9 +13,19 @@ class LandlordOtherSubject extends Model implements AuditableContract
     use AuditableTrait;
 
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+    /**
      * Get the building of this landlord other subject.
      */
-    public function building() {
+    public function building()
+    {
         return $this->belongsTo('App\Room');
     }
 }

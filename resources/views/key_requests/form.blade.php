@@ -47,7 +47,7 @@
                                 <td>
                                     <select 
                                         data-toggle="selectize" 
-                                        data-table="user" 
+                                        data-table="users" 
                                         data-text="name" 
                                         data-value="id"
                                         data-selected="{{ isset($data["request_user_id"]) ? $data['request_user_id'] : \Auth::user()->id }}"

@@ -22,18 +22,14 @@ class User extends Authenticatable implements AuditableContract
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'email', 'password', 'mobile',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'mobile'];
 
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [
-        'email_verified_at', 'remember_token', 'deleted_at',
-    ];
+    protected $hidden = ['email_verified_at', 'remember_token', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -41,84 +37,97 @@ class User extends Authenticatable implements AuditableContract
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime'
     ];
-
 
     /**
      * Get the buildings this user commissions.
      */
-    public function commissionBuildings() {
+    public function commissionBuildings()
+    {
         return $this->hasMany('App\Building', 'commissioner_id');
     }
 
     /**
      * Get the buildings this user manages.
      */
-    public function manageBuildings() {
+    public function manageBuildings()
+    {
         return $this->hasMany('App\Building', 'administrator_id');
     }
 
     /**
      * Get the tenants whose information was confirmed by this user.
      */
-    public function confirmTenants() {
+    public function confirmTenants()
+    {
         return $this->hasMany('App\Tenant', 'confirm_by');
     }
 
     /**
      * Get the tenant contracts this user commissions.
      */
-    public function commissionTenantContracts() {
+    public function commissionTenantContracts()
+    {
         return $this->hasMany('App\TenantContract', 'commissioner_id');
     }
 
     /**
      * Get the keys this user keeps.
      */
-    public function keys() {
+    public function keys()
+    {
         return $this->hasMany('App\Key', 'keeper_id');
     }
 
     /**
      * Get the keys requests this user ever made.
      */
-    public function keyRequests() {
+    public function keyRequests()
+    {
         return $this->hasMany('App\KeyRequest', 'request_user_id');
     }
 
     /**
      * Get the debt collections this user ever made.
      */
-    public function debtCollections() {
+    public function debtCollections()
+    {
         return $this->hasMany('App\DebtCollection', 'colloector_id');
     }
 
     /**
      * Get the maintenances this user commissions.
      */
-    public function commissionMaintenances() {
+    public function commissionMaintenances()
+    {
         return $this->hasMany('App\Maintenance', 'commissioner_id');
     }
 
     /**
      * Get the maintenances this user made.
      */
-    public function maintenances() {
+    public function maintenances()
+    {
         return $this->hasMany('App\Maintenance', 'maintenance_staff_id');
     }
 
     /**
      * Get all the landlord contracts this user commissions.
      */
-    public function landlordContracts() {
+    public function landlordContracts()
+    {
         return $this->hasMany('App\LandlordContract', 'commissioner_id');
     }
     /**
      * Get all the audits of this user.
      */
-    public function allAudits() {
-        return $this->hasMany('App\Audit', 'user_id')->where('user_type', static::class);
+    public function allAudits()
+    {
+        return $this->hasMany('App\Audit', 'user_id')->where(
+            'user_type',
+            static::class
+        );
     }
 
     /**
@@ -127,7 +136,8 @@ class User extends Authenticatable implements AuditableContract
      * @param string $groupName
      * @return boolean
      */
-    public function belongsToGroup(string $groupName) {
+    public function belongsToGroup(string $groupName)
+    {
         return $this->getGroupNames()->contains($groupName);
     }
 
@@ -136,9 +146,12 @@ class User extends Authenticatable implements AuditableContract
      *
      * @return boolean
      */
-    public function belongsToDepartment(string $departmentName) {
+    public function belongsToDepartment(string $departmentName)
+    {
         $departmentIds = $this->groups()->pluck('department_id');
-        $departmentNames = Department::whereIn('id', $departmentIds)->pluck('name');
+        $departmentNames = Department::whereIn('id', $departmentIds)->pluck(
+            'name'
+        );
 
         return $departmentNames->contains($departmentName);
     }

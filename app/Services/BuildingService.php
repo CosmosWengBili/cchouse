@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Services\RoomService;
 use App\Building;
 
-class BuildingService{
-
+class BuildingService
+{
     // protected $buildingRepository;
 
     // public function __construct() {
@@ -14,14 +14,16 @@ class BuildingService{
     // }
 
     // make a building without saving
-    public static function make($data) {
+    public static function make($data)
+    {
         return Building::make($data);
     }
 
     // 1. make a building, and save it
     // 3. create a empty room
     // 4. link the room to the building
-    public static function create($data) {
+    public static function create($data)
+    {
         $building = Building::create($data);
         $emptyRoom = RoomService::makeEmptyRoom();
         static::hasRooms($building, $emptyRoom);
@@ -29,7 +31,8 @@ class BuildingService{
     }
 
     // set foreign key(s) of the given room(s)
-    public static function hasRooms($building, $rooms) {
+    public static function hasRooms($building, $rooms)
+    {
         if (!is_array($rooms)) {
             $rooms = [$rooms];
         }

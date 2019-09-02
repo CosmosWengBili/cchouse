@@ -7,13 +7,18 @@ use App\LandlordAgent;
 use App\ContactInfo;
 use Illuminate\Http\Request;
 
+use App\Services\LandlordService;
+
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
 use App\Services\NestedToAttributeService;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class LandlordController extends Controller
 {
+    use HandleDocumentsUpload;
     /**
      * Display a listing of the resource.
      *
@@ -49,6 +54,7 @@ class LandlordController extends Controller
         $data = $responseData
             ->create(Landlord::class, 'landlords.store')
             ->get();
+        $data['data']['third_party_files'] = [];
         $data['data']['agents'] = [];
         $data['data']['contact_infos'] = [];
         return view('landlords.form', $data);
@@ -68,11 +74,19 @@ class LandlordController extends Controller
             'birth' => 'required',
             'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean'
+            'is_collected_by_third_party' => 'required|boolean',
+            'bank_code' => 'required|integer|digits_between:1,11',
+            'branch_code' => 'required|integer|digits_between:1,11',
+            'account_name' => 'required|max:255',
+            'account_number' => 'required|max:255',
+            'invoice_collection_method' => 'required|max:255',
+            'invoice_collection_number' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         $landlord = Landlord::create($validatedData);
 
+        $this->handleDocumentsUpload($landlord, ['third_party_file']);
         $this->updateAgents($landlord, [
             'agents' => is_array($request->input('agents'))
                 ? $request->input('agents')
@@ -84,7 +98,7 @@ class LandlordController extends Controller
                 : []
         ]);
 
-        return redirect()->route('landlords.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -114,6 +128,9 @@ class LandlordController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($landlord, 'landlords.update')->get();
+        $data['data'][
+            'third_party_files'
+        ] = $landlord->thirdPartyDocuments()->get();
         $data['data']['agents'] = $landlord
             ->agents()
             ->get()
@@ -140,10 +157,19 @@ class LandlordController extends Controller
             'birth' => 'required',
             'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
-            'is_collected_by_third_party' => 'required|boolean'
+            'is_collected_by_third_party' => 'required|boolean',
+            'bank_code' => 'required|integer|digits_between:1,11',
+            'branch_code' => 'required|integer|digits_between:1,11',
+            'account_name' => 'required|max:255',
+            'account_number' => 'required|max:255',
+            'invoice_collection_method' => 'required|max:255',
+            'invoice_collection_number' => 'required|max:255',
+            'invoice_mailing_address' => 'required|max:255'
         ]);
 
-        $landlord->update($validatedData);
+        LandlordService::update($landlord,$validatedData);
+
+        $this->handleDocumentsUpload($landlord, ['third_party_file']);
 
         $this->updateAgents($landlord, [
             'agents' => is_array($request->input('agents'))
@@ -156,7 +182,7 @@ class LandlordController extends Controller
                 : []
         ]);
 
-        return redirect()->route('landlords.edit', ['id' => $landlord->id]);
+        return redirect($request->_redirect);
     }
 
     /**

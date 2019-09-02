@@ -12,10 +12,12 @@ class Appliance extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $guarded = [];
     /**
      * Get the room this appliance belongs to.
      */
-    public function room() {
+    public function room()
+    {
         return $this->belongsTo('App\Room');
     }
 }

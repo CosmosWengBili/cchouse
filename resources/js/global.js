@@ -7,7 +7,7 @@ $(document).ready(function () {
     });
 
     // Realtime search module
-    realtimeSelect($('[data-toggle=selectize]'))
+    window.realtimeSelect($('[data-toggle=selectize]'))
 
     // Auto assigned value on each data resource select element
     $('select').each(function (index, element) {
@@ -36,7 +36,7 @@ $(document).on('click', 'a.jquery-postback', function (e) {
 });
 
 
-function realtimeSelect(selectizeElements) {
+window.realtimeSelect = function (selectizeElements) {
 
     selectizeElements.each(function () {
         // Set data
@@ -57,17 +57,11 @@ function realtimeSelect(selectizeElements) {
                 }
             })
             .done(function (msg) {
-                console.log(msg)
                 if (msg !== "invalid") {
                     var tableElements = ""
                     for (var i = 0; i < msg.length; i++) {
-                        if (selected === msg[i][value]) {
-                            tableElements += `<option value="${msg[i][value]}" selected>${msg[i][text]}</option>`
-                        } else {
-                            tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
-                        }
+                        tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
                     }
-
                     // Render HTML code
                     select.append(tableElements)
                     select.selectize({

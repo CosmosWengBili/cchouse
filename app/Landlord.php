@@ -28,37 +28,48 @@ class Landlord extends Model implements AuditableContract
      */
     protected $casts = [
         'is_legal_person' => 'boolean',
-        'is_collected_by_third_party' => 'boolean',
+        'is_collected_by_third_party' => 'boolean'
     ];
 
     /**
      * Get all the landlord's contracts.
      */
-    public function landlordContracts() {
-        return $this->hasMany('App\LandlordContract');
+    public function landlordContracts()
+    {
+        return $this->belongsToMany('App\LandlordContract');
     }
 
     /**
-     * Get all the buildings through the contracts that this landlord owns.
+     * Get all the landlord's contracts.
      */
-    public function buildings() {
-        return $this->belongsToMany('App\Building', 'landlord_contract');
+    public function activeContracts()
+    {
+        return $this->landlordContracts()->active();
     }
 
     /**
      * Get all of the landlords's documents.
+     */
+    public function documents()
+    {
+        return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get landlords's thirdPartyDocuments.
      * 代收文件
      */
     public function thirdPartyDocuments()
     {
-        return $this->morphMany('App\Document', 'attachable');
+        return $this->documents()->where('document_type', 'third_party_file');
     }
 
     /**
      * Get all kinds of the landlords's contact infos.
      * 所有聯絡資訊
      */
-    public function contactInfos() {
+    public function contactInfos()
+    {
         return $this->morphMany('App\ContactInfo', 'contactable');
     }
 
@@ -66,7 +77,8 @@ class Landlord extends Model implements AuditableContract
      * Get a list of the landlords's phone numbers.
      * 聯絡電話
      */
-    public function phones() {
+    public function phones()
+    {
         return $this->contactInfos()->where('info_type', 'phone');
     }
 
@@ -74,7 +86,8 @@ class Landlord extends Model implements AuditableContract
      * Get a list of the landlords's mailing addresses.
      * 聯絡地址
      */
-    public function mailingAddresses() {
+    public function mailingAddresses()
+    {
         return $this->contactInfos()->where('info_type', 'mailing_address');
     }
 
@@ -82,7 +95,8 @@ class Landlord extends Model implements AuditableContract
      * Get a list of the landlords's emails.
      * 電子郵件
      */
-    public function emails() {
+    public function emails()
+    {
         return $this->contactInfos()->where('info_type', 'email');
     }
 
@@ -90,7 +104,8 @@ class Landlord extends Model implements AuditableContract
      * Get a list of the landlords's fax numbers.
      * 傳真
      */
-    public function faxNumbers() {
+    public function faxNumbers()
+    {
         return $this->contactInfos()->where('info_type', 'fax_number');
     }
 
@@ -98,8 +113,8 @@ class Landlord extends Model implements AuditableContract
      * Get all of the landlord's agents.
      * 代理人
      */
-    public function agents() {
+    public function agents()
+    {
         return $this->hasMany('App\LandlordAgent');
     }
-
 }

@@ -15,23 +15,29 @@ class KeyRequest extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $fillable = [
-        'key_id', 'request_user_id', 'request_date', 'status', 'request_approved'
+        'key_id',
+        'request_user_id',
+        'request_date',
+        'status',
+        'request_approved'
     ];
 
     protected $casts = [
-        'request_approved' => 'boolean',
+        'request_approved' => 'boolean'
     ];
     /**
      * Get the the user who made this request.
      */
-    public function requestUser() {
+    public function requestUser()
+    {
         return $this->belongsTo('App\User', 'request_user_id');
     }
 
     /**
      * Get the requested key.
      */
-    public function key() {
+    public function key()
+    {
         return $this->belongsTo('App\Key');
     }
 
@@ -41,7 +47,8 @@ class KeyRequest extends Model implements AuditableContract
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeApproved($query) {
+    public function scopeApproved($query)
+    {
         return $query->where('request_approved', true);
     }
 
@@ -51,7 +58,8 @@ class KeyRequest extends Model implements AuditableContract
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeDenied($query) {
+    public function scopeDenied($query)
+    {
         return $query->where('request_approved', false);
     }
 }

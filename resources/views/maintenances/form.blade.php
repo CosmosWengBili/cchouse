@@ -16,7 +16,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -85,7 +85,7 @@
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                         >
@@ -99,7 +99,7 @@
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
                                             data-toggle="selectize" 
-                                            data-table="user" 
+                                            data-table="users" 
                                             data-text="name" 
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                         >
@@ -285,17 +285,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Maintenance.invoice_serail_number")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="invoice_serail_number"
-                                            value="{{ $data['invoice_serail_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.comment")</td>
                                     <td>
                                         <input
@@ -309,7 +298,8 @@
 
                             </tbody>
                         </table>
-
+                        <h3 class="mt-3">照片</h3>
+                        @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
                 </div>
@@ -317,6 +307,7 @@
         </div>
     </div>
 </div>
+
 <script>
     (function () {
         const isManageGroup = {{ $isManageGroup ? 'true' : 'false' }};

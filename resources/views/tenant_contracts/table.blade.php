@@ -45,12 +45,13 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ print_r($value) }}</td>
+                                <td> {{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}">查看</a>
-                                <a class="btn btn-primary" href="{{ route( Str::camel(Str::plural($layer)) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel(Str::plural($layer)) . '.destroy', $object['id']) }}">刪除</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=maintenances;tenant;room;deposits;debtCollections;tenantPayments;tenantElectricityPayments;payLogs;documents">查看</a>
+                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
+                                <a class="btn btn-success" href="{{ route('tenantContracts.extend', $object['id']) }}">延期續約</a>
                             </td>
                         </tr>
                     @endforeach

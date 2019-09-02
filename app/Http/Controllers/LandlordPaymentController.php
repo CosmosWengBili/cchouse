@@ -12,6 +12,8 @@ use App\Responser\FormDataResponser;
 
 use OwenIt\Auditing\Contracts\Auditor;
 
+use App\Services\ReceiptService;
+
 class LandlordPaymentController extends Controller
 {
     /**
@@ -25,22 +27,21 @@ class LandlordPaymentController extends Controller
         $responseData = new NestedRelationResponser();
 
         $whitelist = $this->whitelist('landlord_payments');
-        foreach($whitelist as $key => $value){
-            $whitelist[$key] = 'landlord_payments.'.$value;
+        foreach ($whitelist as $key => $value) {
+            $whitelist[$key] = 'landlord_payments.' . $value;
         }
 
-        $landlordPayment = LandlordPayment::select(
-            $whitelist
-        )
+        $landlordPayment = LandlordPayment::select($whitelist)
             ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
             ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-            ->rightJoin(
-                'landlord_contract',
+            ->join(
+                'landlord_contracts',
                 'buildings.id',
                 '=',
-                'landlord_contract.building_id'
+                'landlord_contracts.building_id'
             )
             ->where('commission_end_date', '>', Carbon::today())
+            ->groupBy('id')
             ->get();
         $responseData
             ->index('landlord_payments', $landlordPayment)
@@ -86,7 +87,7 @@ class LandlordPaymentController extends Controller
         ]);
 
         $landlordPayment = LandlordPayment::create($validatedData);
-        return redirect()->route('landlordPayments.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -145,10 +146,9 @@ class LandlordPaymentController extends Controller
             'comment' => 'required'
         ]);
 
+        ReceiptService::compareReceipt($landlordPayment, $validatedData);
         $landlordPayment->update($validatedData);
-        return redirect()->route('landlordPayments.edit', [
-            'id' => $landlordPayment->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**
@@ -158,7 +158,7 @@ class LandlordPaymentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    { 
+    {
         $landlord_payment = LandlordPayment::find($id);
         $landlord_payment->delete();
         return response()->json(true);

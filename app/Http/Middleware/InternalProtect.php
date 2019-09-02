@@ -9,9 +9,7 @@ class InternalProtect
 {
     private const USERNAME = 'admin';
     private const PASSWORD = 'e*33@qD,9[gve4nFEkim';
-    private const BYPASS_IPS = [
-        '127.0.0.1',
-    ];
+    private const BYPASS_IPS = ['127.0.0.1'];
 
     /**
      * Handle an incoming request.
@@ -29,7 +27,8 @@ class InternalProtect
         return $next($request);
     }
 
-    private function needValidate(Request $request) {
+    private function needValidate(Request $request)
+    {
         $ip = $request->ip();
         if (in_array($ip, self::BYPASS_IPS)) {
             return false;

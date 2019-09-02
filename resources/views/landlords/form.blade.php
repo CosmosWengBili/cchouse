@@ -9,7 +9,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -87,14 +87,97 @@
                                         />
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.bank_code")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="bank_code"
+                                            value="{{ isset($data["bank_code"]) ? $data['bank_code'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>@lang("model.Landlord.branch_code")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="branch_code"
+                                            value="{{ isset($data["branch_code"]) ? $data['branch_code'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>@lang("model.Landlord.account_name")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="account_name"
+                                            value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>   
+                                <tr>
+                                    <td>@lang("model.Landlord.account_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="account_number"
+                                            value="{{ isset($data["account_number"]) ? $data['account_number'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>   
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_collection_method")</td>
+                                    <td>
+                                        <select
+                                            class="form-control form-control-sm"
+                                            name="invoice_collection_method"
+                                            value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
+                                        />
+                                            @foreach(config('enums.landlord_contracts.invoice_collection_method') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_mailing_address")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_mailing_address"
+                                            value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
+                                        />
+                                    </td>
+                                </tr>  
+                                <tr>
+                                    <td>@lang("model.Landlord.invoice_collection_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_collection_number"
+                                            value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
+                                        />
+                                    </td>
+                                </tr> 
                             </tbody>
                         </table>
 
+                        <h3 class="mt-3">第三方代理文件</h3>
+                        @include('documents.inputs', ['documentType' => 'third_party_file', 'documents' => $data['third_party_files']])
+
                         <h3 class="mt-3">聯絡資料</h3>
-                        @include('Landlords.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
+                        @include('landlords.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
 
                         <h3 class="mt-3">代理人</h3>
-                        @include('Landlords.agent_form', ['prefix' => 'agents', 'agents' => $data['agents']])
+                        @include('landlords.agent_form', ['prefix' => 'agents', 'agents' => $data['agents']])
 
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>

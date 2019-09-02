@@ -10,8 +10,11 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Services\RoomService;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 class RoomController extends Controller
 {
+    use HandleDocumentsUpload;
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +26,7 @@ class RoomController extends Controller
         $responseData
             ->index('rooms', Room::with($request->withNested)->get())
             ->relations($request->withNested);
-        
+
         return view('rooms.index', $responseData->get());
     }
 
@@ -36,6 +39,8 @@ class RoomController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->create(Room::class, 'rooms.store')->get();
+        $data['data']['pictures'] = [];
+        $data['data']['appliances'] = [];
 
         return view('rooms.form', $data);
     }
@@ -55,12 +60,12 @@ class RoomController extends Controller
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
-                Rule::in(config('enums.rooms.room_status')),
+                Rule::in(config('enums.rooms.room_status'))
             ],
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout')),
+                Rule::in(config('enums.rooms.room_layout'))
             ],
             'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
@@ -75,7 +80,7 @@ class RoomController extends Controller
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
-                Rule::in(config('enums.rooms.management_fee_mode')),
+                Rule::in(config('enums.rooms.management_fee_mode'))
             ],
             'management_fee' => 'required|numeric|between:0,99.99',
             'wifi_account' => 'required|max:255',
@@ -84,14 +89,28 @@ class RoomController extends Controller
             'can_keep_pets' => 'required|boolean',
             'gender_limit' => [
                 'required',
-                Rule::in(config('enums.rooms.gender_limit')),
+                Rule::in(config('enums.rooms.gender_limit'))
             ],
-            'comment' => 'required',
+            'comment' => 'required'
         ]);
 
-        $newRoom = RoomService::create($validatedData);
+        $validatedApplianceData = $request->validate([
+            'appliances' => 'nullable|array',
+            'appliances.*.subject' => 'required',
+            'appliances.*.spec_code' => 'required',
+            'appliances.*.maintenance_phone' => 'required',
+            'appliances.*.count' =>
+                'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.vendor' => 'required'
+        ]);
 
-        return redirect()->route('rooms.index');
+        $room = RoomService::create(
+            $validatedData,
+            $validatedApplianceData['appliances']
+        );
+        $this->handleDocumentsUpload($room, ['picture']);
+
+        return redirect($request->_redirect);
     }
 
     /**
@@ -120,7 +139,11 @@ class RoomController extends Controller
     public function edit(Room $room)
     {
         $responseData = new FormDataResponser();
-        return view('rooms.form', $responseData->edit($room, 'rooms.update')->get());
+        $data = $responseData->edit($room, 'rooms.update')->get();
+        $data['data']['pictures'] = $room->pictures()->get();
+        $data['data']['appliances'] = $room->appliances()->get();
+
+        return view('rooms.form', $data);
     }
 
     /**
@@ -139,12 +162,12 @@ class RoomController extends Controller
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
-                Rule::in(config('enums.rooms.room_status')),
+                Rule::in(config('enums.rooms.room_status'))
             ],
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout')),
+                Rule::in(config('enums.rooms.room_layout'))
             ],
             'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
@@ -159,7 +182,7 @@ class RoomController extends Controller
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
-                Rule::in(config('enums.rooms.management_fee_mode')),
+                Rule::in(config('enums.rooms.management_fee_mode'))
             ],
             'management_fee' => 'required|numeric|between:0,99.99',
             'wifi_account' => 'required|max:255',
@@ -168,14 +191,29 @@ class RoomController extends Controller
             'can_keep_pets' => 'required|boolean',
             'gender_limit' => [
                 'required',
-                Rule::in(config('enums.rooms.gender_limit')),
+                Rule::in(config('enums.rooms.gender_limit'))
             ],
-            'comment' => 'required',
+            'comment' => 'required'
         ]);
 
-        $room->update($validatedData);
+        $validatedApplianceData = $request->validate([
+            'appliances' => 'nullable|array',
+            'appliances.*.subject' => 'required',
+            'appliances.*.spec_code' => 'required',
+            'appliances.*.maintenance_phone' => 'required',
+            'appliances.*.count' =>
+                'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.vendor' => 'required'
+        ]);
 
-        return redirect()->route('rooms.show', $room);
+        RoomService::update(
+            $room,
+            $validatedData,
+            $validatedApplianceData['appliances']
+        );
+        $this->handleDocumentsUpload($room, ['picture']);
+
+        return redirect($request->_redirect);
     }
 
     /**

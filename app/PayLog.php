@@ -12,10 +12,36 @@ class PayLog extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $casts = [
+        'paid_at' => 'datetime:Y-m-d',
+    ];
+    protected $fillable = [
+        'loggable_type',
+        'loggable_id',
+        'subject',
+        'payment_type',
+        'amount',
+        'virtual_account',
+        'paid_at',
+        'tenant_contract_id',
+        'receipt_type'
+    ];
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected $hidden = ['pivot'];
+
+
     /**
      * Get the owning loggable model.
      */
-    public function loggable() {
+    public function loggable()
+    {
         return $this->morphTo();
     }
 }

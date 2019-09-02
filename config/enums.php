@@ -28,13 +28,10 @@ return [
     ],
 
     'documents' => [
-        'type' => [
-            '照片',
-            '載具檔案',
-            '合約檔案',
-            '代收文件',
-            '合約原檔',
-        ],
+        'third_party_file' => '第三方代收文件',
+        'original_file' => '合約原檔',
+        'carrier_file' => '發票載具',
+        'picture' => '相關照片'
     ],
 
     'cities' => [
@@ -175,7 +172,7 @@ return [
         ]
     ],
 
-    'landlord_contract' => [
+    'landlord_contracts' => [
         'commission_type' => [
             '包租',
             '代管',
@@ -202,6 +199,33 @@ return [
     ],
 
     'tenant_payments' => [
+        'subject' => [
+            '更改繳款日租金',
+            '仲介服務費',
+            '管理費',
+            '清潔費',
+            '瓦斯費',
+            '管理服務費',
+            '仲介費',
+            '滯納金',
+            '轉房費',
+            '換約費',
+            '轉換承租人',
+            '維修費',
+            '車馬費',
+            '放鳥費',
+            '磁扣費',
+            '水雜費',
+            '垃圾費',
+            '第四台',
+            '鍋爐費',
+        ],
+        'period' => [
+            '月',
+            '季',
+            '半年',
+            '年',
+        ],
         'collected_by' => [
             '公司',
             '房東',
@@ -221,5 +245,79 @@ return [
             '支出',
         ],
     ],
+    'invoice'=>[
+        '發票張數',
+        '發票日期',
+        '品名序號',
+        '發票品名',
+        '數量',
+        '單價',
+        '課稅別',
+        '稅率',
+        '費用來源',
+        '來源資料ID',
+        '公司統編',
+        '公司名稱',
+        '物件代碼',
+        '房號',
+        '存入日期',
+        '入帳日期',
+        '共通載具',
+        '發票號碼',
+        '發票金額',
+        '備註',
+        '總額'
+    ],
+    'invoice_en' =>[
+        'invoice_count',
+        'invoice_date',
+        'invoice_item_idx',
+        'invoice_item_name',
+        'quantity',
+        'amount',
+        'tax_type',
+        'tax_rate',
+        'data_table',
+        'data_table_id',
+        'company_number',
+        'company_name',
+        'room_code',
+        'room_number',
+        'deposit_date',
+        'actual_deposit_date',
+        'invoice_collection_number',
+        'invoice_serial_number',
+        'invoice_price',
+        'comment',
+        'subtotal'
+    ],
+    'receipt'=>[
+        '物件代碼',
+        '組別',
+        '縣市',
+        '區',
+        '地址',
+        '稅籍編號',
+        '大房東',
+        '應該給大房東租金',
+        '可認列租金支出',
+        '每月付款日',
+        '支出年',
+        '租金票到期日'
+    ],
+    'receipt_en' =>[
+        'room_code',
+        'group',
+        'city',
+        'district',
+        'address',
+        'tax_number',
+        'landlord_name',
+        'taxable_charter_fee',
+        'actual_charter_fee',
+        'rent_collection_time',
+        'rent_collection_year',
+        'commission_end_date'
+    ]
 
 ];

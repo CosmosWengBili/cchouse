@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\DebtCollection;
-use App\Responser\FormDataResponser;
-use App\Tenant;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use App\Responser\NestedRelationResponser;
 use Illuminate\Support\Facades\Auth;
+
+use App\DebtCollection;
+use App\Tenant;
+
+use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
+use App\Services\ReceiptService;
 
 class DebtCollectionController extends Controller
 {
@@ -22,7 +25,7 @@ class DebtCollectionController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
-        
+
         $debtCollections = DebtCollection::select(
             $this->whitelist('debt_collections')
         )
@@ -101,9 +104,7 @@ class DebtCollectionController extends Controller
         ]);
         $debtCollection = DebtCollection::create($validatedData);
 
-        return redirect()->route('debtCollections.show', [
-            'id' => $debtCollection->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**
@@ -139,11 +140,10 @@ class DebtCollectionController extends Controller
             'comment' => 'nullable',
             'collector_id' => 'nullable'
         ]);
+        ReceiptService::compareReceipt($debtCollection, $validatedData);
         $debtCollection->update($validatedData);
 
-        return redirect()->route('debtCollections.show', [
-            'id' => $debtCollection->id
-        ]);
+        return redirect($request->_redirect);
     }
 
     /**

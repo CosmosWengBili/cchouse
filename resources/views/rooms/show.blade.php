@@ -35,8 +35,7 @@
                         @php
                             $layer = Str::snake(explode('.', $relation)[0]); 
                         @endphp
-                        {{print_r($layer)}}
-                        @include( 'rooms.table', ['objects' => $data[$layer], 'layer' => $layer])
+                        @include( $layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
                     </div>
                 @endforeach
             @endif

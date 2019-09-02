@@ -16,11 +16,13 @@ class Document extends Model implements AuditableContract
     /**
      * Get the owning attachable model.
      */
-    public function attachable() {
+    public function attachable()
+    {
         return $this->morphTo();
     }
 
-    public function url() {
+    public function url()
+    {
         return Storage::url($this->path);
     }
 }

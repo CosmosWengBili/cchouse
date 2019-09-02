@@ -29,11 +29,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
-
-
-        // $schedule->call(new DeleteRecentUsers)->daily();
         $schedule->call(ScheduleService::make('notifyContractDue'))
                 ->name('Notify contract due in two months')
                 ->before(function () {
@@ -50,42 +45,53 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(ScheduleService::make('adjustRent'))
                 ->name('Adjust rent')
-                ->before(function () {
-                    // Task is about to start...
-                })
-                ->after(function () {
-                    // Task is complete...
-                })
                 ->daily()
                 ->runInBackground();
-                // ->emailOutputTo('foo@example.com');
-                // ->emailOutputOnFailure('foo@example.com');
 
         $schedule->call(ScheduleService::make('notifyBirth'))
                 ->name('Landlord birth notify')
+                ->daily()
+                ->runInBackground();
+
+        $schedule->call(ScheduleService::make('notifyTenantContractDueInTwoMonths'))
+                ->name('Notify tenant contract due in two months')
+                ->daily()
+                ->runInBackground();
+
+
+        $schedule->call(ScheduleService::make('notifyMaintenanceStatus'))
+                ->name('Notify if maintenance status not changed for a long time')
+                ->daily()
+                ->runInBackground();
+
+        $schedule->call(ScheduleService::make('genarateDebtCollections'))
+                ->name('Genarate debt collections')
+                ->dailyAt('07:00')
+                ->runInBackground();
+            
+        $schedule->call(ScheduleService::make('notifyTenantElectricityPaymentReport'))
+                ->name('Notify Tenant for electricity payment report every month')
                 ->before(function () {
                     // Task is about to start...
                 })
                 ->after(function () {
                     // Task is complete...
                 })
-                ->daily()
+                ->dailyAt('00:30')
+                ->when(function () {
+                    return Carbon::now()->endOfMonth()->isToday();
+                })
                 ->runInBackground();
-                // ->emailOutputTo('foo@example.com');
-                // ->emailOutputOnFailure('foo@example.com');
 
-        $schedule->call(ScheduleService::make('notifyMaintenanceStatus'))
-            ->name('Notify if maintenance status not changed for a long time')
-            ->before(function () {
-                // Task is about to start...
-            })
-            ->after(function () {
-                // Task is complete...
-            })
-            ->daily()
-            ->runInBackground();
-            // ->emailOutputTo('foo@example.com');
-            // ->emailOutputOnFailure('foo@example.com');
+        $schedule->call(ScheduleService::make('setReceiptType'))
+                ->name('Set Receipt Type')
+                ->dailyAt('04:30')
+                ->runInBackground();
+
+        $schedule->call(ScheduleService::make('setMonthlyReportCarryFoward'))
+                ->name('Set Monthly Report CarryFoward')
+                ->dailyAt('05:00')
+                ->runInBackground();
     }
 
     /**

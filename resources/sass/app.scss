@@ -17719,6 +17719,28 @@ button.bg-warning:focus {
     background-color: #cc6900 !important;
 }
 
+.bg-highlight {
+    background-color: yellow !important;
+}
+
+a.bg-highlight:hover,
+a.bg-highlight:focus,
+button.bg-highlight:hover,
+button.bg-highlight:focus {
+    background-color: #cc6900  !important;
+}
+
+.bg-gray {
+    background-color: #EEEEEE !important;
+}
+
+a.bg-gray:hover,
+a.bg-gray:focus,
+button.bg-gray:hover,
+button.bg-gray:focus {
+    background-color: #cc6900  !important;
+}
+
 .bg-danger {
     background-color: #ff0000 !important;
 }

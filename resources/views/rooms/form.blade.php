@@ -19,7 +19,7 @@
                     <div class="card-title">
                         新建 / 編輯表單
                     </div>
-                    <form action="{{$action}}" method="POST">
+                    <form action="{{$action}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method($method)
 
@@ -31,7 +31,7 @@
                                     <td>
                                         <select 
                                             data-toggle="selectize" 
-                                            data-table="building" 
+                                            data-table="buildings" 
                                             data-text="id" 
                                             data-selected="{{ $data['building_id'] ?? 0 }}"
                                             name="building_id"
@@ -339,6 +339,12 @@
                                 
                             </tbody>
                         </table>
+
+                        <h3 class="mt-3">照片</h3>
+                        @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
+
+                        <h3 class="mt-3">附屬設備</h3>
+                        @include('rooms.appliance', ['appliances' => $data['appliances']])
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>

@@ -199,29 +199,12 @@
 </div>
 <script>
 
-    // an object to set html input value by query string
-    const landlordContract = {
-        queryStringName: 'landlord_contract_id',
-        getLandlordContractId: function () {
+    const queryStringName = 'landlord_contract_id';
+    const inputId = 'landlord_contract_id';
 
-            const url = new URL(location.href);
-            const { searchParams } = url;
-            let params = {};
-
-            for(let [key, value] of searchParams.entries()) {
-                params[key] = value;
-            }
-
-            return params[this.queryStringName] || null
-        },
-        set: function (displayNone=true) {
-            const $landlordContractId = $('#landlord_contract_id');
-            const landlordContractId = this.getLandlordContractId(this.queryStringName);
-            landlordContractId && $landlordContractId.val(landlordContractId).attr('name', $landlordContractId.attr('id'));
-            displayNone && $landlordContractId.parent().parent().addClass('d-none');
-        }
-    };
-    landlordContract.set(true);
+    const qs = window.myQueryString();
+    qs.setInputValue(queryStringName, inputId);
+    $('#' + inputId).parents('tr').addClass('d-none');
 
 </script>
 @endsection

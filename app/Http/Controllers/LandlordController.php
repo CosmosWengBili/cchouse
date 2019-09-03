@@ -83,14 +83,9 @@ class LandlordController extends Controller
             'invoice_collection_method' => 'required|max:255',
             'invoice_collection_number' => 'required|max:255',
             'invoice_mailing_address' => 'required|max:255',
-            'landlord_contract_id' => 'integer|min:1',
         ]);
 
-        $landlordDetail = $this->preparedLandlordData(
-            Schema::getColumnListing('landlords'),
-            $validatedData
-        );
-        $landlord = Landlord::create($landlordDetail);
+        $landlord = Landlord::create($validatedData);
 
         $this->handleDocumentsUpload($landlord, ['third_party_file']);
         $this->updateAgents($landlord, [
@@ -279,21 +274,4 @@ class LandlordController extends Controller
         }
     }
 
-    /**
-     * before create landlord row in DB, take necessary keys from $prepareData by $schemas
-     *
-     * @param array $schemas table schemas
-     * @param array $prepareData
-     *
-     * @return array
-     */
-    private function preparedLandlordData(array $schemas, array $prepareData)
-    {
-        $data = [];
-        foreach ($schemas as $key => $value) {
-            isset($prepareData[$value]) and ( $data[$value] = $prepareData[$value] );
-        }
-
-        return $data;
-    }
 }

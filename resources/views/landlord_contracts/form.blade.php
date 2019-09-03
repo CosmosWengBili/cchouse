@@ -290,7 +290,12 @@
     </div>
 </div>
 <script>
-    $('[name="landlord_ids"]').selectize({
+    const qs = window.myQueryString();
+    const landlordId = qs.getQueryStrings()['landlord_id'];
+    const $landlordIds = $('[name="landlord_ids"]');
+    landlordId && $landlordIds.val(landlordId);
+
+    $select = $landlordIds.selectize({
         delimiter: ',',
         persist: false,
         create: function(input) {

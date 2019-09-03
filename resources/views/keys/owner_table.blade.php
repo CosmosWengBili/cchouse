@@ -36,9 +36,9 @@
                     {{-- all the records --}}
                     @foreach ( $objects as $object )
                         @if ( in_array($object['id'], $unapproved_key) )
-                            <tr>
-                        @else
                             <tr class="bg-warning">
+                        @else
+                            <tr>
                         @endif    
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)

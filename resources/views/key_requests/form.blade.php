@@ -67,9 +67,7 @@
                                     >
                                         <option value="預約中">預約中</option>
                                         <option value="使用中">使用中</option>
-                                        @if ( $keeper_id == \Auth::user()->id )
-                                            <option value="已完成">已完成</option>
-                                        @endif
+                                        <option value="已完成">已完成</option>
                                     </select>
                                 </td>
                             </tr>

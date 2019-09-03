@@ -14,7 +14,7 @@ class NotificationService
     {
         $keyRequest = KeyRequest::where([
             'key_id' => $key_id,
-            'status' => 'reserved'
+            'status' => '預約中'
         ])
             ->orderBy('created_at', 'asc')
             ->first();

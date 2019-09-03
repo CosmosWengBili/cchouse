@@ -122,7 +122,7 @@ class KeyRequestController extends Controller
     {
         $key_request = KeyRequest::find($id);
 
-        $using = $key_request->status == 'using' ? true : false;
+        $using = $key_request->status == '使用中' ? true : false;
 
         $validatedData = $request->validate([
             'request_user_id' => 'required|exists:users,id',
@@ -132,7 +132,7 @@ class KeyRequestController extends Controller
         ]);
 
         $key_request->update($validatedData);
-        if ($using && $validatedData['status'] == "finished") {
+        if ($using && $validatedData['status'] == "已完成") {
             NotificationService::notifyKeyRequestFinished(
                 $validatedData['key_id']
             );

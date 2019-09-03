@@ -7,7 +7,9 @@ use RecursiveIteratorIterator;
 use RegexIterator;
 
 abstract class BaseFormatter {
+    private static $formatters;
     protected $notification;
+
 
     public function __construct($notification)
     {
@@ -15,9 +17,12 @@ abstract class BaseFormatter {
     }
 
     public static function allFormatters(): array {
+        if (self::$formatters) {
+            return self::$formatters;
+        }
+
         $path = __DIR__;
         $formatters = array();
-
         $allFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
         $phpFiles = new RegexIterator($allFiles, '/\.php$/');
         foreach ($phpFiles as $phpFile) {
@@ -50,6 +55,7 @@ abstract class BaseFormatter {
                 }
             }
         }
+        self::$formatters = $formatters;
 
         return $formatters;
     }

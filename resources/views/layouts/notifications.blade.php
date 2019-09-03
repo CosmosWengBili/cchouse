@@ -8,7 +8,19 @@
 
 @if($user)
 <style>
+    .preview-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
     .preview-item.read { background-color: #e9ecef; }
+    .sent-at {
+        text-align: right;
+        font-size: 12px;
+        color: 666;
+        border-top: 1px solid #aaa;
+        margin-top: 8px;
+        padding-top: 4px;
+    }
     #notification-modal { color: #333; }
 </style>
 <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
@@ -23,6 +35,7 @@
             $header = $notification->header();
             $content = $notification->content();
             $readAt = $notification->read_at;
+            $createdAt = $notification->created_at;
         @endphp
 
         <a
@@ -41,6 +54,8 @@
                 <h6 class="preview-subject font-weight-normal">{{ $header }}</h6>
                 <p class="font-weight-light small-text mb-0">
                     {{  Str::limit($content, 20) }}
+
+                    <div class="sent-at">{{ $createdAt }}</div>
                 </p>
             </div>
         </a>

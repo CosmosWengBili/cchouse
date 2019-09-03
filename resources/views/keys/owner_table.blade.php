@@ -10,6 +10,7 @@
 
         {{-- the route to create this kind of resource --}}
         <a class="btn btn-sm btn-success my-3" href="{{ route( 'keys.create') }}">建立</a>
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
@@ -39,7 +40,7 @@
                             <tr class="bg-warning">
                         @else
                             <tr>
-                        @endif    
+                        @endif
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}

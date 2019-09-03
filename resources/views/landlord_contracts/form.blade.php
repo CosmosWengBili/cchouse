@@ -290,7 +290,11 @@
     </div>
 </div>
 <script>
-    $('[name="landlord_ids"]').selectize({
+    const landlordId = getLandlordId();
+    const $landlordIds = $('[name="landlord_ids"]');
+    landlordId && $landlordIds.val(landlordId);
+
+    $select = $landlordIds.selectize({
         delimiter: ',',
         persist: false,
         create: function(input) {
@@ -300,5 +304,19 @@
             }
         }
     });
+
+    function getLandlordId() {
+
+        const url = new URL(location.href);
+        const { searchParams } = url;
+        let params = {};
+
+        for(let [key, value] of searchParams.entries()) {
+            params[key] = value;
+        }
+
+        return params['id'] || null
+    }
+
 </script>
 @endsection

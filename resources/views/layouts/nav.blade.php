@@ -136,7 +136,6 @@
                     <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/receipts">發票單據管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
                     </ul>
                 </div>
             </li>

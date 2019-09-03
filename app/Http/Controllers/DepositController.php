@@ -60,7 +60,7 @@ class DepositController extends Controller
 
         $deposit = Deposit::create($validatedData);
 
-        return redirect()->route('deposits.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -117,7 +117,7 @@ class DepositController extends Controller
         ReceiptService::compareReceipt($deposit, $validatedData);
         DepositService::update($deposit, $validatedData);
 
-        return redirect()->route('deposits.index');
+        return redirect($request->_redirect);
     }
 
     /**

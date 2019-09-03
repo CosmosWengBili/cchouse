@@ -106,7 +106,7 @@ class ScheduleService
     {
         $landlord_names = Landlord::where(
             'birth','like', '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
-        )->pluck('name');
+        )->pluck('name')->toArray();
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
         }

@@ -50,7 +50,7 @@ class ExcelController extends Controller
     public function export($model)
     {
         return Excel::download(
-            new MorphExport('App\\' . $model),
+            new MorphExport('App\\' . ucfirst($model)),
             $model . '.xlsx'
         );
     }

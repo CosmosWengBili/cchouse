@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -30,7 +31,12 @@ class RelationExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        $relationModel = get_class($this->collection()->first());
+        $instance = $this->collection()->first();
+        if (is_null($instance)) { // fix $instance maybe null. Try using relation to get model.
+            $relationModel = 'App\\' . ucfirst(Str::camel(Str::singular($this->relation)));
+        } else {
+            $relationModel = get_class($instance);
+        }
         $table = (new $relationModel())->getTable();
         $columnNames = array_values(Schema::getColumnListing($table));
         return $columnNames;

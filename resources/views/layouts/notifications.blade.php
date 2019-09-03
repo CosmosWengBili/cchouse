@@ -13,12 +13,13 @@
 </style>
 <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
     <i class="typcn typcn-bell mr-0"></i>
-    <span class="count bg-danger">{{ $unreadCount }}</span>
+    <span class="count bg-danger" style="{{ $unreadCount == 0 ? 'display: none;' : '' }}">{{ $unreadCount }}</span>
 </a>
 <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
     <p class="mb-0 font-weight-normal float-left dropdown-header">站內通知</p>
     @foreach($notifications as $notification)
         @php
+            $id = $notification->id;
             $header = $notification->header();
             $content = $notification->content();
             $readAt = $notification->read_at;
@@ -26,6 +27,8 @@
 
         <a
             class="dropdown-item preview-item{{ $readAt ? ' read' : '' }}" style="cursor: pointer;"
+            data-id="{{ $id }}"
+            data-read-at="{{ $readAt }}"
             data-header="{{ $header }}"
             data-content="{{ $content }}"
         >
@@ -68,13 +71,30 @@
 
         $('.dropdown-item').on('click', function (event) {
             event.stopPropagation();
-            const header = $(this).data('header');
-            const content = $(this).data('content');
+            const $notification = $(this);
+            const header = $notification.data('header');
+            const content = $notification.data('content');
+            const isRead = $notification.data('read-at').length > 0;
+            const id = $notification.data('id');
 
             $modalHeader.text(header);
             $modalContent.text(content);
 
             $notificationModal.modal('show');
+
+            if (!isRead) {
+                $.post('notifications/' + id, {} , function () {
+                    const count = Number($countSpan.text());
+                    const newCount = count - 1;
+                    if (newCount > 0) {
+                        $countSpan.text(newCount);
+                    } else {
+                        $countSpan.hide();
+                    }
+
+                    $notification.addClass('read').data('read-at', new Date());
+                })
+            }
         });
     })();
 </script>

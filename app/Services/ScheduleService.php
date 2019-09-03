@@ -5,6 +5,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 
+use App\User;
 use App\LandlordContract;
 use App\Landlord;
 use App\TenantContract;
@@ -103,9 +104,9 @@ class ScheduleService
 
     public function notifyBirth()
     {
-        $landlord_names = Landlord::where([
-            'birth' => Carbon::today()->addWeek(2)
-        ])->pluck('name');
+        $landlord_names = Landlord::where(
+            'birth','like', '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
+        )->pluck('name');
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
         }

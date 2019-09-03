@@ -155,7 +155,7 @@
                                             value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
                                         />
                                     </td>
-                                </tr>  
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.invoice_collection_number")</td>
                                     <td>
@@ -166,7 +166,17 @@
                                             value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
                                         />
                                     </td>
-                                </tr> 
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.landlord_contracts")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            id="landlord_contract_id"
+                                        />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -187,4 +197,31 @@
         </div>
     </div>
 </div>
+<script>
+
+    // an object to set html input value by query string
+    const landlordContract = {
+        queryStringName: 'landlord_contract_id',
+        getLandlordContractId: function () {
+
+            const url = new URL(location.href);
+            const { searchParams } = url;
+            let params = {};
+
+            for(let [key, value] of searchParams.entries()) {
+                params[key] = value;
+            }
+
+            return params[this.queryStringName] || null
+        },
+        set: function (displayNone=true) {
+            const $landlordContractId = $('#landlord_contract_id');
+            const landlordContractId = this.getLandlordContractId(this.queryStringName);
+            landlordContractId && $landlordContractId.val(landlordContractId).attr('name', $landlordContractId.attr('id'));
+            displayNone && $landlordContractId.parent().parent().addClass('d-none');
+        }
+    };
+    landlordContract.set(true);
+
+</script>
 @endsection

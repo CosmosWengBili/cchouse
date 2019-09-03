@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Landlord;
 use App\LandlordAgent;
 use App\ContactInfo;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 
 use App\Services\LandlordService;
@@ -81,10 +82,15 @@ class LandlordController extends Controller
             'account_number' => 'required|max:255',
             'invoice_collection_method' => 'required|max:255',
             'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255'
+            'invoice_mailing_address' => 'required|max:255',
+            'landlord_contract_id' => 'integer|min:1',
         ]);
 
-        $landlord = Landlord::create($validatedData);
+        $landlordDetail = $this->preparedLandlordData(
+            Schema::getColumnListing('landlords'),
+            $validatedData
+        );
+        $landlord = Landlord::create($landlordDetail);
 
         $this->handleDocumentsUpload($landlord, ['third_party_file']);
         $this->updateAgents($landlord, [
@@ -97,6 +103,10 @@ class LandlordController extends Controller
                 ? $request->input('contact_infos')
                 : []
         ]);
+        $this->createLandlordContractRelation(
+            $landlord,
+            $request->input('landlord_contract_id', null)
+        );
 
         return redirect($request->_redirect);
     }
@@ -167,7 +177,7 @@ class LandlordController extends Controller
             'invoice_mailing_address' => 'required|max:255'
         ]);
 
-        LandlordService::update($landlord,$validatedData);
+        LandlordService::update($landlord, $validatedData);
 
         $this->handleDocumentsUpload($landlord, ['third_party_file']);
 
@@ -253,5 +263,37 @@ class LandlordController extends Controller
                 }
             }
         }
+    }
+
+    /**
+     * create relation to landlord and landlordContact
+     *
+     * @param Landlord $landlord
+     * @param $landlordContactId
+     */
+    private function createLandlordContractRelation(Landlord $landlord, $landlordContactId)
+    {
+        if (! is_null($landlordContactId)) {
+            $landlordContactId = array_wrap($landlordContactId);
+            $landlord->landlordContracts()->sync($landlordContactId);
+        }
+    }
+
+    /**
+     * before create landlord row in DB, take necessary keys from $prepareData by $schemas
+     *
+     * @param array $schemas table schemas
+     * @param array $prepareData
+     *
+     * @return array
+     */
+    private function preparedLandlordData(array $schemas, array $prepareData)
+    {
+        $data = [];
+        foreach ($schemas as $key => $value) {
+            isset($prepareData[$value]) and ( $data[$value] = $prepareData[$value] );
+        }
+
+        return $data;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RelationExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
@@ -64,6 +65,13 @@ class ExcelController extends Controller
         );
     }
 
+    public function exportRelation(string $model, string $id, string $relation) {
+        return Excel::download(
+            new RelationExport('App\\' . $model, $id, $relation),
+            $relation . '.xlsx'
+        );
+    }
+
     // download specific table file
     public function export_by_function($function)
     {
@@ -86,10 +94,10 @@ class ExcelController extends Controller
                     new ReceiptExport($receiptData, 'receipt'),
                     '收據報表.xlsx'
                 );
-                
+
 
                 break;
-            default: 
+            default:
                 break;
         }
     }

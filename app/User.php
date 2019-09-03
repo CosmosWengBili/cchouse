@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Traits\HasGroups;
-use Illuminate\Notifications\Notifiable;
+use App\Traits\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;

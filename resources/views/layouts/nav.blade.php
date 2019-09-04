@@ -100,6 +100,7 @@
             <div class="submenu">
                 <ul class="submenu-item">
                 <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/systemVariables">系統變數管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
                 </ul>
             </div>
@@ -131,6 +132,7 @@
                 <div class="submenu">
                     <ul class="submenu-item">
                     <li class="nav-item"><a class="nav-link" href="/deposits">訂金管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/companyIncomes">公司收入管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tenantElectricityPayments">電費管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tenantPayments">租客應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>

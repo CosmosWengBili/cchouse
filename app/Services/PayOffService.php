@@ -86,7 +86,7 @@ class PayOffService
      *   "合約 09/05 到期，08/25 點交"
      */
     private function buildComment() {
-        $contractEnd = $this->tenantContract->contract_end->format('m/d');
+        $contractEnd = $this->tenantContract->contract_end;
         $payOffDate = $this->payOffDate->format('m/d');
 
         return "合約 ${contractEnd} 到期，${payOffDate} 點交。";
@@ -99,7 +99,7 @@ class PayOffService
     private function buildPaymentFees(Collection $payments): array
     {
         // 差多少日合約到期
-        $diffInDays = $this->payOffDate->copy()->startOfDay()->diffInDays($this->tenantContract->contract_end);
+        $diffInDays = $this->payOffDate->copy()->startOfDay()->diffInDays($payments->first()->due_time);
         $fees = [];
         foreach ($payments as $payment) {
             $subject = $payment->subject;

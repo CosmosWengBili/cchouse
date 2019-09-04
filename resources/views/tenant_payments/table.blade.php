@@ -14,6 +14,7 @@
         @if(Route::has(Str::camel($layer) . '.create'))
             <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
         @endif
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         @if (empty($objects))
             <h3>尚無紀錄</h3>

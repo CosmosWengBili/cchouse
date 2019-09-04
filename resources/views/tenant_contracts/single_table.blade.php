@@ -13,6 +13,8 @@
             @endif
         </h2>
 
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
             <h3>Nothing here</h3>

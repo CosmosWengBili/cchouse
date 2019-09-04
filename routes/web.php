@@ -70,6 +70,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('upload/{model}', 'ExcelController@upload');
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
+            Route::get('export/{model}/{id}/{relation}', 'ExcelController@exportRelation');
             Route::get('example/{model}', 'ExcelController@example');
             Route::get('export/function/{function}', 'ExcelController@export_by_function');
 
@@ -91,7 +92,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
-            
+
         });
     });
 

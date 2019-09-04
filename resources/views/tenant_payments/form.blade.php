@@ -1,11 +1,4 @@
 @extends('layouts.app')
-
-@php
-    $tenantContracts = \App\TenantContract::pluck('id');
-    $subjects = \App\TenantPayment::pluck('subject');
-    $users = \App\User::pluck('name', 'id');
-@endphp
-
 @section('content')
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -36,15 +29,11 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="tenant_contract_id"
+                                            data-toggle="selectize" 
+                                            data-table="tenant_contract" 
+                                            data-text="id"
+                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
-                                            @foreach($tenantContracts as $value)
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ ($data['tenant_contract_id'] ?? '') == $value ? 'selected' : '' }}
-                                                >
-                                                    {{$value}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -54,15 +43,12 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="subject"
+                                            data-toggle="selectize" 
+                                            data-table="tenant_payments" 
+                                            data-text="subject" 
+                                            data-value="subject" 
+                                            data-selected="{{ $data['subject'] ?? '' }}"
                                         >
-                                            @foreach($subjects as $subject)
-                                                <option
-                                                    value="{{$subject}}"
-                                                    {{ ($data['subject'] ?? '') == $subject ? 'selected' : '' }}
-                                                >
-                                                    {{$subject}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -117,15 +103,12 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="collected_by"
+                                            data-toggle="selectize" 
+                                            data-table="users" 
+                                            data-text="name" 
+                                            data-value="id" 
+                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
-                                            @foreach($users as $id => $name)
-                                                <option
-                                                    value="{{$id}}"
-                                                    {{ ($data['collected_by'] ?? '') == $id ? 'selected' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -168,10 +151,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $('form select').select2();
-    });
-</script>
 @endsection

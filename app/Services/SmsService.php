@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Mitake\Client;
-use Mitake\Message\Message;
+use Mitake\Message\LongMessage;
 use Mitake\Message\Response;
 
 class SmsService {
@@ -13,8 +13,8 @@ class SmsService {
         \Log::info($content);
         \Log::info("================================");
 
-        $message = (new Message())->setDstaddr($mobile)->setSmbody($content);
-        return $this->client()->send($message);
+        $message = (new LongMessage())->setDstaddr($mobile)->setSmbody($content);
+        return $this->client()->sendLongMessage($message);
     }
 
     private function client() {

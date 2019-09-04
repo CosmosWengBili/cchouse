@@ -304,7 +304,7 @@ class TenantContractController extends Controller
         $room =$tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
-        return view('buildings.electricity_payment_report', [
+        return view('tenant_contracts.electricity_payment_report', [
             'reportRows' => [$row],
             'year' => $year,
             'month' => $month,

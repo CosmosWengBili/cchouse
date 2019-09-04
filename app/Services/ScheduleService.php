@@ -127,8 +127,10 @@ class ScheduleService
     }
     public function notifyMaintenanceStatus()
     {
-        $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.
-        $limitDatetime = Carbon::now()->subDays(10);
+        $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
+                                            ->where('code', 'MaintenanceNotifyRequiredDays')
+                                            ->first()->value;
+        $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
         $maintenances = Maintenance::where('status', '!=', 'done')
             ->where('updated_at', '<=', $limitDatetime)
             ->get();

@@ -253,10 +253,10 @@ class MonthlyReportService
                         }
                     }
                     $data['payoffs'][] = $roomData;
+                    $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
+                    $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
                 }
             }
-            $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
-            $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
         }
         // end section : payoffs
 

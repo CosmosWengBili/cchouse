@@ -298,7 +298,7 @@
                         <div class="col-xs-2"></div>
                         <div class="col-xs-10 px-0">
                             <div class="col-xs-6"></div>
-                            <div class="col-xs-2">合計</div>
+                            <div class="col-xs-2">仲介費合計</div>
                             <div class="col-xs-2">{{$data['meta']['total_agency_fee']}}</div>
                             <div class="col-xs-2"></div>
                         </div>

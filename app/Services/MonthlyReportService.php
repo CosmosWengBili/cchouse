@@ -103,7 +103,7 @@ class MonthlyReportService
 
             foreach ($landlordOtherSubjects as $landlordOtherSubject) {
                 $data['details']['data'][] = [
-                    'type'               => $landlordOtherSubject->income_or_expense === '收入' ? 'income' : 'expense',
+                    'type'               => $landlordOtherSubject->income_or_expense === '收入' ? '收入' : '支出',
                     'room_code'          => $room->room_code,
                     'subject'            => $landlordOtherSubject->subject,
                     'bill_serial_number' => '',

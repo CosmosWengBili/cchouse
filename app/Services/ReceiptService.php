@@ -81,8 +81,11 @@ class ReceiptService
                                 $pay_log_tenant_contract_id
                             );
                         })
-                        ->get();
-                    foreach ($tmp_payments as $payment_key => $payment) {
+                        ->when( $model_key == 'App\TenantPayment' , function ($query) {
+                            return $query->where('collected_by', '公司');
+                        });
+                    
+                    foreach ($tmp_payments->get() as $payment_key => $payment) {
                         $payment_count += $payment->payLogs
                             ->whereBetween('paid_at', [$start_date, $end_date])
                             ->where('receipt_type', '=', '發票')
@@ -117,6 +120,7 @@ class ReceiptService
                     $pay_log->loggable->tenantContract->room->comment);
 
             // Make subtotal row
+
             if ($payment_count == $invoice_item_count) {
                 $data['invoice_item_idx'] = $data['invoice_item_idx'] + 1;
                 if (
@@ -177,7 +181,7 @@ class ReceiptService
 
         // Set every receipt's actual pay amount
         foreach($pay_logs as $log_key => $pay_log){
-            $current_landlord_contract = $pay_log->loggable->tenantContract->room->building->activeContracts->first();
+            $current_landlord_contract = $pay_log->loggable->tenantContract->room->building->activeContracts();
             array_push($landlord_contract_ids, $current_landlord_contract->id);
 
             $landlord_contract_key = $current_landlord_contract->id;
@@ -284,7 +288,7 @@ class ReceiptService
                 $deposit_interest = SystemVariable::where(
                     'code',
                     '=',
-                    '押金設算息'
+                    'deposit_rate'
                 )->first()->value;
                 $data['amount'] = round(
                     $tenant_contract->deposit_paid * $deposit_interest
@@ -531,6 +535,7 @@ class ReceiptService
     public static function updateInvoiceNumber($receipts)
     {
         foreach ($receipts as $class => $receipt) {
+            $class = array_search($class, __('general'));
             $model_name = studly_case(str_singular($class));
             foreach ($receipt as $receipt_key => $receipt_row) {
                 $id = array_keys($receipt_row)[0];

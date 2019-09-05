@@ -312,7 +312,7 @@
     })
 
     $('#save-other-subjects').on('click', function(){
-        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $public_room->id) }}';
+        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $data['building_id']) }}';
 
         // add new landlord other subject data
         const addedData = $.map($('.landlord-other-subject'), function(subject, index){

@@ -62,8 +62,6 @@ class MonthlyReportController extends Controller
             $month_counter->addMonth(); 
         }
 
-        $public_room = $building->publicRoom();
-
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
@@ -72,8 +70,7 @@ class MonthlyReportController extends Controller
         return view('monthly_reports.show')
                 ->with('data', $data)
                 ->with('month_options', $month_options)
-                ->with('report_used_date', $report_used_date)
-                ->with('public_room', $public_room);
+                ->with('report_used_date', $report_used_date);
     }
 
     public function storeOtherSubjects(building $building, Request $request){

@@ -328,4 +328,13 @@ class TenantContractController extends Controller
             'pricePerDegreeSummer' => $tenantContract->electricity_price_per_degree_summer,
         ]);
     }
+
+    public function payment_recheck(TenantContract $tenantContract){
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($tenantContract->load(['tenantPayments','tenantElectricityPayments','payLogs']))
+            ->relations(['tenantPayments','tenantElectricityPayments','payLogs']);
+
+        return view('tenant_contracts.payment_recheck', $responseData->get());        
+    }
 }

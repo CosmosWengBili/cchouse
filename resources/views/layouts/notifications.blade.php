@@ -93,7 +93,7 @@
             const id = $notification.data('id');
 
             $modalHeader.text(header);
-            $modalContent.text(content);
+            $modalContent.html(content);
 
             $notificationModal.modal('show');
 

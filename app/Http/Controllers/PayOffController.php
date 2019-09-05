@@ -57,7 +57,6 @@ class PayOffController extends Controller
                 'amount' => $amount,
                 'is_charge_off_done' => true,
                 'charge_off_date' => $payOffDate,
-                'invoice_serial_number' => '',
                 'collected_by' => '公司',
                 'is_visible_at_report' =>false,
                 'is_pay_off' => true,

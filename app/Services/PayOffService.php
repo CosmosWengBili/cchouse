@@ -99,7 +99,9 @@ class PayOffService
     private function buildPaymentFees(Collection $payments): array
     {
         // 差多少日合約到期
-        $diffInDays = $this->payOffDate->copy()->startOfDay()->diffInDays($payments->first()->due_time);
+        if($payments->count() > 0){
+            $diffInDays = $this->payOffDate->copy()->startOfDay()->diffInDays($payments->first()->due_time);
+        }
         $fees = [];
         foreach ($payments as $payment) {
             $subject = $payment->subject;

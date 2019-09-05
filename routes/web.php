@@ -93,6 +93,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
 
+            // engineers tool
+            Route::get('engineers/api', 'EngineerController@api')->name('engineers.api');
+            Route::post('engineers/api/reversal', 'EngineerController@reversal')->name('engineers.reversal');
         });
     });
 

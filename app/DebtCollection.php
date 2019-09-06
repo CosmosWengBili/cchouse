@@ -9,6 +9,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class DebtCollection extends Model implements AuditableContract
 {
+    use \Znck\Eloquent\Traits\BelongsToThrough;
     use SoftDeletes;
     use AuditableTrait;
 
@@ -39,6 +40,33 @@ class DebtCollection extends Model implements AuditableContract
     public function tenantContract()
     {
         return $this->belongsTo('App\TenantContract');
+    }
+
+    /**
+     * Get room
+     *
+     * @return \Znck\Eloquent\Relations\BelongsToThrough
+     */
+    public function room()
+    {
+        return $this->belongsToThrough('App\Room', 'App\TenantContract');
+    }
+
+    /**
+     * Get pay logs
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function payLogs()
+    {
+        return $this->hasManyThrough(
+            'App\PayLog',
+            'App\TenantContract',
+            'id',
+            'tenant_contract_id',
+            'tenant_contract_id'
+        );
+
     }
 
     /**

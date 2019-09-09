@@ -71,7 +71,6 @@ class KeyRequestController extends Controller
             'status' => 'required',
             'request_approved' => 'nullable'
         ]);
-
         $key_requests = KeyRequest::create($validatedData);
         return redirect($request->_redirect);
     }
@@ -122,17 +121,18 @@ class KeyRequestController extends Controller
     {
         $key_request = KeyRequest::find($id);
 
-        $using = $key_request->status == 'using' ? true : false;
+        $using = $key_request->status == '使用中' ? true : false;
 
         $validatedData = $request->validate([
             'request_user_id' => 'required|exists:users,id',
             'key_id' => 'required|exists:keys,id',
             'request_date' => 'required|max:255',
-            'status' => 'required'
+            'status' => 'required',
+            'request_approved' => 'nullable'
         ]);
 
         $key_request->update($validatedData);
-        if ($using && $validatedData['status'] == "finished") {
+        if ($using && $validatedData['status'] == "已完成") {
             NotificationService::notifyKeyRequestFinished(
                 $validatedData['key_id']
             );

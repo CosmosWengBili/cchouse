@@ -51,14 +51,14 @@ class CompanyIncomeController extends Controller
         $validatedData = $this->fetchValidateData($request);
         CompanyIncome::create($validatedData);
 
-        return redirect()->route('companyIncomes.index');
+        return redirect($request->_redirect);
     }
 
     public function update(Request $request, CompanyIncome $companyIncome) {
         $validatedData = $this->fetchValidateData($request);
         $companyIncome->update($validatedData);
 
-        return redirect()->route('companyIncomes.index');
+        return redirect($request->_redirect);
     }
 
     private function fetchValidateData(Request $request) {

@@ -17,7 +17,11 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
-                        新建 / 編輯表單
+                        @if( (string) request()->route()->getName() == "tenantContracts.extend" )
+                            延期續約
+                        @else
+                            新建 / 編輯表單
+                        @endif
                     </div>
                     <form action="{{$action}}" method="POST"  enctype="multipart/form-data">
                         @csrf

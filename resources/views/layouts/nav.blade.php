@@ -11,53 +11,8 @@
             </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item dropdown  d-flex" style="top: -8px">
-                <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-                <i class="typcn typcn-bell mr-0"></i>
-                <span class="count bg-danger">2</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-                <p class="mb-0 font-weight-normal float-left dropdown-header">站內通知</p>
-                <a class="dropdown-item preview-item">
-                    <div class="preview-thumbnail">
-                    <div class="preview-icon bg-success">
-                        <i class="typcn typcn-info-large mx-0"></i>
-                    </div>
-                    </div>
-                    <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Application Error</h6>
-                    <p class="font-weight-light small-text mb-0">
-                        Just now
-                    </p>
-                    </div>
-                </a>
-                <a class="dropdown-item preview-item">
-                    <div class="preview-thumbnail">
-                    <div class="preview-icon bg-warning">
-                        <i class="typcn typcn-cog mx-0"></i>
-                    </div>
-                    </div>
-                    <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Settings</h6>
-                    <p class="font-weight-light small-text mb-0">
-                        Private message
-                    </p>
-                    </div>
-                </a>
-                <a class="dropdown-item preview-item">
-                    <div class="preview-thumbnail">
-                    <div class="preview-icon bg-info">
-                        <i class="typcn typcn-user-outline mx-0"></i>
-                    </div>
-                    </div>
-                    <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">New user registration</h6>
-                    <p class="font-weight-light small-text mb-0">
-                        2 days ago
-                    </p>
-                    </div>
-                </a>
-                </div>
+            <li class="nav-item dropdown  d-flex" style="top: -8px;">
+                @include('layouts.notifications')
             </li>
             <li class="nav-item nav-profile dropdown">
                 <a class="nav-link dropdown-toggle  pl-0 pr-0" href="#" data-toggle="dropdown" id="profileDropdown">
@@ -100,6 +55,7 @@
             <div class="submenu">
                 <ul class="submenu-item">
                 <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
+                <li class="nav-item"><a class="nav-link" href="/systemVariables">系統變數管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
                 </ul>
             </div>
@@ -131,12 +87,14 @@
                 <div class="submenu">
                     <ul class="submenu-item">
                     <li class="nav-item"><a class="nav-link" href="/deposits">訂金管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/companyIncomes">公司收入管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/payLogs">現金流管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tenantElectricityPayments">電費管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tenantPayments">租客應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/receipts">發票單據管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages/forms/code_editor.html">Code Editor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/payOffs">點交管理</a></li>
                     </ul>
                 </div>
             </li>

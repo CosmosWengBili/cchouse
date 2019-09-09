@@ -31,14 +31,12 @@ class KeyController extends Controller
             )
             ->relations($request->withNested);
 
-        $owner_query = Key::select($this->whitelist('keys'))->where([
-            'keeper_id' => Auth::id()
-        ]);
+        $owner_query = Key::select($this->whitelist('keys'))->where('keeper_id', Auth::id());
         $owner_data
             ->index('keys', $owner_query->with($request->withNested)->get())
             ->relations($request->withNested);
 
-        $unapproved_key = KeyRequest::whereIn('id', $owner_query->pluck('id'))
+        $unapproved_key = KeyRequest::whereIn('key_id', $owner_query->pluck('id'))
             ->denied()
             ->pluck('key_id')
             ->toArray();

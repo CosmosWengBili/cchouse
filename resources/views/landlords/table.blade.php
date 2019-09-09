@@ -22,9 +22,8 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create', $appendLandlordContractQueryString) }}">建立</a>
-        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
-        <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create') }}">建立</a>
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -67,7 +66,7 @@
         @endif
     </div>
 </div>
-@include('shared.import_modal', ['layer' => $layer])
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

@@ -266,7 +266,7 @@
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
                         <div class="col-8"></div>
-                        <div class="col-2">合計</div>
+                        <div class="col-2">仲介費合計</div>
                         <div class="col-1">{{$data['meta']['total_agency_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
@@ -312,7 +312,7 @@
     })
 
     $('#save-other-subjects').on('click', function(){
-        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $public_room->id) }}';
+        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $data['building_id']) }}';
 
         // add new landlord other subject data
         const addedData = $.map($('.landlord-other-subject'), function(subject, index){

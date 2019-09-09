@@ -113,12 +113,12 @@ class ReverseTenantPayments
                         $incomeData = [
                             'subject'     => $payLogData['subject'],
                             'income_date' => $payLogData['paid_at'],
-                            'amount'      => $payLogData['amount'],
+                            'amount'      => $payment->amount,
                         ];
 
                         if ($payment->subject === '租金') {
                             if ($tenantContract->room->management_fee_mode === '比例') {
-                                $income = intval(round($tenantContract->room->rent_actual * $tenantContract->room->management_fee / 100));
+                                $income = intval(round($payment->amount * $tenantContract->room->management_fee / 100));
                                 $incomeData['amount'] = $income;
                             } else {
                                 $incomeData['amount'] = intval($tenantContract->room->management_fee);
@@ -134,7 +134,7 @@ class ReverseTenantPayments
                             'subject_type'      => $payLogData['payment_type'],
                             'income_or_expense' => '收入',
                             'expense_date'      => $payLogData['paid_at'],
-                            'amount'            => $payLogData['amount'],
+                            'amount'            => $payment->amount,
                             'room_id'           => $tenantContract->room->id,
                         ]);
                     }
@@ -156,6 +156,17 @@ class ReverseTenantPayments
                 if ($txTime->lte($dueTime)) {
                     $tenantContract->commissioner->notify(new AbnormalPaymentReceived($payment));
                 }
+            }
+            if( $amount > 0 ){
+                $payLogData = [
+                    'subject'            => '溢繳無法沖銷費用',
+                    'payment_type'       => '租金雜費',
+                    'virtual_account'    => $virtualAccount,
+                    'paid_at'            => $paidAt,
+                    'amount'             => $amount,
+                    'tenant_contract_id' => $tenantContract->id,
+                ];
+                $payments->last()->payLogs()->create($payLogData);
             }
 
             return true;

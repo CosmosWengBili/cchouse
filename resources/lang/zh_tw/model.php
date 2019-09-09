@@ -321,7 +321,8 @@ return [
         'pay_logs' => '繳款紀錄',
         'deposits' => '訂金',
         'maintenances' => '清潔維修',
-        'tenant' => '租客'
+        'tenant' => '租客',
+        'company_incomes' => '公司收入'
     ],
     'DebtCollection' => [
         'id' => '編號',

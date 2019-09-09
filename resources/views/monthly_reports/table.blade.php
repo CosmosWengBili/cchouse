@@ -8,6 +8,8 @@
             月結單列表
         </h2>
 
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -38,7 +40,7 @@
                             <td>
                                 <a class="btn btn-info" href="{{ route( 'monthlyReports.show', $object['id']) }}">查看月結單</a>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>                                
+                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                             </td>
                         </tr>
                     @endforeach

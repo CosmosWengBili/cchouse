@@ -5,12 +5,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 
+use App\User;
 use App\LandlordContract;
 use App\Landlord;
 use App\TenantContract;
 use App\TenantPayment;
 use App\Maintenance;
 use App\MonthlyReport;
+use App\SystemVariable;
 
 use App\Notifications\LandlordContractDue;
 use App\Notifications\TenantContractDueInTwoMonths;
@@ -103,9 +105,9 @@ class ScheduleService
 
     public function notifyBirth()
     {
-        $landlord_names = Landlord::where([
-            'birth' => Carbon::today()->addWeek(2)
-        ])->pluck('name');
+        $landlord_names = Landlord::where(
+            'birth','like', '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
+        )->pluck('name')->toArray();
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
         }
@@ -126,8 +128,10 @@ class ScheduleService
     }
     public function notifyMaintenanceStatus()
     {
-        $notifyRequiredDays = 10; # @TODO: Replace with system variable when `System Variable Management` feature done.
-        $limitDatetime = Carbon::now()->subDays(10);
+        $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
+                                            ->where('code', 'MaintenanceNotifyRequiredDays')
+                                            ->first()->value;
+        $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
         $maintenances = Maintenance::where('status', '!=', 'done')
             ->where('updated_at', '<=', $limitDatetime)
             ->get();
@@ -144,7 +148,7 @@ class ScheduleService
     public function genarateDebtCollections()
     {
         
-        $delay = App\SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
+        $delay = SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
         $delay = $delay ? intval($delay->value) : config('finance.debt_collection_delay_days');
         $notifyAt = Carbon::today()->subDays($delay);
         $tenantPayments = TenantPayment::with('payLogs')->where('is_charge_off_done', false)->where('due_time', $notifyAt)->get();

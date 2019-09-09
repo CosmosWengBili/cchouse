@@ -167,8 +167,22 @@ class TenantContract extends Pivot implements AuditableContract
 
     public function calculateCurrentBalance() {
 
-        $unpaid = $this->tenantPayments()->sum('amount');
-        $electricityUnpaid = $this->tenantElectricityPayments()->sum('amount');
+        $month = 0;
+        $payment_date = '';
+
+        if( Carbon::now()->format('d') < $this->rent_pay_day ){
+            $month = Carbon::now()->subMonth()->month;
+            $payment_date = Carbon::create(Carbon::now()->year,$month,$this->rent_pay_day);
+            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<', $payment_date)->sum('amount');            
+        }
+        else{
+            $month = Carbon::now()->month;
+            $payment_date = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
+            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');              
+        }
+
         $paid = $this->payLogs()->sum('amount');
 
         return $paid - $unpaid - $electricityUnpaid;

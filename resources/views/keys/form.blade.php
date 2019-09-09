@@ -58,7 +58,7 @@
                                     <select 
                                         data-toggle="selectize" 
                                         data-table="rooms" 
-                                        data-text="room_code" 
+                                        data-text="id" 
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"
                                         class="form-control form-control-sm" 

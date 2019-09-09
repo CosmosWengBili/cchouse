@@ -141,10 +141,10 @@
                     <div class="col-xs-12 px-0 text-center bg-gray mb-0">
                         <div class="col-xs-2"></div>
                         <div class="col-xs-10 px-0">
-                            <div class="col-xs-8"></div>
+                            <div class="col-xs-6"></div>
                             <div class="col-xs-2">入帳日</div>
-                            <div class="col-xs-1">收入</div>
-                            <div class="col-xs-1">支出</div>
+                            <div class="col-xs-2">收入</div>
+                            <div class="col-xs-2">支出</div>
                         </div>
                     </div>
                     @foreach( $data['rooms'] as $room )
@@ -163,27 +163,27 @@
                                 $expense_not_zero = count($room['expenses']) > 0;
                             @endphp
                             @foreach( $room['incomes'] as $income )
-                                <div class="col-xs-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
+                                <div class="col-xs-6 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
                                 <div class="col-xs-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
-                                <div class="col-xs-1 text-center">{{ $income['amount'] }}</div>
-                                <div class="col-xs-1 text-center"></div>
+                                <div class="col-xs-2 text-center">{{ $income['amount'] }}</div>
+                                <div class="col-xs-2 text-center"></div>
                             @endforeach
                             @if( $income_not_zero )
                                 <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
                             @endif
                             @foreach( $room['expenses'] as $expense )
-                                <div class="col-xs-8 px-5">{{ $expense['subject'] }}</div>
+                                <div class="col-xs-6 px-5">{{ $expense['subject'] }}</div>
                                 <div class="col-xs-2 text-center">{{ $expense['paid_at']->format('m-d') }}</div>
-                                <div class="col-xs-1 text-center"></div>
-                                <div class="col-xs-1 text-center">{{ $expense['amount'] }}</div>
+                                <div class="col-xs-2 text-center"></div>
+                                <div class="col-xs-2 text-center">{{ $expense['amount'] }}</div>
                             @endforeach
                             @if( $expense_not_zero )
                                 <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
                             @endif
-                            <div class="col-xs-8"></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
-                            <div class="col-xs-1 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $room['meta']['room_total_income'] }}</span></div>
-                            <div class="col-xs-1 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $room['meta']['room_total_expense'] }}</span></div>
+                            <div class="col-xs-6"></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $room['meta']['room_total_income'] }}</span></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $room['meta']['room_total_expense'] }}</span></div>
                     </div>
                     </div>
                     @endforeach
@@ -200,28 +200,28 @@
                         </div>
                         <div class="col-xs-10 px-0">
                             @foreach( $payoff['incomes'] as $income )
-                                <div class="col-xs-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
+                                <div class="col-xs-6 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
                                 <div class="col-xs-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
-                                <div class="col-xs-1 text-center">{{ $income['amount'] }}</div>
-                                <div class="col-xs-1 text-center"></div>
+                                <div class="col-xs-2 text-center">{{ $income['amount'] }}</div>
+                                <div class="col-xs-2 text-center"></div>
                             @endforeach
                             @if( count($payoff['incomes']) > 0 )
                                 <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
                             @endif
 
                             @foreach( $payoff['expenses'] as $expense )
-                                <div class="col-xs-8 px-5">{{ $expense['subject'] }}</div>
+                                <div class="col-xs-6 px-5">{{ $expense['subject'] }}</div>
                                 <div class="col-xs-2 text-center">{{ $expense['paid_at']->format('m-d') }}</div>
-                                <div class="col-xs-1 text-center"></div>
-                                <div class="col-xs-1 text-center">{{ $expense['amount'] }}</div>
+                                <div class="col-xs-2 text-center"></div>
+                                <div class="col-xs-2 text-center">{{ $expense['amount'] }}</div>
                             @endforeach
                             @if( count($payoff['expenses']) > 0 )
                                 <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
                             @endif
-                            <div class="col-xs-8"></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
-                            <div class="col-xs-1 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $payoff['meta']['room_total_income'] }}</span></div>
-                            <div class="col-xs-1 text-center"><span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $payoff['meta']['room_total_expense'] }}</span></div>
+                            <div class="col-xs-6"></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $payoff['meta']['room_total_income'] }}</span></div>
+                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ $payoff['meta']['room_total_expense'] }}</span></div>
                     </div>
                     </div>
                     @endforeach                
@@ -237,7 +237,7 @@
                                 value={{ implode(',', $data['details']['meta']['total_landlord_other_subject_id']) }}
                             >
                             @foreach( $data['details']['data'] as $detail_data )
-                                <div class="col-xs-8 px-5">                             
+                                <div class="col-xs-6 px-5">                             
                                     {{ $detail_data['subject'] }}
                                     @if( $detail_data['bill_serial_number'] != '' )
                                         (帳單號:{{ $detail_data['bill_serial_number'] }})
@@ -248,11 +248,11 @@
                                 </div>
                                 <div class="col-xs-2 text-center">{{ substr(strval($detail_data['paid_at']),5,5) }}</div>
                                 @if( $detail_data['type'] == '收入' )
-                                    <div class="col-xs-1 text-center">{{ $detail_data['amount'] }}</div>
-                                    <div class="col-xs-1 text-center"></div>
+                                    <div class="col-xs-2 text-center">{{ $detail_data['amount'] }}</div>
+                                    <div class="col-xs-2 text-center"></div>
                                 @else
-                                    <div class="col-xs-1 text-center"></div>
-                                    <div class="col-xs-1 text-center">{{ abs($detail_data['amount']) }}</div>
+                                    <div class="col-xs-2 text-center"></div>
+                                    <div class="col-xs-2 text-center">{{ abs($detail_data['amount']) }}</div>
                                 @endif
                             @endforeach
                     </div>
@@ -265,12 +265,12 @@
                         </div>
                         <div class="col-xs-10 align-self-start px-0">
                             @foreach( $data['shareholders'] as $shareholder )
-                                <div class="col-xs-8 px-5">
+                                <div class="col-xs-6 px-5">
                                     {{ $shareholder['name'] }}
                                 </div>
                                 <div class="col-xs-2 text-center">{{ $shareholder['current_period'] }} / {{ $shareholder['max_period'] }}</div>
-                                <div class="col-xs-1 text-center"></div>
-                                <div class="col-xs-1 text-center">{{ $shareholder['distribution_fee'] }}</div>
+                                <div class="col-xs-2 text-center"></div>
+                                <div class="col-xs-2 text-center">{{ $shareholder['distribution_fee'] }}</div>
                             @endforeach
                         </div>
                     </div>                  
@@ -279,28 +279,28 @@
                     <div class="col-xs-12 px-0 text-center mb-0">
                         <div class="col-xs-2"></div>
                         <div class="col-xs-10 px-0">
-                            <div class="col-xs-8"></div>
+                            <div class="col-xs-6"></div>
                             <div class="col-xs-2">合計</div>
-                            <div class="col-xs-1">{{$data['meta']['total_income']}}</div>
-                            <div class="col-xs-1">{{$data['meta']['total_expense']}}</div>
+                            <div class="col-xs-2">{{$data['meta']['total_income']}}</div>
+                            <div class="col-xs-2">{{$data['meta']['total_expense']}}</div>
                         </div>
                     </div>  
                     <div class="col-xs-12 px-0 text-center mb-0">
                         <div class="col-xs-2"></div>
                         <div class="col-xs-10 px-0">
-                            <div class="col-xs-8"></div>
+                            <div class="col-xs-6"></div>
                             <div class="col-xs-2">本公司服務費</div>
-                            <div class="col-xs-1">{{$data['meta']['total_management_fee']}}</div>
-                            <div class="col-xs-1"></div>
+                            <div class="col-xs-2">{{$data['meta']['total_management_fee']}}</div>
+                            <div class="col-xs-2"></div>
                         </div>
                     </div>  
                     <div class="col-xs-12 px-0 text-center mb-0">
                         <div class="col-xs-2"></div>
                         <div class="col-xs-10 px-0">
-                            <div class="col-xs-8"></div>
-                            <div class="col-xs-2">合計</div>
-                            <div class="col-xs-1">{{$data['meta']['total_agency_fee']}}</div>
-                            <div class="col-xs-1"></div>
+                            <div class="col-xs-6"></div>
+                            <div class="col-xs-2">仲介費合計</div>
+                            <div class="col-xs-2">{{$data['meta']['total_agency_fee']}}</div>
+                            <div class="col-xs-2"></div>
                         </div>
                     </div>                            
                     {{-- Footer end --}}

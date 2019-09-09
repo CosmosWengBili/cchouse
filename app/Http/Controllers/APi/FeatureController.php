@@ -23,8 +23,7 @@ class FeatureController extends Controller
         if (in_array($text, $whitelist)) {
             $table = ucfirst(camel_case(str_singular($table)));
             $model = app("App\\{$table}");
-            $data = $model::select($text, $value)->get();
-
+            $data = $model::select($text, $value)->distinct($text)->get();
             return response()->json($data);
         } else {
             return response('invalid');

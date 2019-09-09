@@ -31,5 +31,14 @@ class SystemVariableSeeder extends Seeder
             'code'  => 'debt_collection_delay_days',
             'value' => config('finance.debt_collection_delay_days'),
         ]);
+
+        // 押金設算息
+        $system_variables = [
+            ['id' => 1, 'code' => 'deposit_rate', 'value' => '0.00087'],
+        ];
+
+        foreach ($system_variables as $system_variable) {
+            $this->updateOrCreate(\App\SystemVariable::class, $system_variable);
+        }
     }
 }

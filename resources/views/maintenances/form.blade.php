@@ -145,14 +145,16 @@
                                         <select
                                             name="status"
                                             class="form-control form-control-sm"
+                                            value="{{ $data['status'] ?? ''}}"
                                         >
                                             @foreach(config('enums.maintenance.status') as $value)
                                                 @php
-                                                    $disabled = $value == 'done' && $isManageGroup;
+                                                    $disabled = ($value == '案件完成' && $isManageGroup) && (isset($data["is_recorded"]) ? ($data['is_recorded'] == true) : true);
                                                 @endphp
-                                                <option value="{{$value}}"
-                                                {{ $disabled ? 'disabled="disabled"' : '' }}
-                                                >{{$value}}</option>
+                                                @if( !$disabled )
+                                                    <option value="{{$value}}"
+                                                    >{{$value}}</option>
+                                                @endif
                                             @endforeach
                                         </select>
                                     </td>
@@ -174,6 +176,7 @@
                                         <select
                                             name="incident_type"
                                             class="form-control form-control-sm"
+                                            value="{{ $data['incident_type'] ?? ''}}"
                                         >
                                             @foreach(config('enums.maintenance.incident_type') as $value)
                                                 <option value="{{$value}}">{{$value}}</option>
@@ -187,6 +190,7 @@
                                         <select
                                             name="work_type"
                                             class="form-control form-control-sm"
+                                            value="{{ $data['work_type'] ?? ''}}"
                                         >
                                             @foreach(config('enums.maintenance.work_type') as $value)
                                                 <option value="{{$value}}">{{$value}}</option>

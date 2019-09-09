@@ -206,6 +206,9 @@ class TenantContractController extends Controller
         $data = $responseData
             ->edit($tempContract, 'tenantContracts.create')
             ->get();
+        $data['data']['original_files'] = null;
+        $data['data']['carrier_files'] =  null;
+
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
         return view('tenant_contracts.form', $data);
@@ -301,7 +304,7 @@ class TenantContractController extends Controller
         $room = $tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
-        return view('buildings.electricity_payment_report', [
+        return view('tenant_contracts.electricity_payment_report', [
             'reportRows' => [$row],
             'year' => $year,
             'month' => $month,

@@ -114,7 +114,9 @@ class TenantController extends Controller
             'company' => 'required',
             'job_position' => 'required',
             'company_address' => 'required',
-            'birth' => 'required'
+            'birth' => 'required|date',
+            'confirm_by' => 'required|min:1',
+            'confirm_at' => 'required|date',
         ]);
         $tenant = Tenant::create($validatedData);
 
@@ -155,9 +157,9 @@ class TenantController extends Controller
             'company' => 'required',
             'job_position' => 'required',
             'company_address' => 'required',
-            'confirm_by' => 'required',
-            'confirm_at' => 'required',
-            'birth' => 'required'
+            'confirm_by' => 'required|min:1',
+            'confirm_at' => 'required|date',
+            'birth' => 'required|date'
         ]);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [

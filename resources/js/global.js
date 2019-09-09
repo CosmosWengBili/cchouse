@@ -74,3 +74,53 @@ window.realtimeSelect = function (selectizeElements) {
             })
     })
 }
+
+// getQueryString('key').setInputValue('input_key', 'input_value').show('true|false');
+
+/**
+ *
+ * @type {{getQueryStrings, setInputValue}}
+ */
+window.myQueryString = function () {
+    
+    let queryStrings = [];
+    const url = new URL(location.href);
+    const { searchParams } = url;
+    
+    for(let [key, value] of searchParams.entries()) {
+        queryStrings[key] = value;
+    }
+    
+    /**
+     * get url query string
+     * @returns {Array}
+     */
+    function getQueryStrings() {
+        return queryStrings;
+    }
+    
+    /**
+     * set value, from query string, to an input by input id
+     * @param queryStringKey
+     * @param inputId
+     * @param setName is set input name equal to input id
+     * @return boolean
+     */
+    function setInputValue(queryStringKey, inputId, setName=true) {
+    
+        const $input = $('#' + inputId);
+        const queryStringValue = queryStrings[queryStringKey] || null;
+        if ($input.length === 0 || queryStringValue === null) return false;
+        
+        $input.val(queryStringValue);
+        setName && $input.attr('name', inputId)
+        
+        return true;
+    }
+    
+    return {
+        getQueryStrings,
+        setInputValue
+    }
+};
+

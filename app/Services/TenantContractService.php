@@ -22,6 +22,10 @@ class TenantContractService
     public function create($data, $payments = [])
     {
         $tenantContract = DB::transaction(function () use ($data, $payments) {
+
+            // insertGetId does not support auto created_at
+            $data['created_at'] = $data['updated_at'] = Carbon::now();
+
             // create tenant contract
             $tenantContractId = TenantContract::insertGetId($data);
             $tenantContract = TenantContract::find($tenantContractId);

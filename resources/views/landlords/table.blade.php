@@ -1,5 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+
+    $appendLandlordContractQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['landlordContracts.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('landlord_contract_id', $data['id'] ?? null);
 @endphp
 
 <div class="card">
@@ -13,7 +22,7 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create', $appendLandlordContractQueryString) }}">建立</a>
         <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
         <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
         {{-- you should handle the empty array logic --}}

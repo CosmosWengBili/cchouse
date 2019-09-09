@@ -290,7 +290,8 @@
     </div>
 </div>
 <script>
-    const landlordId = getLandlordId();
+    const qs = window.myQueryString();
+    const landlordId = qs.getQueryStrings()['landlord_id'];
     const $landlordIds = $('[name="landlord_ids"]');
     landlordId && $landlordIds.val(landlordId);
 
@@ -304,19 +305,5 @@
             }
         }
     });
-
-    function getLandlordId() {
-
-        const url = new URL(location.href);
-        const { searchParams } = url;
-        let params = {};
-
-        for(let [key, value] of searchParams.entries()) {
-            params[key] = value;
-        }
-
-        return params['id'] || null
-    }
-
 </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Landlord;
 use App\LandlordAgent;
 use App\ContactInfo;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 
 use App\Services\LandlordService;
@@ -72,16 +73,16 @@ class LandlordController extends Controller
             'name' => 'required|max:255',
             'certificate_number' => 'required',
             'birth' => 'required',
-            'note' => 'nullable',
+            'note' => 'present',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
-            'bank_code' => 'required|integer|digits_between:1,11',
-            'branch_code' => 'required|integer|digits_between:1,11',
+            'bank_code' => 'required|digits:3',
+            'branch_code' => 'required|digits:4',
             'account_name' => 'required|max:255',
             'account_number' => 'required|max:255',
             'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required|max:255',
-            'invoice_mailing_address' => 'required|max:255'
+            'invoice_collection_number' => 'required_if:invoice_collection_method,載具|max:255',
+            'invoice_mailing_address' => 'required|max:255',
         ]);
 
         $landlord = Landlord::create($validatedData);
@@ -97,6 +98,10 @@ class LandlordController extends Controller
                 ? $request->input('contact_infos')
                 : []
         ]);
+        $this->createLandlordContractRelation(
+            $landlord,
+            $request->input('landlord_contract_id', null)
+        );
 
         return redirect($request->_redirect);
     }
@@ -158,16 +163,16 @@ class LandlordController extends Controller
             'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
-            'bank_code' => 'required|integer|digits_between:1,11',
-            'branch_code' => 'required|integer|digits_between:1,11',
+            'bank_code' => 'required|digits:3',
+            'branch_code' => 'required|digits:4',
             'account_name' => 'required|max:255',
             'account_number' => 'required|max:255',
             'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required|max:255',
+            'invoice_collection_number' => 'required_if:invoice_collection_method,寄送|max:255',
             'invoice_mailing_address' => 'required|max:255'
         ]);
 
-        LandlordService::update($landlord,$validatedData);
+        LandlordService::update($landlord, $validatedData);
 
         $this->handleDocumentsUpload($landlord, ['third_party_file']);
 
@@ -252,6 +257,20 @@ class LandlordController extends Controller
                     );
                 }
             }
+        }
+    }
+
+    /**
+     * create relation to landlord and landlordContact
+     *
+     * @param Landlord $landlord
+     * @param $landlordContactId
+     */
+    private function createLandlordContractRelation(Landlord $landlord, $landlordContactId)
+    {
+        if (! is_null($landlordContactId)) {
+            $landlordContactId = array_wrap($landlordContactId);
+            $landlord->landlordContracts()->sync($landlordContactId);
         }
     }
 }

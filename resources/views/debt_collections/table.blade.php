@@ -54,7 +54,7 @@
                                 </td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) . '?with=tenantContract.room;tenantPayments.payLog;tenantElectricityPayments.payLog' }}">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) . '?with=room;payLogs' }}">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
                             </td>

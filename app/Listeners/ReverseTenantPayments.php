@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ReceivableArrived;
+use App\TenantElectricityPayment;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\TenantPayment;
@@ -39,74 +40,83 @@ class ReverseTenantPayments
             'success' => false,
             'message' => ''
         ];
-        
+
         $res = DB::transaction(function () use ($event) {
 
             $order = SystemVariable::ofGroup('Reversal')->pluck('code');
-    
+
             $amount = intval($event->data['amount']);
             $virtualAccount = $event->data['virtual_account'];
             $paidAt = $event->data['txTime'];
-    
+
             $tenantContract = $event->tenantContract;
-            $tenantPayments = TenantPayment::with('payLogs')
-                                            ->where('tenant_contract_id', $tenantContract->id)
-                                            ->where('is_charge_off_done', false)
-                                            ->get();
-            
-            $tenantPayments = $tenantPayments->sortBy(function ($tp) use ($order) {
+
+            $payments = collect(); // TenantPayment and TenantElectricityPayment collection
+            TenantPayment::with('payLogs')
+                          ->where('tenant_contract_id', $tenantContract->id)
+                          ->where('is_charge_off_done', false)
+                          ->get()
+                          ->each(function ($tp) use ($payments) { $payments->push($tp); });
+            TenantElectricityPayment::with('payLogs')
+                                      ->where('tenant_contract_id', $tenantContract->id)
+                                      ->where('is_charge_off_done', false)
+                                      ->get()
+                                      ->each(function ($tep) use ($payments) { $payments->push($tep); });
+
+            $payments = $payments->sortBy(function ($tp) use ($order) {
                 return $tp->due_time . '#' . ($order->search($tp->subject) + 10);
             })->values();
-    
-            
-            foreach ($tenantPayments as $tp) {
-    
+
+            foreach ($payments as $payment) {
+
                 if ($amount === 0) {
                     break;
                 }
-                
+
                 $payLogData = [
-                    'subject'            => $tp->subject,
-                    'payment_type'       => $tp->subject === '電費' ? '電費' : '租金雜費',
+                    'subject'            => $payment->subject,
+                    'payment_type'       => $payment->subject === '電費' ? '電費' : '租金雜費',
                     'virtual_account'    => $virtualAccount,
                     'paid_at'            => $paidAt,
                     'tenant_contract_id' => $tenantContract->id,
                 ];
-     
+
                 // previously paid total amount for this tenant payment(which is not enough)
                 // it will be 0 if the payment wasn't paid before
-                $alreadyPaid = $tp->payLogs->sum('amount');
-                
-                // by default(the tenant payment wasn't paid before), 
+                $alreadyPaid = $payment->payLogs->sum('amount');
+
+                // by default(the tenant payment wasn't paid before),
                 // the amount missing(or should be paid) is the amount of this tenant payment
-                $shuldPayAmount = $tp->amount - $alreadyPaid;
-    
-    
+                $shouldPayAmount = $payment->amount - $alreadyPaid;
+
                 // if current amount is sufficient for the next payment
-                if ( $amount - $shuldPayAmount >= 0 ) {
+                if ( $amount - $shouldPayAmount >= 0 ) {
                     // pay for this payment
-                    $amount = $amount - $shuldPayAmount;
-    
+                    $amount = $amount - $shouldPayAmount;
+
                     // mark tenant payment as deon
-                    $tp->update([
+                    $payment->update([
                         'is_charge_off_done' => true,
                         'charge_off_date'    => $paidAt,
                     ]);
-    
+
                     // generate a pay log
-                    $payLogData['amount'] = $shuldPayAmount;
-                    $tp->payLogs()->create($payLogData);
-    
+                    $payLogData['amount'] = $shouldPayAmount;
+                    $payment->payLogs()->create($payLogData);
+
                     // determine who gets the income
-                    if ($tp->collected_by === '公司') {
+                    $paymentCollectedByCompany = $payment->collected_by === '公司';
+                    $electricityPaymentCollectedByCompany = $payment->subject == '電費' &&
+                                                            $tenantContract->electricity_payment_method != '自行帳單繳付';
+                    if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany) {
                         // generate company income
                         $incomeData = [
                             'subject'     => $payLogData['subject'],
                             'income_date' => $payLogData['paid_at'],
                             'amount'      => $payLogData['amount'],
                         ];
-    
-                        if ($tp->subject === '租金') {
+
+                        if ($payment->subject === '租金') {
                             if ($tenantContract->room->management_fee_mode === '比例') {
                                 $income = intval(round($tenantContract->room->rent_actual * $tenantContract->room->management_fee / 100));
                                 $incomeData['amount'] = $income;
@@ -114,10 +124,10 @@ class ReverseTenantPayments
                                 $incomeData['amount'] = intval($tenantContract->room->management_fee);
                             }
                         }
-                        
+
                         $tenantContract->companyIncomes()->create($incomeData);
-    
-                    } else if ($tp->collected_by === '房東') {
+
+                    } else if ($payment->collected_by === '房東') {
                         // generate landlord other subject
                         LandlordOtherSubject::create([
                             'subject'           => $payLogData['subject'],
@@ -128,20 +138,23 @@ class ReverseTenantPayments
                             'room_id'           => $tenantContract->room->id,
                         ]);
                     }
-    
-    
+
+
                 } else {
                     // the remaining amount is insufficient for next payment
                     // we will still generate a pay log for it
                     $payLogData['amount'] = $amount;
-                    $tp->payLogs()->create($payLogData);
+                    $payment->payLogs()->create($payLogData);
                     $amount = 0;
                 }
-    
+
                 // if transaction date is not within next period of payment
                 // it's considered as abnormal, and a notification is needed
-                if ($this->periodService->next($event->data['txTime'], $tp->period)->startOfDay()->lte(Carbon::parse($tp->due_time))) {
-                    $tenantContract->commissioner->notify(new AbnormalPaymentReceived($tp));
+                $period = $payment->period ?? '月';
+                $txTime = $this->periodService->next($event->data['txTime'], $period)->startOfDay();
+                $dueTime = Carbon::parse($payment->due_time);
+                if ($txTime->lte($dueTime)) {
+                    $tenantContract->commissioner->notify(new AbnormalPaymentReceived($payment));
                 }
             }
 

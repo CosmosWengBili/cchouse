@@ -117,9 +117,10 @@
                                 <td>
                                     <input
                                         class="form-control form-control-sm"
-                                        type="text"
+                                        type="date"
                                         name="birth"
                                         value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
+                                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                                     />
                                 </td>
                             </tr>
@@ -145,6 +146,7 @@
                                         type="date"
                                         name="confirm_at"
                                         value="{{ isset($data["confirm_at"]) ? $data['confirm_at'] : '' }}"
+                                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                                     />
                                 </td>
                             </tr>

@@ -27,7 +27,8 @@ class Tenant extends Model implements AuditableContract
         'job_position',
         'company_address',
         'confirm_by',
-        'confirm_at'
+        'confirm_at',
+        'birth'
     ];
 
     /**

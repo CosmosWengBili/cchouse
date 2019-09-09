@@ -40,7 +40,13 @@
                         @php
                             $layer = Str::snake(explode('.', $relation)[0]);
                             $layerPlural = Str::plural($layer);
-                            $objects = isset($data[$layer][0]) ? $data[$layer] : [$data[$layer]];
+
+                            $objects = null;
+                            if (isset($data[$layer][0])) {
+                                $objects = $data[$layer];
+                            } elseif (isset($data[$layer]['id'])) {
+                                $objects = [$data[$layer]];
+                            }
                         @endphp
                         @include($layerPlural . '.table', ['objects' => $objects, 'layer' => $layerPlural])
                     </div>

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
+use App\Responser\SubTableResponser;
 
 use OwenIt\Auditing\Contracts\Auditor;
 
@@ -108,8 +109,10 @@ class LandlordContractController extends Controller
         $responseData
             ->show($landlordContract->load($request->withNested))
             ->relations($request->withNested);
-
-        return view('landlord_contracts.show', $responseData->get());
+        $data = $responseData->get();
+        $subtableResponser = new SubTableResponser();
+        $data = $subtableResponser->whitelist('LandlordContract', $data, $data['relations']);
+        return view('landlord_contracts.show', $data);
     }
 
     /**

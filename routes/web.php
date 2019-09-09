@@ -38,6 +38,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('companyIncomes', 'CompanyIncomeController');
             Route::get('tenantContracts/{tenantContract}/electricityDegree', 'TenantContractController@electricityDegree');
+            Route::get('tenantContracts/{tenantContract}/payment_recheck', 'TenantContractController@payment_recheck');
             Route::post(
                 'tenantContracts/sendElectricityPaymentReportSMS',
                 'TenantContractController@sendElectricityPaymentReportSMS'

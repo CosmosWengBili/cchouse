@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('layouts.form_error')
+@include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8 mt-5">
@@ -96,6 +96,9 @@
                                             type="text"
                                             name="bank_code"
                                             value="{{ isset($data["bank_code"]) ? $data['bank_code'] : '' }}"
+                                            maxlength="3"
+                                            pattern="\d*"
+                                            placeholder="例如新光銀行請輸入: 103"
                                         />
                                     </td>
                                 </tr> 
@@ -107,6 +110,9 @@
                                             type="text"
                                             name="branch_code"
                                             value="{{ isset($data["branch_code"]) ? $data['branch_code'] : '' }}"
+                                            maxlength="4"
+                                            pattern="\d*"
+                                            placeholder="分行代碼為四個數字"
                                         />
                                     </td>
                                 </tr> 
@@ -136,6 +142,7 @@
                                     <td>@lang("model.Landlord.invoice_collection_method")</td>
                                     <td>
                                         <select
+                                            id="invoice_collection_method"
                                             class="form-control form-control-sm"
                                             name="invoice_collection_method"
                                             value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
@@ -156,18 +163,29 @@
                                             value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
                                         />
                                     </td>
-                                </tr>  
-                                <tr>
+                                </tr>
+                                <tr id="invoice_tr" class="">
                                     <td>@lang("model.Landlord.invoice_collection_number")</td>
                                     <td>
                                         <input
+                                            id="invoice_collection_number"
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="invoice_collection_number"
                                             value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
                                         />
                                     </td>
-                                </tr> 
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Landlord.landlord_contracts")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            id="landlord_contract_id"
+                                        />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -188,4 +206,49 @@
         </div>
     </div>
 </div>
+<script>
+
+    const queryStringName = 'landlord_contract_id';
+    const inputId = 'landlord_contract_id';
+
+    const qs = window.myQueryString();
+    qs.setInputValue(queryStringName, inputId);
+    $('#' + inputId).parents('tr').addClass('d-none');
+
+
+    const toggleElement = {
+        selectElement: null,
+        toggledElement: null,
+        bind: function (selectElement, toggledElement) {
+            this.selectElement = selectElement;
+            this.toggledElement = toggledElement;
+
+            document.getElementById(this.selectElement.id)
+                .addEventListener('change', () => this.display())
+
+            return this
+        },
+        display: function () {
+            const option1 = '寄送';
+            const option2 = '載具';
+            const selectedValue = this.selectElement.value;
+
+            if (selectedValue === option1) {
+                this.toggledElement.classList.add('d-none');
+            } else if (selectedValue === option2) {
+                this.toggledElement.classList.remove('d-none');
+            }
+
+            return this
+        }
+    };
+
+    $(document).ready(function () {
+        toggleElement.bind(
+            document.getElementById('invoice_collection_method'),
+            document.getElementById('invoice_tr')
+        ).display()
+    })
+
+</script>
 @endsection

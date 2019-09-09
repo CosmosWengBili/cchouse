@@ -1,5 +1,15 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+
+    $appendLandlordQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['landlords.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('landlord_id', $data['id'] ?? null);
+
 @endphp
 
 <div class="card">

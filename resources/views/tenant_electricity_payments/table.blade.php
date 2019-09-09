@@ -11,6 +11,7 @@
                 @lang("model.{$model_name}.{$layer}")
             @endif
         </h2>
+        <p>僅顯示有效合約中，電費繳款方式為【公司代付】的電費單</p>
 
         {{-- the route to create this kind of resource --}}
         @if(Route::has(Str::camel($layer) . '.create'))

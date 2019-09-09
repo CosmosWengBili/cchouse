@@ -112,8 +112,8 @@ class TenantContractController extends Controller
                 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11',
-            '220v_start_degree' => 'required|integer|digits_between:1,11',
+            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
+            '220v_start_degree' => 'required|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
             '220v_end_degree' => 'required|integer|digits_between:1,11',
             'invoice_collection_method' => [
@@ -263,8 +263,8 @@ class TenantContractController extends Controller
                 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11',
-            '220v_start_degree' => 'required|integer|digits_between:1,11',
+            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
+            '220v_start_degree' => 'required|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
             '220v_end_degree' => 'required|integer|digits_between:1,11',
             'invoice_collection_method' => [
@@ -301,7 +301,7 @@ class TenantContractController extends Controller
 
     public function electricityPaymentReport(TenantContract $tenantContract, int $year, int $month)
     {
-        $room =$tenantContract->room()->first();
+        $room = $tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
         return view('tenant_contracts.electricity_payment_report', [
@@ -311,7 +311,8 @@ class TenantContractController extends Controller
         ]);
     }
 
-    public function sendElectricityPaymentReportSMS(Request $request) {
+    public function sendElectricityPaymentReportSMS(Request $request)
+    {
         $tenantContractId = intval($request->input('tenantContractId'));
         $year = intval($request->input('year'));
         $month = intval($request->input('month'));
@@ -321,7 +322,8 @@ class TenantContractController extends Controller
         return response()->json(true);
     }
 
-    public function electricityDegree(TenantContract $tenantContract) {
+    public function electricityDegree(TenantContract $tenantContract)
+    {
         return response()->json([
             'method' => $tenantContract->electricity_calculate_method,
             'pricePerDegree' => $tenantContract->electricity_price_per_degree,

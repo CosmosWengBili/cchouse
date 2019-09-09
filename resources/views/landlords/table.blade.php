@@ -1,5 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+
+    $appendLandlordContractQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['landlordContracts.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('landlord_contract_id', $data['id'] ?? null);
 @endphp
 
 <div class="card">
@@ -15,7 +24,6 @@
         {{-- the route to create this kind of resource --}}
         <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create') }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
-
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>

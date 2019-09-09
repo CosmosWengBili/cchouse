@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('layouts.form_error')
 <div class="container">
 
     <form action="{{$action}}" method="POST">

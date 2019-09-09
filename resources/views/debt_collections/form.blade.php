@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8 mt-5">

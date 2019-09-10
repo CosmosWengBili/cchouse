@@ -72,6 +72,7 @@ return [
         'invoice_collection_method' => '發票領取方式',
         'invoice_collection_number' => '發票領取號碼',
         'invoice_mailing_address' => '發票寄送地址',
+        'documents' => '相關文件'
     ],
     'LandlordContract' => [
         'id' => '編號',

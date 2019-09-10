@@ -17,7 +17,7 @@
 
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
-            <h3>Nothing here</h3>
+            <h3>目前沒有資料</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">

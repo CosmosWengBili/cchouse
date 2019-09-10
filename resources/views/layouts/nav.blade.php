@@ -16,7 +16,7 @@
             </li>
             <li class="nav-item nav-profile dropdown">
                 <a class="nav-link dropdown-toggle  pl-0 pr-0" href="#" data-toggle="dropdown" id="profileDropdown">
-                <i class="typcn typcn-user-outline mr-0"></i>
+                <i class="typcn typcn-user-outline mr-0 dropdown" style="top: -8px;"></i>
                 <span class="nav-profile-name">{{{ Auth::user()->name }}}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">

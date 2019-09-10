@@ -25,19 +25,52 @@
                         @endforeach
                     </table>
                 </div>
-            </div>
 
-            <div class="col-6 my-3">
-                @include('keys.single_table', ['object' => $data['keeper'], 'layer' => "users"])
-            </div>
-            <div class="col-6 my-3">
-                @include('keys.single_table', ['object' => $data['room'], 'layer' => "rooms"])
-            </div>
-            <div class="col-6 my-3">
-                @include('key_requests.table', ['objects' => $data['key_requests'], 'layer' => "key_requests", 'key_id' => $data['id']])
-            </div>
+                <hr>
 
-        </div>
+                @component('layouts.tab')
+                    {{-- other title of relation pages --}}
+                    @slot('relation_titles')
+                        @if (!empty($relations))
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    $layer = Str::snake(explode('.', $relation)[0]);
+                                    $title = __("model.{$model_name}.{$layer}");
+
+                                    $active = $loop->first ? 'active' : '';
+                                @endphp
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $active }}" data-toggle="tab" href="#content-{{$key}}">{{$title}}</a>
+                                </li>
+                            @endforeach
+                        @endif
+                    @endslot
+
+                    {{-- other contents of relation pages --}}
+                    @slot('relation_contents')
+                        {{-- display the next level nested resources --}}
+                        @if (!empty($relations))
+                            {{-- you could propbly have many kinds of nested resources --}}
+                            @if ($data['keeper'])
+                                <div class="tab-pane container active" id="content-0">
+                                    @include('keys.single_table', ['object' => $data['keeper'], 'layer' => "users"])
+                                </div>
+                            @endif
+                            @if ($data['keeper'])
+                                <div class="tab-pane container active" id="content-1">
+                                    @include('keys.single_table', ['object' => $data['room'], 'layer' => "rooms"])
+                                </div>
+                            @endif
+                            @if ($data['keeper'])
+                                <div class="tab-pane container active" id="content-2">
+                                    @include('key_requests.table', ['objects' => $data['key_requests'], 'layer' => "key_requests", 'key_id' => $data['id']])
+                                </div>
+                            @endif
+                        @endif
+                    @endslot
+                @endcomponent
+
+            </div>
     </div>
 </div>
 @endsection

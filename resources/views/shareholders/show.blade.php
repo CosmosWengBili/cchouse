@@ -19,23 +19,45 @@
                         @endforeach
                     </table>
                 </div>
-            </div>
+                <hr>
 
-            {{-- display the next level nested resources --}}
-            <div>
-                @if (!empty($relations))
-                    {{-- you could propbly have many kinds of nested resources --}}
-                    @foreach($relations as $relation)
-                        <div class="col-md-12 mt-3">
-                            {{-- handle first level of the nested resource, leave the others to recursion --}}
-                            @php
-                                $layer = explode('.', $relation)[0];
-                            @endphp
+                @component('layouts.tab')
+                    {{-- other title of relation pages --}}
+                    @slot('relation_titles')
+                        @if (!empty($relations))
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    $layer = Str::snake(explode('.', $relation)[0]);
+                                    $title = __("model.{$model_name}.{$layer}");
 
-                            @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        </div>
-                    @endforeach
-                @endif
+                                    $active = $loop->first ? 'active' : '';
+                                @endphp
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $active }}" data-toggle="tab" href="#content-{{$key}}">{{$title}}</a>
+                                </li>
+                            @endforeach
+                        @endif
+                    @endslot
+
+                    {{-- other contents of relation pages --}}
+                    @slot('relation_contents')
+                        {{-- display the next level nested resources --}}
+                        @if (!empty($relations))
+                            {{-- you could propbly have many kinds of nested resources --}}
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    $active = $loop->first ? 'active' : 'fade';
+                                @endphp
+                                <div class="tab-pane container {{ $active }}" id="content-{{$key}}">
+                                    @php
+                                        $layer = Str::snake(explode('.', $relation)[0]);
+                                    @endphp
+                                    @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
+                                </div>
+                            @endforeach
+                        @endif
+                    @endslot
+                @endcomponent
             </div>
 
         </div>

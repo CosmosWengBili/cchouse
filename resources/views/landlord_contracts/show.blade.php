@@ -25,28 +25,57 @@
                         @endforeach
                     </table>
                 </div>
-            </div>
+                <hr>
 
-            {{-- display the next level nested resources --}}
-            @if (!empty($relations))
-                {{-- you could propbly have many kinds of nested resources --}}
-                @foreach($relations as $relation)
-                    <div class="col-6 my-3">
-                        {{-- handle first level of the nested resource, leave the others to recursion --}}
-                        @php
-                            $layer = Str::snake(explode('.', $relation)[0]);
-                        @endphp
-                        @if ( $layer == 'documents' )
-                            @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @elseif ( $layer == 'landlords' )
-                            @include('landlords.table', ['objects' => $data[$layer], 'layer' => $layer])
-                        @else
-                            @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
+                @component('layouts.tab')
+                    {{-- other title of relation pages --}}
+                    @slot('relation_titles')
+                        @if (!empty($relations))
+                            @if (!empty($relations))
+                                @foreach($relations as $key => $relation)
+                                    @php
+                                        if (is_null($model_name)) {
+                                            $title = $layer;
+                                        } else {
+                                            $layer = Str::snake(explode('.', $relation)[0]);
+                                            $title = __("model.{$model_name}.{$layer}");
+                                        }
+
+                                        $active = $loop->first ? 'active' : '';
+                                    @endphp
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $active }}" data-toggle="tab" href="#content-{{$key}}">{{$title}}</a>
+                                    </li>
+                                @endforeach
+                            @endif
                         @endif
-                    </div>
-                @endforeach
-            @endif
+                    @endslot
 
+                    {{-- other contents of relation pages --}}
+                    @slot('relation_contents')
+                        {{-- display the next level nested resources --}}
+                        @if (!empty($relations))
+                            {{-- you could propbly have many kinds of nested resources --}}
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    $layer = Str::snake(explode('.', $relation)[0]);
+                                    $active = $loop->first ? 'active' : 'fade';
+                                @endphp
+                                {{-- handle first level of the nested resource, leave the others to recursion --}}
+                                <div class="tab-pane container {{ $active }}" id="content-{{$key}}">
+                                    @if ( $layer == 'documents' )
+                                        @include('documents.table', ['objects' => $data[$layer], 'layer' => $layer])
+                                    @elseif ( $layer == 'landlords' )
+                                        @include('landlords.table', ['objects' => $data[$layer], 'layer' => $layer])
+                                    @else
+                                        @include('landlord_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer."s"])
+                                    @endif
+                                </div>
+                            @endforeach
+                        @endif
+                    @endslot
+                @endcomponent
+            </div>
         </div>
     </div>
 </div>

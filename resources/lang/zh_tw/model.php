@@ -96,7 +96,9 @@ return [
         'commissioner_id' => '專員',
         'landlords'=> '房東',
         'building_id' => '建物編號',
+        'building'=> '建物',
         'buildings'=> '建物',
+        'documents' => '相關文件',
         'landlord_ids' => '房東編號'
     ],
     'LandlordPayment' => [

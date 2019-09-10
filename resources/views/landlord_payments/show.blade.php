@@ -25,14 +25,52 @@
                         @endforeach
                     </table>
                 </div>
+
+                <hr>
+
+                @component('layouts.tab')
+                    {{-- other title of relation pages --}}
+                    @slot('relation_titles')
+                        @if (!empty($relations))
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    if ($relation === 'room') {
+                                        $title = __("model.{$model_name}.rooms");
+                                    } elseif ($relation === 'room.building') {
+                                        $title = __("model.{$model_name}.buildings");
+                                    }
+
+                                    $active = $loop->first ? 'active' : '';
+                                @endphp
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $active }}" data-toggle="tab" href="#content-{{$key}}">{{$title}}</a>
+                                </li>
+                            @endforeach
+                        @endif
+                    @endslot
+
+                    {{-- other contents of relation pages --}}
+                    @slot('relation_contents')
+                        {{-- display the next level nested resources --}}
+                        @if (!empty($relations))
+                            {{-- you could propbly have many kinds of nested resources --}}
+                            @foreach($relations as $key => $relation)
+                                @php
+                                    $active = $loop->first ? 'active' : 'fade';
+                                @endphp
+                                <div class="tab-pane container {{ $active }}" id="content-{{$key}}">
+                                @if ($relation === 'room')
+                                    @include('landlord_payments.single_table', ['object' => $data['room'], 'layer' => "rooms"])
+                                @elseif ($relation === 'room.building')
+                                    @include('landlord_payments.single_table', ['object' => $data['room']['building'], 'layer' => "buildings"])
+                                @endif
+                                </div>
+                            @endforeach
+                        @endif
+                    @endslot
+                @endcomponent
             </div>
 
-            <div class="col-6 my-3">
-                @include('landlord_payments.single_table', ['object' => $data['room'], 'layer' => "rooms"])
-            </div>
-            <div class="col-6 my-3">
-                @include('landlord_payments.single_table', ['object' => $data['room']['building'], 'layer' => "buildings"])
-            </div>
 
         </div>
     </div>

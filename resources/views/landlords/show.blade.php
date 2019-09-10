@@ -33,14 +33,11 @@
                         @component('layouts.tab')
                             {{-- other title of relation pages --}}
                             @slot('relation_titles')
-                                @foreach($relations as $key => $relation)
+                                @if (!empty($relations))
+                                    @foreach($relations as $key => $relation)
                                     @php
-                                        if (is_null($model_name)) {
-                                            $title = $layer;
-                                        } else {
-                                            $layer = Str::snake(explode('.', $relation)[0]);
-                                            $title = __("model.{$model_name}.{$layer}");
-                                        }
+                                        $layer = Str::snake(explode('.', $relation)[0]);
+                                        $title = __("model.{$model_name}.{$layer}");
 
                                         $active = $loop->first ? 'active' : '';
                                     @endphp
@@ -48,6 +45,7 @@
                                         <a class="nav-link {{ $active }}" data-toggle="tab" href="#content-{{$key}}">{{$title}}</a>
                                     </li>
                                 @endforeach
+                                @endif
                             @endslot
 
                             {{-- other contents of relation pages --}}

@@ -16,7 +16,6 @@
                     value="{{ $contact_info['info_type'] }}"
                 >
                     <option value="phone">聯絡電話</option>
-                    {{--<option value="residence_address">戶籍地址</option>--}}
                     <option value="mailing_address">聯絡地址</option>
                     <option value="email">電子郵件</option>
                     <option value="fax_number">傳真</option>
@@ -52,7 +51,6 @@
                 '    <td>' +
                 '        <select class="form-control form-control-sm" name="{{$prefix}}[' + idx + '][info_type]">' +
                 '            <option value="phone">聯絡電話</option> ' +
-                '            <option value="residence_address">戶籍地址</option> ' +
                 '            <option value="mailing_address">聯絡地址</option> ' +
                 '            <option value="email">電子郵件</option> ' +
                 '            <option value="fax_number">傳真</option> ' +

@@ -155,7 +155,6 @@ return [
         'name' => '姓名',
         'certificate_number' => '證號',
         'phone' => '聯絡電話',
-        'residence_address' => '戶籍地址',
         'mailing_address' => '聯絡地址',
         'email' => '電子郵件'
 

@@ -13,7 +13,7 @@
                     <form action="{{$action}}" method="POST">
                         @csrf
                         @method($method)
-                        
+
                         <table class="table table-bordered">
                         @foreach ( $data as $attribute => $value )
                             {{-- handle your own type and empty policy --}}
@@ -36,4 +36,63 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                name: {
+                    required: true
+                },
+                email: {
+                    required: true
+                },
+                password: {
+                    required: true
+                },
+                mobile: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                name: {
+                    required: '必須輸入'
+                },
+                email: {
+                    required: '必須輸入'
+                },
+                password: {
+                    required: '必須輸入'
+                },
+                mobile: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

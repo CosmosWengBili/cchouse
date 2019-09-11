@@ -21,13 +21,13 @@
                                 <tr>
                                     <td>@lang("model.Room.building_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="buildings" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="buildings"
+                                            data-text="id"
                                             data-selected="{{ $data['building_id'] ?? 0 }}"
                                             name="building_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -326,9 +326,9 @@
                                         />
                                     </td>
                                 </tr>
-                                
-                                
-                                
+
+
+
                             </tbody>
                         </table>
 
@@ -345,4 +345,141 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                room_code: {
+                    required: true
+                },
+                virtual_account: {
+                    required: true
+                },
+                room_number: {
+                    required: true
+                },
+                room_attribute: {
+                    required: true
+                },
+                living_room_count: {
+                    required: true,
+                },
+                room_count: {
+                    required: true,
+                },
+                bathroom_count: {
+                    required: true
+                },
+                parking_count: {
+                    required: true
+                },
+                ammeter_reading_date: {
+                    required: true
+                },
+                rent_list_price: {
+                    required: true
+                },
+                rent_reserve_price: {
+                    required: true
+                },
+                rent_landlord: {
+                    required: true
+                },
+                rent_actual: {
+                    required: true
+                },
+                internet_form: {
+                    required: true
+                },
+                management_fee: {
+                    required: true
+                },
+                wifi_account: {
+                    required: true
+                },
+                wifi_password: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                room_code: {
+                    required: '必須輸入'
+                },
+                virtual_account: {
+                    required: '必須輸入'
+                },
+                room_number: {
+                    required: '必須輸入'
+                },
+                room_attribute: {
+                    required: '必須輸入'
+                },
+                living_room_count: {
+                    required: '必須輸入',
+                },
+                room_count: {
+                    required: '必須輸入',
+                },
+                bathroom_count: {
+                    required: '必須輸入'
+                },
+                parking_count: {
+                    required: '必須輸入'
+                },
+                ammeter_reading_date: {
+                    required: '必須輸入'
+                },
+                rent_list_price: {
+                    required: '必須輸入'
+                },
+                rent_reserve_price: {
+                    required: '必須輸入'
+                },
+                rent_landlord: {
+                    required: '必須輸入'
+                },
+                rent_actual: {
+                    required: '必須輸入'
+                },
+                internet_form: {
+                    required: '必須輸入'
+                },
+                management_fee: {
+                    required: '必須輸入'
+                },
+                wifi_account: {
+                    required: '必須輸入'
+                },
+                wifi_password: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

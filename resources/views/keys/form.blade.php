@@ -28,18 +28,18 @@
                                         value="{{ isset($data["key_name"]) ? $data['key_name'] : '' }}"
                                     />
                                 </td>
-                            </tr>                          
+                            </tr>
                             <tr>
                                 <td>@lang("model.Key.keeper_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
-                                        data-text="name" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
+                                        data-text="name"
                                         data-value="id"
                                         data-selected="{{ isset($data["keeper_id"]) ? $data['keeper_id'] : '0' }}"
                                         name="keeper_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -47,13 +47,13 @@
                             <tr>
                                 <td>@lang("model.Key.room_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="rooms" 
-                                        data-text="id" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="rooms"
+                                        data-text="id"
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -68,4 +68,45 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                key_name: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                key_name: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

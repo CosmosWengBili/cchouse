@@ -85,9 +85,9 @@
                                         <select
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                         >
                                         </select>
@@ -99,9 +99,9 @@
                                         <select
                                             name="maintenance_staff_id"
                                             class="form-control form-control-sm"
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
                                             data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
                                         >
                                         </select>
@@ -326,4 +326,141 @@
         });
     })();
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                tenant_contract_id: {
+                    required: true
+                },
+                reported_at: {
+                    required: true
+                },
+                expected_service_date: {
+                    required: true
+                },
+                expected_service_time: {
+                    required: true
+                },
+                dispatch_date: {
+                    required: true,
+                },
+                closed_date: {
+                    required: true,
+                },
+                closed_comment: {
+                    required: true
+                },
+                service_comment: {
+                    required: true
+                },
+                incident_details: {
+                    required: true
+                },
+                number_of_times: {
+                    required: true
+                },
+                payment_request_date: {
+                    required: true
+                },
+                closing_serial_number: {
+                    required: true
+                },
+                billing_details: {
+                    required: true
+                },
+                deposit_month_count: {
+                    required: true
+                },
+                payment_request_serial_number: {
+                    required: true
+                },
+                cost: {
+                    required: true
+                },
+                price: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                tenant_contract_id: {
+                    required: '必須輸入'
+                },
+                reported_at: {
+                    required: '必須輸入'
+                },
+                expected_service_date: {
+                    required: '必須輸入'
+                },
+                expected_service_time: {
+                    required: '必須輸入'
+                },
+                dispatch_date: {
+                    required: '必須輸入',
+                },
+                closed_date: {
+                    required: '必須輸入',
+                },
+                closed_comment: {
+                    required: '必須輸入'
+                },
+                service_comment: {
+                    required: '必須輸入'
+                },
+                incident_details: {
+                    required: '必須輸入'
+                },
+                number_of_times: {
+                    required: '必須輸入'
+                },
+                payment_request_date: {
+                    required: '必須輸入'
+                },
+                closing_serial_number: {
+                    required: '必須輸入'
+                },
+                billing_details: {
+                    required: '必須輸入'
+                },
+                deposit_month_count: {
+                    required: '必須輸入'
+                },
+                payment_request_serial_number: {
+                    required: '必須輸入'
+                },
+                cost: {
+                    required: '必須輸入'
+                },
+                price: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

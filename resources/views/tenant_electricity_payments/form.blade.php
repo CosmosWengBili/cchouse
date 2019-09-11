@@ -193,4 +193,81 @@
         getDegree();
     })();
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                ammeter_read_date: {
+                    required: true
+                },
+                "110v_start_degree": {
+                    required: true
+                },
+                "110v_end_degree": {
+                    required: true
+                },
+                "220v_start_degree": {
+                    required: true
+                },
+                "220v_end_degree": {
+                    required: true,
+                },
+                amount: {
+                    required: true,
+                },
+                due_time: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                ammeter_read_date: {
+                    required: '必須輸入'
+                },
+                "110v_start_degree": {
+                    required: '必須輸入'
+                },
+                "110v_end_degree": {
+                    required: '必須輸入'
+                },
+                "220v_start_degree": {
+                    required: '必須輸入'
+                },
+                "220v_end_degree": {
+                    required: '必須輸入',
+                },
+                amount: {
+                    required: '必須輸入',
+                },
+                due_time: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

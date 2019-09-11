@@ -90,4 +90,51 @@
         </div>
     </div>
 </div>
+<script id="validation">
+
+    $(document).ready(function () {
+
+        const rules = {
+            income_date: {
+                required: true
+            },
+            amount: {
+                required: true
+            },
+        };
+
+        const messages = {
+            income_date: {
+                required: '必須輸入'
+            },
+            amount: {
+                required: '必須輸入'
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        });
+
+    });
+
+
+
+</script>
 @endsection

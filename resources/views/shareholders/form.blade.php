@@ -215,4 +215,105 @@ $('[name="building_ids"]').selectize({
     }
 });
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                name: {
+                    required: true
+                },
+                email: {
+                    required: true
+                },
+                bank_name: {
+                    required: true
+                },
+                bank_code: {
+                    required: true
+                },
+                account_number: {
+                    required: true,
+                },
+                account_name: {
+                    required: true,
+                },
+                bill_delivery: {
+                    required: true
+                },
+                distribution_start_date: {
+                    required: true
+                },
+                distribution_end_date: {
+                    required: true
+                },
+                distribution_rate: {
+                    required: true
+                },
+                investment_amount: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                name: {
+                    required: '必須輸入'
+                },
+                email: {
+                    required: '必須輸入'
+                },
+                bank_name: {
+                    required: '必須輸入'
+                },
+                bank_code: {
+                    required: '必須輸入'
+                },
+                account_number: {
+                    required: '必須輸入',
+                },
+                account_name: {
+                    required: '必須輸入',
+                },
+                bill_delivery: {
+                    required: '必須輸入'
+                },
+                distribution_start_date: {
+                    required: '必須輸入'
+                },
+                distribution_end_date: {
+                    required: '必須輸入'
+                },
+                distribution_rate: {
+                    required: '必須輸入'
+                },
+                investment_amount: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

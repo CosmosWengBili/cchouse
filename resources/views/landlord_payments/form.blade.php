@@ -21,13 +21,13 @@
                             <tr>
                                 <td>@lang("model.LandlordPayment.room_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="rooms" 
-                                        data-text="id" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="rooms"
+                                        data-text="id"
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -35,14 +35,14 @@
                             <tr>
                                 <td>@lang("model.LandlordPayment.subject")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="landlord_payments" 
-                                        data-text="subject" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="landlord_payments"
+                                        data-text="subject"
                                         data-value="subject"
                                         data-selected="{{ isset($data["subject"]) ? $data['subject'] : '0' }}"
                                         name="subject"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -91,7 +91,7 @@
                                     />
                                 </td>
                             </tr>
-    
+
                             <tr>
                                 <td>@lang("model.LandlordPayment.billing_vendor")</td>
                                 <td>
@@ -137,4 +137,74 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                bill_serial_number: {
+                    required: true
+                },
+                bill_start_date: {
+                    required: true
+                },
+                bill_end_date: {
+                    required: true
+                },
+                collection_date: {
+                    required: true
+                },
+                billing_vendor: {
+                    required: true,
+                },
+                amount: {
+                    required: true,
+                },};
+
+            const messages = {
+                bill_serial_number: {
+                    required: '必須輸入'
+                },
+                bill_start_date: {
+                    required: '必須輸入'
+                },
+                bill_end_date: {
+                    required: '必須輸入'
+                },
+                collection_date: {
+                    required: '必須輸入'
+                },
+                billing_vendor: {
+                    required: '必須輸入',
+                },
+                amount: {
+                    required: '必須輸入',
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

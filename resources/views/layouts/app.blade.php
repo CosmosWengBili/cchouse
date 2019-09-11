@@ -25,10 +25,12 @@
         <!-- endinject -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-        </script>
-        <script src={{ asset('js/manifest.js') }}></script>
+        </script><script src={{ asset('js/manifest.js') }}></script>
         <script src={{ asset('js/vendor.js') }}></script>
         <script src={{ asset('js/app.js') }}></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/additional-methods.min.js"></script>
+
     </head>
     <body>
         <div class="container-scroller">

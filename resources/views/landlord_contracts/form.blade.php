@@ -21,13 +21,13 @@
                             <tr>
                                 <td>@lang("model.LandlordContract.building_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="buildings" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="buildings"
                                         data-text="address"
                                         data-selected="{{ isset($data["building_id"]) ? $data['building_id'] : '0' }}"
                                         name="building_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -113,7 +113,7 @@
                                     />
                                 </td>
                             </tr>
-    
+
                             <tr>
                                 <td>@lang("model.LandlordContract.annual_service_fee_month_count")</td>
                                 <td>
@@ -230,7 +230,7 @@
                                         {{ isset($data["is_collected_by_third_party"]) ? ($data['is_collected_by_third_party'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>   
+                            </tr>
                             <tr>
                                 <td>@lang("model.LandlordContract.is_notarized")</td>
                                 <td>
@@ -242,17 +242,17 @@
                                         {{ isset($data["is_notarized"]) ? ($data['is_notarized'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>                             
+                            </tr>
                             <tr>
                                 <td>@lang("model.LandlordContract.commissioner_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
                                         data-text="name"
                                         data-selected="{{ isset($data["commissioner_id"]) ? $data['commissioner_id'] : '0' }}"
                                         name="commissioner_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -298,4 +298,123 @@
         }
     });
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                commission_start_date: {
+                    required: true
+                },
+                commission_end_date: {
+                    required: true
+                },
+                warranty_start_date: {
+                    required: true
+                },
+                warranty_end_date: {
+                    required: true
+                },
+                rental_decoration_free_start_date: {
+                    required: true,
+                },
+                rental_decoration_free_end_date: {
+                    required: true,
+                },
+                annual_service_fee_month_count: {
+                    required: true
+                },
+                charter_fee: {
+                    required: true
+                },
+                taxable_charter_fee: {
+                    required: true
+                },
+                agency_service_fee: {
+                    required: true
+                },
+                rent_collection_time: {
+                    required: true
+                },
+                rent_adjusted_date: {
+                    required: true
+                },
+                adjust_ratio: {
+                    required: true
+                },
+                deposit_month_count: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                commission_start_date: {
+                    required: '必須輸入'
+                },
+                commission_end_date: {
+                    required: '必須輸入'
+                },
+                warranty_start_date: {
+                    required: '必須輸入'
+                },
+                warranty_end_date: {
+                    required: '必須輸入'
+                },
+                rental_decoration_free_start_date: {
+                    required: '必須輸入',
+                },
+                rental_decoration_free_end_date: {
+                    required: '必須輸入',
+                },
+                annual_service_fee_month_count: {
+                    required: '必須輸入'
+                },
+                charter_fee: {
+                    required: '必須輸入'
+                },
+                taxable_charter_fee: {
+                    required: '必須輸入'
+                },
+                agency_service_fee: {
+                    required: '必須輸入'
+                },
+                rent_collection_time: {
+                    required: '必須輸入'
+                },
+                rent_adjusted_date: {
+                    required: '必須輸入'
+                },
+                adjust_ratio: {
+                    required: '必須輸入'
+                },
+                deposit_month_count: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

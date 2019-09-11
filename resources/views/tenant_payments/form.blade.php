@@ -21,8 +21,8 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="tenant_contract_id"
-                                            data-toggle="selectize" 
-                                            data-table="tenant_contract" 
+                                            data-toggle="selectize"
+                                            data-table="tenant_contract"
                                             data-text="id"
                                             data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
@@ -35,10 +35,10 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="subject"
-                                            data-toggle="selectize" 
-                                            data-table="tenant_payments" 
-                                            data-text="subject" 
-                                            data-value="subject" 
+                                            data-toggle="selectize"
+                                            data-table="tenant_payments"
+                                            data-text="subject"
+                                            data-value="subject"
                                             data-selected="{{ $data['subject'] ?? '' }}"
                                         >
                                         </select>
@@ -95,10 +95,10 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="collected_by"
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
-                                            data-value="id" 
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-value="id"
                                             data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
                                         </select>
@@ -143,4 +143,63 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                due_time: {
+                    required: true
+                },
+                amount: {
+                    required: true
+                },
+                charge_off_date: {
+                    required: true
+                },
+                collected_by: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                due_time: {
+                    required: '必須輸入'
+                },
+                amount: {
+                    required: '必須輸入'
+                },
+                charge_off_date: {
+                    required: '必須輸入'
+                },
+                collected_by: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

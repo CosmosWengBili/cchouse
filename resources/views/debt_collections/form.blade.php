@@ -70,13 +70,13 @@
                                 <tr>
                                     <td>@lang("model.DebtCollection.collector_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
                                             data-selected="{{ $data['collector_id'] ?? 0 }}"
                                             name="collector_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -90,4 +90,51 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                tenant_contract_id: {
+                    required: true
+                },
+                details: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                tenant_contract_id: {
+                    required: '必須輸入'
+                },
+                details: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

@@ -101,7 +101,7 @@
                                             placeholder="例如新光銀行請輸入: 103"
                                         />
                                     </td>
-                                </tr> 
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.branch_code")</td>
                                     <td>
@@ -115,7 +115,7 @@
                                             placeholder="分行代碼為四個數字"
                                         />
                                     </td>
-                                </tr> 
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.account_name")</td>
                                     <td>
@@ -126,7 +126,7 @@
                                             value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
                                         />
                                     </td>
-                                </tr>   
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.account_number")</td>
                                     <td>
@@ -137,7 +137,7 @@
                                             value="{{ isset($data["account_number"]) ? $data['account_number'] : '' }}"
                                         />
                                     </td>
-                                </tr>   
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.invoice_collection_method")</td>
                                     <td>
@@ -249,6 +249,115 @@
             document.getElementById('invoice_tr')
         ).display()
     })
+
+</script>
+<script id="validation">
+
+    $(document).ready(function () {
+
+        const rules = {
+            name: {
+                required: true,
+            },
+            certificate_number: {
+                required: true,
+            },
+            birth: {
+                required: true,
+                dateISO: true,
+            },
+            note: {
+                required: true,
+            },
+            bank_code: {
+                required: true,
+                digits: true,
+                minlength: 3,
+                maxlength: 3,
+            },
+            branch_code: {
+                required: true,
+                digits: true,
+                minlength: 4,
+                maxlength: 4,
+            },
+            account_name: {
+                required: true,
+            },
+            account_number: {
+                required: true,
+                digits: true
+            },
+            invoice_mailing_address: {
+                required: true,
+                email: true
+            },
+            invoice_collection_number: {
+                required: true,
+                digits: true
+            },
+        };
+
+        const messages = {
+            name: {
+                required: '必須輸入'
+            },
+            certificate_number: {
+                required: '必須輸入'
+            },
+            birth: {
+                required: '必須輸入'
+            },
+            note: {
+                required: '必須輸入'
+            },
+            bank_code: {
+                required: '必須輸入',
+                minlength: "只能輸入 {0} 個數字",
+                maxlength: "只能輸入 {0} 個數字",
+            },
+            branch_code: {
+                required: '必須輸入',
+                minlength: "只能輸入 {0} 個數字",
+                maxlength: "只能輸入 {0} 個數字",
+            },
+            account_name: {
+                required: '必須輸入'
+            },
+            account_number: {
+                required: '必須輸入'
+            },
+            invoice_mailing_address: {
+                required: '必須輸入'
+            },
+            invoice_collection_number: {
+                required: '必須輸入'
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        });
+
+    });
+
+
 
 </script>
 @endsection

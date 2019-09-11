@@ -128,13 +128,13 @@
                             <tr>
                                 <td>@lang("model.Tenant.confirm_by")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
-                                        data-text="name" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
+                                        data-text="name"
                                         data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
                                         name="confirm_by"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -169,4 +169,99 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                name: {
+                    required: true
+                },
+                certificate_number: {
+                    required: true
+                },
+                line_id: {
+                    required: true
+                },
+                residence_address: {
+                    required: true
+                },
+                company: {
+                    required: true,
+                },
+                job_position: {
+                    required: true,
+                },
+                company_address: {
+                    required: true
+                },
+                birth: {
+                    required: true
+                },
+                confirm_by: {
+                    required: true
+                },
+                confirm_at: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                name: {
+                    required: '必須輸入'
+                },
+                certificate_number: {
+                    required: '必須輸入'
+                },
+                line_id: {
+                    required: '必須輸入'
+                },
+                residence_address: {
+                    required: '必須輸入'
+                },
+                company: {
+                    required: '必須輸入',
+                },
+                job_position: {
+                    required: '必須輸入',
+                },
+                company_address: {
+                    required: '必須輸入'
+                },
+                birth: {
+                    required: '必須輸入'
+                },
+                confirm_by: {
+                    required: '必須輸入'
+                },
+                confirm_at: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

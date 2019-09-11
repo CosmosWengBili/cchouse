@@ -25,13 +25,13 @@
                                 <tr>
                                     <td>@lang("model.TenantContract.room_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="rooms" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="id"
                                             data-selected="{{ $data['room_id'] ?? 0 }}"
                                             name="room_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -39,13 +39,13 @@
                                 <tr>
                                     <td>@lang("model.TenantContract.tenant_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="tenants" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="tenants"
+                                            data-text="id"
                                             data-selected="{{ $data['tenant_id'] ?? 0 }}"
                                             name="tenant_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -370,13 +370,13 @@
                                 <tr>
                                     <td>@lang("model.TenantContract.commissioner_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="id"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -399,4 +399,153 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                contract_serial_number: {
+                    required: true
+                },
+                other_rights: {
+                    required: true
+                },
+                car_parking_floor: {
+                    required: true
+                },
+                car_parking_space_number: {
+                    required: true
+                },
+                motorcycle_parking_space_number: {
+                    required: true,
+                },
+                motorcycle_parking_count: {
+                    required: true,
+                },
+                contract_start: {
+                    required: true
+                },
+                contract_end: {
+                    required: true
+                },
+                rent: {
+                    required: true
+                },
+                rent_pay_day: {
+                    required: true
+                },
+                deposit: {
+                    required: true
+                },
+                deposit_paid: {
+                    required: true
+                },
+                electricity_price_per_degree: {
+                    required: true
+                },
+                electricity_price_per_degree_summer: {
+                    required: true
+                },
+                "110v_start_degree": {
+                    required: true
+                },
+                "220v_start_degree": {
+                    required: true
+                },
+                "110v_end_degree": {
+                    required: true
+                },
+                "220v_end_degree": {
+                    required: true
+                },
+                invoice_collection_number: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                contract_serial_number: {
+                    required: '必須輸入'
+                },
+                other_rights: {
+                    required: '必須輸入'
+                },
+                car_parking_floor: {
+                    required: '必須輸入'
+                },
+                car_parking_space_number: {
+                    required: '必須輸入'
+                },
+                motorcycle_parking_space_number: {
+                    required: '必須輸入',
+                },
+                motorcycle_parking_count: {
+                    required: '必須輸入',
+                },
+                contract_start: {
+                    required: '必須輸入'
+                },
+                contract_end: {
+                    required: '必須輸入'
+                },
+                rent: {
+                    required: '必須輸入'
+                },
+                rent_pay_day: {
+                    required: '必須輸入'
+                },
+                deposit: {
+                    required: '必須輸入'
+                },
+                deposit_paid: {
+                    required: '必須輸入'
+                },
+                electricity_price_per_degree: {
+                    required: '必須輸入'
+                },
+                electricity_price_per_degree_summer: {
+                    required: '必須輸入'
+                },
+                "110v_start_degree": {
+                    required: '必須輸入'
+                },
+                "220v_start_degree": {
+                    required: '必須輸入'
+                },
+                "110v_end_degree": {
+                    required: '必須輸入'
+                },
+                "220v_end_degree": {
+                    required: '必須輸入'
+                },
+                invoice_collection_number: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

@@ -25,22 +25,23 @@ class MonthlyReportController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $whitelist = $this->whitelist('buildings');
-        $buildings = Building::select($whitelist)->select('buildings.*')
-            ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
-            ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
-            ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
-            ->where('landlord_contracts.is_collected_by_third_party', true)
-            ->groupBy('id')
-            ->get();
+        $buildings = $this->limitRecords(
+            Building::select($whitelist)->select('buildings.*')
+                ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
+                ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
+                ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
+                ->where('landlord_contracts.is_collected_by_third_party', true)
+                ->groupBy('id')
+        );
 
         $responseData
             ->index('buildings',$buildings)
             ->relations($request->withNested);
 
-        return view('monthly_reports.index', $responseData->get());    
+        return view('monthly_reports.index', $responseData->get());
     }
     public function show(building $building)
-    { 
+    {
         $month = Input::get('month') ?? Carbon::now()->month;
 
         // set object which would be used on blade date data
@@ -59,13 +60,13 @@ class MonthlyReportController extends Controller
                 'year' => $month_counter->year,
                 'month' => $month_counter->month,
             ];
-            $month_counter->addMonth(); 
+            $month_counter->addMonth();
         }
 
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
-        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']); 
+        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
         $data['building_id'] = $building->id;
         return view('monthly_reports.show')
                 ->with('data', $data)
@@ -112,8 +113,8 @@ class MonthlyReportController extends Controller
             'data' => $data
         ];
 
-        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);  
-        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');        
+        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);
+        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
     }
 
 }

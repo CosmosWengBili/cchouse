@@ -31,18 +31,21 @@ class LandlordPaymentController extends Controller
             $whitelist[$key] = 'landlord_payments.' . $value;
         }
 
-        $landlordPayment = LandlordPayment::select($whitelist)
-            ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
-            ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-            ->join(
-                'landlord_contracts',
-                'buildings.id',
-                '=',
-                'landlord_contracts.building_id'
-            )
-            ->where('commission_end_date', '>', Carbon::today())
-            ->groupBy('id')
-            ->get();
+
+        $landlordPayment = $this->limitRecords(
+            LandlordPayment::select($whitelist)
+                ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
+                ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                ->join(
+                    'landlord_contracts',
+                    'buildings.id',
+                    '=',
+                    'landlord_contracts.building_id'
+                )
+                ->where('commission_end_date', '>', Carbon::today())
+                ->groupBy('id')
+        );
+
         $responseData
             ->index('landlord_payments', $landlordPayment)
             ->relations($request->withNested);

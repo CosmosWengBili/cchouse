@@ -30,9 +30,11 @@ class LandlordController extends Controller
     {
         $responseData = new NestedRelationResponser();
 
-        $landlords = Landlord::select($this->whitelist('landlords'))
-            ->with($request->withNested)
-            ->get();
+        $landlords = $this->limitRecords(
+            Landlord::select($this->whitelist('landlords'))
+                ->with($request->withNested)
+        );
+
         $landlords = NestedToAttributeService::contactInfoToAttribute(
             $landlords
         );

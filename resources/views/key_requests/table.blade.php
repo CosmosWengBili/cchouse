@@ -13,7 +13,13 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keyRequests.create') . '?key_id=' . $key_id }}">建立</a>
+        @php
+            $param = [];
+            if (!empty($key_id)) {
+                $param['key_id'] = $key_id;
+            }
+        @endphp
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keyRequests.create', $param ) }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}

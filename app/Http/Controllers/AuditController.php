@@ -20,9 +20,10 @@ class AuditController extends Controller
         $responseData
             ->index(
                 'Audits',
-                Audit::select($this->whitelist('audits'))
+                $this->limitRecords(
+                    Audit::select($this->whitelist('audits'))
                     ->with($request->withNested)
-                    ->get()
+                )
             )
             ->relations($request->withNested);
 

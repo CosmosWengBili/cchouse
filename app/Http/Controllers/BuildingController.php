@@ -33,7 +33,9 @@ class BuildingController extends Controller
 
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('buildings', Building::with($request->withNested)->get())
+            ->index('buildings',
+                $this->limitRecords(Building::with($request->withNested))
+            )
             ->relations($request->withNested);
 
         return view('buildings.index', $responseData->get());

@@ -27,9 +27,10 @@ class TenantController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $tenants = Tenant::select($this->whitelist('tenants'))
-            ->with($request->withNested)
-            ->get();
+        $tenants = $this->limitRecords(
+            Tenant::select($this->whitelist('tenants'))
+                ->with($request->withNested)
+        );
 
         $tenants = NestedToAttributeService::contactInfoToAttribute($tenants);
 

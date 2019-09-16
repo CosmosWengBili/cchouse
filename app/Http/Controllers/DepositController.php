@@ -20,7 +20,10 @@ class DepositController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('deposits', Deposit::with($request->withNested)->get())
+            ->index(
+                'deposits',
+                $this->limitRecords(Deposit::with($request->withNested))
+            )
             ->relations($request->withNested);
 
         return view('deposits.index', $responseData->get());

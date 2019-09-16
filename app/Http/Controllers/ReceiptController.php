@@ -33,13 +33,14 @@ class ReceiptController extends Controller
         $tenant_contracts = $responseData
             ->index(
                 'tenant_contracts',
-                TenantContract::select($this->whitelist('tenant_contracts'))
-                    ->where('contract_end', '>', Carbon::today()->subWeek())
-                    ->with($request->withNested)
-                    ->get()
+                $this->limitRecords(
+                    TenantContract::select($this->whitelist('tenant_contracts'))
+                        ->where('contract_end', '>', Carbon::today()->subWeek())
+                        ->with($request->withNested)
+                )
             )
             ->relations($request->withNested)->get();
-            
+
         if(isset($start_date) && isset($end_date)){
             if( $type == 'invoice'){
                 $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));

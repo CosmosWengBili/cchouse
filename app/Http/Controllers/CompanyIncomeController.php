@@ -15,11 +15,11 @@ class CompanyIncomeController extends Controller
         $startAt = $endAt->copy()->subMonth(5)->startOfMonth(); // 近六個月（含本月）
 
         $companyIncomes = CompanyIncome::whereBetween('income_date', [$startAt, $endAt])
-                    ->get()
-                    ->groupBy(function ($companyIncome) {
-                        return $companyIncome->income_date->month;
-                    })
-                    ->toArray();
+            ->get()
+            ->groupBy(function ($companyIncome) {
+                return $companyIncome->income_date->month;
+            })
+            ->toArray();
 
         return view('company_incomes.index', ['companyIncomes' => $companyIncomes]);
     }

@@ -19,7 +19,7 @@ class PayOffController extends Controller
         $responseData
             ->index(
                 'tenant_contracts',
-                TenantContract::with($request->withNested)->active()->get()
+                $this->limitRecords(TenantContract::with($request->withNested)->active())
             )
             ->relations($request->withNested);
 

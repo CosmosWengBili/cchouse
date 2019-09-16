@@ -27,13 +27,14 @@ class KeyRequestController extends Controller
         $responseData
             ->index(
                 'key_requests',
-                KeyRequest::select($this->whitelist('key_requests'))
-                    ->with($request->withNested)
-                    ->get()
+                $this->limitRecords(
+                    KeyRequest::select($this->whitelist('key_requests'))
+                        ->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 
-        return view('keyRequests.index', $responseData->get());
+        return view('key_requests.index', $responseData->get());
     }
 
     /**

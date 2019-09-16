@@ -24,7 +24,10 @@ class RoomController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('rooms', Room::with($request->withNested)->get())
+            ->index(
+                'rooms',
+                $this->limitRecords(Room::with($request->withNested))
+            )
             ->relations($request->withNested);
 
         return view('rooms.index', $responseData->get());

@@ -25,21 +25,28 @@ class KeyController extends Controller
         $responseData
             ->index(
                 'keys',
-                Key::select($this->whitelist('keys'))
+                $this->limitRecords(
+                    Key::select($this->whitelist('keys'))
                     ->with($request->withNested)
-                    ->get()
+                )
             )
             ->relations($request->withNested);
 
         $owner_query = Key::select($this->whitelist('keys'))->where('keeper_id', Auth::id());
         $owner_data
-            ->index('keys', $owner_query->with($request->withNested)->get())
+            ->index('keys',
+                $this->limitRecords($owner_query->with($request->withNested))
+            )
             ->relations($request->withNested);
 
-        $unapproved_key = KeyRequest::whereIn('key_id', $owner_query->pluck('id'))
+        $unapproved_key = $this->limitRecords(
+            KeyRequest::whereIn('key_id', $owner_query->pluck('id')),
+            false
+        )
             ->denied()
             ->pluck('key_id')
-            ->toArray();
+            ->toArray();;
+
 
         return view('keys.index', $responseData->get())
             ->with('owner_data', $owner_data->get())

@@ -28,9 +28,10 @@ class LandlordContractController extends Controller
         $responseData
             ->index(
                 'landlord_contracts',
-                LandlordContract::select($this->whitelist('landlord_contracts'))
-                    ->with($request->withNested)
-                    ->get()
+                $this->limitRecords(
+                    LandlordContract::select($this->whitelist('landlord_contracts'))
+                        ->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 

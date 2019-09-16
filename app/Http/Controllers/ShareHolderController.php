@@ -23,9 +23,10 @@ class ShareholderController extends Controller
         $responseData
             ->index(
                 'shareholders',
-                Shareholder::select($this->whitelist('shareholders'))
+                $this->limitRecords(
+                    Shareholder::select($this->whitelist('shareholders'))
                     ->with($request->withNested)
-                    ->get()
+                )
             )
             ->relations($request->withNested);
 
@@ -148,7 +149,7 @@ class ShareholderController extends Controller
         else{
             $shareholder->buildings()->sync(array());
         }
-        
+
         return redirect($request->_redirect);
     }
 

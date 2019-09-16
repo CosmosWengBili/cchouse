@@ -26,25 +26,26 @@ class DebtCollectionController extends Controller
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
 
-        $debtCollections = DebtCollection::select(
-            $this->whitelist('debt_collections')
-        )
-            ->with($request->withNested)
-            ->get();
+        $debtCollections = $this->limitRecords(
+            DebtCollection::select($this->whitelist('debt_collections'))
+                ->with($request->withNested)
+        );
 
         $responseData
             ->index('DebtCollections', $debtCollections)
             ->relations($request->withNested);
 
-        $owner_query = DebtCollection::select(
-            $this->whitelist('debt_collections')
-        )->where([
-            'collector_id' => Auth::id()
-        ]);
+        $owner_query = $this->limitRecords(
+            DebtCollection::select($this->whitelist('debt_collections'))
+                ->where(['collector_id' => Auth::id()])
+                ->with($request->withNested),
+            false
+        );
+
         $owner_data
             ->index(
                 'DebtCollections',
-                $owner_query->with($request->withNested)->get()
+                $owner_query->get()
             )
             ->relations($request->withNested);
 

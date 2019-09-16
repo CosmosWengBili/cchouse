@@ -39,7 +39,7 @@ class TenantContractController extends Controller
         $responseData
             ->index(
                 'tenant_contracts',
-                TenantContract::with($request->withNested)->get()
+                $this->limitRecords(TenantContract::with($request->withNested))
             )
             ->relations($request->withNested);
 
@@ -276,7 +276,7 @@ class TenantContractController extends Controller
             'invoice_collection_number' => 'required|max:255',
             'commissioner_id' => 'exists:users,id'
         ]);
-        
+
         ReceiptService::compareReceipt($tenantContract, $validatedData);
 
         $tenantContract->update($validatedData);
@@ -331,12 +331,13 @@ class TenantContractController extends Controller
         ]);
     }
 
-    public function payment_recheck(TenantContract $tenantContract){
+    public function payment_recheck(TenantContract $tenantContract)
+    {
         $responseData = new NestedRelationResponser();
         $responseData
             ->show($tenantContract->load(['tenantPayments','tenantElectricityPayments','payLogs']))
             ->relations(['tenantPayments','tenantElectricityPayments','payLogs']);
 
-        return view('tenant_contracts.payment_recheck', $responseData->get());        
+        return view('tenant_contracts.payment_recheck', $responseData->get());
     }
 }

@@ -17,10 +17,11 @@ class TenantElectricityPaymentController extends Controller
     public function index(Request $request) {
         $responseData = new NestedRelationResponser();
 
-        $tenantContracts = TenantContract::where('contract_end', '>', Carbon::now())
-            ->where('electricity_payment_method', '公司代付')
-            ->with($request->withNested)
-            ->get();
+        $tenantContracts = $this->limitRecords(
+            TenantContract::where('contract_end', '>', Carbon::now())
+                ->where('electricity_payment_method', '公司代付')
+                ->with($request->withNested)
+        );
 
         $data = $responseData
             ->index('TenantContracts', $tenantContracts)

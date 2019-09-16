@@ -30,11 +30,11 @@
         <script src={{ asset('js/app.js') }}></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/additional-methods.min.js"></script>
-
+        <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
     </head>
     <body>
         <div class="container-scroller">
-            <?php if(Auth::check()): ?>
+            <?php if (Auth::check()) : ?>
                 @include('layouts.nav')
             <?php endif; ?>
             <div class="container-fluid page-body-wrapper">

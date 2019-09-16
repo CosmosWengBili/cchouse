@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\SystemVariable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -45,14 +46,13 @@ class Controller extends BaseController
         $showAll = request()->input('showAll', null) == 1;
 
         if ($validCall && !$showAll) {
-//            dd(1);
-            $recordLimit = config('cchouse.view.default_records_in_index_blade', 200);
+            $recordLimit = SystemVariable::where('code', 'default_records_in_index_blade')->first('value')['value'] ?? 200;
+
             return $useGET
                 ? $builder->orderBy('id', 'desc')->limit($recordLimit)->get()
                 : $builder->orderBy('id', 'desc')->limit($recordLimit);
-
         }
-//dd(2);
+
         return $useGET ? $builder->get(): $builder;
     }
 }

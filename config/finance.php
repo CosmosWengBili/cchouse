@@ -9,7 +9,7 @@ return [
     |
     |
     */
-    
+
     'bank_code' => 952,
 
     // default options and order of reversal
@@ -36,6 +36,13 @@ return [
         '租金',
         '電費',
     ],
-    
+
     'debt_collection_delay_days' => 4,
+
+
+
+    'view' => [
+        // Show records in every index.blade.php.
+        'default_records_in_index_blade' => 200,
+    ]
 ];

@@ -32,6 +32,11 @@ class SystemVariableSeeder extends Seeder
             'value' => config('finance.debt_collection_delay_days'),
         ]);
 
+        DB::table('system_variables')->insert([
+            'code'  => 'default_records_in_index_blade',
+            'value' => config('finance.view.default_records_in_index_blade', 200),
+        ]);
+
         // 押金設算息
         $system_variables = [
             ['id' => 1, 'code' => 'deposit_rate', 'value' => '0.00087'],

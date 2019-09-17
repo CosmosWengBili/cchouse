@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -28,8 +28,6 @@
                                             value="{{ $data['title'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.city")</td>
                                     <td>
                                         <select
@@ -62,8 +60,6 @@
                                             @endif
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.address")</td>
                                     <td>
                                         <input
@@ -84,8 +80,6 @@
                                             value="{{ $data['tax_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.building_type")</td>
                                     <td>
                                         <select
@@ -109,8 +103,6 @@
                                             value="{{ $data['floor'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.legal_usage")</td>
                                     <td>
                                         <select
@@ -136,8 +128,6 @@
                                             {{ isset($data["has_elevator"]) ? ($data['has_elevator'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.security_guard")</td>
                                     <td>
                                         <input
@@ -158,8 +148,6 @@
                                             value="{{ $data['management_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.first_floor_door_opening")</td>
                                     <td>
                                         <input
@@ -180,8 +168,6 @@
                                             value="{{ $data['public_area_door_opening'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.room_door_opening")</td>
                                     <td>
                                         <input
@@ -202,8 +188,6 @@
                                             value="{{ $data['main_ammeter_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.ammeter_serial_number_1")</td>
                                     <td>
                                         <input
@@ -224,8 +208,6 @@
                                             value="{{ $data['shared_electricity'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.electricity_payment_method")</td>
                                     <td>
                                         <select
@@ -249,8 +231,6 @@
                                             value="{{ $data['private_ammeter_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.water_meter_location")</td>
                                     <td>
                                         <input
@@ -271,8 +251,6 @@
                                             value="{{ $data['water_meter_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.water_payment_method")</td>
                                     <td>
                                         <select
@@ -296,8 +274,6 @@
                                             value="{{ $data['water_meter_reading_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.gas_meter_location")</td>
                                     <td>
                                         <input
@@ -318,8 +294,6 @@
                                             value="{{ $data['garbage_collection_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.garbage_collection_time")</td>
                                     <td>
                                         <input
@@ -343,8 +317,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.management_fee_contact")</td>
                                     <td>
                                         <input
@@ -365,8 +337,6 @@
                                             value="{{ $data['management_fee_contact_phone'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.distribution_method")</td>
                                     <td>
                                         <input
@@ -387,8 +357,6 @@
                                             value="{{ $data['administrative_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.accounting_group")</td>
                                     <td>
                                         <input
@@ -409,8 +377,6 @@
                                             value="{{ $data['rental_receipt'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.commissioner_id")</td>
                                     <td>
                                         <select
@@ -437,8 +403,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.comment")</td>
                                     <td>
                                         <input

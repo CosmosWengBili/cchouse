@@ -11,7 +11,7 @@
     @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -34,8 +34,6 @@
                                             value="{{ $data['tenant_contract_id'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
@@ -56,8 +54,6 @@
                                             value="{{ $data['expected_service_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.expected_service_time")</td>
                                     <td>
                                         <input
@@ -78,8 +74,6 @@
                                             value="{{ $data['dispatch_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
                                         <select
@@ -106,8 +100,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.closed_date")</td>
                                     <td>
                                         <input
@@ -128,8 +120,6 @@
                                             value="{{ $data['closed_comment'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.service_comment")</td>
                                     <td>
                                         <input
@@ -159,8 +149,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.incident_details")</td>
                                     <td>
                                         <input
@@ -184,8 +172,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.work_type")</td>
                                     <td>
                                         <select
@@ -209,8 +195,6 @@
                                             value="{{ $data['number_of_times'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.payment_request_date")</td>
                                     <td>
                                         <input
@@ -231,8 +215,6 @@
                                             value="{{ $data['closing_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.billing_details")</td>
                                     <td>
                                         <input
@@ -253,8 +235,6 @@
                                             value="{{ $data['payment_request_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.cost")</td>
                                     <td>
                                         <input
@@ -275,8 +255,6 @@
                                             value="{{ $data['price'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.is_recorded")</td>
                                     <td>
 

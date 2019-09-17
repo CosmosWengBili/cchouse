@@ -16,7 +16,7 @@ class TenantPaymentService
         foreach ($payments as $payment) {
 
             $rows[] = [
-                '應繳科目ID' => $payment->id,
+                '應繳科目編號' => $payment->id,
                 '應繳科目' =>  $payment->subject,
                 '應繳費用' => $payment->amount,
                 '應繳日期' => $payment->due_time,
@@ -36,7 +36,7 @@ class TenantPaymentService
                 '繳費科目' => $payLog->subject,
                 '繳費費用' => $payLog->amount,
                 '繳費日期' => Carbon::parse($payLog->paid_at)->toDateString(),
-                '繳納科目ID' => $payLog->loggable->id,
+                '繳納科目編號' => $payLog->loggable->id,
             ];
 
             if(isset($rows[$idx])) {

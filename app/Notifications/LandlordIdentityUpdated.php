@@ -57,7 +57,7 @@ class LandlordIdentityUpdated extends Notification
     public function toArray($notifiable)
     {
         return [
-            'content' => '房東ID' . $this->landlord->id . '資料更新，請查看。'
+            'content' => '房東編號' . $this->landlord->id . '資料更新，請查看。'
         ];
     }
 }

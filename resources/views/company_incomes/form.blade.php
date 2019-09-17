@@ -20,7 +20,7 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>租客合約 ID</td>
+                                    <td>租客合約編號</td>
                                     <td>
                                         <select class="form-control" name="tenant_contract_id">
                                             @foreach($tenantContractIds as $tenantContractId)

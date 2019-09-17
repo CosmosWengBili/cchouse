@@ -37,7 +37,7 @@
                                             </option>
                                         </select>
                                     </td>
-                                    <td>費用 ID</td>
+                                    <td>費用編號</td>
                                     <td>
                                         <input
                                             type="number"

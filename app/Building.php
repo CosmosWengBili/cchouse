@@ -20,7 +20,7 @@ class Building extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be mutated to dates.

@@ -14,13 +14,9 @@ class KeyRequest extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
-    protected $fillable = [
-        'key_id',
-        'request_user_id',
-        'request_date',
-        'status',
-        'request_approved'
-    ];
+    protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     protected $casts = [
         'request_approved' => 'boolean'

@@ -17,14 +17,14 @@ class TenantContract extends Pivot implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
-    protected $hidden = ['deleted_at'];
-
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
     protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

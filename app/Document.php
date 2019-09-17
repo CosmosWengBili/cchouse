@@ -13,6 +13,7 @@ class Document extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $hidden = ['pivot', 'deleted_at'];
     /**
      * Get the owning attachable model.
      */

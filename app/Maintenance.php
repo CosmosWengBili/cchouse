@@ -32,9 +32,9 @@ class Maintenance extends Model implements AuditableContract
         'others' => '其它'
     ];
 
-    protected $hidden = ['updated_at', 'deleted_at'];
-
     protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
     /**
      * Get the user who took care of this maintenance.
      */

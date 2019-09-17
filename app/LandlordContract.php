@@ -14,8 +14,8 @@ class LandlordContract extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
-
-    protected $hidden = ['pivot'];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     protected $casts = ['commission_start_date' => 'date',
                         'commission_end_date' => 'date'];

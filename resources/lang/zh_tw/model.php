@@ -242,6 +242,8 @@ return [
         'commissioner_id' => '招租人員',
         'administrator_id' => '管理人員',
         'comment' => '備註',
+        'carry' => '沖銷餘額',
+        'location' => '完整地址',
         'landlord_contract_id' => '房東合約 ID',
         'rooms' => '房',
         'landlordContracts' => '房東合約'
@@ -335,6 +337,7 @@ return [
         'is_penalty_collected' => '是否收滯納金',
         'comment' => '備註',
         'created_at' => '建立時間',
+        'received_at' => '收取時間'
     ],
     'Shareholder' => [
         'id' => '編號',

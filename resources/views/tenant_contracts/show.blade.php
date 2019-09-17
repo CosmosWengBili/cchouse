@@ -14,21 +14,19 @@
                             data-target='#send-electricity-payment-report-sms-model'
                             data-tenant-contract-id="{{$data['id']}}">發送電費報表</button>
                     {{-- for showing the target returned --}}
-                    <table class="table table-bordered">
+                    <div class="row">
                         @foreach ( $data as $attribute => $value)
                             @continue(is_array($value))
-                            <tr>
-                                <td>@lang("model.{$model_name}.{$attribute}")</td>
-                                <td>
-                                    @if(is_bool($value))
-                                        {{ $value ? '是' : '否' }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                </td>
-                            </tr>
+                            <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
+                            <div class="col-3 border py-2">
+                                @if(is_bool($value))
+                                    {{ $value ? '是' : '否' }}
+                                @else
+                                    {{ $value }}
+                                @endif
+                            </div>
                         @endforeach
-                    </table>
+                    </div>
                 </div>
                 <hr>
 

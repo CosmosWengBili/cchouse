@@ -10,15 +10,19 @@
                         <a class="btn btn-primary" href="{{ route( 'users.edit', $data['id']) }}">編輯</a>
                     </div>
                     {{-- for showing the target returned --}}
-                    <table class="table table-bordered">
+                    <div class="row">
                         @foreach ( $data as $attribute => $value)
                             @continue(is_array($value))
-                            <tr>
-                                <td>@lang("model.{$model_name}.{$attribute}")</td>
-                                <td>{{ $value }}</td>
-                            </tr>
+                            <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
+                            <div class="col-3 border py-2">
+                                @if(is_bool($value))
+                                    {{ $value ? '是' : '否' }}
+                                @else
+                                    {{ $value }}
+                                @endif
+                            </div>
                         @endforeach
-                    </table>
+                    </div>
                 </div>
                 <hr>
 

@@ -4,7 +4,7 @@
     @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -27,14 +27,6 @@
                                             value="{{ isset($data["tenant_contract_id"]) ? $data['tenant_contract_id'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.DebtCollection.details")</td>
-                                    <td>
-                                        <textarea name="details" class="form-control" rows="15">{{ isset($data["details"]) ? $data['details'] : '' }}</textarea>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.DebtCollection.status")</td>
                                     <td>
                                         <select
@@ -49,6 +41,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.DebtCollection.details")</td>
+                                    <td>
+                                        <textarea name="details" class="form-control" rows="15">{{ isset($data["details"]) ? $data['details'] : '' }}</textarea>
+                                    </td>
+                                    <td>@lang("model.DebtCollection.comment")</td>
+                                    <td>
+                                        <textarea name="comment" class="form-control" rows="15">{{ isset($data["comment"]) ? $data['comment'] : '' }}</textarea>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.DebtCollection.is_penalty_collected")</td>
                                     <td>
                                         {{-- unchecked value for checkbox--}}
@@ -60,14 +62,6 @@
                                             {{ isset($data["is_penalty_collected"]) ? ($data['is_penalty_collected'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.DebtCollection.comment")</td>
-                                    <td>
-                                        <textarea name="comment" class="form-control" rows="15">{{ isset($data["comment"]) ? $data['comment'] : '' }}</textarea>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.DebtCollection.collector_id")</td>
                                     <td>
                                         <select

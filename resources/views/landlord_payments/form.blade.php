@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -31,8 +31,6 @@
                                     >
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordPayment.subject")</td>
                                 <td>
                                     <select
@@ -57,8 +55,6 @@
                                         value="{{ isset($data["bill_serial_number"]) ? $data['bill_serial_number'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordPayment.bill_start_date")</td>
                                 <td>
                                     <input
@@ -79,8 +75,6 @@
                                         value="{{ isset($data["bill_end_date"]) ? $data['bill_end_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordPayment.collection_date")</td>
                                 <td>
                                     <input
@@ -102,9 +96,6 @@
                                         value="{{ isset($data["billing_vendor"]) ? $data['billing_vendor'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.LandlordPayment.amount")</td>
                                 <td>
                                     <input

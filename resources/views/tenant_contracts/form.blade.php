@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -35,8 +35,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.tenant_id")</td>
                                     <td>
                                         <select
@@ -60,8 +58,6 @@
                                             value="{{ $data['contract_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.set_other_rights")</td>
                                     <td>
 
@@ -84,8 +80,6 @@
                                             value="{{ $data['other_rights'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.sealed_registered")</td>
                                     <td>
 
@@ -108,8 +102,6 @@
                                             value="{{ $data['car_parking_floor'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.car_parking_type")</td>
                                     <td>
                                         <select
@@ -133,8 +125,6 @@
                                             value="{{ $data['car_parking_space_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.motorcycle_parking_floor")</td>
                                     <td>
                                         <input
@@ -155,8 +145,6 @@
                                             value="{{ $data['motorcycle_parking_space_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.motorcycle_parking_count")</td>
                                     <td>
                                         <input
@@ -179,8 +167,6 @@
                                             {{ isset($data["effective"]) ? ($data['effective'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.contract_start")</td>
                                     <td>
                                         <input
@@ -201,8 +187,6 @@
                                             value="{{ $data['contract_end'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.rent")</td>
                                     <td>
                                         <input
@@ -223,8 +207,6 @@
                                             value="{{ $data['rent_pay_day'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.deposit")</td>
                                     <td>
                                         <input
@@ -245,8 +227,6 @@
                                             value="{{ $data['deposit_paid'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_payment_method")</td>
                                     <td>
                                         <select
@@ -273,8 +253,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_price_per_degree")</td>
                                     <td>
                                         <input
@@ -297,8 +275,6 @@
                                             value="{{ $data['electricity_price_per_degree_summer'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.110v_start_degree")</td>
                                     <td>
                                         <input
@@ -319,8 +295,6 @@
                                             value="{{ $data['220v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.110v_end_degree")</td>
                                     <td>
                                         <input
@@ -341,8 +315,6 @@
                                             value="{{ $data['220v_end_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.invoice_collection_method")</td>
                                     <td>
                                         <select
@@ -366,8 +338,6 @@
                                             value="{{ $data['invoice_collection_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.commissioner_id")</td>
                                     <td>
                                         <select

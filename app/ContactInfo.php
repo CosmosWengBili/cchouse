@@ -12,5 +12,5 @@ class ContactInfo extends Model implements AuditableContract
 
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 }

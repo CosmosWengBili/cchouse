@@ -4,7 +4,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -28,8 +28,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>科目</td>
                                     <td>
                                         <select
@@ -54,8 +52,6 @@
                                             value="{{ $data['due_time'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>費用</td>
                                     <td>
                                         <input
@@ -77,8 +73,6 @@
                                             {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>沖銷日期</td>
                                     <td>
                                         <input
@@ -103,8 +97,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>是否顯示在報表</td>
                                     <td>
                                         <input type="hidden" value="0" name="is_visible_at_report"/>
@@ -127,8 +119,6 @@
                                             {{ ($data['is_pay_off'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>備註</td>
                                     <td>
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>

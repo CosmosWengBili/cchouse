@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -31,8 +31,6 @@
                                     >
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.commission_type")</td>
                                 <td>
                                     <select
@@ -57,8 +55,6 @@
                                         value="{{ isset($data["commission_start_date"]) ? $data['commission_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.commission_end_date")</td>
                                 <td>
                                     <input
@@ -79,8 +75,6 @@
                                         value="{{ isset($data["warranty_start_date"]) ? $data['warranty_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.warranty_end_date")</td>
                                 <td>
                                     <input
@@ -101,8 +95,6 @@
                                         value="{{ isset($data["rental_decoration_free_start_date"]) ? $data['rental_decoration_free_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.rental_decoration_free_end_date")</td>
                                 <td>
                                     <input
@@ -113,7 +105,6 @@
                                     />
                                 </td>
                             </tr>
-
                             <tr>
                                 <td>@lang("model.LandlordContract.annual_service_fee_month_count")</td>
                                 <td>
@@ -124,9 +115,6 @@
                                         value="{{ isset($data["annual_service_fee_month_count"]) ? $data['annual_service_fee_month_count'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.LandlordContract.charter_fee")</td>
                                 <td>
                                     <input
@@ -148,9 +136,6 @@
                                         value="{{ isset($data["taxable_charter_fee"]) ? $data['taxable_charter_fee'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.LandlordContract.agency_service_fee")</td>
                                 <td>
                                     <input
@@ -174,8 +159,6 @@
                                         @endforeach
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.rent_collection_time")</td>
                                 <td>
                                     <input
@@ -196,8 +179,6 @@
                                         value="{{ isset($data["rent_adjusted_date"]) ? $data['rent_adjusted_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.adjust_ratio")</td>
                                 <td>
                                     <input
@@ -218,8 +199,6 @@
                                         value="{{ isset($data["deposit_month_count"]) ? $data['deposit_month_count'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.is_collected_by_third_party")</td>
                                 <td>
                                     <input type="hidden" value="0" name="is_collected_by_third_party"/>
@@ -242,8 +221,6 @@
                                         {{ isset($data["is_notarized"]) ? ($data['is_notarized'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.commissioner_id")</td>
                                 <td>
                                     <select

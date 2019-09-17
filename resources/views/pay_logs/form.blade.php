@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -37,9 +37,7 @@
                                             </option>
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>費用 ID</td>
+                                    <td>費用編號</td>
                                     <td>
                                         <input
                                             type="number"
@@ -67,8 +65,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>繳費類別</td>
                                     <td>
                                         <select
@@ -96,8 +92,6 @@
                                             value="{{ $data['amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>虛擬帳號</td>
                                     <td>
                                         <input

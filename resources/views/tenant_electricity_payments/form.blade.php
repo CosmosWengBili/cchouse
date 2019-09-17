@@ -9,7 +9,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -37,8 +37,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>抄表時間</td>
                                     <td>
                                         <input
@@ -59,8 +57,6 @@
                                             value="{{ $data['110v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>110v迄</td>
                                     <td>
                                         <input
@@ -81,8 +77,6 @@
                                             value="{{ $data['220v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>220v迄</td>
                                     <td>
                                         <input
@@ -103,8 +97,6 @@
                                             value="{{ $data['amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>應繳時間</td>
                                     <td>
                                         <input
@@ -126,8 +118,6 @@
                                             {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>備註</td>
                                     <td>
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>

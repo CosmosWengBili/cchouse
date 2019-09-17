@@ -4,7 +4,7 @@
     @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -31,8 +31,6 @@
                                         </select>
 
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_date")</td>
                                     <td>
                                         <input
@@ -53,8 +51,6 @@
                                             value="{{ $data['deposit_collection_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_confiscated_amount")</td>
                                     <td>
                                         <input
@@ -75,8 +71,6 @@
                                             value="{{ $data['deposit_returned_amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.confiscated_or_returned_date")</td>
                                     <td>
                                         <input
@@ -97,8 +91,6 @@
                                             value="{{ $data['invoicing_amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.invoice_date")</td>
                                     <td>
                                         <input
@@ -121,8 +113,6 @@
                                             {{ isset($data["is_deposit_collected"]) ? ($data['is_deposit_collected'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.comment")</td>
                                     <td>
                                         <input

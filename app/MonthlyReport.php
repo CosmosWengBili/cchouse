@@ -18,6 +18,8 @@ class MonthlyReport extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * Get the landlordContract that this monthly report is in.

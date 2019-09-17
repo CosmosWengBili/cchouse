@@ -12,24 +12,25 @@ return [
     'Audit' => [
         'id' => '編號',
         'user_type' => 'User Model',
-        'user_id' => 'User ID',
+        'user_id' => 'User編號',
         'event' => '事件',
         'auditable_type' => 'Model',
-        'auditable_id' => 'Model ID',
+        'auditable_id' => 'Model編號',
         'old_values' => '變更前資料',
         'new_values' => '變更後資料',
         'url' => '操作網址',
         'ip_address' => 'IP Address',
         'user_agent' => 'User Agent',
         'tags' => '標籤',
-        'created_at' => '發生時間',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Tenant' => [
         'id' => '編號',
         'name' => '姓名',
         'certificate_number' => '證號',
         'is_legal_person' => '是否法人',
-        'line_id' => 'Line ID',
+        'line_id' => 'Line編號',
         'residence_address' => '戶籍地址',
         'company' => '任職公司',
         'job_position' => '任職職位',
@@ -38,7 +39,7 @@ return [
         'confirm_by' => '資料確認人員',
         'confirm_at' => '資料確認時間',
         'created_at' => '建立時間',
-        'updated_at' => '最後更新時間',
+        'updated_at' => '更新時間',
         'emergency_contacts' => '緊急聯絡人',
         'guarantors' => '保證人',
         'contact_infos' => '聯絡資料',
@@ -72,7 +73,9 @@ return [
         'invoice_collection_method' => '發票領取方式',
         'invoice_collection_number' => '發票領取號碼',
         'invoice_mailing_address' => '發票寄送地址',
-        'documents' => '相關文件'
+        'documents' => '相關文件',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'LandlordContract' => [
         'id' => '編號',
@@ -100,7 +103,9 @@ return [
         'building'=> '建物',
         'buildings'=> '建物',
         'documents' => '相關文件',
-        'landlord_ids' => '房東編號'
+        'landlord_ids' => '房東編號',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'LandlordPayment' => [
         'id' => '編號',
@@ -114,7 +119,9 @@ return [
         'comment' => '備註',
         'room_id' => '房編號',
         'buildings' => '建物',
-        'rooms' => '房'
+        'rooms' => '房',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Key' => [
         'id' => '編號',
@@ -123,7 +130,9 @@ return [
         'keeper_id' => '保管人',
         'users' => '保管人',
         'rooms' => '房',
-        'key_requests' => '鑰匙紀錄'
+        'key_requests' => '鑰匙紀錄',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'KeyRequest' => [
         'id' => '編號',
@@ -131,7 +140,9 @@ return [
         'status' => '狀態',
         'request_date' => '出借日',
         'request_approved' => '出借允許',
-        'key_id' => '鑰匙編號'
+        'key_id' => '鑰匙編號',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Guarantor' => [
         'id' => '編號',
@@ -156,17 +167,20 @@ return [
         'certificate_number' => '證號',
         'phone' => '聯絡電話',
         'mailing_address' => '聯絡地址',
-        'email' => '電子郵件'
-
+        'email' => '電子郵件',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'ContactInfo' => [
         'id' => '編號',
         'info_type' => '類別',
-        'value' => '資料'
+        'value' => '資料',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
     ],
     'Maintenance' => [
         'id' => '編號',
-        'tenant_contract_id' => '租客合約 ID',
+        'tenant_contract_id' => '租客合約編號',
         'reported_at' => '反映日期',
         'expected_service_date' => '預計處理日期',
         'expected_service_time' => '預計處理時間',
@@ -193,16 +207,20 @@ return [
         'tenant_contract' => '租客合約',
         'room' => '房間',
         'tenant' => '租客',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'Appliance' => [
         'id' => '',
-        'room_id' => '室ID',
+        'room_id' => '室編號',
         'subject' => '項目',
         'spec_code' => '型號',
         'vendor' => '廠商',
         'count' => '個數',
         'maintenance_phone' => '維護電話',
         'comment' => '備註',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'Building' => [
         'id' => '編號',
@@ -242,13 +260,17 @@ return [
         'commissioner_id' => '招租人員',
         'administrator_id' => '管理人員',
         'comment' => '備註',
-        'landlord_contract_id' => '房東合約 ID',
+        'carry' => '沖銷餘額',
+        'location' => '完整地址',
+        'landlord_contract_id' => '房東合約編號',
         'rooms' => '房',
-        'landlordContracts' => '房東合約'
+        'landlordContracts' => '房東合約',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'Room' => [
         'id' => '編號',
-        'building_id' => '物件 ID',
+        'building_id' => '物件編號',
         'needs_decoration' => '是否需裝修',
         'room_code' => '物件代碼',
         'virtual_account' => '虛擬帳號',
@@ -278,12 +300,14 @@ return [
         'keys' => '鑰匙',
         'appliances' => '附屬設備',
         'landlord_payments' => '房東應付帳單',
-        'landlord_other_subjects' => '房東其他科目'
+        'landlord_other_subjects' => '房東其他科目',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'TenantContract' => [
         'id' => '編號',
-        'room_id' => '室ID',
-        'tenant_id' => '租客ID',
+        'room_id' => '室編號',
+        'tenant_id' => '租客編號',
         'contract_serial_number' => '契約序號',
         'set_other_rights' => '設定他項權利',
         'other_rights' => '他項權利種類',
@@ -313,7 +337,7 @@ return [
         'invoice_collection_number' => '發票領取號碼',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
-        'commissioner_id' => '專員 ID',
+        'commissioner_id' => '專員編號',
         'currentBalance' => '目前餘額',
         'building' => '物件',
         'room' => '房',
@@ -328,13 +352,15 @@ return [
     ],
     'DebtCollection' => [
         'id' => '編號',
-        'collector_id' => '催收人 ID',
-        'tenant_contract_id' => '租客合約 ID',
+        'collector_id' => '催收人編號',
+        'tenant_contract_id' => '租客合約編號',
         'details' => '催收說明',
         'status' => '催收狀態',
         'is_penalty_collected' => '是否收滯納金',
         'comment' => '備註',
         'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'received_at' => '收取時間'
     ],
     'Shareholder' => [
         'id' => '編號',
@@ -353,11 +379,13 @@ return [
         'distribution_rate' => '分配費率',
         'investment_amount' => '投資額',
         'buildings' => '物件',
-        'building_ids' => '物件編號'
+        'building_ids' => '物件編號',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'Deposit' => [
         'id' => '編號',
-        'tenant_contract_id' => '租客合約 ID',
+        'tenant_contract_id' => '租客合約編號',
         'deposit_collection_date' => '收訂日期',
         'deposit_collection_serial_number' => '收訂單號',
         'deposit_confiscated_amount' => '沒定金額',
@@ -369,11 +397,13 @@ return [
         'comment' => '備註',
         'tenantContracts' => '租客合約',
         'rooms' => '房',
-        'buildings' => '物件'
+        'buildings' => '物件',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'TenantPayment' => [
         "id" => '編號',
-        "tenant_contract_id" => "租客合約ID",
+        "tenant_contract_id" => "租客合約編號",
         "subject" => "科目",
         "due_time" => "應繳時間",
         "amount" => "費用",
@@ -385,11 +415,13 @@ return [
         "is_pay_off" => "是否為點交",
         "period" => '期數',
         "comment" => "備註",
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'TenantElectricityPayment' => [
         "id" => '編號',
         "subject" => '科目',
-        "tenant_contract_id" => "租客合約ID",
+        "tenant_contract_id" => "租客合約編號",
         "ammeter_read_date" => "抄表時間",
         "110v_start_degree" => "110v起",
         "110v_end_degree" => "110v迄",
@@ -400,28 +432,31 @@ return [
         "is_charge_off_done" => "是否已沖銷",
         "due_time" => '應繳時間',
         "comment" => "備註",
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ],
     'CompanyIncome' => [
         'company_incomes' => 'Company Incomes',
         "id" => '編號',
-        "tenant_contract_id" => "租客合約ID",
+        "tenant_contract_id" => "租客合約編號",
         "subject" => "項目",
         "income_date" => "收入時間",
         "amount" => "費用",
         "comment" => "備註",
         'created_at' => '建立時間',
-        'updated_at' => '更新時間',
-        'deleted_at' => '刪除時間',
+        'updated_at' => '更新時間'
     ],
     'PayLog' => [
         "id" => '編號',
         "loggable_type" => "紀錄類型",
-        "loggable_id" => "紀錄 ID",
+        "loggable_id" => "紀錄編號",
         "subject" => "科目",
         "payment_type" => "繳費類別",
         "amount" => "費用",
         "virtual_account" => "虛擬帳號",
         "paid_at" => "匯款時間",
-        "tenant_contract_id" => "租客合約ID",
+        "tenant_contract_id" => "租客合約編號",
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ]
 ];

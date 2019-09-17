@@ -17,19 +17,9 @@ class Tenant extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'certificate_number',
-        'is_legal_person',
-        'line_id',
-        'residence_address',
-        'company',
-        'job_position',
-        'company_address',
-        'confirm_by',
-        'confirm_at',
-        'birth'
-    ];
+    protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

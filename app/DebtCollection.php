@@ -13,15 +13,8 @@ class DebtCollection extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
-    protected $fillable = [
-        'collector_id',
-        'tenant_contract_id',
-        'details',
-        'status',
-        'is_penalty_collected',
-        'comment'
-    ];
-
+    protected $guarded = [];
+    protected $hidden = ['pivot', 'deleted_at'];
     protected $casts = [
         'is_penalty_collected' => 'boolean'
     ];

@@ -17,12 +17,7 @@ class RelatedPerson extends Model
         'created_at',
         'updated_at'
     ];
-    protected $fillable = [
-        'related_person_type',
-        'related_person_id',
-        'type',
-        'name',
-        'phone',
-        'relationship'
-    ];
+    protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 }

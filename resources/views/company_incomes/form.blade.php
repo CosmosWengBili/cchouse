@@ -8,7 +8,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -20,7 +20,7 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>租客合約 ID</td>
+                                    <td>租客合約編號</td>
                                     <td>
                                         <select class="form-control" name="tenant_contract_id">
                                             @foreach($tenantContractIds as $tenantContractId)
@@ -33,8 +33,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>項目</td>
                                     <td>
                                         <select
@@ -63,8 +61,6 @@
                                             value="{{ $data['income_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>費用</td>
                                     <td>
                                         <input

@@ -5,7 +5,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -31,8 +31,6 @@
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.needs_decoration")</td>
                                     <td>
 
@@ -55,8 +53,6 @@
                                             value="{{ $data['room_code'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.virtual_account")</td>
                                     <td>
                                         <input
@@ -80,8 +76,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_number")</td>
                                     <td>
                                         <input
@@ -105,8 +99,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_attribute")</td>
                                     <td>
                                         <input
@@ -127,8 +119,6 @@
                                             value="{{ $data['living_room_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_count")</td>
                                     <td>
                                         <input
@@ -149,8 +139,6 @@
                                             value="{{ $data['bathroom_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.parking_count")</td>
                                     <td>
                                         <input
@@ -171,8 +159,6 @@
                                             value="{{ $data['ammeter_reading_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.rent_list_price")</td>
                                     <td>
                                         <input
@@ -193,8 +179,6 @@
                                             value="{{ $data['rent_reserve_price'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.rent_landlord")</td>
                                     <td>
                                         <input
@@ -215,8 +199,6 @@
                                             value="{{ $data['rent_actual'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.internet_form")</td>
                                     <td>
                                         <input
@@ -240,8 +222,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.management_fee")</td>
                                     <td>
                                         <input
@@ -263,8 +243,6 @@
                                             value="{{ $data['wifi_account'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.wifi_password")</td>
                                     <td>
                                         <input
@@ -287,8 +265,6 @@
                                             {{ isset($data["has_digital_tv"]) ? ($data['has_digital_tv'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.can_keep_pets")</td>
                                     <td>
 
@@ -314,8 +290,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.comment")</td>
                                     <td>
                                         <input

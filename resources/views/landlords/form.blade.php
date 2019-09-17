@@ -4,7 +4,7 @@
 @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -27,9 +27,6 @@
                                             value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-
-                                <tr>
                                     <td>@lang("model.Landlord.certificate_number")</td>
                                     <td>
                                         <input
@@ -50,8 +47,6 @@
                                             value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.note")</td>
                                     <td>
                                         <input
@@ -74,8 +69,6 @@
                                             {{ isset($data["is_legal_person"]) ? ($data['is_legal_person'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.is_collected_by_third_party")</td>
                                     <td>
                                         {{-- unchecked value for checkbox--}}
@@ -101,8 +94,6 @@
                                             placeholder="例如新光銀行請輸入: 103"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.branch_code")</td>
                                     <td>
                                         <input
@@ -126,8 +117,6 @@
                                             value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.account_number")</td>
                                     <td>
                                         <input
@@ -152,8 +141,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.invoice_mailing_address")</td>
                                     <td>
                                         <input
@@ -175,8 +162,6 @@
                                             value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.landlord_contracts")</td>
                                     <td>
                                         <input

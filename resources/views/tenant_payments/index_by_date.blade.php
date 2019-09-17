@@ -36,7 +36,7 @@
                                     <th></th>
                                 </tr>
                                 <tr>
-                                    <th>科目 ID</th>
+                                    <th>科目編號</th>
                                     <th>科目類別</th>
                                     <th>費用</th>
                                     <th>日期</th>
@@ -44,13 +44,13 @@
                                     <th>繳費科目</th>
                                     <th>費用</th>
                                     <th>日期</th>
-                                    <th>科目 ID</th>
+                                    <th>科目編號</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($tableRows as $row)
                                         <tr>
-                                            <td>{{ $row['應繳科目ID'] ?? '' }}</td>
+                                            <td>{{ $row['應繳科目編號'] ?? '' }}</td>
                                             <td>{{ $row['應繳科目'] ?? '' }}</td>
                                             <td>
                                                 @php
@@ -70,7 +70,7 @@
                                                 {{ $pay }}
                                             </td>
                                             <td>{{ $row['繳費日期'] ?? '' }}</td>
-                                            <td>{{ $row['繳納科目ID'] ?? '' }}</td>
+                                            <td>{{ $row['繳納科目編號'] ?? '' }}</td>
                                         </tr>
                                     @empty
                                         <tr>

@@ -4,7 +4,7 @@
     @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -27,9 +27,6 @@
                                         value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.certificate_number")</td>
                                 <td>
                                     <input
@@ -52,9 +49,6 @@
                                         {{ isset($data["is_legal_person"]) ? ($data['is_legal_person'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.line_id")</td>
                                 <td>
                                     <input
@@ -76,9 +70,6 @@
                                         value="{{ isset($data["residence_address"]) ? $data['residence_address'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.company")</td>
                                 <td>
                                     <input
@@ -100,9 +91,6 @@
                                         value="{{ isset($data["job_position"]) ? $data['job_position'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.company_address")</td>
                                 <td>
                                     <input
@@ -124,8 +112,6 @@
                                         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Tenant.confirm_by")</td>
                                 <td>
                                     <select

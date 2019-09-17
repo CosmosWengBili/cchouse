@@ -7,6 +7,7 @@
                 <div class="card-body">
                     <div class="card-title">
                         詳細資料
+                        <a class="btn btn-primary" href="{{ route( 'companyIncomes.edit', $data['id']) }}">編輯</a>
                     </div>
                     {{-- for showing the target returned --}}
                     <table class="table table-bordered">
@@ -28,7 +29,7 @@
 
                 <hr>
 
-                @component
+                @component('layouts.tab')
                     {{-- other title of relation pages --}}
                     @slot('relation_titles')
                         @if (!empty($relations))

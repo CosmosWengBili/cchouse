@@ -64,12 +64,12 @@ class TenantElectricityPaymentController extends Controller
     public function edit(TenantElectricityPayment $tenantElectricityPayment)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData->edit($tenantElectricityPayment, 'tenant_electricity_payments.update')->get();
+        $data = $responseData->edit($tenantElectricityPayment, 'tenantElectricityPayments.update')->get();
 
         return view('tenant_electricity_payments.form', $data);
     }
 
-    public function show(TenantElectricityPayment $tenantElectricityPayment)
+    public function show(Request $request, TenantElectricityPayment $tenantElectricityPayment)
     {
         $responseData = new NestedRelationResponser();
         $responseData

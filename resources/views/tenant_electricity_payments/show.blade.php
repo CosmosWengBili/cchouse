@@ -7,6 +7,7 @@
                 <div class="card-body">
                     <div class="card-title">
                         詳細資料
+                        <a class="btn btn-primary" href="{{ route( 'tenantElectricityPayments.edit', $data['id']) }}">編輯</a>
                     </div>
                     {{-- for showing the target returned --}}
                     <table class="table table-bordered">

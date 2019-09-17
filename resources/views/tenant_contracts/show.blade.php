@@ -7,6 +7,7 @@
                 <div class="card-body">
                     <div class="card-title">
                         詳細資料
+                        <a class="btn btn-primary" href="{{ route( 'tenantContracts.edit', $data['id']) }}">編輯</a>
                     </div>
                     <button class="btn btn-danger btn-lg" 
                             data-toggle="modal" 

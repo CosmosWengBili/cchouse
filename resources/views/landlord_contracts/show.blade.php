@@ -36,7 +36,9 @@
                                         if (is_null($model_name)) {
                                             $title = $layer;
                                         } else {
-                                            $layer = Str::snake(explode('.', $relation)[0]);
+                                            $layer = explode('.', $relation);
+                                            $layer = Str::snake(last($layer));
+                                            $layer = Str::plural($layer);
                                             $title = __("model.{$model_name}.{$layer}");
                                         }
 

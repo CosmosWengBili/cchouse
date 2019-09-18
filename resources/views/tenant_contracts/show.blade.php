@@ -9,8 +9,8 @@
                         詳細資料
                         <a class="btn btn-primary" href="{{ route( 'tenantContracts.edit', $data['id']) }}">編輯</a>
                     </div>
-                    <button class="btn btn-danger btn-lg" 
-                            data-toggle="modal" 
+                    <button class="btn btn-danger btn-lg"
+                            data-toggle="modal"
                             data-target='#send-electricity-payment-report-sms-model'
                             data-tenant-contract-id="{{$data['id']}}">發送電費報表</button>
                     {{-- for showing the target returned --}}
@@ -36,7 +36,9 @@
                         @if (!empty($relations))
                             @foreach($relations as $key => $relation)
                                 @php
-                                    $layer = Str::snake(explode('.', $relation)[0]);
+                                    $layer = explode('.', $relation);
+                                    $layer = Str::snake(last($layer));
+                                    $layer = Str::plural($layer);
                                     $title = __("model.{$model_name}.{$layer}");
 
                                     $active = $loop->first ? 'active' : '';

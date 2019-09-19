@@ -38,7 +38,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('companyIncomes', 'CompanyIncomeController');
             Route::get('tenantContracts/{tenantContract}/electricityDegree', 'TenantContractController@electricityDegree');
-            Route::get('tenantContracts/{tenantContract}/payment_recheck', 'TenantContractController@payment_recheck');
+            Route::get('tenantContracts/{tenantContract}/payment_recheck', 'TenantContractController@payment_recheck')
+                ->name('tenantContracts.paymentRecheck');
             Route::post(
                 'tenantContracts/sendElectricityPaymentReportSMS',
                 'TenantContractController@sendElectricityPaymentReportSMS'
@@ -56,7 +57,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
             });
 
             Route::resource('shareholders', 'ShareHolderController');
-            Route::resource('deposits', 'DepositController');
 
             // receipts
             Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;

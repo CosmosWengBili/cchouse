@@ -14,13 +14,19 @@ class LandlordContract extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
-    protected $casts = ['commission_start_date' => 'date',
-                        'commission_end_date' => 'date'];
-
     protected $appends = array('landlord_ids');
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'can_keep_pets' => 'boolean'
+    ];
 
     public function getLandlordIdsAttribute() {
         return implode(",",$this->landlords()->get()->pluck('id')->toArray());

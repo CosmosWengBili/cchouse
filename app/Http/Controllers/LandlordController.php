@@ -74,17 +74,8 @@ class LandlordController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|max:255',
             'certificate_number' => 'required',
-            'birth' => 'required',
-            'note' => 'present',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
-            'bank_code' => 'required|digits:3',
-            'branch_code' => 'required|digits:4',
-            'account_name' => 'required|max:255',
-            'account_number' => 'required|max:255',
-            'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required_if:invoice_collection_method,載具|max:255',
-            'invoice_mailing_address' => 'required|max:255',
         ]);
 
         $landlord = Landlord::create($validatedData);
@@ -159,19 +150,10 @@ class LandlordController extends Controller
     public function update(Request $request, Landlord $landlord)
     {
         $validatedData = $request->validate([
-            'name' => 'nullable|max:255',
+            'name' => 'required|max:255',
             'certificate_number' => 'required',
-            'birth' => 'required',
-            'note' => 'nullable',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
-            'bank_code' => 'required|digits:3',
-            'branch_code' => 'required|digits:4',
-            'account_name' => 'required|max:255',
-            'account_number' => 'required|max:255',
-            'invoice_collection_method' => 'required|max:255',
-            'invoice_collection_number' => 'required_if:invoice_collection_method,寄送|max:255',
-            'invoice_mailing_address' => 'required|max:255'
         ]);
 
         LandlordService::update($landlord, $validatedData);

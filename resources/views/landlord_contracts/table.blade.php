@@ -53,8 +53,19 @@
                         <tr>
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
-                                {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                @if (is_array($value) && $key === 'building')
+                                    <td>{{ $value['address'] }}</td>
+                                @elseif (is_array($value) && $key === 'landlords')
+                                    @php
+                                    $landlordNames = collect($value)->map(function ($item, $key) {
+                                        return collect($item)->only(['name'])->toArray();
+                                    });
+                                    @endphp
+                                    <td> {{ $landlordNames->implode('name', ',') }}</td>
+                                @else
+                                    {{-- an even nested resource array --}}
+                                    <td> {{ $value }}</td>
+                                @endif
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=landlords;building;documents">查看</a>

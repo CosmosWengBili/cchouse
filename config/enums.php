@@ -104,11 +104,6 @@ return [
             '比例',
             '固定',
         ],
-        'gender_limit' => [
-            '不限',
-            '男性',
-            '女性',
-        ],
     ],
 
     'tenant_contract' => [
@@ -149,7 +144,7 @@ return [
     'maintenance' => [
         'status' => [
             '待處理',
-            '聯繫中', 
+            '聯繫中',
             '已派工',
             '請款中',
             '案件完成',
@@ -184,6 +179,16 @@ return [
         'invoice_collection_method' => [
             '載具',
             '寄送',
+        ],
+        'is_notarized' => [
+            '否',
+            '是',
+            '另議',
+        ],
+        'gender_limit' => [
+            '不限',
+            '男性',
+            '女性',
         ],
     ],
 

@@ -124,3 +124,4 @@ window.myQueryString = function () {
     }
 };
 
+window._ = require('lodash');

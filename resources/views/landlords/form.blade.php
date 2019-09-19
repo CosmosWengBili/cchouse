@@ -101,9 +101,7 @@
                                             type="text"
                                             name="branch_code"
                                             value="{{ isset($data["branch_code"]) ? $data['branch_code'] : '' }}"
-                                            maxlength="4"
-                                            pattern="\d*"
-                                            placeholder="分行代碼為四個數字"
+                                            placeholder="分行名稱"
                                         />
                                     </td>
                                 </tr>
@@ -151,7 +149,7 @@
                                         />
                                     </td>
                                 </tr>
-                                <tr id="invoice_tr" class="">
+                                <tr>
                                     <td>@lang("model.Landlord.invoice_collection_number")</td>
                                     <td>
                                         <input
@@ -198,7 +196,7 @@
 
     const qs = window.myQueryString();
     qs.setInputValue(queryStringName, inputId);
-    $('#' + inputId).parents('tr').addClass('d-none');
+    $('#' + inputId).addClass('d-none');
 
 
     const toggleElement = {
@@ -231,7 +229,7 @@
     $(document).ready(function () {
         toggleElement.bind(
             document.getElementById('invoice_collection_method'),
-            document.getElementById('invoice_tr')
+            document.getElementById('invoice_collection_number')
         ).display()
     })
 
@@ -248,37 +246,20 @@
                 required: true,
             },
             birth: {
-                required: true,
                 dateISO: true,
             },
-            note: {
-                required: true,
-            },
             bank_code: {
-                required: true,
                 digits: true,
                 minlength: 3,
                 maxlength: 3,
             },
-            branch_code: {
-                required: true,
-                digits: true,
-                minlength: 4,
-                maxlength: 4,
-            },
-            account_name: {
-                required: true,
-            },
             account_number: {
-                required: true,
                 digits: true
             },
             invoice_mailing_address: {
-                required: true,
                 email: true
             },
             invoice_collection_number: {
-                required: true,
                 digits: true
             },
         };
@@ -290,33 +271,9 @@
             certificate_number: {
                 required: '必須輸入'
             },
-            birth: {
-                required: '必須輸入'
-            },
-            note: {
-                required: '必須輸入'
-            },
             bank_code: {
-                required: '必須輸入',
                 minlength: "只能輸入 {0} 個數字",
                 maxlength: "只能輸入 {0} 個數字",
-            },
-            branch_code: {
-                required: '必須輸入',
-                minlength: "只能輸入 {0} 個數字",
-                maxlength: "只能輸入 {0} 個數字",
-            },
-            account_name: {
-                required: '必須輸入'
-            },
-            account_number: {
-                required: '必須輸入'
-            },
-            invoice_mailing_address: {
-                required: '必須輸入'
-            },
-            invoice_collection_number: {
-                required: '必須輸入'
             },
         };
 

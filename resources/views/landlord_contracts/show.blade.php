@@ -15,11 +15,7 @@
                             @continue(is_array($value))
                             <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
                             <div class="col-3 border py-2">
-                                @if(is_bool($value))
-                                    {{ $value ? '是' : '否' }}
-                                @else
-                                    {{ $value }}
-                                @endif
+                                @include('shared.helpers.value_helper', ['value' => $value])
                             </div>
                         @endforeach
                         </div>

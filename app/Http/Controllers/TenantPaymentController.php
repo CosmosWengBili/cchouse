@@ -43,7 +43,7 @@ class TenantPaymentController extends Controller
 
     public function store(Request $request) {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'subject' => 'required',
             'due_time' => 'required',
             'amount' => 'required',
@@ -83,7 +83,7 @@ class TenantPaymentController extends Controller
     public function update(Request $request, TenantPayment $tenantPayment)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'subject' => 'required',
             'due_time' => 'required',
             'amount' => 'required',

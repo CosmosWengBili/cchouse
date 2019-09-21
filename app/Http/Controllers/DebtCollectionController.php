@@ -96,12 +96,12 @@ class DebtCollectionController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'details' => 'nullable',
             'status' => 'required|max:255',
             'is_penalty_collected' => 'required',
             'comment' => 'nullable',
-            'collector_id' => 'nullable'
+            'collector_id' => 'sometimes|exists:users,id'
         ]);
         $debtCollection = DebtCollection::create($validatedData);
 
@@ -134,12 +134,12 @@ class DebtCollectionController extends Controller
     public function update(Request $request, DebtCollection $debtCollection)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'details' => 'nullable',
             'status' => 'required|max:255',
             'is_penalty_collected' => 'required',
             'comment' => 'nullable',
-            'collector_id' => 'nullable'
+            'collector_id' => 'sometimes|exists:users,id'
         ]);
         ReceiptService::compareReceipt($debtCollection, $validatedData);
         $debtCollection->update($validatedData);

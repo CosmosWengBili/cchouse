@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DebtCollectionExport;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\DebtCollection;
-use App\Tenant;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Services\ReceiptService;
+use Illuminate\Support\Facades\Input;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DebtCollectionController extends Controller
 {
@@ -158,5 +161,15 @@ class DebtCollectionController extends Controller
     {
         $debtCollection->delete();
         return response()->json(true);
+    }
+
+    public function exportReport()
+    {
+        $date = Carbon::parse(Input::get('date'));
+
+        return Excel::download(
+            new DebtCollectionExport($date),
+            "Debt-{$date->format('Y-m-d')}.xlsx"
+        );
     }
 }

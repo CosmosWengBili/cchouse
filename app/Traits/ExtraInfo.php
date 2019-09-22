@@ -21,12 +21,13 @@ trait ExtraInfo {
         switch ($tableName) {
             case 'landlord_contracts':
                 return $builder
-                        ->join('buildings', 'buildings.id', '=', 'landlord_contracts.building_id')
+                        ->join('buildings', 'buildings.id', '=', "{$tableName}.building_id")
                         ->join('rooms', 'buildings.id', '=', 'rooms.building_id');
                 break;
             case 'tenant_contract':
+            case 'keys':
                 return $builder
-                        ->join('rooms', 'rooms.id', '=', 'tenant_contract.room_id')
+                        ->join('rooms', 'rooms.id', '=', "{$tableName}.room_id")
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
                 break;
@@ -50,6 +51,7 @@ trait ExtraInfo {
                 ];
                 break;
             case 'tenant_contract':
+            case 'keys':
                 $extraSelects = [
                     'landlord_contracts.commission_type AS commission_type',
                     'buildings.building_code AS building_code',

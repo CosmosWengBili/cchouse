@@ -9,7 +9,6 @@
         $isAccountGroup = true;
     } else if ($user->belongsToGroup('管理組')){
         $statuses = \App\Maintenance::STATUSES;
-
     }
 
     $workTypes = \App\Maintenance::WORK_TYPES;
@@ -79,7 +78,7 @@
                                                     <i class="fa fa-plus-circle" data-toggle="datatable-query-add"></i>
                                                     <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
                                                 </form>
-                                    
+
                                                 <table id="{{ $statusKey }}-{{ $workTypeKey }}-table" class="display table" style="width:100%">
                                                     <thead>
                                                         @if($isAccountGroup && $statusKey == 'request')
@@ -160,7 +159,7 @@
                                                                         tableElement += '</tr>'
                                                                     })
                                                                     $recordTableBody.append(tableElement)
-                                                               })  
+                                                               })
                                                             });
                                                         })();
                                                     @endif

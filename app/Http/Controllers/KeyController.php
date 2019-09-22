@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Key;
 use App\KeyRequest;
+use App\TenantContract;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
+use Illuminate\Support\Facades\DB;
 
 class KeyController extends Controller
 {
@@ -22,17 +24,19 @@ class KeyController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
+        $columns = array_map(function ($column) { return "keys.{$column}"; }, $this->whitelist('keys'));
+        $selectColumns = array_merge($columns, Key::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $responseData
             ->index(
                 'keys',
                 $this->limitRecords(
-                    Key::select($this->whitelist('keys'))
-                    ->with($request->withNested)
+                    Key::extraInfo()->select($selectStr)->with($request->withNested)
                 )
             )
             ->relations($request->withNested);
 
-        $owner_query = Key::select($this->whitelist('keys'))->where('keeper_id', Auth::id());
+        $owner_query = Key::extraInfo()->select($selectStr)->where('keeper_id', Auth::id());
         $owner_data
             ->index('keys',
                 $this->limitRecords($owner_query->with($request->withNested))

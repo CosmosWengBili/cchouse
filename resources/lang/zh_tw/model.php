@@ -377,7 +377,13 @@ return [
         'comment' => '備註',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
-        'received_at' => '收取時間'
+        'received_at' => '收取時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Shareholder' => [
         'id' => '編號',

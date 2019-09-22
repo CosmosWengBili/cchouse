@@ -31,6 +31,13 @@ trait ExtraInfo {
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
                 break;
+            case 'debt_collections':
+                return $builder
+                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                        ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                        ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                break;
             default:
                 return $builder;
         }
@@ -52,6 +59,7 @@ trait ExtraInfo {
                 break;
             case 'tenant_contract':
             case 'keys':
+            case 'debt_collections':
                 $extraSelects = [
                     'landlord_contracts.commission_type AS commission_type',
                     'buildings.building_code AS building_code',

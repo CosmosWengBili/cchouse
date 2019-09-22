@@ -26,7 +26,8 @@ class LandlordContractController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $selectColumns = array_merge($this->whitelist('landlord_contracts'), LandlordContract::extraInfoColumns());
+        $columns = array_map(function ($column) { return "landlord_contracts.{$column}"; }, $this->whitelist('landlord_contracts'));
+        $selectColumns = array_merge($columns, LandlordContract::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         $responseData

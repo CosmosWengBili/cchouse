@@ -353,7 +353,13 @@ return [
         'deposits' => '訂金',
         'maintenances' => '清潔維修',
         'tenant' => '租客',
-        'company_incomes' => '公司收入'
+        'company_incomes' => '公司收入',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'DebtCollection' => [
         'id' => '編號',

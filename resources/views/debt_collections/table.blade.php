@@ -17,6 +17,14 @@
             <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
         @endif
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+        <form action="{{ route('debtCollections.export_report') }}" method="POST">
+            @csrf
+            <label>
+                選擇日期：
+                <input type="date" name="date">
+            </label>
+            <button class="btn btn-success btn-sm">匯出報表</button>
+        </form>
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))

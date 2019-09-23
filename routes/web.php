@@ -49,6 +49,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('maintenances', 'MaintenanceController');
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
+            Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
 
             Route::group(['middleware' => 'payment.lock'], function () {
                 Route::resource('payLogs', 'PayLogController');

@@ -7,14 +7,17 @@ use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 
 use App\DebtCollection;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Services\ReceiptService;
-use Illuminate\Support\Facades\Input;
+
 use Maatwebsite\Excel\Facades\Excel;
+
 
 class DebtCollectionController extends Controller
 {
@@ -28,10 +31,12 @@ class DebtCollectionController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
+        $columns = array_map(function ($column) { return "debt_collections.{$column}"; }, $this->whitelist('debt_collections'));
+        $selectColumns = array_merge($columns, DebtCollection::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
 
         $debtCollections = $this->limitRecords(
-            DebtCollection::select($this->whitelist('debt_collections'))
-                ->with($request->withNested)
+            DebtCollection::extraInfo()->select($selectStr)->with($request->withNested)
         );
 
         $responseData
@@ -39,7 +44,8 @@ class DebtCollectionController extends Controller
             ->relations($request->withNested);
 
         $owner_query = $this->limitRecords(
-            DebtCollection::select($this->whitelist('debt_collections'))
+            DebtCollection::extraInfo()
+                ->select($selectStr)
                 ->where(['collector_id' => Auth::id()])
                 ->with($request->withNested),
             false

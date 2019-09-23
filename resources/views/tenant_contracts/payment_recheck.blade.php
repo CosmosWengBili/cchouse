@@ -15,11 +15,7 @@
                             <tr>
                                 <td>@lang("model.{$model_name}.{$attribute}")</td>
                                 <td>
-                                    @if(is_bool($value))
-                                        {{ $value ? '是' : '否' }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
+                                    @include('shared.helpers.value_helper', ['value' => $value])
                                 </td>
                             </tr>
                         @endforeach

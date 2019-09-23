@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\ExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -11,6 +12,7 @@ class Maintenance extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use ExtraInfo;
 
     const STATUSES = [
         'pending' => '待處理',
@@ -33,7 +35,7 @@ class Maintenance extends Model implements AuditableContract
     ];
 
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
     /**
      * Get the user who took care of this maintenance.

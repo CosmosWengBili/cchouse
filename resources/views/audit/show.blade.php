@@ -14,7 +14,7 @@
                                 @continue(is_array($value))
                                 <tr>
                                     <td>@lang("model.{$model_name}.{$attribute}")</td>
-                                    <td>{{ $value }}</td>
+                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                 </tr>
                             @endforeach
                         </table>

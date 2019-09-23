@@ -9,6 +9,7 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Responser\SubTableResponser;
 
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditor;
 
 use App\Traits\Controllers\HandleDocumentsUpload;
@@ -25,12 +26,15 @@ class LandlordContractController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $columns = array_map(function ($column) { return "landlord_contracts.{$column}"; }, $this->whitelist('landlord_contracts'));
+        $selectColumns = array_merge($columns, LandlordContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $responseData
             ->index(
                 'landlord_contracts',
                 $this->limitRecords(
-                    LandlordContract::select($this->whitelist('landlord_contracts'))
-                        ->with($request->withNested)
+                    LandlordContract::extraInfo()->select($selectStr)->with($request->withNested)
                 )
             )
             ->relations($request->withNested);

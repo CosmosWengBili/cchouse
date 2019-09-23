@@ -9,7 +9,6 @@
         $isAccountGroup = true;
     } else if ($user->belongsToGroup('管理組')){
         $statuses = \App\Maintenance::STATUSES;
-
     }
 
     $workTypes = \App\Maintenance::WORK_TYPES;

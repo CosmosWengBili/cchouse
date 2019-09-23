@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CompanyIncome;
+use App\DebtCollection;
 use App\LandlordPayment;
 use App\Maintenance;
 use App\Responser\NestedRelationResponser;
@@ -259,17 +260,19 @@ class MaintenanceController extends Controller
     private function getMaintenancesByGroup()
     {
         $user = Auth::user();
+        $selectColumns = array_merge(['maintenances.*'], DebtCollection::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
 
         if ($user->belongsToGroup('管理組')) {
-            return Maintenance::all();
+            return Maintenance::extraInfo()->select($selectStr)->get();
         } elseif ($user->belongsToGroup('帳務組')) {
-            $threeMonthsAgo = Carbon::now()->subMonth(3);
-            $threeMonthsFromNow = Carbon::now()->addMonth(3);
+//            $threeMonthsAgo = Carbon::now()->subMonth(3);
+//            $threeMonthsFromNow = Carbon::now()->addMonth(3);
 
-            $maintenances = Maintenance::whereIn('status', [
-                '案件完成',
-                '請款中'
-            ])->get();
+            $maintenances = Maintenance::extraInfo()
+                ->select($selectStr)
+                ->whereIn('status', ['案件完成', '請款中'])
+                ->get();
 
             return $maintenances;
         }

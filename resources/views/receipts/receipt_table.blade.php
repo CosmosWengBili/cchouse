@@ -33,7 +33,7 @@
                     @foreach ( $objects as $object )
                         <tr>
                             @foreach(config('enums.receipt_en') as $receipt_key)
-                                <td>{{ $object[$receipt_key]}}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $object[$receipt_key]])</td>
                             @endforeach
                         </tr>
                     @endforeach
@@ -45,4 +45,3 @@
 <script>
     renderDataTable(["#receipts-table"]);
 </script>
-    

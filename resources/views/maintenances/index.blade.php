@@ -79,7 +79,7 @@
                                                     <i class="fa fa-plus-circle" data-toggle="datatable-query-add"></i>
                                                     <input type="submit" class="btn btn-sm btn-primary" value="搜尋">
                                                 </form>
-                                    
+
                                                 <table id="{{ $statusKey }}-{{ $workTypeKey }}-table" class="display table" style="width:100%">
                                                     <thead>
                                                         @if($isAccountGroup && $statusKey == 'request')
@@ -104,7 +104,7 @@
                                                                 {{-- render all attributes --}}
                                                                 @foreach($maintenance as $key => $value)
                                                                     {{-- an even nested resource array --}}
-                                                                    <td> {{ $value }}</td>
+                                                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                                                 @endforeach
                                                                 <td>
                                                                     <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room">查看</a>
@@ -160,7 +160,7 @@
                                                                         tableElement += '</tr>'
                                                                     })
                                                                     $recordTableBody.append(tableElement)
-                                                               })  
+                                                               })
                                                             });
                                                         })();
                                                     @endif

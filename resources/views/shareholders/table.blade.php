@@ -38,7 +38,7 @@ $tableId = "model-{$model_name}-{$layer}-" . rand();
                                 {{-- render all attributes --}}
                                 @foreach($object as $key => $value)
                                     {{-- an even nested resource array --}}
-                                    <td> {{ $value }}</td>
+                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                 @endforeach
                                 <td>
                                     <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=buildings">查看</a>

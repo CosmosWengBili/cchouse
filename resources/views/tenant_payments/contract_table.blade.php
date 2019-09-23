@@ -49,7 +49,7 @@
                                         {{ $value }}
                                     </td>
                                 @else
-                                    <td> {{ $value }}</td>
+                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                 @endif
                             @endforeach
                             <td>

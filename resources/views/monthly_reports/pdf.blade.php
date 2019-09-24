@@ -118,7 +118,7 @@
                     <div class="col-xs-12">&nbsp;</div>
 
                     <div class="col-xs-2">匯款帳號</div>
-                    <div class="col-xs-6">{{implode(",", $data['meta']['account_numbers']->toArray())}}</div>
+                    <div class="col-xs-6">{{implode(",", $data['meta']['account_numbers'])}}</div>
                     <div class="col-xs-2 text-center bg-gray">
                         @if( $data['meta']['total_income'] - $data['meta']['total_expense'] > 0 )
                             本月實收

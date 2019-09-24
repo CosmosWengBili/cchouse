@@ -53,7 +53,12 @@ class MonthlyReportService
         $data['meta']['building_location'] = $landlordContract->building->location;
         $data['meta']['rooms_count'] = $landlordContract->building->rooms->count() - 1;
         $data['meta']['landlords_phones'] = $landlordContract->landlords->pluck('phones.*.value')->flatten();
-        $data['meta']['account_numbers'] = $landlordContract->landlords->pluck('account_number');
+
+        $account_numbers = array();
+        foreach ($landlordContract->landlords as $landlord){
+            $account_numbers[] = $landlord->bank_code.' '.$landlord->branch_code.' '.$landlord->account_name.' '.$landlord->account_number;
+        }
+        $data['meta']['account_numbers'] = $account_numbers;
         $data['meta']['account_address'] = array_merge($landlordContract->landlords->pluck('invoice_mailing_address')->toArray(), 
                                                         $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten()->toArray());
         $data['meta']['rent_collection_time'] = $landlordContract->rent_collection_time;

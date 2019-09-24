@@ -244,6 +244,7 @@ return [
         'city' => '縣市',
         'district' => '區域',
         'address' => '地址',
+        'building_code' => '物件代碼',
         'tax_number' => '稅籍編號',
         'building_type' => '物件類型',
         'floor' => '樓層',

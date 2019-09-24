@@ -126,7 +126,7 @@
                             本月應付
                         @endif
                     </div>
-                    <div class="col-xs-2">{{ abs($data['meta']['total_income'] - $data['meta']['total_expense'])}}</div>
+                    <div class="col-xs-2">{{ $data['meta']['total_income'] - $data['meta']['total_expense']}}</div>
 
                     <div class="col-xs-12">&nbsp;</div>
 

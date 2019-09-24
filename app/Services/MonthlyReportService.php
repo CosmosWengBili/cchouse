@@ -143,6 +143,7 @@ class MonthlyReportService
             $roomData['meta']['room_number'] = $room->room_number;
             $roomData['meta']['management_fee'] = $room->management_fee;
             $roomData['meta']['management_fee_mode'] = $room->management_fee_mode;
+            $roomData['meta']['status'] = $room->room_status;
 
             $tenantContract = $room->activeContracts->first();
             if (is_null($tenantContract)) {

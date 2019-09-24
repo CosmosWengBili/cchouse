@@ -156,6 +156,8 @@
                             @elseif( $room['meta']['management_fee_mode'] == "固定" )
                                 (服務費 {{ $room['meta']['management_fee'] }})
                             @endif
+                            <br/>
+                            狀態:  {{ $room['meta']['status'] }}
                         </div>
                         <div class="col-xs-10 px-0">
                             @php

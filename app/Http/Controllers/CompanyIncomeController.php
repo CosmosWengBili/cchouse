@@ -63,7 +63,7 @@ class CompanyIncomeController extends Controller
 
     private function fetchValidateData(Request $request) {
         return $request->validate([
-            'tenant_contract_id' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'subject' => 'required',
             'income_date' => 'required',
             'amount' => 'required',

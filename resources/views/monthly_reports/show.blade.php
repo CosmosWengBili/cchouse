@@ -89,12 +89,11 @@
                 <div class="col-2 bg-highlight px-3 text-center">{{$report_used_date['next_month']}}月{{$data['meta']['rent_collection_time']}}日</div>
                 {{-- Meta data end --}}
                 {{-- Room data --}}
-                <div class="col-6 text-center border-top border-dark">租約起迄日及租金條件</div>
-                <div class="col-6 text-center border-top border-dark">入帳月份及收入支出金額</div>
                 <div class="col-12 row px-0 text-center bg-gray mb-0">
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
-                        <div class="col-8"></div>
+                        <div class="col-1"></div>
+                        <div class="col-7 text-left">說明</div>
                         <div class="col-2">入帳日</div>
                         <div class="col-1">收入</div>
                         <div class="col-1">支出</div>

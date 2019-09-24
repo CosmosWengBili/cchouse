@@ -41,8 +41,9 @@ class MonthlyReportService
         // and landlord -- contact info are 1 to n
         // you should pack your own logic of how to display them
 
+        $has_shareholder = $landlordContract->building->shareholders->count() > 0;
+
         // section : meta
-        $data['meta']['landlord_name'] = $landlordContract->landlords->pluck('name');
         // period calculation
         $relative_landlordContracts = $landlordContract->landlords->first()->landlordContracts->where('commission_end_date', '>', $start_date);
         $period_start = $relative_landlordContracts->first()->commission_start_date->format('Y-m-d');
@@ -52,22 +53,30 @@ class MonthlyReportService
         $data['meta']['building_code'] = $landlordContract->building->rooms->pluck('room_code');
         $data['meta']['building_location'] = $landlordContract->building->location;
         $data['meta']['rooms_count'] = $landlordContract->building->rooms->count() - 1;
-        $data['meta']['landlords_phones'] = $landlordContract->landlords->pluck('phones.*.value')->flatten();
 
-        $account_numbers = array();
-        foreach ($landlordContract->landlords as $landlord){
-            $account_numbers[] = $landlord->bank_code.' '.$landlord->branch_code.' '.$landlord->account_name.' '.$landlord->account_number;
+        if( $has_shareholder && $landlordContract->commission_type == "包租" ){
+            $data['meta']['landlord_name'] = collect(['依股東']);
+            $data['meta']['landlords_phones'] = collect(['依股東']);
+            $data['meta']['account_numbers'] = array('依股東');
+            $data['meta']['account_address'] = array('依股東');
         }
-        $data['meta']['account_numbers'] = $account_numbers;
-        $data['meta']['account_address'] = array_merge($landlordContract->landlords->pluck('invoice_mailing_address')->toArray(), 
-                                                        $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten()->toArray());
+        else{
+            $data['meta']['landlord_name'] = $landlordContract->landlords->pluck('name');
+            $data['meta']['landlords_phones'] = $landlordContract->landlords->pluck('phones.*.value')->flatten();
+            $account_numbers = collect();
+            foreach ($landlordContract->landlords as $landlord){
+                $account_numbers[] = $landlord->bank_code.' '.$landlord->branch_code.' '.$landlord->account_name.' '.$landlord->account_number;
+            }
+            $data['meta']['account_numbers'] = $account_numbers;
+            $data['meta']['account_address'] = array_merge($landlordContract->landlords->pluck('invoice_mailing_address')->toArray(), 
+                                                            $landlordContract->landlords->pluck('faxNumbers.*.value')->flatten()->toArray());
+        }
         $data['meta']['rent_collection_time'] = $landlordContract->rent_collection_time;
         $data['meta']['agency_service_fee'] = $landlordContract->agency_service_fee;
         $data['meta']['total_management_fee'] = 0;
         $data['meta']['total_agency_fee'] = 0;
         $data['meta']['total_income'] = 0;
         $data['meta']['total_expense'] = 0;
-        // TODO: calculation of incomes and expenses
         // end section : meta
 
         // section : rooms

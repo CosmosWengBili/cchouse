@@ -12,6 +12,20 @@
                     {{-- for showing the target returned --}}
                     <div class="row">
                         @foreach ( $data as $attribute => $value)
+                            @if ($attribute === 'building')
+                                <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
+                                <div class="col-3 border py-2">{{ $value['address'] }}</div>
+                            @endif
+                            @if ($attribute === 'landlords')
+                                @php
+                                    $landlordNames = collect($value)->map(function ($item, $key) {
+                                        return collect($item)->only(['name'])->toArray();
+                                    });
+                                @endphp
+                                    <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
+                                    <div class="col-3 border py-2">{{ $landlordNames->implode('name', ',') }}</div>
+
+                            @endif
                             @continue(is_array($value))
                             <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
                             <div class="col-3 border py-2">

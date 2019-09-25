@@ -1,7 +1,7 @@
 <?php
 return [
     'LandlordContract' =>[
-        'building' => ['id', 'title'],
+        'building' => ['id', 'title', 'address'],
         'landlords' => ['id', 'name']
     ]
 ];

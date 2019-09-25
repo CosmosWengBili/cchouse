@@ -53,7 +53,7 @@ class ScheduleService
             'commission_end_date' => Carbon::today()->addMonth(2),
             'commission_type' => '代管'
         ])
-            ->with('commissioner')
+            ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
             ->each(function ($landlordContract) {
                 $landlordContract->commissioner->notify(
@@ -65,7 +65,7 @@ class ScheduleService
             'commission_end_date' => Carbon::today()->addMonth(6),
             'commission_type' => '包租'
         ])
-            ->with('commissioner')
+            ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
             ->each(function ($landlordContract) {
                 $landlordContract->commissioner->notify(
@@ -84,13 +84,25 @@ class ScheduleService
                 $landlordContract->building->rooms->each(function ($room) use (
                     $landlordContract
                 ) {
-                    $room->rent_list_price = intval(
-                        round(
-                            ($room->rent_list_price *
-                                (100 + $landlordContract->adjust_ratio)) /
-                                100
-                        )
-                    );
+                    $ratio = intval($landlordContract->adjust_ratio);
+                    $isRatioLTE100 = $ratio <= 100;
+
+                    if ($isRatioLTE100) {
+                        // 用 % 數調漲
+                        $room->rent_list_price = intval(
+                            round(
+                                ($room->rent_list_price * (100 + $landlordContract->adjust_ratio) ) / 100
+                            )
+                        );
+                    } else {
+                        // 直接將租金加上此值
+                        $room->rent_list_price = intval(
+                            round(
+                                $room->rent_list_price + $landlordContract->adjust_ratio
+                            )
+                        );
+                    }
+
                     $room->rent_landlord = intval(
                         round(
                             ($room->rent_landlord *
@@ -147,12 +159,12 @@ class ScheduleService
 
     public function genarateDebtCollections()
     {
-        
+
         $delay = SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
         $delay = $delay ? intval($delay->value) : config('finance.debt_collection_delay_days');
         $notifyAt = Carbon::today()->subDays($delay);
         $tenantPayments = TenantPayment::with('payLogs')->where('is_charge_off_done', false)->where('due_time', $notifyAt)->get();
-        
+
         foreach ($tenantPayments as $tenantPayment) {
             $tenantPayment->tenantContract->debtCollections()->create([
                 'status' => '催收中'
@@ -187,7 +199,7 @@ class ScheduleService
                     $landlord_contract->landlords
                         ->pluck('is_legal_person')
                         ->toArray()
-                ) 
+                )
             ){
                 $landlord_pay_logs = new Collection();
                 $rooms = $landlord_contract->building->rooms;
@@ -197,7 +209,7 @@ class ScheduleService
                         $landlord_pay_logs = $landlord_pay_logs->merge($room->activeContracts->first()->payLogs->where('subject', '=', '租金'));
                     }
                 }
-    
+
                 $first_day_of_last_month = Carbon::today()->subMonth()->startOfMonth();
                 $first_day_of_this_month = Carbon::today()->startOfMonth();
                 $last_month_pay = 0;
@@ -240,9 +252,9 @@ class ScheduleService
 
             // store carry forward if current day it the last day of the month
             if( Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d') ){
-                $monthlyReport = MonthlyReport::create(['year' => $year, 
-                    'month' => $month, 
-                    'carry_forward' => $revenue, 
+                $monthlyReport = MonthlyReport::create(['year' => $year,
+                    'month' => $month,
+                    'carry_forward' => $revenue,
                     'landlord_contract_id' => $landlordContract->id]);
             }
 

@@ -23,7 +23,7 @@
 
         {{-- the route to create this kind of resource --}}
         <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlords.create', $appendLandlordContractQueryString) }}">建立</a>
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordFast.create') }}">快速建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordMulti.create') }}">快速建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))

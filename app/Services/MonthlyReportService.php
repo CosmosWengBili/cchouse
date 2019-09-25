@@ -63,7 +63,7 @@ class MonthlyReportService
         else{
             $data['meta']['landlord_name'] = $landlordContract->landlords->pluck('name');
             $data['meta']['landlords_phones'] = $landlordContract->landlords->pluck('phones.*.value')->flatten();
-            $account_numbers = collect();
+            $account_numbers = array();
             foreach ($landlordContract->landlords as $landlord){
                 $account_numbers[] = $landlord->bank_code.' '.$landlord->branch_code.' '.$landlord->account_name.' '.$landlord->account_number;
             }
@@ -286,13 +286,14 @@ class MonthlyReportService
 
             $distribution_fee = 0;
             if( $shareholder->distribution_method == '浮動' ){
-                $total_revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+                // $total_revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+                $total_revenue = 10000;
                 if( $total_revenue > 0 ){
-                    $distribution_fee = $total_revenue * $shareholder->investment_amount;
+                    $distribution_fee = round($total_revenue * $shareholder->distribution_rate/100);
                 }
             }
             else if ( $shareholder->distribution_method == '固定' ){
-                $distribution_fee = $shareholder->investment_amount;
+                $distribution_fee = $shareholder->distribution_amount;
                 $data['meta']['total_expense'] += $distribution_fee;
             }
 

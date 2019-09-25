@@ -228,6 +228,7 @@
                 </div>                
                 {{-- Detail data end --}}
                 {{-- Shareholder data --}}
+                @if( !empty($data['shareholders'] ))
                 <div class="col-12 row px-0 border border-dark">
                     <div class="col-2 text-center border border-dark py-4 my-0">
                         股東分配
@@ -242,7 +243,8 @@
                             <div class="col-1 text-center">{{ $shareholder['distribution_fee'] }}</div>
                         @endforeach
                     </div>
-                </div>                  
+                </div>
+                @endif                
                 {{-- Shareholder data end --}}
                 {{-- Footer --}}
                 <div class="col-12 row px-0 text-center mb-0">

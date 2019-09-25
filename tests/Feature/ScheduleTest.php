@@ -16,6 +16,14 @@ class ScheduleTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Artisan::call('migrate');
+        Artisan::call('db:seed');
+
+    }
     /**
      * @TODO: Fix test and remove ignore group.
      * @group ignore
@@ -111,8 +119,6 @@ class ScheduleTest extends TestCase
             'wifi_account' => '',
             'wifi_password' => '',
             'has_digital_tv' => 0,
-            'can_keep_pets' => 0,
-            'gender_limit' => '',
             'comment' => '',
         ]);
 
@@ -131,16 +137,8 @@ class ScheduleTest extends TestCase
             'deposit_month_count' => 1,
             'is_collected_by_third_party' => 1,
             'is_notarized' => 1,
-            'bank_code' => 1,
-            'branch_code' => 1,
-            'account_name' => '',
-            'account_number' => '',
-            'invoice_collection_method' => '',
-            'invoice_collection_number' => '',
-            'invoice_mailing_address' => '',
         ]);
 
-        DB::table('buildings')->where('id', $buildingId)->update(['landlord_contract_id' => $landlordContractId]);
 
         // run schedule event
         Artisan::call('schedule:run');

@@ -29,11 +29,7 @@
                             @continue(is_array($value))
                             <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
                             <div class="col-3 border py-2">
-                                @if(is_bool($value))
-                                    {{ $value ? '是' : '否' }}
-                                @else
-                                    {{ $value }}
-                                @endif
+                                @include('shared.helpers.value_helper', ['value' => $value])
                             </div>
                         @endforeach
                         </div>
@@ -50,7 +46,9 @@
                                         if (is_null($model_name)) {
                                             $title = $layer;
                                         } else {
-                                            $layer = Str::snake(explode('.', $relation)[0]);
+                                            $layer = explode('.', $relation);
+                                            $layer = Str::snake(last($layer));
+                                            $layer = Str::plural($layer);
                                             $title = __("model.{$model_name}.{$layer}");
                                         }
 

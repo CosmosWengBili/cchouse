@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\SmsService;
+use App\Traits\ExtraInfo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,6 +17,7 @@ class TenantContract extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use ExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.
@@ -23,7 +25,7 @@ class TenantContract extends Pivot implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
@@ -174,13 +176,13 @@ class TenantContract extends Pivot implements AuditableContract
             $month = Carbon::now()->subMonth()->month;
             $payment_date = Carbon::create(Carbon::now()->year,$month,$this->rent_pay_day);
             $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
-            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<', $payment_date)->sum('amount');            
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<', $payment_date)->sum('amount');
         }
         else{
             $month = Carbon::now()->month;
             $payment_date = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
             $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
-            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');              
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');
         }
 
         $paid = $this->payLogs()->sum('amount');
@@ -200,7 +202,7 @@ class TenantContract extends Pivot implements AuditableContract
             ->where('contract_end', '>=', Carbon::today())
             ->where('contract_start', '<=', Carbon::today());
     }
-    
+
     /**
      * Get the receipts of this tenant contracts.
      */

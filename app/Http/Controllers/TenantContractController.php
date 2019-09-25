@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\LandlordContract;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Validation\Rule;
 
@@ -36,10 +38,15 @@ class TenantContractController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $responseData
             ->index(
                 'tenant_contracts',
-                $this->limitRecords(TenantContract::with($request->withNested))
+                $this->limitRecords(
+                    TenantContract::extraInfo()->select($selectStr)->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 

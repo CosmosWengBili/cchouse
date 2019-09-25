@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Scopes\ExtraBuildingInfoScope;
+use App\Traits\ExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -12,6 +14,7 @@ class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use ExtraInfo;
 
     protected $guarded = [];
 

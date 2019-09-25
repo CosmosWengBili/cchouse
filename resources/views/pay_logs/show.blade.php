@@ -14,13 +14,7 @@
                             @continue(is_array($value))
                             <tr>
                                 <td>@lang("model.{$model_name}.{$attribute}")</td>
-                                <td>
-                                    @if(is_bool($value))
-                                        {{ $value ? '是' : '否' }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                </td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             </tr>
                         @endforeach
                     </table>
@@ -33,7 +27,7 @@
                         @if (!empty($relations))
                             @foreach($relations as $key => $relation)
                                 @php
-                                    $layer = Str::snake(explode('.', $relation)[0]);
+                                    $layer = getLayer($relation);
                                     $title = __("model.{$model_name}.{$layer}");
 
                                     $active = $loop->first ? 'active' : '';

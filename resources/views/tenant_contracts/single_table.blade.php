@@ -45,7 +45,7 @@
                         @foreach($object as $key => $value)
                             {{-- an even nested resource array --}}
                             @if ( $key != 'building' )
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endif
                         @endforeach
                         <td>

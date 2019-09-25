@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\LandlordContract;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
+use App\LandlordContract;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Responser\SubTableResponser;
+use App\Traits\Controllers\HandleDocumentsUpload;
 
-use Illuminate\Validation\Rule;
 use OwenIt\Auditing\Contracts\Auditor;
 
-use App\Traits\Controllers\HandleDocumentsUpload;
+
 
 class LandlordContractController extends Controller
 {
@@ -27,9 +29,12 @@ class LandlordContractController extends Controller
     {
         $responseData = new NestedRelationResponser();
 
+        $columns = array_map(function ($column) { return "landlord_contracts.{$column}"; }, $this->whitelist('landlord_contracts'));
+        $selectColumns = array_merge($columns, LandlordContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+      
         $data = $this->limitRecords(
-            LandlordContract::select($this->whitelist('landlord_contracts'))
-                ->with($request->withNested)->with('landlords', 'building'),
+            LandlordContract::extraInfo()->select($selectStr)->with($request->withNested)->with('landlords', 'building'),
             true
         );
 

@@ -64,7 +64,7 @@
                                     <td> {{ $landlordNames->implode('name', ',') }}</td>
                                 @else
                                     {{-- an even nested resource array --}}
-                                    <td> {{ $value }}</td>
+                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                 @endif
                             @endforeach
                             <td>

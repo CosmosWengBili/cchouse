@@ -31,7 +31,7 @@
                                         @php
                                             $total += ($header == '本期應付金額') ? $value : 0;
                                         @endphp
-                                        <td>{{ $value }}</td>
+                                        <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                     @endforeach
                                 </tr>
                                 </tbody>

@@ -17,6 +17,14 @@
             <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
         @endif
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+        <form action="{{ route('debtCollections.export_report') }}" method="POST">
+            @csrf
+            <label>
+                選擇日期：
+                <input type="date" name="date">
+            </label>
+            <button class="btn btn-success btn-sm">匯出報表</button>
+        </form>
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
@@ -46,13 +54,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td>
-                                    @if(is_bool($value))
-                                        {{ $value ? '是' : '否' }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                </td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) . '?with=room;payLogs' }}">查看</a>

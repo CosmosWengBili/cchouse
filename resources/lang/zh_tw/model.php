@@ -109,6 +109,11 @@ return [
         'can_keep_pets' => '養寵物',
         'gender_limit' => '性別限制',
         'commissioner' => '專員姓名'
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
     ],
     'LandlordPayment' => [
         'id' => '編號',
@@ -136,6 +141,12 @@ return [
         'key_requests' => '鑰匙紀錄',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'KeyRequest' => [
         'id' => '編號',
@@ -210,8 +221,13 @@ return [
         'tenant_contract' => '租客合約',
         'room' => '房間',
         'tenant' => '租客',
-        'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Appliance' => [
         'id' => '',
@@ -349,7 +365,13 @@ return [
         'deposits' => '訂金',
         'maintenances' => '清潔維修',
         'tenant' => '租客',
-        'company_incomes' => '公司收入'
+        'company_incomes' => '公司收入',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'DebtCollection' => [
         'id' => '編號',
@@ -361,7 +383,13 @@ return [
         'comment' => '備註',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
-        'received_at' => '收取時間'
+        'received_at' => '收取時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Shareholder' => [
         'id' => '編號',
@@ -386,6 +414,7 @@ return [
     ],
     'Deposit' => [
         'id' => '編號',
+        'tenant_contracts' => '租客合約',
         'tenant_contract_id' => '租客合約編號',
         'deposit_collection_date' => '收訂日期',
         'deposit_collection_serial_number' => '收訂單號',

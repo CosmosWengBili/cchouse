@@ -29,7 +29,7 @@ class LandlordContractController extends Controller
 
         $data = $this->limitRecords(
             LandlordContract::select($this->whitelist('landlord_contracts'))
-                ->with($request->withNested)->with('landlords','building'),
+                ->with($request->withNested)->with('landlords', 'building'),
             true
         );
 
@@ -102,10 +102,9 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract = LandlordContract::create($validatedData);
-        if($request->landlord_ids != ''){
-            $landlordContract->landlords()->sync(explode(",",$request->landlord_ids));
-        }
-        else{
+        if ($request->landlord_ids != '') {
+            $landlordContract->landlords()->sync(explode(",", $request->landlord_ids));
+        } else {
             $landlordContract->landlords()->sync(array());
         }
         $this->handleDocumentsUpload($landlordContract, ['original_file']);
@@ -188,10 +187,9 @@ class LandlordContractController extends Controller
         ]);
 
         $landlordContract->update($validatedData);
-        if($request->landlord_ids != ''){
-            $landlordContract->landlords()->sync(explode(",",$request->landlord_ids));
-        }
-        else{
+        if ($request->landlord_ids != '') {
+            $landlordContract->landlords()->sync(explode(",", $request->landlord_ids));
+        } else {
             $landlordContract->landlords()->sync(array());
         }
         $this->handleDocumentsUpload($landlordContract, ['original_file']);

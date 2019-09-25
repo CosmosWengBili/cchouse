@@ -76,6 +76,16 @@ class LandlordController extends Controller
             'certificate_number' => 'required',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
+
+            'birth' => 'present',
+            'note' => 'present',
+            'bank_code' => 'present|digits:3',
+            'branch_code' => 'present',
+            'account_name' => 'present|max:255',
+            'account_number' => 'present|max:255',
+            'invoice_collection_method' => 'present|max:255',
+            'invoice_collection_number' => 'present',
+            'invoice_mailing_address' => 'present|max:255',
         ]);
 
         $landlord = Landlord::create($validatedData);
@@ -154,6 +164,16 @@ class LandlordController extends Controller
             'certificate_number' => 'required',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
+
+            'birth' => 'present',
+            'note' => 'present',
+            'bank_code' => 'present|digits:3',
+            'branch_code' => 'present',
+            'account_name' => 'present|max:255',
+            'account_number' => 'present|max:255',
+            'invoice_collection_method' => 'present|max:255',
+            'invoice_collection_number' => 'present',
+            'invoice_mailing_address' => 'present|max:255',
         ]);
 
         LandlordService::update($landlord, $validatedData);

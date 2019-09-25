@@ -150,6 +150,9 @@ class MonthlyReportService
                 // there are no active contracts
             } else {
                 $payLogs = $tenantContract->payLogs->whereBetween('paid_at', [$start_date, $end_date]);
+                $payLogs->reject(function ($payLog) {
+                    return $payLog->collected_by == '公司';
+                });
                 foreach ($payLogs as $payLog) {
                     $roomData['incomes'][] = [
                         'subject' => $payLog->subject,

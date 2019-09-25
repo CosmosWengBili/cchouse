@@ -306,31 +306,6 @@
         }
     });
 </script>
-    <script id="event_in_form">
-        const $charter_fee = $('input[name=charter_fee]');
-
-        $('input[name=adjust_ratio]').on('change', function(){
-            const ratio = Number.parseFloat($(this).val()) || 0;
-            const charter_fee   = Number.parseFloat($charter_fee.val()) || 0;
-            if (_.lte(ratio, 100)) {
-                // 用 % 數調漲
-                const result = getChangedCharterFee(charter_fee, ratio)
-                $charter_fee.val(result)
-            } else {
-                // 直接將租金加上此值
-                $charter_fee.val(_.add(ratio, charter_fee))
-            }
-        });
-
-        // business logic
-        function getChangedCharterFee(charter_fee, ratio) {
-            const d_percent = _.divide(ratio, 100)
-            const multiply = _.multiply(charter_fee, d_percent)
-
-            return _.add(charter_fee, multiply)
-        }
-
-    </script>
     <script id="validation">
 
         $(document).ready(function () {

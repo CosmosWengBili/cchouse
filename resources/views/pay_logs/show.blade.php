@@ -33,9 +33,7 @@
                         @if (!empty($relations))
                             @foreach($relations as $key => $relation)
                                 @php
-                                    $layer = explode('.', $relation);
-                                    $layer = Str::snake(last($layer));
-                                    $layer = Str::plural($layer);
+                                    $layer = getLayer($relation);
                                     $title = __("model.{$model_name}.{$layer}");
 
                                     $active = $loop->first ? 'active' : '';

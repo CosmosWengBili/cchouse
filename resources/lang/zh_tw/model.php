@@ -108,7 +108,7 @@ return [
         'updated_at' => '更新時間',
         'can_keep_pets' => '養寵物',
         'gender_limit' => '性別限制',
-        'commissioner' => '專員姓名'
+        'commissioner' => '專員姓名',
         'building_code' => '物件代碼',
         'building_title' => '簡稱',
         'building_location' => '地址',

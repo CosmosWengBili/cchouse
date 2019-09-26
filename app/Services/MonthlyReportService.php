@@ -79,6 +79,22 @@ class MonthlyReportService
         $data['meta']['total_expense'] = 0;
         // end section : meta
 
+        // section : add charter_fee for charter contract
+
+        if( $landlordContract->commission_type == "包租" ){
+            $data['details']['data'][] = [
+                'type'               => 'expense',
+                'subject'            => '租金票',
+                'bill_serial_number' => '',
+                'bill_start_date'    => '',
+                'bill_end_date'      => '',
+                'paid_at'            => $end_date,
+                'amount'             => $landlordContract->charter_fee,
+            ];
+            $data['details']['meta']['total_expenses'] += $landlordContract->charter_fee;
+        }
+        //
+
         // section : rooms
         foreach ($landlordContract->building->rooms as $room) {
             $roomData = [
@@ -99,7 +115,9 @@ class MonthlyReportService
 
             // section : details
             $landlordPayments = $room->landlordPayments->whereBetween('collection_date', [$start_date, $end_date]);
-            $landlordOtherSubjects = $room->landlordOtherSubjects->whereBetween('expense_date', [$start_date, $end_date]);
+            $landlordOtherSubjects = $room->landlordOtherSubjects
+                                    ->where('subject_type', '!=', '點交')
+                                    ->whereBetween('expense_date', [$start_date, $end_date]);
             
             foreach ($landlordPayments as $landlordPayment) {
                 $data['details']['data'][] = [
@@ -135,6 +153,32 @@ class MonthlyReportService
                     $data['details']['meta']['total_expenses'] += $landlordOtherSubject->amount;
                 }
             }
+
+            $tenantContracts = $room->tenantContracts
+                                    ->where('contract_start', '<', $end_date)
+                                    ->where('contract_end', '>', $start_date);
+            foreach( $tenantContracts as $tenantContract ){
+                
+                $maintenances = $tenantContract->maintenances()
+                                ->where('afford_by', '=', '房東')
+                                ->where('status', '=', '案件完成')
+                                ->whereBetween('updated_at', [$start_date, $end_date])->get();
+
+                foreach( $maintenances as $maintenance ){
+                    $data['details']['data'][] = [
+                        'type'               => '支出',
+                        'room_code'          => $room->room_code,
+                        'subject'            => $room->room_code.' '.$maintenance->work_type.' '.$maintenance->incident_details,
+                        'bill_serial_number' => '',
+                        'bill_start_date'    => '',
+                        'bill_end_date'      => '',
+                        'paid_at'            => $maintenance->updated_at,
+                        'amount'             => $maintenance->price
+                    ];
+                }
+                
+            }
+
             // end section : details
             if ($room->room_code === '公用') {
                 continue;

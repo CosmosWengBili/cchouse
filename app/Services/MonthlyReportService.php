@@ -46,8 +46,8 @@ class MonthlyReportService
         // section : meta
         // period calculation
         $relative_landlordContracts = $landlordContract->landlords->first()->landlordContracts->where('commission_end_date', '>', $start_date);
-        $period_start = $relative_landlordContracts->first()->commission_start_date->format('Y-m-d');
-        $period_end = $relative_landlordContracts->last()->commission_end_date->format('Y-m-d');
+        $period_start = $relative_landlordContracts->first()->commission_start_date;
+        $period_end = $relative_landlordContracts->last()->commission_end_date;
 
         $data['meta']['period'] = $period_start.' ~ '.$period_end;
         $data['meta']['building_code'] = $landlordContract->building->rooms->pluck('room_code');

@@ -369,6 +369,13 @@
         </div>
     </div>
 </div>
+    <script>
+        const qs = window.myQueryString();
+        const tenantId = qs.getQueryStrings()['tenant_id'];
+        const $tenant_id = $('[name="tenant_id"]');
+        $tenant_id.attr('data-selected', tenantId)
+
+    </script>
     <script id="validation">
 
         $(document).ready(function () {

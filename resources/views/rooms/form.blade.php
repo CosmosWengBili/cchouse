@@ -265,31 +265,6 @@
                                             {{ isset($data["has_digital_tv"]) ? ($data['has_digital_tv'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                    <td>@lang("model.Room.can_keep_pets")</td>
-                                    <td>
-
-                                        <input type="hidden" value="0" name="can_keep_pets"/>
-                                        <input
-                                            type="checkbox"
-                                            name="can_keep_pets"
-                                            value="1"
-                                            {{ isset($data["can_keep_pets"]) ? ($data['can_keep_pets'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Room.gender_limit")</td>
-                                    <td>
-                                        <select
-                                            class="form-control form-control-sm"
-                                            name="gender_limit"
-                                            value="{{ $data['gender_limit'] ?? '' }}"
-                                        />
-                                            @foreach(config('enums.rooms.gender_limit') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
                                     <td>@lang("model.Room.comment")</td>
                                     <td>
                                         <input
@@ -300,9 +275,6 @@
                                         />
                                     </td>
                                 </tr>
-
-
-
                             </tbody>
                         </table>
 

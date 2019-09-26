@@ -13,7 +13,7 @@ return [
         'id', 'name', 'certificate_number'
     ],
     'landlord_contracts' => [
-        'id', 'commission_start_date',
+        'id','commission_start_date', 'building_id'
     ],
     'debt_collections' => [
       'id', 'collector_id', 'tenant_contract_id', 'details', 'is_penalty_collected', 'comment', 'created_at'

@@ -27,6 +27,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
+            Route::get('landlords/createMulti', 'LandlordController@createMulti')->name('landlordMulti.create');
+            Route::post('landlords/store', 'LandlordController@storeMulti')->name('landlordMulti.store');
             Route::resource('landlords', 'LandlordController');
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');

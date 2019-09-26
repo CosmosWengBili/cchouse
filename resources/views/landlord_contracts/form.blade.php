@@ -213,13 +213,17 @@
                             <tr>
                                 <td>@lang("model.LandlordContract.is_notarized")</td>
                                 <td>
-                                    <input type="hidden" value="0" name="is_notarized"/>
-                                    <input
-                                        type="checkbox"
-                                        name="is_notarized"
-                                        value="1"
-                                        {{ isset($data["is_notarized"]) ? ($data['is_notarized'] ? 'checked' : '') : '' }}
-                                    />
+                                    @foreach(config('enums.landlord_contracts.is_notarized') as $notarizedText)
+                                        <label class="form-check-label">
+                                            <input
+                                                type="radio"
+                                                name="is_notarized"
+                                                value="{{ $notarizedText }}"
+                                                {{ $loop->first || (isset($data['is_notarized']) && ($data['is_notarized'] == $notarizedText)) ? 'checked': '' }}
+                                            />
+                                            {{ $notarizedText }}
+                                        </label>
+                                    @endforeach
                                 </td>
                                 <td>@lang("model.LandlordContract.commissioner_id")</td>
                                 <td>
@@ -244,6 +248,33 @@
                                         value="{{ isset($data["landlord_ids"]) ? $data['landlord_ids'] : '' }}"
                                     />
                                 </td>
+                                <td>@lang("model.LandlordContract.can_keep_pets")</td>
+                                <td>
+
+                                    <input type="hidden" value="0" name="can_keep_pets"/>
+                                    <input
+                                        type="checkbox"
+                                        name="can_keep_pets"
+                                        value="1"
+                                        {{ isset($data["can_keep_pets"]) ? ($data['can_keep_pets'] ? 'checked' : '') : '' }}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@lang("model.LandlordContract.gender_limit")</td>
+                                <td>
+                                    <select
+                                        class="form-control form-control-sm"
+                                        name="gender_limit"
+                                        value="{{ $data['gender_limit'] ?? '' }}"
+                                    />
+                                    @foreach(config('enums.landlord_contracts.gender_limit') as $value)
+                                        <option value="{{$value}}">{{$value}}</option>
+                                    @endforeach
+                                    </select>
+                                </td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             </tbody>
                         </table>
@@ -280,12 +311,6 @@
         $(document).ready(function () {
 
             const rules = {
-                commission_start_date: {
-                    required: true
-                },
-                commission_end_date: {
-                    required: true
-                },
                 warranty_start_date: {
                     required: true
                 },
@@ -298,16 +323,13 @@
                 rental_decoration_free_end_date: {
                     required: true,
                 },
-                annual_service_fee_month_count: {
+                agency_service_fee: {
                     required: true
                 },
                 charter_fee: {
                     required: true
                 },
                 taxable_charter_fee: {
-                    required: true
-                },
-                agency_service_fee: {
                     required: true
                 },
                 rent_collection_time: {
@@ -325,12 +347,6 @@
             };
 
             const messages = {
-                commission_start_date: {
-                    required: '必須輸入'
-                },
-                commission_end_date: {
-                    required: '必須輸入'
-                },
                 warranty_start_date: {
                     required: '必須輸入'
                 },
@@ -343,16 +359,10 @@
                 rental_decoration_free_end_date: {
                     required: '必須輸入',
                 },
-                annual_service_fee_month_count: {
-                    required: '必須輸入'
-                },
                 charter_fee: {
                     required: '必須輸入'
                 },
                 taxable_charter_fee: {
-                    required: '必須輸入'
-                },
-                agency_service_fee: {
                     required: '必須輸入'
                 },
                 rent_collection_time: {
@@ -365,6 +375,9 @@
                     required: '必須輸入'
                 },
                 deposit_month_count: {
+                    required: '必須輸入'
+                },
+                agency_service_fee: {
                     required: '必須輸入'
                 },
             };

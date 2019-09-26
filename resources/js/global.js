@@ -40,36 +40,52 @@ window.realtimeSelect = function (selectizeElements) {
 
     selectizeElements.each(function () {
         // Set data
-        const select = $(this)
-        const table = select.data('table')
-        const text = select.data('text')
-        const selected = select.data('selected')
-        const value = select.data('value') || 'id'
+        const $select = $(this)
+        const table = $select.data('table')
+        const text = $select.data('text')
+        const selected = $select.data('selected')
+        const value = $select.data('value') || 'id'
 
         // Call API
         $.ajax({
-                method: "POST",
-                url: "/api/selectize",
-                data: {
-                    table: table,
-                    text: text,
-                    value: value
-                }
-            })
-            .done(function (msg) {
-                if (msg !== "invalid") {
-                    var tableElements = ""
-                    for (var i = 0; i < msg.length; i++) {
-                        tableElements += `<option value="${msg[i][value]}">${msg[i][text]}</option>`
-                    }
+            method: "POST",
+            url: "/api/selectize",
+            data: {
+                table: table,
+                text: text,
+                value: value
+            }
+        })
+            .then(function (options) {
+                if (options !== "invalid") {
                     // Render HTML code
-                    select.append(tableElements)
-                    select.selectize({
+                    $select.selectize({
+                        valueField: value,
+                        labelField: text,
                         create: true,
+                        options: options,
                         sortField: 'text'
                     });
+                    
+                    return options;
                 } else {
                     alert('SQL Query issue');
+                }
+            })
+            .then(function (options) {
+                if (!! options) {
+                    let select_selectize = $select[0].selectize;
+                    let tag_name_is_select = $select.prop('tagName') === 'SELECT';
+                    let has_data_toggle_selectize = $select.data('toggle') === 'selectize';
+
+                    if (tag_name_is_select && has_data_toggle_selectize) {
+                        if (selected === 0) {
+                            // set default selected value as the first one
+                            select_selectize.setValue(options[0][value])
+                        } else {
+                            select_selectize.setValue(selected)
+                        }
+                    }
                 }
             })
     })
@@ -87,7 +103,7 @@ window.myQueryString = function () {
     const url = new URL(location.href);
     const { searchParams } = url;
     
-    for(let [key, value] of searchParams.entries()) {
+    for (let [key, value] of searchParams.entries()) {
         queryStrings[key] = value;
     }
     
@@ -110,7 +126,9 @@ window.myQueryString = function () {
     
         const $input = $('#' + inputId);
         const queryStringValue = queryStrings[queryStringKey] || null;
-        if ($input.length === 0 || queryStringValue === null) return false;
+        if ($input.length === 0 || queryStringValue === null) {
+            return false;
+        }
         
         $input.val(queryStringValue);
         setName && $input.attr('name', inputId)
@@ -127,7 +145,7 @@ window.myQueryString = function () {
 window._ = require('lodash');
 
 // jquery validation plugin localization zh-TW
-$.extend( $.validator.messages, {
+$.extend($.validator.messages, {
     required: "必須填寫",
     remote: "請修正此欄位",
     email: "請輸入有效的電子郵件",
@@ -139,11 +157,11 @@ $.extend( $.validator.messages, {
     creditcard: "請輸入有效的信用卡號碼",
     equalTo: "請重複輸入一次",
     extension: "請輸入有效的後綴",
-    maxlength: $.validator.format( "最多 {0} 個字" ),
-    minlength: $.validator.format( "最少 {0} 個字" ),
-    rangelength: $.validator.format( "請輸入長度為 {0} 至 {1} 之間的字串" ),
-    range: $.validator.format( "請輸入 {0} 至 {1} 之間的數值" ),
-    step: $.validator.format( "請輸入 {0} 的整數倍值" ),
-    max: $.validator.format( "請輸入不大於 {0} 的數值" ),
-    min: $.validator.format( "請輸入不小於 {0} 的數值" )
-} );
+    maxlength: $.validator.format("最多 {0} 個字"),
+    minlength: $.validator.format("最少 {0} 個字"),
+    rangelength: $.validator.format("請輸入長度為 {0} 至 {1} 之間的字串"),
+    range: $.validator.format("請輸入 {0} 至 {1} 之間的數值"),
+    step: $.validator.format("請輸入 {0} 的整數倍值"),
+    max: $.validator.format("請輸入不大於 {0} 的數值"),
+    min: $.validator.format("請輸入不小於 {0} 的數值")
+});

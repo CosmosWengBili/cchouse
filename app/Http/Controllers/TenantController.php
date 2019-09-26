@@ -231,31 +231,22 @@ class TenantController extends Controller
 
     private function updateContactInfos(Tenant $tenant, array $contactInfos)
     {
+        // remove all items that belong to the tenant
+        $tenant
+            ->contactInfos()
+            ->where('contactable_type', Tenant::class)
+            ->delete();
+
+        // then create contract info by $contactInfos
         foreach ($contactInfos as $type => $contactInfoCollection) {
-            $keepIds = array_map(function ($contactInfo) {
-                return isset($contactInfo['id']) ? $contactInfo['id'] : null;
-            }, $contactInfoCollection);
-
-            // remove removed item
-            $tenant
-                ->contactInfos()
-                ->where('contactable_type', $type)
-                ->whereNotIn('id', $keepIds)
-                ->delete();
-
             foreach ($contactInfoCollection as $contactInfo) {
-                if (isset($contactInfo['id'])) {
-                    $id = $contactInfo['id'];
-                    $data = $tenant->contactInfos()->find($id);
-                    $data->update($contactInfo);
-                } else {
-                    ContactInfo::create(
-                        array_merge($contactInfo, [
-                            'contactable_type' => Tenant::class,
-                            'contactable_id' => $tenant->id
-                        ])
-                    );
-                }
+                unset($contactInfo['id']);
+                ContactInfo::create(
+                    array_merge($contactInfo, [
+                        'contactable_type' => Tenant::class,
+                        'contactable_id' => $tenant->id
+                    ])
+                );
             }
         }
     }

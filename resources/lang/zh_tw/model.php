@@ -372,6 +372,7 @@ return [
         'room_number' => '房號',
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
+        "comment" => "備註",
     ],
     'DebtCollection' => [
         'id' => '編號',

@@ -205,6 +205,10 @@
                                             type="number"
                                             name="rent_pay_day"
                                             value="{{ $data['rent_pay_day'] ?? '' }}"
+                                            placeholder="1日 ~ 31日"
+                                            min="1"
+                                            max="31"
+                                            step="1"
                                         />
                                     </td>
                                     <td>@lang("model.TenantContract.deposit")</td>
@@ -351,6 +355,12 @@
                                         </select>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>@lang("model.TenantContract.comment")</td>
+                                    <td colspan="3">
+                                        <textarea class="form-control" rows="5" name="comment">{{ $data['comment'] ?? '' }}</textarea>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -409,7 +419,9 @@
                     required: true
                 },
                 rent_pay_day: {
-                    required: true
+                    required: true,
+                    min: 1,
+                    max: 31,
                 },
                 deposit: {
                     required: true
@@ -426,13 +438,7 @@
                 "110v_start_degree": {
                     required: true
                 },
-                "220v_start_degree": {
-                    required: true
-                },
                 "110v_end_degree": {
-                    required: true
-                },
-                "220v_end_degree": {
                     required: true
                 },
                 invoice_collection_number: {
@@ -469,7 +475,9 @@
                     required: '必須輸入'
                 },
                 rent_pay_day: {
-                    required: '必須輸入'
+                    required: '必須輸入',
+                    min: "日期輸入錯誤 沒有 {0} 日",
+                    max: "日期輸入錯誤 沒有 {0} 日",
                 },
                 deposit: {
                     required: '必須輸入'
@@ -486,13 +494,7 @@
                 "110v_start_degree": {
                     required: '必須輸入'
                 },
-                "220v_start_degree": {
-                    required: '必須輸入'
-                },
                 "110v_end_degree": {
-                    required: '必須輸入'
-                },
-                "220v_end_degree": {
                     required: '必須輸入'
                 },
                 invoice_collection_number: {

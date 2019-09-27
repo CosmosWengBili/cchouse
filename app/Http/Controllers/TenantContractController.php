@@ -100,7 +100,7 @@ class TenantContractController extends Controller
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
             'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|digits_between:1,11',
+            'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
@@ -130,7 +130,8 @@ class TenantContractController extends Controller
                 )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id'
+            'commissioner_id' => 'exists:users,id',
+            'comment' => 'present',
         ]);
 
         $validatedPaymentData = $request->validate([
@@ -200,12 +201,14 @@ class TenantContractController extends Controller
 
     /**
      * Show the form for extending a contract.
+     * @param Request        $request
+     * @param TenantContract $tenantContract
      *
-     * @param  \App\TenantContract  $tenantContract
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function extend(TenantContract $tenantContract)
+    public function extend(Request $request, TenantContract $tenantContract)
     {
+        /** @var TenantContract $tempContract */
         $tempContract = $this->tenantContractService->makeExtendedContract(
             $tenantContract
         );
@@ -216,6 +219,9 @@ class TenantContractController extends Controller
         $data['data']['original_files'] = null;
         $data['data']['carrier_files'] =  null;
 
+        // 租客帳單
+        $data['data']['tenant_payment'] = $tenantContract->tenantPayments->toArray() or [];
+//dd($data['data']['tenant_payment']);
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
         return view('tenant_contracts.form', $data);
@@ -251,7 +257,7 @@ class TenantContractController extends Controller
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
             'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|digits_between:1,11',
+            'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
@@ -281,7 +287,8 @@ class TenantContractController extends Controller
                 )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id'
+            'commissioner_id' => 'exists:users,id',
+            'comment' => 'present',
         ]);
 
         ReceiptService::compareReceipt($tenantContract, $validatedData);

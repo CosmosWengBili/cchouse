@@ -30,7 +30,6 @@ class MonthlyReportController extends Controller
                 ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
                 ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
                 ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
-                ->where('landlord_contracts.is_collected_by_third_party', true)
                 ->groupBy('id')
         );
 

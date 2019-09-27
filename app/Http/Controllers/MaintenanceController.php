@@ -7,6 +7,7 @@ use App\DebtCollection;
 use App\LandlordPayment;
 use App\Maintenance;
 use App\Responser\NestedRelationResponser;
+use App\TenantContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -38,17 +39,11 @@ class MaintenanceController extends Controller
         $maintenances = $this->getMaintenancesByGroup();
         foreach ($maintenances as $maintenance) {
             $status = $maintenance->status;
-            $workType = $maintenance->work_type;
             if (!isset($groupedMaintances[$status])) {
                 $groupedMaintances[$status] = [];
             }
-            if (!isset($groupedMaintances[$status][$workType])) {
-                $groupedMaintances[$status][$workType] = [];
-            }
 
-            $groupedMaintenances[$status][
-                $workType
-            ][] = $maintenance->toArray();
+            $groupedMaintenances[$status][] = $maintenance->toArray();
         }
 
         return view('maintenances.index', [
@@ -92,31 +87,20 @@ class MaintenanceController extends Controller
     {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
-            'closed_comment' => 'required',
+            'reported_at' => 'required|date',
+            'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
-            'status' => 'required|max:255',
-            'incident_details' => 'required',
             'incident_type' => 'required|max:255',
             'work_type' => 'required|max:255',
-            'number_of_times' => 'required|integer|digits_between:1,11',
-            'closing_serial_number' => 'required|max:255',
-            'billing_details' => 'required',
-            'payment_request_serial_number' => 'required|max:255',
-            'payment_request_date' => 'nullable',
-            'reported_at' => 'nullable',
-            'expected_service_date' => 'nullable',
-            'expected_service_time' => 'nullable',
-            'dispatch_date' => 'nullable',
-            'commissioner_id' => 'sometimes|exists:users,id',
-            'maintenance_staff_id' => 'sometimes|exists:users,id',
-            'closed_date' => 'nullable',
-            'cost' => 'required|integer|digits_between:1,11',
-            'price' => 'required|integer|digits_between:1,11',
-            'is_recorded' => 'required|boolean',
-            'comment' => 'required'
+            'incident_details' => 'required',
         ]);
 
         $maintenance = Maintenance::create($validatedData);
+
+        $room = TenantContract::find($validatedData['tenant_contract_id'])->room;
+        // update room status if needed
+        $this->updateRoomStatusIfNeeded($room);
+
         $this->handleDocumentsUpload($maintenance, ['picture']);
 
         return redirect($request->_redirect);
@@ -134,6 +118,7 @@ class MaintenanceController extends Controller
         $responseData
             ->show($maintenance->load($request->withNested))
             ->relations($request->withNested);
+
         return view('maintenances.show', $responseData->get());
     }
 
@@ -163,22 +148,23 @@ class MaintenanceController extends Controller
     {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
-            'closed_comment' => 'required',
+            'reported_at' => 'required|date',
+            'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
-            'status' => 'required|max:255',
-            'incident_details' => 'required',
             'incident_type' => 'required|max:255',
             'work_type' => 'required|max:255',
+            'incident_details' => 'required',
+
+            'closed_comment' => 'required',
+            'status' => 'required|max:255',
             'number_of_times' => 'required|integer|digits_between:1,11',
             'closing_serial_number' => 'required|max:255',
             'billing_details' => 'required',
             'payment_request_serial_number' => 'required|max:255',
             'payment_request_date' => 'nullable',
-            'reported_at' => 'nullable',
             'expected_service_date' => 'nullable',
             'expected_service_time' => 'nullable',
             'dispatch_date' => 'nullable',
-            'commissioner_id' => 'sometimes|exists:users,id',
             'maintenance_staff_id' => 'sometimes|exists:users,id',
             'closed_date' => 'nullable',
             'cost' => 'required|integer|digits_between:1,11',
@@ -200,7 +186,9 @@ class MaintenanceController extends Controller
      */
     public function destroy(Maintenance $maintenance)
     {
-        $maintenance->delete();
+        $maintenance->status = Maintenance::STATUSES['cancel'];
+        $maintenance->save();
+
         return response()->json(true);
     }
 
@@ -313,5 +301,19 @@ class MaintenanceController extends Controller
         $landlordPayment->comment =
             '系統產生';
         $landlordPayment->save();
+    }
+
+    private function updateRoomStatusIfNeeded($room)
+    {
+        $id = \request()->input('tenant_contract_id');
+        $type = \request()->input('incident_type');
+        if (! is_null($id) && ! is_null($type)) {
+            if ($room->room_status === '待出租') {
+                $room->room_status = $type === '清潔'
+                    ? '空屋清潔'
+                    : '空屋維修';
+                $room->save();
+            }
+        }
     }
 }

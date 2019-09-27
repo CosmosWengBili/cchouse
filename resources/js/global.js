@@ -19,6 +19,9 @@ $(document).ready(function () {
             }
         }
     })
+    
+    
+    window.setDefaultDateAsToday();
 });
 $(document).on('click', 'a.jquery-postback', function (e) {
     e.preventDefault();
@@ -143,6 +146,22 @@ window.myQueryString = function () {
 };
 
 window._ = require('lodash');
+
+/**
+ * 使用方式：
+ * 只允許使用在 <input type="date" /> 內
+ * 需要在 class內加上 set-date
+ * 指定其他日期 則加上data-setdate="2019-09-01"
+ * 完整事例:
+ * <input class="set-date" type="date" data-setdate="2019-09-01" />
+ */
+window.setDefaultDateAsToday = function () {
+    document.querySelectorAll('input[type=date].set-date').forEach(function (element, index) {
+        console.log(element);
+        const today = (new Date()).toISOString().slice(0,10).replace(/-/g,"-");
+        element.value = element.dataset['setdate'] || today;
+    })
+}
 
 // jquery validation plugin localization zh-TW
 $.extend($.validator.messages, {

@@ -3,6 +3,8 @@
     $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
     $userIds = \App\User::select('id')->pluck('id')->toArray();
     $isManageGroup = Auth::User()->belongsToGroup('管理組');
+
+    $isCreate = request()->routeIs('maintenances.create');
 @endphp
 
 @extends('layouts.app')
@@ -22,8 +24,10 @@
                         @method($method)
 
                         <h3 class="mt-3">基本資料</h3>
-                        <table class="table table-bordered">
-                            <tbody>
+                        @if ($isCreate)
+                            {{-- Show some items --}}
+                            <table class="table table-bordered">
+                                <tbody>
                                 <tr>
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
@@ -37,9 +41,100 @@
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
-                                            class="form-control form-control-sm"
+                                            class="form-control form-control-sm set-date"
                                             type="date"
                                             name="reported_at"
+                                            data-setdate="2019-09-01"
+                                            value="{{ $data['reported_at'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Maintenance.commissioner_id")</td>
+                                    <td>
+                                        <select
+                                            name="commissioner_id"
+                                            class="form-control form-control-sm"
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
+                                        >
+                                        </select>
+                                    </td>
+                                    <td>@lang("model.Maintenance.service_comment")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="service_comment"
+                                            value="{{ $data['service_comment'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Maintenance.incident_details")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="incident_details"
+                                            value="{{ $data['incident_details'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Maintenance.incident_type")</td>
+                                    <td>
+                                        <select
+                                            name="incident_type"
+                                            class="form-control form-control-sm"
+                                            value="{{ $data['incident_type'] ?? ''}}"
+                                        >
+                                            @foreach(config('enums.maintenance.incident_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Maintenance.work_type")</td>
+                                    <td>
+                                        <select
+                                            name="work_type"
+                                            class="form-control form-control-sm"
+                                            value="{{ $data['work_type'] ?? ''}}"
+                                        >
+                                            @foreach(config('enums.maintenance.work_type') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        @else
+                            {{-- Show all items --}}
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td>@lang("model.Maintenance.tenant_contract_id")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="tenant_contract_id"
+                                            disabled
+                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Maintenance.reported_at")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm set-date"
+                                            type="date"
+                                            name="reported_at"
+                                            disabled
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
                                     </td>
@@ -78,6 +173,7 @@
                                     <td>
                                         <select
                                             name="commissioner_id"
+                                            disabled
                                             class="form-control form-control-sm"
                                             data-toggle="selectize"
                                             data-table="users"
@@ -126,6 +222,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="service_comment"
+                                            disabled
                                             value="{{ $data['service_comment'] ?? '' }}"
                                         />
                                     </td>
@@ -155,6 +252,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="incident_details"
+                                            disabled
                                             value="{{ $data['incident_details'] ?? '' }}"
                                         />
                                     </td>
@@ -164,6 +262,7 @@
                                     <td>
                                         <select
                                             name="incident_type"
+                                            disabled
                                             class="form-control form-control-sm"
                                             value="{{ $data['incident_type'] ?? ''}}"
                                         >
@@ -176,6 +275,7 @@
                                     <td>
                                         <select
                                             name="work_type"
+                                            disabled
                                             class="form-control form-control-sm"
                                             value="{{ $data['work_type'] ?? ''}}"
                                         >
@@ -279,8 +379,9 @@
                                     </td>
                                 </tr>
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        @endif
                         <h3 class="mt-3">照片</h3>
                         @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
@@ -315,19 +416,7 @@
                 reported_at: {
                     required: true
                 },
-                expected_service_date: {
-                    required: true
-                },
-                expected_service_time: {
-                    required: true
-                },
-                dispatch_date: {
-                    required: true,
-                },
-                closed_date: {
-                    required: true,
-                },
-                closed_comment: {
+                commissioner_id: {
                     required: true
                 },
                 service_comment: {
@@ -336,28 +425,10 @@
                 incident_details: {
                     required: true
                 },
-                number_of_times: {
+                incident_type: {
                     required: true
                 },
-                payment_request_date: {
-                    required: true
-                },
-                closing_serial_number: {
-                    required: true
-                },
-                billing_details: {
-                    required: true
-                },
-                deposit_month_count: {
-                    required: true
-                },
-                payment_request_serial_number: {
-                    required: true
-                },
-                cost: {
-                    required: true
-                },
-                price: {
+                work_type: {
                     required: true
                 },
             };
@@ -369,19 +440,7 @@
                 reported_at: {
                     required: '必須輸入'
                 },
-                expected_service_date: {
-                    required: '必須輸入'
-                },
-                expected_service_time: {
-                    required: '必須輸入'
-                },
-                dispatch_date: {
-                    required: '必須輸入',
-                },
-                closed_date: {
-                    required: '必須輸入',
-                },
-                closed_comment: {
+                commissioner_id: {
                     required: '必須輸入'
                 },
                 service_comment: {
@@ -390,28 +449,10 @@
                 incident_details: {
                     required: '必須輸入'
                 },
-                number_of_times: {
+                incident_type: {
                     required: '必須輸入'
                 },
-                payment_request_date: {
-                    required: '必須輸入'
-                },
-                closing_serial_number: {
-                    required: '必須輸入'
-                },
-                billing_details: {
-                    required: '必須輸入'
-                },
-                deposit_month_count: {
-                    required: '必須輸入'
-                },
-                payment_request_serial_number: {
-                    required: '必須輸入'
-                },
-                cost: {
-                    required: '必須輸入'
-                },
-                price: {
+                work_type: {
                     required: '必須輸入'
                 },
             };

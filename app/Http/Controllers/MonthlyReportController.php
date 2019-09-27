@@ -74,24 +74,6 @@ class MonthlyReportController extends Controller
                 ->with('report_used_date', $report_used_date);
     }
 
-    public function storeOtherSubjects(building $building, Request $request){
-        $landlord_other_subjects = Input::get('data');
-        $delete_ids = Input::get('deleteIds');
-
-        foreach( $landlord_other_subjects as $landlord_other_subject){
-            if( isset($landlord_other_subject['subject'])){
-                LandlordOtherSubject::create([
-                    'subject' => $landlord_other_subject['subject'],
-                    'subject_type' => '月結單',
-                    'income_or_expense' => ($landlord_other_subject['income'] != "") ? '收入' : '支出',
-                    'expense_date' => $landlord_other_subject['date'],
-                    'amount' => ($landlord_other_subject['income'] != "") ? $landlord_other_subject['income'] : $landlord_other_subject['expense'],
-                    'room_id' => $building->publicRoom()->id
-                ]);
-            }
-        }
-        LandlordOtherSubject::destroy($delete_ids);
-    }
 
     public function print(building $building){
 

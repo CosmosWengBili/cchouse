@@ -13,16 +13,6 @@
     bottom: 0px;
     left: 42%;
 }
-.monthly-report .add-subject{
-    position: absolute;
-    top: -10%;
-    left: 95%
-}
-.monthly-report .delete-subject{
-    position: absolute;
-    top: -10%;
-    left: 140%
-}
 </style>
 <div class="container-fluid">
     <div class="card">
@@ -214,16 +204,6 @@
                                 <div class="col-1 text-center">{{ abs($detail_data['amount']) }}</div>
                             @endif
                         @endforeach
-                        <div class="col-8 px-5">
-                            <input class="w-100 landlord-other-subject">
-                        </div>
-                        <div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>
-                        <div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>
-                        <div class="col-1 text-center position-relative">
-                            <input class="w-100 landlord-other-expense">
-                            <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>
-                            <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>
-                        </div>
                    </div>
                 </div>                
                 {{-- Detail data end --}}
@@ -273,79 +253,10 @@
                         <div class="col-1">{{$data['meta']['total_agency_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
-                </div>    
-                <div class="col-3">
-                    <button id="save-other-subjects" class="btn btn-block btn-success">儲存</button>
-                </div>                          
+                </div>                            
                 {{-- Footer end --}}
             </div>
         </div>
     </div>
 </div>
-<script>
-    $('body').on('click', '.add-subject', function(){
-        const $buttons = $(this).parent().find('button')
-        $buttons.remove()
-
-        const element = 
-        '<div class="col-8 px-5">' +
-        '   <input class="w-100 landlord-other-subject">' +
-        '</div>' +
-        '<div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>' +
-        '<div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>' +
-        '<div class="col-1 text-center position-relative">' +
-        '   <input class="w-100 landlord-other-expense">' +
-        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
-        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>' +
-        '</div>'
-        
-        $('#detail-data').append(element)
-    })
-    $('body').on('click', '.delete-subject', function(){
-        const element =
-        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
-        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>'
-
-        // delete one by one bacause of element structure
-        $(this).parent().prev().prev().prev().prev().append(element)
-        $(this).parent().prev().prev().prev().remove()
-        $(this).parent().prev().prev().remove()
-        $(this).parent().prev().remove()
-        $(this).parent().remove()
-    })
-
-    $('#save-other-subjects').on('click', function(){
-        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $data['building_id']) }}';
-
-        // add new landlord other subject data
-        const addedData = $.map($('.landlord-other-subject'), function(subject, index){
-            var tmpData = {
-                'subject' : subject.value,
-                'date' : $('.landlord-other-date')[index].value,
-                'income' : $('.landlord-other-income')[index].value,
-                'expense' : $('.landlord-other-expense')[index].value,
-            }
-            return tmpData;
-        })
-
-        // delete deleted subjects
-        const totalIds = $('#total_landlord_other_subject_id').val().split(',')
-        const keepIds = $.map($('.delete-real-subject'), function(subject, index){
-            return subject.dataset.id
-        })
-        const deleteIds = totalIds.filter(x => !keepIds.includes(x));
-
-        $.post(apiURL, { data: addedData, deleteIds:  deleteIds}, function (data) {
-            location.reload();
-        })
-    })
-
-    // delete one by one bacause of element structure
-    $('.delete-real-subject').on('click', function(){
-        $(this).parent().next().next().next().remove()
-        $(this).parent().next().next().remove()
-        $(this).parent().next().remove()
-        $(this).parent().remove()
-    })
-</script>
 @endsection

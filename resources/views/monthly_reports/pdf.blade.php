@@ -18,16 +18,6 @@
         top: 80px;
         left: 45%;
     }
-    .monthly-report .add-subject{
-        position: absolute;
-        top: -10%;
-        left: 95%
-    }
-    .monthly-report .delete-subject{
-        position: absolute;
-        top: -10%;
-        left: 140%
-    }
 
     /* used for only pdf format */
     body{

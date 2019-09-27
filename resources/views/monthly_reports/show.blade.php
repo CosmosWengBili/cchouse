@@ -202,8 +202,13 @@
                             @else
                                 <div class="col-1 text-center"></div>
                                 <div class="col-1 text-center">{{ abs($detail_data['amount']) }}</div>
-                            @endif
+                            @endif                          
                         @endforeach
+                        <div class="col-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
+                        <div class="col-8"></div>
+                        <div class="col-2 text-center"><span >小計</span></div>
+                        <div class="col-1 text-center"><span>{{ $data['details']['meta']['total_incomes'] }}</span></div>
+                        <div class="col-1 text-center"><span>{{ $data['details']['meta']['total_expenses'] }}</span></div>  
                    </div>
                 </div>                
                 {{-- Detail data end --}}

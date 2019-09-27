@@ -63,6 +63,13 @@
         margin-bottom: 0 !important;
         margin-top: 0 !important;        
     }
+    .relative{
+        position: relative;
+    }
+    .bottom{
+        position: absolute;
+        bottom: 0%;
+    }
     
     </style>
     <div class="container-fluid" style="min-width: 1024px;">
@@ -148,7 +155,7 @@
                             <br/>
                             狀態:  {{ $room['meta']['status'] }}
                         </div>
-                        <div class="col-xs-10 px-0">
+                        <div class="col-xs-10 relative px-0">
                             @php
                                 $income_not_zero = count($room['incomes']) > 0;
                                 $expense_not_zero = count($room['expenses']) > 0;
@@ -170,11 +177,16 @@
                             @endforeach
                             @if( $expense_not_zero )
                                 <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
+                                <div class="col-xs-6 bottom"></div>
+                                <div class="col-xs-2 text-center bottom" style="left: 50%;"><span>小計</span></div>
+                                <div class="col-xs-2 text-center bottom" style="left: 67%;"><span>{{ number_format($room['meta']['room_total_income']) }}</span></div>
+                                <div class="col-xs-2 text-center bottom" style="left: 84%;"><span>{{ number_format($room['meta']['room_total_expense']) }}</span></div>
+                            @else
+                                <div class="col-xs-6"></div>
+                                <div class="col-xs-2 text-center"><span class="left-bottom">小計</span></div>
+                                <div class="col-xs-2 text-center"><span class="left-bottom">{{ number_format($room['meta']['room_total_income']) }}</span></div>
+                                <div class="col-xs-2 text-center"><span class="left-bottom">{{ number_format($room['meta']['room_total_expense']) }}</span></div>
                             @endif
-                            <div class="col-xs-6"></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($room['meta']['room_total_income']) }}</span></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($room['meta']['room_total_expense']) }}</span></div>
                     </div>
                     </div>
                     @endforeach
@@ -189,7 +201,7 @@
                         <div class="col-xs-2 text-center border border-dark py-5 my-0">
                             {{$payoff['meta']['room_number']}}室(點交)<br/>
                         </div>
-                        <div class="col-xs-10 px-0">
+                        <div class="col-xs-10 relative px-0">
                             @foreach( $payoff['incomes'] as $income )
                                 <div class="col-xs-6 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
                                 <div class="col-xs-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
@@ -207,12 +219,12 @@
                                 <div class="col-xs-2 text-center">{{ number_format($expense['amount']) }}</div>
                             @endforeach
                             @if( count($payoff['expenses']) > 0 )
-                                <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
+                                <div class="col-xs-12 border border-dark ml-3 mb-0 bottom" style="height: 0px;"></div>
                             @endif
-                            <div class="col-xs-6"></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($payoff['meta']['room_total_income']) }}</span></div>
-                            <div class="col-xs-2 text-center"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($payoff['meta']['room_total_expense']) }}</span></div>
+                            <div class="col-xs-6 bottom"></div>
+                            <div class="col-xs-2 text-center bottom" style="left: 50%;"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">小計</span></div>
+                            <div class="col-xs-2 text-center bottom" style="left: 67%;"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($payoff['meta']['room_total_income']) }}</span></div>
+                            <div class="col-xs-2 text-center bottom" style="left: 84%;"><span class="{{ ($expense_not_zero || $income_not_zero) == false ? 'left-bottom' : ''  }}">{{ number_format($payoff['meta']['room_total_expense']) }}</span></div>
                     </div>
                     </div>
                     @endforeach                
@@ -246,6 +258,11 @@
                                     <div class="col-xs-2 text-center">{{ number_format(abs($detail_data['amount'])) }}</div>
                                 @endif
                             @endforeach
+                            <div class="col-xs-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
+                            <div class="col-xs-6"></div>
+                            <div class="col-xs-2 text-center"><span >小計</span></div>
+                            <div class="col-xs-2 text-center"><span>{{ $data['details']['meta']['total_incomes'] }}</span></div>
+                            <div class="col-xs-2 text-center"><span>{{ $data['details']['meta']['total_expenses'] }}</span></div>  
                     </div>
                     </div>                
                     {{-- Detail data end --}}

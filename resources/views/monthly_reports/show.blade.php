@@ -11,7 +11,7 @@
 .monthly-report .room span.left-bottom{
     position: absolute;
     bottom: 0px;
-    left: 40%;
+    left: 42%;
 }
 .monthly-report .add-subject{
     position: absolute;
@@ -54,7 +54,7 @@
                 <div class="col-3"></div>
 
                 <div class="col-1">物件代碼</div>
-                <div class="col-8">{{implode(",", $data['meta']['building_code']->toArray())}}</div>
+                <div class="col-8">{{$data['meta']['building_code']}}</div>
                 <div class="col-1 bg-gray">本月收入</div>
                 <div class="col-2">{{$data['meta']['total_income']}}</div>
 
@@ -260,7 +260,7 @@
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
                         <div class="col-8"></div>
-                        <div class="col-2">本公司服務費</div>
+                        <div class="col-2">服務費</div>
                         <div class="col-1">{{$data['meta']['total_management_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
@@ -269,7 +269,7 @@
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
                         <div class="col-8"></div>
-                        <div class="col-2">仲介費合計</div>
+                        <div class="col-2">仲介費</div>
                         <div class="col-1">{{$data['meta']['total_agency_fee']}}</div>
                         <div class="col-1"></div>
                     </div>

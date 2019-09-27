@@ -50,7 +50,7 @@ class MonthlyReportService
         $period_end = $relative_landlordContracts->last()->commission_end_date;
 
         $data['meta']['period'] = $period_start.' ~ '.$period_end;
-        $data['meta']['building_code'] = $landlordContract->building->rooms->pluck('room_code');
+        $data['meta']['building_code'] = $landlordContract->building->building_code;
         $data['meta']['building_location'] = $landlordContract->building->location;
         $data['meta']['rooms_count'] = $landlordContract->building->rooms->count() - 1;
 

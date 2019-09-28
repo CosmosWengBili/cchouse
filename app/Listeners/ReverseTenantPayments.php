@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ReceivableArrived;
+use App\ReversalErrorCase;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use Illuminate\Queue\InteractsWithQueue;
@@ -65,19 +66,26 @@ class ReverseTenantPayments
                 $targetContract = $targetContract->nextTenantContract();
             }
 
-            if($restAmount > 0) { //
+            if($restAmount > 0) {
                 $payLogData = [
                     'subject'            => '溢繳無法沖銷費用',
                     'payment_type'       => '租金雜費',
                     'virtual_account'    => $virtualAccount,
                     'paid_at'            => $paidAt,
                     'amount'             => $restAmount,
-                    'tenant_contract_id' => $tenantContract->id,
+                    'tenant_contract_id' => $tenantContract ? $tenantContract->id : null,
                     'loggable_type'      => 'OverPayment',
                     'loggable_id'        => 0, // 0 為溢繳費用（不關連至任何 TenantPayment 或 TenantElectricityPayment)
                 ];
-                PayLog::create($payLogData);
+                $payLog = PayLog::create($payLogData);
+
+                if (is_null($tenantContract)) {
+                    $this->createReversalErrorCase('無合約入帳', $payLog);
+                } else {
+                    $this->createReversalErrorCase('無續約之溢繳入帳', $payLog);
+                }
             }
+
 
             return true;
         });
@@ -141,7 +149,10 @@ class ReverseTenantPayments
 
                 // generate a pay log
                 $payLogData['amount'] = $shouldPayAmount;
-                $payment->payLogs()->create($payLogData);
+                $payLog = $payment->payLogs()->create($payLogData);
+                if ($payment->due_time->gt($paidAt)) {
+                    $this->createReversalErrorCase('溢繳入帳', $payLog);
+                }
 
                 // determine who gets the income
                 $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
@@ -170,7 +181,10 @@ class ReverseTenantPayments
                 // the remaining amount is insufficient for next payment
                 // we will still generate a pay log for it
                 $payLogData['amount'] = $amount;
-                $payment->payLogs()->create($payLogData);
+                $payLog = $payment->payLogs()->create($payLogData);
+                if ($payment->due_time->gt($paidAt)) {
+                    $this->createReversalErrorCase('溢繳入帳', $payLog);
+                }
                 if ($payment->subject == '租金'){
                     $incomeData = [
                         'subject' => $payLogData['subject'],
@@ -202,6 +216,11 @@ class ReverseTenantPayments
 
         return $amount; // 回傳未沖銷金額
     }
+
+    function createReversalErrorCase(string $name, PayLog $payLog) {
+        ReversalErrorCase::create(['name' => $name,  'date' => Carbon::now(), 'pay_log_id' => $payLog->id,]);
+    }
+
 
     private function recordSumPaid(TenantContract $tenantContract, int $amount) {
         $tenantContract->sum_paid += $amount;

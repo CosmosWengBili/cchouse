@@ -175,8 +175,9 @@ class TenantContractController extends Controller
         $responseData
             ->show($tenantContract->load($request->withNested))
             ->relations($request->withNested);
+        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->sum('amount');
 
-        return view('tenant_contracts.show', $responseData->get());
+        return view('tenant_contracts.show', array_merge($responseData->get(), ['paid_diff' => $paid_diff]));
     }
 
     /**

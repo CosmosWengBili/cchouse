@@ -156,11 +156,10 @@ class ReverseTenantPayments
                     ];
 
                     if ($payment->subject === '租金') {
-                        if ($tenantContract->room->management_fee_mode === '比例') {
-                            $income = intval(round($payment->amount * $tenantContract->room->management_fee / 100));
-                            $incomeData['amount'] = $income;
+                        if ($tenantContract->room->management_fee_mode == '比例') {
+                            $incomeData['amount'] = intval(round($shouldPayAmount * $tenantContract->room->management_fee / 100));
                         } else {
-                            $incomeData['amount'] = intval($tenantContract->room->management_fee);
+                            $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($shouldPayAmount / $payment->amount)));
                         }
                     }
 
@@ -172,6 +171,22 @@ class ReverseTenantPayments
                 // we will still generate a pay log for it
                 $payLogData['amount'] = $amount;
                 $payment->payLogs()->create($payLogData);
+                if ($payment->subject == '租金'){
+                    $incomeData = [
+                        'subject' => $payLogData['subject'],
+                        'income_date' => $payLogData['paid_at'],
+                        'amount' => 0,
+                    ];
+                    if ($tenantContract->room->management_fee_mode == '比例') {
+                        $income = intval(round($amount * $tenantContract->room->management_fee / 100));
+                        $incomeData['amount'] = $income;
+                    } else {
+                        $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
+                    }
+
+                    $tenantContract->companyIncomes()->create($incomeData);
+                }
+
                 $amount = 0;
             }
 

@@ -162,8 +162,7 @@ class AutoReversalTest extends TestCase
                 ->contains(function ($value, $key) use ($userId, $newContract){
                     return ($value->notifiable_type === 'App\User')
                         && ($value->notifiable_id === $userId)
-                        && ($value->type === 'App\Notifications\AbnormalPaymentReceived')
-                        && ($value->data['tenantPayment']['id'] > 0);
+                        && ($value->type === 'App\Notifications\AbnormalPaymentReceived');
                 })
         );
     }

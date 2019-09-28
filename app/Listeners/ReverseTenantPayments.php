@@ -53,8 +53,17 @@ class ReverseTenantPayments
         $res = DB::transaction(function () use(
             $tenantContract, $virtualAccount, $paidAt, $amount
         ) {
-            $restAmount = $this->reverse($tenantContract, $virtualAccount, $paidAt, $amount);
-            $this->recordSumPaid($tenantContract, $amount); // 紀錄「已繳總額」
+            $targetContract = $tenantContract;
+            $restAmount = $amount;
+
+            while ($targetContract) {
+                $restAmountAfterReverse = $this->reverse($targetContract, $virtualAccount, $paidAt, $restAmount);
+                $amountOfThisReverse = $restAmount - $restAmountAfterReverse;
+                $this->recordSumPaid($targetContract, $amountOfThisReverse); // 紀錄「已繳總額」
+
+                $restAmount = $restAmountAfterReverse;
+                $targetContract = $targetContract->nextTenantContract();
+            }
 
             if($restAmount > 0) { //
                 $payLogData = [
@@ -62,7 +71,7 @@ class ReverseTenantPayments
                     'payment_type'       => '租金雜費',
                     'virtual_account'    => $virtualAccount,
                     'paid_at'            => $paidAt,
-                    'amount'             => $amount,
+                    'amount'             => $restAmount,
                     'tenant_contract_id' => $tenantContract->id,
                     'loggable_type'      => 'OverPayment',
                     'loggable_id'        => 0, // 0 為溢繳費用（不關連至任何 TenantPayment 或 TenantElectricityPayment)

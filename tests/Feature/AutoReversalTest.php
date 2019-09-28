@@ -151,23 +151,6 @@ class AutoReversalTest extends TestCase
             'income_date' => '2019-08-10',
             'amount' => 100,
         ]);
-
-        $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $newContract->id,
-            'subject' => '水雜費',
-            'amount' => 300,
-            'income_date' => '2019-08-10',
-        ]);
-
-        $this->assertTrue(
-            User::find($userId)
-                ->notifications
-                ->contains(function ($value, $key) use ($userId, $newContract){
-                    return ($value->notifiable_type === 'App\User')
-                        && ($value->notifiable_id === $userId)
-                        && ($value->type === 'App\Notifications\AbnormalPaymentReceived');
-                })
-        );
     }
 
     public function testAutoReverseNextTenantContract()
@@ -302,13 +285,6 @@ class AutoReversalTest extends TestCase
             'income_date' => '2019-08-10',
             'amount' => 100,
         ]);
-        $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
-            'subject' => '水雜費',
-            'amount' => 300,
-            'income_date' => '2019-08-10',
-        ]);
-
 
         // 下期 Contract 沖銷
         $firstOfEachPayments = DB::table('tenant_payments')->where('tenant_contract_id', $nextContract->id)->groupBy('subject')->get();

@@ -14,7 +14,6 @@ use App\LandlordOtherSubject;
 use App\SystemVariable;
 use Illuminate\Support\Facades\DB;
 use App\Services\PeriodService;
-use App\Notifications\AbnormalPaymentReceived;
 use Carbon\Carbon;
 use phpDocumentor\Reflection\Types\Integer;
 
@@ -202,15 +201,6 @@ class ReverseTenantPayments
                 }
 
                 $amount = 0;
-            }
-
-            // if transaction date is not within next period of payment
-            // it's considered as abnormal, and a notification is needed
-            $period = $payment->period ?? '月';
-            $txTime = $this->periodService->next($paidAt, $period)->startOfDay();
-            $dueTime = Carbon::parse($payment->due_time);
-            if ($txTime->lte($dueTime)) {
-                $tenantContract->commissioner->notify(new AbnormalPaymentReceived($payment));
             }
         }
 

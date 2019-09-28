@@ -16,4 +16,9 @@ class ReversalErrorCase extends Model
     protected $casts = [
         'date' => 'datetime',
     ];
+
+    public function payLog()
+    {
+        return $this->belongsTo('App\PayLog', 'pay_log_id');
+    }
 }

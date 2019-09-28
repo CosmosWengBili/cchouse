@@ -86,6 +86,10 @@ class AutoReversalTest extends TestCase
 
         $firstOfEachPayments = DB::table('tenant_payments')->where('tenant_contract_id', $newContract->id)->groupBy('subject')->get();
 
+        $this->assertDatabaseHas('tenant_contract', [
+            'id' => $newContract->id,
+            'sum_paid' => 5401
+        ]);
         $this->assertDatabaseHas('tenant_payments', [
             'tenant_contract_id' => $newContract->id,
             'subject' => '水雜費',

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ReceivableArrived;
+use App\TenantContract;
 use App\TenantElectricityPayment;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\PeriodService;
 use App\Notifications\AbnormalPaymentReceived;
 use Carbon\Carbon;
+use phpDocumentor\Reflection\Types\Integer;
 
 class ReverseTenantPayments
 {
@@ -48,8 +50,9 @@ class ReverseTenantPayments
             $amount = intval($event->data['amount']);
             $virtualAccount = $event->data['virtual_account'];
             $paidAt = $event->data['txTime'];
-
             $tenantContract = $event->tenantContract;
+
+            $this->recordSumPaid($tenantContract, $amount); // 紀錄「已繳總額」
 
             $payments = collect(); // TenantPayment and TenantElectricityPayment collection
             TenantPayment::with('payLogs')
@@ -175,5 +178,10 @@ class ReverseTenantPayments
         $result['success'] = $res;
 
         return $result;
+    }
+
+    private function recordSumPaid(TenantContract $tenantContract, int $amount) {
+        $tenantContract->sum_paid += $amount;
+        $tenantContract->saveOrFail();
     }
 }

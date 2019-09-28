@@ -11,6 +11,7 @@ use App\TenantPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TenantPaymentController extends Controller
 {
@@ -129,8 +130,12 @@ class TenantPaymentController extends Controller
 
     private function indexByContract(Request $request) {
         $responseData = new NestedRelationResponser();
-        $tenantContracts = TenantContract::where('contract_end', '>', Carbon::now())
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+        $tenantContracts = TenantContract::withExtraInfo()
+            ->where('contract_end', '>', Carbon::now())
             ->with($request->withNested)
+            ->select($selectStr)
             ->get();
         $data = $responseData
                     ->index('TenantContracts', $tenantContracts)

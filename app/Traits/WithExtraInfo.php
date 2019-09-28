@@ -34,6 +34,7 @@ trait WithExtraInfo {
             case 'debt_collections':
             case 'maintenances':
             case 'deposits':
+            case 'company_incomes':
                 return $builder
                         ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
                         ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
@@ -63,7 +64,7 @@ trait WithExtraInfo {
             case 'keys':
             case 'debt_collections':
             case 'maintenances':
-            case 'deposits':
+            case 'company_incomes':
                 $extraSelects = [
                     'landlord_contracts.commission_type AS commission_type',
                     'buildings.building_code AS building_code',

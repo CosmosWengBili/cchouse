@@ -264,12 +264,12 @@ class MaintenanceController extends Controller
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         if ($user->belongsToGroup('管理組')) {
-            return Maintenance::extraInfo()->select($selectStr)->get();
+            return Maintenance::withExtraInfo()->select($selectStr)->get();
         } elseif ($user->belongsToGroup('帳務組')) {
 //            $threeMonthsAgo = Carbon::now()->subMonth(3);
 //            $threeMonthsFromNow = Carbon::now()->addMonth(3);
 
-            $maintenances = Maintenance::extraInfo()
+            $maintenances = Maintenance::withExtraInfo()
                 ->select($selectStr)
                 ->whereIn('status', ['案件完成', '請款中'])
                 ->get();

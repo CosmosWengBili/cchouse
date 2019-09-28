@@ -32,9 +32,9 @@ class LandlordContractController extends Controller
         $columns = array_map(function ($column) { return "landlord_contracts.{$column}"; }, $this->whitelist('landlord_contracts'));
         $selectColumns = array_merge($columns, LandlordContract::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
-      
+
         $data = $this->limitRecords(
-            LandlordContract::extraInfo()->select($selectStr)->with($request->withNested)->with('landlords', 'building'),
+            LandlordContract::withExtraInfo()->select($selectStr)->with($request->withNested)->with('landlords', 'building'),
             true
         );
 

@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 trait ExtraInfo {
-    public function scopeExtraInfo(Builder $builder) {
+    public function scopeWithExtraInfo(Builder $builder) {
         $tableName = $this->getTable();
 
         return $this->joinRequiredTable($builder)->groupBy("{$tableName}.id");

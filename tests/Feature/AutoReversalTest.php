@@ -151,13 +151,11 @@ class AutoReversalTest extends TestCase
             'amount' => 100,
         ]);
 
-        $this->assertDatabaseHas('landlord_other_subjects', [
+        $this->assertDatabaseHas('company_incomes', [
+            'tenant_contract_id' => $newContract->id,
             'subject' => '水雜費',
-            'subject_type' => '租金雜費',
-            'income_or_expense' => '收入',
-            'expense_date' => '2019-08-10',
             'amount' => 300,
-            'room_id' => $roomId,
+            'income_date' => '2019-08-10',
         ]);
 
         $this->assertTrue(
@@ -303,14 +301,13 @@ class AutoReversalTest extends TestCase
             'income_date' => '2019-08-10',
             'amount' => 100,
         ]);
-        $this->assertDatabaseHas('landlord_other_subjects', [
+        $this->assertDatabaseHas('company_incomes', [
+            'tenant_contract_id' => $contract->id,
             'subject' => '水雜費',
-            'subject_type' => '租金雜費',
-            'income_or_expense' => '收入',
-            'expense_date' => '2019-08-10',
             'amount' => 300,
-            'room_id' => $roomId,
+            'income_date' => '2019-08-10',
         ]);
+
 
         // 下期 Contract 沖銷
         $firstOfEachPayments = DB::table('tenant_payments')->where('tenant_contract_id', $nextContract->id)->groupBy('subject')->get();

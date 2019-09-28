@@ -144,7 +144,7 @@ class ReverseTenantPayments
                 $payment->payLogs()->create($payLogData);
 
                 // determine who gets the income
-                $paymentCollectedByCompany = $payment->collected_by === '公司';
+                $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
                 $electricityPaymentCollectedByCompany = $payment->subject == '電費' &&
                     $tenantContract->electricity_payment_method != '自行帳單繳付';
                 if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany) {
@@ -165,19 +165,7 @@ class ReverseTenantPayments
                     }
 
                     $tenantContract->companyIncomes()->create($incomeData);
-
-                } else if ($payment->collected_by === '房東') {
-                    // generate landlord other subject
-                    LandlordOtherSubject::create([
-                        'subject'           => $payLogData['subject'],
-                        'subject_type'      => $payLogData['payment_type'],
-                        'income_or_expense' => '收入',
-                        'expense_date'      => $payLogData['paid_at'],
-                        'amount'            => $payment->amount,
-                        'room_id'           => $tenantContract->room->id,
-                    ]);
                 }
-
 
             } else {
                 // the remaining amount is insufficient for next payment

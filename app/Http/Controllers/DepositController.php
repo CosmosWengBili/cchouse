@@ -8,6 +8,7 @@ use App\Responser\FormDataResponser;
 use App\Deposit;
 use App\Services\DepositService;
 use App\Services\ReceiptService;
+use Illuminate\Support\Facades\DB;
 
 class DepositController extends Controller
 {
@@ -19,10 +20,15 @@ class DepositController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['deposits.*'], Deposit::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $responseData
             ->index(
                 'deposits',
-                $this->limitRecords(Deposit::with($request->withNested))
+                $this->limitRecords(
+                    Deposit::withExtraInfo()->select($selectStr)->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 

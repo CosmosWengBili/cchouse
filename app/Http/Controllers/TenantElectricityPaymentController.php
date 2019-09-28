@@ -11,15 +11,19 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TenantElectricityPaymentController extends Controller
 {
     public function index(Request $request) {
         $responseData = new NestedRelationResponser();
-
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $tenantContracts = $this->limitRecords(
-            TenantContract::where('contract_end', '>', Carbon::now())
-                ->where('electricity_payment_method', '公司代付')
+            TenantContract::withExtraInfo()
+                ->select($selectStr)
+                ->where('contract_end', '>', Carbon::now())
+                ->where('tenant_contract.electricity_payment_method', '公司代付')
                 ->with($request->withNested)
         );
 

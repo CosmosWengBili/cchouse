@@ -19,6 +19,11 @@ trait WithExtraInfo {
         $tableName = $this->getTable();
 
         switch ($tableName) {
+            case 'buildings':
+                return $builder
+                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
+                        ->join('rooms', 'buildings.id', '=', 'rooms.building_id');
+                break;
             case 'landlord_contracts':
                 return $builder
                         ->join('buildings', 'buildings.id', '=', "{$tableName}.building_id")
@@ -57,6 +62,13 @@ trait WithExtraInfo {
                     'buildings.building_code AS building_code',
                     'buildings.title AS building_title',
                     'CONCAT(buildings.city, buildings.district, address) AS building_location',
+                    'GROUP_CONCAT(rooms.room_number) AS room_number',
+                    'GROUP_CONCAT(rooms.room_status) AS room_status',
+                ];
+                break;
+            case 'buildings':
+                $extraSelects = [
+                    'GROUP_CONCAT(landlord_contracts.commission_type) AS commission_type',
                     'GROUP_CONCAT(rooms.room_number) AS room_number',
                     'GROUP_CONCAT(rooms.room_status) AS room_status',
                 ];

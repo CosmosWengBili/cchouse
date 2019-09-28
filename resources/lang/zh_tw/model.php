@@ -291,7 +291,11 @@ return [
         'rooms' => '房',
         'landlordContracts' => '房東合約',
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Room' => [
         'id' => '編號',

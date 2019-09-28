@@ -10,7 +10,7 @@ class PeriodService
         '月' => 1,
         '季' => 3,
         '半年' => 6,
-        '年' => 12
+        '年' => 12,
     ];
 
     public function everyMonth($from, $to, $callback)
@@ -36,7 +36,9 @@ class PeriodService
     // maps the calculated dates collection
     public function every(string $period, $from, $to, $callback)
     {
-        if (isset($this->monthsOf[$period])) {
+        if ($period == '次') {
+            return collect([$callback(Carbon::parse($from))]);
+        } else if (isset($this->monthsOf[$period])) {
             return $this->getPeriods($from, $to, $this->monthsOf[$period])->map(
                 $callback
             );

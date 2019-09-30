@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -12,7 +12,7 @@ class Maintenance extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     const STATUSES = [
         'pending' => '待處理',

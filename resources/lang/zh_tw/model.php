@@ -130,6 +130,12 @@ return [
         'rooms' => '房',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Key' => [
         'id' => '編號',
@@ -285,7 +291,11 @@ return [
         'rooms' => '房',
         'landlordContracts' => '房東合約',
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'Room' => [
         'id' => '編號',
@@ -430,7 +440,13 @@ return [
         'rooms' => '房',
         'buildings' => '物件',
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'TenantPayment' => [
         "id" => '編號',
@@ -475,7 +491,13 @@ return [
         "amount" => "費用",
         "comment" => "備註",
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
+        'building_title' => '簡稱',
+        'building_location' => '地址',
+        'room_number' => '房號',
+        'room_status' => '房狀態',
+        'commission_type' => '承租方式',
     ],
     'PayLog' => [
         "id" => '編號',

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -13,7 +13,7 @@ class DebtCollection extends Model implements AuditableContract
     use \Znck\Eloquent\Traits\BelongsToThrough;
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     protected $guarded = [];
     protected $hidden = ['pivot', 'deleted_at'];

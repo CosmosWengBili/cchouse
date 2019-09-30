@@ -31,12 +31,12 @@ class KeyController extends Controller
             ->index(
                 'keys',
                 $this->limitRecords(
-                    Key::extraInfo()->select($selectStr)->with($request->withNested)
+                    Key::withExtraInfo()->select($selectStr)->with($request->withNested)
                 )
             )
             ->relations($request->withNested);
 
-        $owner_query = Key::extraInfo()->select($selectStr)->where('keeper_id', Auth::id());
+        $owner_query = Key::withExtraInfo()->select($selectStr)->where('keeper_id', Auth::id());
         $owner_data
             ->index('keys',
                 $this->limitRecords($owner_query->with($request->withNested))

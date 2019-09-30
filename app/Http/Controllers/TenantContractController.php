@@ -45,7 +45,7 @@ class TenantContractController extends Controller
             ->index(
                 'tenant_contracts',
                 $this->limitRecords(
-                    TenantContract::extraInfo()->select($selectStr)->with($request->withNested)
+                    TenantContract::withExtraInfo()->select($selectStr)->with($request->withNested)
                 )
             )
             ->relations($request->withNested);

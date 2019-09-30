@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Services\SmsService;
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,7 +17,7 @@ class TenantContract extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.

@@ -16,7 +16,7 @@ class PayLog extends Model implements AuditableContract
         'paid_at' => 'datetime:Y-m-d',
     ];
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
@@ -25,5 +25,10 @@ class PayLog extends Model implements AuditableContract
     public function loggable()
     {
         return $this->morphTo();
+    }
+
+    public function tenantContract()
+    {
+        return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
     }
 }

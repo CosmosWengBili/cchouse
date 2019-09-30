@@ -223,6 +223,18 @@ class TenantContract extends Pivot implements AuditableContract
         $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
     }
 
+    /**
+     * 取得下一期的 TenantContract
+     */
+    public function nextTenantContract() {
+        return $this->tenant
+             ->tenantContracts()
+             ->where('tenant_contract.id', '>', $this->id)
+             ->where('tenant_contract.contract_start', '>=', $this->contract_start)
+             ->orderBy('tenant_contract.contract_start', 'asc')
+             ->first();
+    }
+
     private function electricityPaymentAmount($year, $month) {
         $data = $this->room()->first()->buildElectricityPaymentData($year, $month);
         return $data['本期應付金額'];

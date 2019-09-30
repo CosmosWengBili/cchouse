@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\ReversalErrorCase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
@@ -183,6 +184,16 @@ class ScheduleService
             ->each(function ($tenantContract) use ($year, $month) {
                 $tenantContract->sendElectricityPaymentReportSMS($year, $month);
             });
+    }
+
+    public function notifyReversalErrorCases()
+    {
+        if(ReversalErrorCase::where('status', '未結案')->exists()) {
+            $users = User::group('管理組')->get();
+            $users->each(function ($user) {
+                $user->notify(new TextNotify('尚有未結案之異常沖銷案件'));
+            });
+        }
     }
 
     public static function setReceiptType(){

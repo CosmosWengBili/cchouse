@@ -23,4 +23,5 @@ Route::group(['namespace' => 'Api'], function () {
 
 Route::group(['middleware' => ['api', 'cors']], function () {
     Route::post('/bank/webhook', 'API\ReceivableController@incoming');
+    Route::post('/bank/ubot/webhook', 'API\ReceivableController@ubotWebhook');
 });

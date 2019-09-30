@@ -7,8 +7,11 @@ use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Responser\NestedRelationResponser;
 use App\Services\MonthlyReportService;
+use App\Exports\MonthlyTenantExport;
 use App\Building;
 use App\LandlordContract;
 use App\LandlordOtherSubject;
@@ -96,6 +99,21 @@ class MonthlyReportController extends Controller
 
         $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);
         return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
+    }
+
+    public function print_tenant(building $building){
+
+        $month = Input::get('month');
+        $year = Input::get('year');
+        $building_lazy_load = Building::with(['rooms'])
+                                    ->where('id', '=', $building->id)
+                                    ->get()
+                                    ->first();
+
+        return Excel::download(
+            new MonthlyTenantExport($building_lazy_load, $year, $month),
+            $building->building_code.'_'.$building->location.'_'.$year.$month.'.xlsx'
+        );
     }
 
 }

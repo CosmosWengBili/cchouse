@@ -19,6 +19,9 @@
         <div class="card-body table-responsive" style="padding: 5rem;">
             <a href="{{route('monthlyReports.print', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
                 輸出為 PDF
+            </a> |
+            <a href="{{route('monthlyReports.print_tenant', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
+                輸出租客報表
             </a>
             @include('monthly_reports.tabs', ['by' => 'contract'])
             <div class="row justify-content-center monthly-report mt-3">

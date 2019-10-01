@@ -303,6 +303,7 @@ class MonthlyReportService
             else{
                 $payoffPayments = $tenantContract->tenantPayments
                                                 ->where('is_pay_off', true)
+                                                ->where('collected_by', '房東')
                                                 ->whereBetween('due_time', [$start_date, $end_date]);
                 if( $payoffPayments->count() > 0 ){
                     $roomData = [
@@ -321,8 +322,7 @@ class MonthlyReportService
                                 'month'   => Carbon::parse($payoffPayment->due_time)->month . '月',
                                 'paid_at' => $payoffPayment->due_time,
                                 'amount'  => -$payoffPayment->amount,
-                            ];  
-                            $roomData['meta']['room_total_income'] += -$payoffPayment->amount;        
+                            ];        
                         }
                         else{
                             $roomData['expenses'][] = [
@@ -330,9 +330,12 @@ class MonthlyReportService
                                 'month'   => Carbon::parse($payoffPayment->due_time)->month . '月',
                                 'paid_at' => $payoffPayment->due_time,
                                 'amount'  => $payoffPayment->amount,
-                            ];
-                            $roomData['meta']['room_total_expense'] += $payoffPayment->amount;                   
+                            ];                 
                         }
+                    }
+                    $landlord_paid = $tenantContract->payOff()->get()->first()->landlord_paid;
+                    if( $landlord_paid > 0 ){
+                        $roomData['meta']['room_total_expense'] = $tenantContract->payOff()->get()->first()->landlord_paid;
                     }
                     $data['payoffs'][] = $roomData;
                     $data['meta']['total_income'] += $roomData['meta']['room_total_income'];

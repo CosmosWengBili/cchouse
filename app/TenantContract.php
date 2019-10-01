@@ -167,6 +167,14 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->documents()->where('document_type', 'original_file');
     }
 
+    /**
+     * Get all the payOff of this tenant contract.
+     */
+    public function payOff()
+    {
+        return $this->hasOne('App\PayOff', 'tenant_contract_id');
+    }
+
     public function calculateCurrentBalance() {
 
         $month = 0;

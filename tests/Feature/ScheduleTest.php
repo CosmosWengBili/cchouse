@@ -128,7 +128,7 @@ class ScheduleTest extends TestCase
             'commission_end_date' => Carbon::now()->addMonths(2),
             'rent_adjusted_date' => Carbon::now(),
             'adjust_ratio' => $adjust_ratio,
-            'commission_type' => '',
+            'commission_type' => '代管',
             'annual_service_fee_month_count' => 1,
             'charter_fee' => 1,
             'taxable_charter_fee' => 1,
@@ -151,7 +151,7 @@ class ScheduleTest extends TestCase
                 ->contains(function ($value, $key) use ($userId, $landlordContractId){
                     return ($value->notifiable_type === 'App\User')
                         && ($value->notifiable_id === $userId)
-                        && ($value->type === 'App\Notifications\ContractDueInTwoMonths')
+                        && ($value->type === 'App\Notifications\LandlordContractDue')
                         && ($value->data['landlordContract']['id'] === $landlordContractId);
                 })
         );

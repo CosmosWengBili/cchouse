@@ -407,7 +407,7 @@ class MonthlyReportService
 
             // Find pay logs data
             $current_pay_amount = 0;
-            $current_pay_logs_dates = [];
+            $current_pay_logs_dates = ['尚無繳款'];
             if(isset($current_payment)){
                 $current_pay_logs = $current_payment->payLogs();
                 $current_pay_amount = $current_pay_logs->sum('amount');
@@ -425,7 +425,7 @@ class MonthlyReportService
 
 
             // Find electricity degree
-            $electricity_price_per_degree = '';
+            $electricity_price_per_degree = 5.5;
             if($tenantContracts->isNotEmpty()){
                 if(in_array($selected_month->month, [7,8,9,10])){
                     $electricity_price_per_degree =  $tenantContracts->last()->electricity_price_per_degree_summer;

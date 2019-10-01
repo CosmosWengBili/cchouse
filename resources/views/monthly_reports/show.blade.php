@@ -267,7 +267,7 @@
                 </div>                            
                 {{-- Footer end --}}
             </div>
-            <h2 class="text-center py-4">電費報表</h2>
+            <h3 class="text-center py-4">電費報表</h3>
             <div class="row electricity-report">
                 {{-- Electricity start --}}
                 {{-- Meta start --}}

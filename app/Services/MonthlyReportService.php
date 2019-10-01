@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\RoomService;
 use App\Building;
 use App\LandlordContract;
+use App\TenantElectricityPayment;
 use App\MonthlyReport;
 use Carbon\Carbon;
 
@@ -371,4 +372,84 @@ class MonthlyReportService
         return collect($data);
     }
 
+    public function getEletricityReport(LandlordContract $landlordContract, $month, $year) {
+
+        $data = [
+            'meta'         => [],
+            'rooms'        => [],
+        ];
+
+        $selected_month = Carbon::create($year, $month);
+        
+        $data['meta']['year'] = $year;
+        $data['meta']['month'] = $month-1;
+        $data['meta']['produce_date'] = $selected_month->copy()->subMonth()->endOfMonth()->format('Y/m/d');
+
+        $end_date = $selected_month->copy()->endOfMonth();
+        $start_date = $selected_month->copy()->startOfMonth();
+
+        foreach ($landlordContract->building->normalRooms() as $room) {
+            $tenantContracts = $room->tenantContracts
+                                    ->where('contract_start', '<', $end_date)
+                                    ->where('contract_end', '>', $start_date);
+            $tenantContractIds = $tenantContracts->pluck('id')->toArray();
+
+            // Find payments data
+            $electricity_payments = TenantElectricityPayment::whereIn('tenant_contract_id', $tenantContractIds)->get();
+            $current_payment = $electricity_payments->whereBetween('due_time', [$start_date, $end_date])
+                                                    ->last();
+            $last_unpaid_payments = $electricity_payments->where('due_time', '<', $selected_month->startOfMonth())
+                                                        ->where('is_charge_off_done', '=', false);
+            $debt = 0;
+            foreach( $last_unpaid_payments as $last_unpaid_payment ){
+                $debt += $last_unpaid_payment->amount - $last_unpaid_payment->payLogs()->sum('amount');
+            }
+
+            // Find pay logs data
+            $current_pay_amount = 0;
+            $current_pay_logs_dates = [];
+            if(isset($current_payment)){
+                $current_pay_logs = $current_payment->payLogs();
+                $current_pay_amount = $current_pay_logs->sum('amount');
+                $current_pay_logs_dates = $current_pay_logs->pluck('paid_at')->toArray();
+                $current_pay_logs_dates = array_map(function($current_pay_logs_date){
+                    return $current_pay_logs_date->format('m-d');
+                }, $current_pay_logs_dates);
+            }
+            else{
+                // Set default value if current_payment not been set
+                $current_payment['110v_start_degree'] = $current_payment['110v_end_degree'] = $room->current_110v;
+                $current_payment['220v_start_degree'] = $current_payment['220v_end_degree'] = $room->current_220v;
+                $current_payment['amount'] = 0;
+            }
+
+
+            // Find electricity degree
+            $electricity_price_per_degree = '';
+            if($tenantContracts->isNotEmpty()){
+                if(in_array($selected_month->month, [7,8,9,10])){
+                    $electricity_price_per_degree =  $tenantContracts->last()->electricity_price_per_degree_summer;
+                }
+                else{
+                    $electricity_price_per_degree =  $tenantContracts->last()->electricity_price_per_degree;
+                }
+            }
+            
+
+            $data['rooms'][] = [
+                'start_110v' => $current_payment['110v_start_degree'],
+                'start_220v' => $current_payment['220v_start_degree'],
+                'end_110v' => $current_payment['110v_end_degree'],
+                'end_220v' => $current_payment['220v_end_degree'],
+                'electricity_price_per_degree' =>  $electricity_price_per_degree,
+                'current_amount' =>  $current_payment['amount'],
+                'debt' => $debt,
+                'should_paid' => $debt + $current_payment['amount'],
+                'room_number' => $room->room_number,
+                'pay_log_amount' => $current_pay_amount,
+                'pay_log_date' => implode(',', $current_pay_logs_dates)
+            ];            
+        }
+        return $data;
+    }
 }

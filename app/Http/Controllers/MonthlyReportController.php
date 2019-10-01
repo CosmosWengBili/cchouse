@@ -68,10 +68,12 @@ class MonthlyReportController extends Controller
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
-        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
-        $data['building_id'] = $building->id;
+        $monthly_data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $eletricity_data = $service->getEletricityReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $monthly_data['building_id'] = $building->id;
         return view('monthly_reports.show')
-                ->with('data', $data)
+                ->with('data', $monthly_data)
+                ->with('eletricity_data', $eletricity_data)
                 ->with('month_options', $month_options)
                 ->with('report_used_date', $report_used_date);
     }

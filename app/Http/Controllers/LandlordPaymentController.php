@@ -12,6 +12,7 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditor;
 
 use App\Services\ReceiptService;
@@ -36,13 +37,18 @@ class LandlordPaymentController extends Controller
                 ->select($selectStr)
                 ->where('commission_end_date', '>', Carbon::today())
                 ->groupBy('id')
-        );
+        )
+            ->filter(function ($item, $key) {
+                if (Str::contains($item->subject, '維修')) {
+                    return $item;
+                }
+            });
 
-        $responseData
+        $data = $responseData
             ->index('landlord_payments', $landlordPayment)
-            ->relations($request->withNested);
-
-        return view('landlord_payments.index', $responseData->get());
+            ->relations($request->withNested)
+            ->get();
+        return view('landlord_payments.index', $data);
     }
 
     /**
@@ -78,7 +84,7 @@ class LandlordPaymentController extends Controller
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
             'amount' => 'required|integer|digits_between:1,11',
-            'comment' => 'required'
+            'comment' => 'nullable'
         ]);
 
         $landlordPayment = LandlordPayment::create($validatedData);
@@ -138,7 +144,7 @@ class LandlordPaymentController extends Controller
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
             'amount' => 'required|integer|digits_between:1,11',
-            'comment' => 'required'
+            'comment' => 'nullable'
         ]);
 
         ReceiptService::compareReceipt($landlordPayment, $validatedData);

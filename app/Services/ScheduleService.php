@@ -140,18 +140,24 @@ class ScheduleService
     }
     public function notifyMaintenanceStatus()
     {
+        // 超過『預計處理日期』 時，且『狀態』不是『案件完成』和 『已取消』才跳通知
         $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
                                             ->where('code', 'MaintenanceNotifyRequiredDays')
                                             ->first()->value;
         $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
-        $maintenances = Maintenance::where('status', '!=', 'done')
-            ->where('updated_at', '<=', $limitDatetime)
+        $maintenances = Maintenance::where('status', '!=', '案件完成')
+            ->orWhere(function ($query) {
+                $query->where('status', '!=', '已取消');
+            })
+            ->where('expected_service_date', '<=', $limitDatetime)
             ->get();
         foreach ($maintenances as $maintenance) {
             $commissioner = $maintenance->commissioner()->first();
+            // 通知附上連結，點擊後到對應的維修清潔的查看頁面
+            $url = route('maintenances.show', [$maintenance->id]);
             $commissioner->notify(
                 new TextNotify(
-                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。"
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。 $url"
                 )
             );
         }

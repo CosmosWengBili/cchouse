@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\ReversalErrorCase;
+use App\KeyRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
@@ -52,7 +53,7 @@ class ScheduleService
         // escrow is 2 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(2),
-            'commission_type' => '代管'
+            'commission_type' => '代管',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -64,7 +65,7 @@ class ScheduleService
         // charter is 6 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(6),
-            'commission_type' => '包租'
+            'commission_type' => '包租',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -141,18 +142,24 @@ class ScheduleService
     }
     public function notifyMaintenanceStatus()
     {
+        // 超過『預計處理日期』 時，且『狀態』不是『案件完成』和 『已取消』才跳通知
         $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
                                             ->where('code', 'MaintenanceNotifyRequiredDays')
                                             ->first()->value;
         $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
-        $maintenances = Maintenance::where('status', '!=', 'done')
-            ->where('updated_at', '<=', $limitDatetime)
+        $maintenances = Maintenance::where('status', '!=', '案件完成')
+            ->orWhere(function ($query) {
+                $query->where('status', '!=', '已取消');
+            })
+            ->where('expected_service_date', '<=', $limitDatetime)
             ->get();
         foreach ($maintenances as $maintenance) {
             $commissioner = $maintenance->commissioner()->first();
+            // 通知附上連結，點擊後到對應的維修清潔的查看頁面
+            $url = route('maintenances.show', [$maintenance->id]);
             $commissioner->notify(
                 new TextNotify(
-                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。"
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。 $url"
                 )
             );
         }
@@ -168,7 +175,7 @@ class ScheduleService
 
         foreach ($tenantPayments as $tenantPayment) {
             $tenantPayment->tenantContract->debtCollections()->create([
-                'status' => '催收中'
+                'status' => '催收中',
             ]);
         }
     }
@@ -276,4 +283,46 @@ class ScheduleService
     // public function anotherNotification($data) {
     //     //
     // }
+
+    /**
+     * 預約中 使用中 已完成
+     * 超過預計借日 borrow_date，狀態仍未到使用中
+     * 超過預計還日 return_date，狀態仍未到已歸還
+     * 以上 通知鑰匙保管者和借閱者
+     */
+    public function notifyKeyRequestBorrowAllowed()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+
+        // 1. get all by conditions
+
+        $keyRequests = KeyRequest::where('borrow_date', '<', $today)
+            ->where('status', '預約中')
+
+            ->orWhere(function ($query) use ($today) {
+                $query->where('return_date', '<', $today);
+                $query->where('status', '<>', '已完成');
+            })
+            ->get();
+
+        // 2. send notifications.
+        /** @var KeyRequest $keyRequest */
+        foreach ($keyRequests as $keyRequest) {
+            // send to request user 借用人
+            $keyRequest->requestUser->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+
+            // send to holder 保管人
+            User::find($keyRequest->key->keeper_id)->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+        }
+    }
+
+
 }

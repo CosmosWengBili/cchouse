@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\KeyRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
@@ -51,7 +52,7 @@ class ScheduleService
         // escrow is 2 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(2),
-            'commission_type' => '代管'
+            'commission_type' => '代管',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -63,7 +64,7 @@ class ScheduleService
         // charter is 6 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(6),
-            'commission_type' => '包租'
+            'commission_type' => '包租',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -173,7 +174,7 @@ class ScheduleService
 
         foreach ($tenantPayments as $tenantPayment) {
             $tenantPayment->tenantContract->debtCollections()->create([
-                'status' => '催收中'
+                'status' => '催收中',
             ]);
         }
     }
@@ -271,4 +272,46 @@ class ScheduleService
     // public function anotherNotification($data) {
     //     //
     // }
+
+    /**
+     * 預約中 使用中 已完成
+     * 超過預計借日 borrow_date，狀態仍未到使用中
+     * 超過預計還日 return_date，狀態仍未到已歸還
+     * 以上 通知鑰匙保管者和借閱者
+     */
+    public function notifyKeyRequestBorrowAllowed()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+
+        // 1. get all by conditions
+
+        $keyRequests = KeyRequest::where('borrow_date', '<', $today)
+            ->where('status', '預約中')
+
+            ->orWhere(function ($query) use ($today) {
+                $query->where('return_date', '<', $today);
+                $query->where('status', '<>', '已完成');
+            })
+            ->get();
+
+        // 2. send notifications.
+        /** @var KeyRequest $keyRequest */
+        foreach ($keyRequests as $keyRequest) {
+            // send to request user 借用人
+            $keyRequest->requestUser->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+
+            // send to holder 保管人
+            User::find($keyRequest->key->keeper_id)->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+        }
+    }
+
+
 }

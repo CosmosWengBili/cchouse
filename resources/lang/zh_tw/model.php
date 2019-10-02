@@ -134,7 +134,7 @@ return [
     'Key' => [
         'id' => '編號',
         'key_name' => '鑰匙代號',
-        'room_id' => '相對應房',
+        'room_id' => '房代號',
         'keeper_id' => '保管人',
         'users' => '保管人',
         'rooms' => '房',
@@ -147,6 +147,10 @@ return [
         'room_number' => '房號',
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
+        'comment' => '備註',
+        'scrap_date' => '報廢日期',
+        'keepers' => '保管人',
+        'is_scraped' => '是否已報廢',
     ],
     'KeyRequest' => [
         'id' => '編號',
@@ -157,6 +161,8 @@ return [
         'key_id' => '鑰匙編號',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
+        'borrow_date' => '預計借日',
+        'return_date' => '預計還日',
     ],
     'Guarantor' => [
         'id' => '編號',

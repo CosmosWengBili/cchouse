@@ -75,6 +75,27 @@
                                     </td>
                                 </tr>
                             @endif
+                            <tr>
+                                <td>@lang("model.KeyRequest.borrow_date")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="borrow_date"
+                                        value="{{ isset($data["borrow_date"]) ? $data['borrow_date'] : '' }}"
+                                    />
+                                </td>
+                                <td>@lang("model.KeyRequest.return_date")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="return_date"
+                                        value="{{ isset($data["return_date"]) ? $data['return_date'] : '' }}"
+                                    />
+                                </td>
+
+                            </tr>
                             </tbody>
                         </table>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Key;
 use App\KeyRequest;
 use App\TenantContract;
+use App\Traits\Controllers\HandleDocumentsUpload;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class KeyController extends Controller
 {
+    use HandleDocumentsUpload;
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +27,9 @@ class KeyController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $owner_data = new NestedRelationResponser();
-        $columns = array_map(function ($column) { return "keys.{$column}"; }, $this->whitelist('keys'));
+        $columns = array_map(function ($column) {
+            return "keys.{$column}";
+        }, $this->whitelist('keys'));
         $selectColumns = array_merge($columns, Key::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
         $responseData
@@ -38,7 +43,8 @@ class KeyController extends Controller
 
         $owner_query = Key::extraInfo()->select($selectStr)->where('keeper_id', Auth::id());
         $owner_data
-            ->index('keys',
+            ->index(
+                'keys',
                 $this->limitRecords($owner_query->with($request->withNested))
             )
             ->relations($request->withNested);
@@ -49,8 +55,7 @@ class KeyController extends Controller
         )
             ->denied()
             ->pluck('key_id')
-            ->toArray();;
-
+            ->toArray();
 
         return view('keys.index', $responseData->get())
             ->with('owner_data', $owner_data->get())
@@ -67,6 +72,7 @@ class KeyController extends Controller
     {
         $responseData = new FormDataResponser();
         $data = $responseData->create(Key::class, 'keys.store')->get();
+        $data['data']['key_files'] = [];
 
         return view('keys.form', $data);
     }
@@ -82,10 +88,14 @@ class KeyController extends Controller
         $validatedData = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'keeper_id' => 'required|exists:users,id',
-            'key_name' => 'required|max:255'
+            'scrap_date' => 'nullable|date',
+            'comment' => 'nullable',
         ]);
 
         $key = key::create($validatedData);
+
+        $this->handleDocumentsUpload($key, ['key_file']);
+
         return redirect($request->_redirect);
     }
 
@@ -115,9 +125,13 @@ class KeyController extends Controller
     public function edit(Key $key)
     {
         $responseData = new FormDataResponser();
+
+        $data = $responseData->edit($key, 'keys.update')->get();
+        $data['data']['key_files'] = $key->keyDocuments()->get();
+
         return view(
             'keys.form',
-            $responseData->edit($key, 'keys.update')->get()
+            $data
         );
     }
 
@@ -133,7 +147,9 @@ class KeyController extends Controller
         $validatedData = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'keeper_id' => 'required|exists:users,id',
-            'key_name' => 'required|max:255'
+            'is_scraped' => 'required',
+            'comment' => 'nullable',
+            'scrap_date' => 'nullable|date',
         ]);
 
         $key->update($validatedData);

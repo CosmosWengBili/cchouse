@@ -99,7 +99,8 @@ class RoomController extends Controller
             'appliances.*.maintenance_phone' => 'required',
             'appliances.*.count' =>
                 'required_with:appliances|integer|digits_between:1,11',
-            'appliances.*.vendor' => 'required'
+            'appliances.*.vendor' => 'required',
+            'appliances.*.comment' => 'nullable',
         ]);
 
         $room = RoomService::create(

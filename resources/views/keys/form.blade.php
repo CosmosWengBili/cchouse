@@ -93,6 +93,12 @@
         </div>
     </div>
 </div>
+    <script id="set_room_id">
+        const qs = window.myQueryString();
+        const roomId = qs.getQueryStrings()['room_id'];
+        const $roomId = $('[name="room_id"]');
+        roomId && $roomId.attr('data-selected', roomId)
+    </script>
     <script id="validation">
 
         $(document).ready(function () {

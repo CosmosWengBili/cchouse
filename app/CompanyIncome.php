@@ -25,6 +25,10 @@ class CompanyIncome extends Model implements AuditableContract
 
     protected $casts = ['income_date' => 'date:Y-m-d'];
 
+    public function incomable()
+    {
+        return $this->morphTo();
+    }
 
     /**
      * Get the tenant contract that this income is made from.

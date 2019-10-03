@@ -120,9 +120,9 @@ class TenantContractController extends Controller
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
             '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree' => 'required|integer|digits_between:1,11|lte:220v_end_degree',
+            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'required|integer|digits_between:1,11',
+            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
                 Rule::in(
@@ -278,9 +278,9 @@ class TenantContractController extends Controller
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
             '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree' => 'required|integer|digits_between:1,11|lte:220v_end_degree',
+            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'required|integer|digits_between:1,11',
+            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
                 Rule::in(

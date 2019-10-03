@@ -94,7 +94,12 @@
                                         value="{{ isset($data["return_date"]) ? $data['return_date'] : '' }}"
                                     />
                                 </td>
-
+                            </tr>
+                            <tr>
+                                <td>@lang("model.KeyRequest.comment")</td>
+                                <td colspan="3">
+                                    <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

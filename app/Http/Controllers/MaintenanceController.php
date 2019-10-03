@@ -99,7 +99,7 @@ class MaintenanceController extends Controller
 
         $room = TenantContract::find($validatedData['tenant_contract_id'])->room;
         // update room status if needed
-        $this->updateRoomStatusIfNeeded($room);
+        $this->updateRoomStatusIfNeeded($room, $validatedData['tenant_contract_id'], $validatedData['incident_type']);
 
         $this->handleDocumentsUpload($maintenance, ['picture']);
 
@@ -303,13 +303,11 @@ class MaintenanceController extends Controller
         $landlordPayment->save();
     }
 
-    private function updateRoomStatusIfNeeded($room)
+    private function updateRoomStatusIfNeeded($room, $tenant_contract_id, $incident_type)
     {
-        $id = \request()->input('tenant_contract_id');
-        $type = \request()->input('incident_type');
-        if (! is_null($id) && ! is_null($type)) {
+        if (! is_null($tenant_contract_id) && ! is_null($incident_type)) {
             if ($room->room_status === '待出租') {
-                $room->room_status = $type === '清潔'
+                $room->room_status = $incident_type === '清潔'
                     ? '空屋清潔'
                     : '空屋維修';
                 $room->save();

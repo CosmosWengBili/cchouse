@@ -73,6 +73,7 @@ class KeyRequestController extends Controller
             'request_approved' => 'nullable',
             'borrow_date' => 'nullable|date',
             'return_date' => 'nullable|date',
+            'comment' => 'nullable',
         ]);
         $key_requests = KeyRequest::create($validatedData);
         return redirect($request->_redirect);
@@ -134,6 +135,7 @@ class KeyRequestController extends Controller
             'request_approved' => 'nullable',
             'borrow_date' => 'nullable|date',
             'return_date' => 'nullable|date',
+            'comment' => 'nullable',
         ]);
 
         $key_request->update($validatedData);

@@ -169,6 +169,7 @@ return [
         'updated_at' => '更新時間',
         'borrow_date' => '預計借日',
         'return_date' => '預計還日',
+        'comment' => '備註',
     ],
     'Guarantor' => [
         'id' => '編號',

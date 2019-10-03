@@ -84,7 +84,7 @@ class RoomService
     private static function notifyMaintenanceBuilder(Room $room, array $data)
     {
         if ($data['room_status'] !== $room->room_status) {
-            $tenantContractIds = collect($room->tenantContracts)->map->id->toArray();
+            $tenantContractIds = collect($room->tenantContracts)->pluck('id')->toArray();
             $maintenances = Maintenance::whereIn('tenant_contract_id', $tenantContractIds)
                 ->where('status', '<>', '案件完成')
                 ->where('status', '<>', '已取消')

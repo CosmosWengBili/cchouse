@@ -120,7 +120,9 @@ class ScheduleService
     public function notifyBirth()
     {
         $landlord_names = Landlord::where(
-            'birth','like', '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
+            'birth',
+            'like',
+            '%' . Carbon::today()->addWeek(2)->format('m-d') . '%'
         )->pluck('name')->toArray();
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
@@ -147,10 +149,7 @@ class ScheduleService
                                             ->where('code', 'MaintenanceNotifyRequiredDays')
                                             ->first()->value;
         $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
-        $maintenances = Maintenance::where('status', '!=', '案件完成')
-            ->orWhere(function ($query) {
-                $query->where('status', '!=', '已取消');
-            })
+        $maintenances = Maintenance::whereNotIn('status', ['案件完成', '已取消'])
             ->where('expected_service_date', '<=', $limitDatetime)
             ->get();
         foreach ($maintenances as $maintenance) {
@@ -159,7 +158,7 @@ class ScheduleService
             $url = route('maintenances.show', [$maintenance->id]);
             $commissioner->notify(
                 new TextNotify(
-                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。 $url"
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。" . '<a href="' . $url . '">點我</a>'
                 )
             );
         }
@@ -195,7 +194,7 @@ class ScheduleService
 
     public function notifyReversalErrorCases()
     {
-        if(ReversalErrorCase::where('status', '未結案')->exists()) {
+        if (ReversalErrorCase::where('status', '未結案')->exists()) {
             $users = User::group('管理組')->get();
             $users->each(function ($user) {
                 $user->notify(new TextNotify('尚有未結案之異常沖銷案件'));
@@ -203,27 +202,27 @@ class ScheduleService
         }
     }
 
-    public static function setReceiptType(){
+    public static function setReceiptType()
+    {
 
         $landlord_contracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                                 ->where('commission_end_date', '>', Carbon::today())
                                                 ->with(['building.rooms.activeContracts.payLogs'])->get();
 
-        foreach($landlord_contracts as $contract_key => $landlord_contract){
-            if(
-                $landlord_contract->commission_type == '包租' &&
+        foreach ($landlord_contracts as $contract_key => $landlord_contract) {
+            if ($landlord_contract->commission_type == '包租' &&
                 !in_array(
                     true,
                     $landlord_contract->landlords
                         ->pluck('is_legal_person')
                         ->toArray()
                 )
-            ){
+            ) {
                 $landlord_pay_logs = new Collection();
                 $rooms = $landlord_contract->building->rooms;
 
-                foreach($rooms as $room_key => $room){
-                    if( isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person){
+                foreach ($rooms as $room_key => $room) {
+                    if (isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person) {
                         $landlord_pay_logs = $landlord_pay_logs->merge($room->activeContracts->first()->payLogs->where('subject', '=', '租金'));
                     }
                 }
@@ -233,22 +232,19 @@ class ScheduleService
                 $last_month_pay = 0;
                 $this_month_pay = 0;
 
-                foreach($landlord_pay_logs as $pay_log_key => $landlord_pay_log){
-                    if( $landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month ){
+                foreach ($landlord_pay_logs as $pay_log_key => $landlord_pay_log) {
+                    if ($landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month) {
                         $last_month_pay += $landlord_pay_log['amount'];
-                    }
-                    else if( $landlord_pay_log['paid_at'] >= $first_day_of_this_month  ){
+                    } elseif ($landlord_pay_log['paid_at'] >= $first_day_of_this_month) {
                         $this_month_pay += $landlord_pay_log['amount'];
                     }
 
-                    if($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
-                        $landlord_pay_log->update(['receipt_type'=>'發票']);
-                    }
-                    else{
-                        $landlord_pay_log->update(['receipt_type'=>'收據']);
+                    if ($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
+                        $landlord_pay_log->update(['receipt_type' => '發票']);
+                    } else {
+                        $landlord_pay_log->update(['receipt_type' => '收據']);
                     }
                 }
-
             }
         }
     }
@@ -264,12 +260,12 @@ class ScheduleService
                                             ->where('commission_end_date', '>', Carbon::today())
                                             ->get();
 
-        foreach( $landlordContracts as $landlordContract ){
-            $data = $service->getMonthlyReport( $landlordContract, $month, $year );
+        foreach ($landlordContracts as $landlordContract) {
+            $data = $service->getMonthlyReport($landlordContract, $month, $year);
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
 
             // store carry forward if current day it the last day of the month
-            if( Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d') ){
+            if (Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d')) {
                 $monthlyReport = MonthlyReport::create(['year' => $year,
                     'month' => $month,
                     'carry_forward' => $revenue,
@@ -277,7 +273,7 @@ class ScheduleService
             }
 
             // store to Redis each time
-            Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
+            Redis::set('monthlyRepost:carry:' . $landlordContract->id, $revenue);
         }
     }
     // public function anotherNotification($data) {
@@ -323,6 +319,4 @@ class ScheduleService
             );
         }
     }
-
-
 }

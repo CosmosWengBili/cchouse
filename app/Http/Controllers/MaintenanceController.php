@@ -204,9 +204,12 @@ class MaintenanceController extends Controller
 
         DB::transaction(function () use ($who, $maintenancesRelation) {
             $maintenances = $maintenancesRelation->get();
-            $maintenancesRelation->update(['status' => '案件完成']);
             if ($who == 'landlord') {
+                $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '房東']);
                 $this->createLandlordPaymentAndCompanyIncome($maintenances);
+            }
+            else{
+                $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '公司']);
             }
         });
         return response()->json(true);

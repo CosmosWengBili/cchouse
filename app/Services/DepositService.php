@@ -19,7 +19,7 @@ class DepositService
                     'room_status' => '已出租'
                 ]);
             }
-            if (isset($newValues['confiscated_or_returned_date']) && isset($newValues['deposit_confiscated_amount'])) {
+            if (isset($newValues['confiscated_or_returned_date']) && isset($newValues['deposit_confiscated_amount']) && $newValues['deposit_confiscated_amount'] != 0 ) {
                 // make new company income
                 CompanyIncome::create([
                     'tenant_contract_id' => $deposit->tenantContract->id,

@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -26,9 +27,6 @@
                                         value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Shareholder.email")</td>
                                 <td>
                                     <input
@@ -51,9 +49,6 @@
                                         {{ isset($data["is_remittance_fee_collected"]) ? ($data['is_remittance_fee_collected'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Shareholder.bank_name")</td>
                                 <td>
                                     <input
@@ -75,9 +70,6 @@
                                         value="{{ isset($data["bank_code"]) ? $data['bank_code'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Shareholder.account_number")</td>
                                 <td>
                                     <input
@@ -98,8 +90,6 @@
                                         value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Shareholder.transfer_from")</td>
                                 <td>
                                     <select
@@ -123,8 +113,6 @@
                                         value="{{ isset($data["bill_delivery"]) ? $data['bill_delivery'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Shareholder.distribution_method")</td>
                                 <td>
                                     <select
@@ -148,8 +136,6 @@
                                         value="{{ isset($data["distribution_start_date"]) ? $data['distribution_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Shareholder.distribution_end_date")</td>
                                 <td>
                                     <input
@@ -170,8 +156,6 @@
                                         value="{{ isset($data["distribution_rate"]) ? $data['distribution_rate'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Shareholder.investment_amount")</td>
                                 <td>
                                     <input
@@ -214,4 +198,105 @@ $('[name="building_ids"]').selectize({
     }
 });
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                name: {
+                    required: true
+                },
+                email: {
+                    required: true
+                },
+                bank_name: {
+                    required: true
+                },
+                bank_code: {
+                    required: true
+                },
+                account_number: {
+                    required: true,
+                },
+                account_name: {
+                    required: true,
+                },
+                bill_delivery: {
+                    required: true
+                },
+                distribution_start_date: {
+                    required: true
+                },
+                distribution_end_date: {
+                    required: true
+                },
+                distribution_rate: {
+                    required: true
+                },
+                investment_amount: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                name: {
+                    required: '必須輸入'
+                },
+                email: {
+                    required: '必須輸入'
+                },
+                bank_name: {
+                    required: '必須輸入'
+                },
+                bank_code: {
+                    required: '必須輸入'
+                },
+                account_number: {
+                    required: '必須輸入',
+                },
+                account_name: {
+                    required: '必須輸入',
+                },
+                bill_delivery: {
+                    required: '必須輸入'
+                },
+                distribution_start_date: {
+                    required: '必須輸入'
+                },
+                distribution_end_date: {
+                    required: '必須輸入'
+                },
+                distribution_rate: {
+                    required: '必須輸入'
+                },
+                investment_amount: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

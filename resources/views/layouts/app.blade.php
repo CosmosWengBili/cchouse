@@ -16,8 +16,6 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
-        <link rel="stylesheet" href={{ asset('css/datatables.css') }}>
-        <link rel="stylesheet" href={{ asset('css/select2.css') }}>
         <link rel="stylesheet" href={{ asset('css/vendor.css') }}>
         <!-- End plugin css for this page -->
         <!-- inject:css -->
@@ -25,14 +23,16 @@
         <!-- endinject -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-        </script>
-        <script src={{ asset('js/manifest.js') }}></script>
+        </script><script src={{ asset('js/manifest.js') }}></script>
         <script src={{ asset('js/vendor.js') }}></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/additional-methods.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
         <script src={{ asset('js/app.js') }}></script>
     </head>
     <body>
         <div class="container-scroller">
-            <?php if(Auth::check()): ?>
+            <?php if (Auth::check()) : ?>
                 @include('layouts.nav')
             <?php endif; ?>
             <div class="container-fluid page-body-wrapper">

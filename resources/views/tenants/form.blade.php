@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -26,9 +27,6 @@
                                         value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.certificate_number")</td>
                                 <td>
                                     <input
@@ -51,9 +49,6 @@
                                         {{ isset($data["is_legal_person"]) ? ($data['is_legal_person'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.line_id")</td>
                                 <td>
                                     <input
@@ -75,9 +70,6 @@
                                         value="{{ isset($data["residence_address"]) ? $data['residence_address'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.company")</td>
                                 <td>
                                     <input
@@ -99,9 +91,6 @@
                                         value="{{ isset($data["job_position"]) ? $data['job_position'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.Tenant.company_address")</td>
                                 <td>
                                     <input
@@ -117,22 +106,21 @@
                                 <td>
                                     <input
                                         class="form-control form-control-sm"
-                                        type="text"
+                                        type="date"
                                         name="birth"
                                         value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
+                                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Tenant.confirm_by")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
-                                        data-text="name" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
+                                        data-text="name"
                                         data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
                                         name="confirm_by"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -145,6 +133,7 @@
                                         type="date"
                                         name="confirm_at"
                                         value="{{ isset($data["confirm_at"]) ? $data['confirm_at'] : '' }}"
+                                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                                     />
                                 </td>
                             </tr>
@@ -166,4 +155,99 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                name: {
+                    required: true
+                },
+                certificate_number: {
+                    required: true
+                },
+                line_id: {
+                    required: true
+                },
+                residence_address: {
+                    required: true
+                },
+                company: {
+                    required: true,
+                },
+                job_position: {
+                    required: true,
+                },
+                company_address: {
+                    required: true
+                },
+                birth: {
+                    required: true
+                },
+                confirm_by: {
+                    required: true
+                },
+                confirm_at: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                name: {
+                    required: '必須輸入'
+                },
+                certificate_number: {
+                    required: '必須輸入'
+                },
+                line_id: {
+                    required: '必須輸入'
+                },
+                residence_address: {
+                    required: '必須輸入'
+                },
+                company: {
+                    required: '必須輸入',
+                },
+                job_position: {
+                    required: '必須輸入',
+                },
+                company_address: {
+                    required: '必須輸入'
+                },
+                birth: {
+                    required: '必須輸入'
+                },
+                confirm_by: {
+                    required: '必須輸入'
+                },
+                confirm_at: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

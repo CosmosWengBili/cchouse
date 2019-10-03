@@ -12,6 +12,8 @@
             @endif
         </h2>
 
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -31,7 +33,6 @@
                     @foreach ( array_keys($objects[0]) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>
                     @endforeach
-                    <th>功能</th>
                 </thead>
                 <tbody>
                     {{-- all the records --}}
@@ -40,13 +41,8 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
-                            <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
-                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
-                            </td>
                         </tr>
                     @endforeach
                 </tbody>

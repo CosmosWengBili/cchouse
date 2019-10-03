@@ -8,6 +8,7 @@ use App\Responser\FormDataResponser;
 use App\Deposit;
 use App\Services\DepositService;
 use App\Services\ReceiptService;
+use Illuminate\Support\Facades\DB;
 
 class DepositController extends Controller
 {
@@ -19,8 +20,16 @@ class DepositController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['deposits.*'], Deposit::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $responseData
-            ->index('deposits', Deposit::with($request->withNested)->get())
+            ->index(
+                'deposits',
+                $this->limitRecords(
+                    Deposit::withExtraInfo()->select($selectStr)->with($request->withNested)
+                )
+            )
             ->relations($request->withNested);
 
         return view('deposits.index', $responseData->get());
@@ -60,7 +69,7 @@ class DepositController extends Controller
 
         $deposit = Deposit::create($validatedData);
 
-        return redirect()->route('deposits.index');
+        return redirect($request->_redirect);
     }
 
     /**
@@ -117,7 +126,7 @@ class DepositController extends Controller
         ReceiptService::compareReceipt($deposit, $validatedData);
         DepositService::update($deposit, $validatedData);
 
-        return redirect()->route('deposits.index');
+        return redirect($request->_redirect);
     }
 
     /**

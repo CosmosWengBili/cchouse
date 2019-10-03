@@ -1,22 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 @php
     $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
 @endphp
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -28,7 +20,7 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>租客合約 ID</td>
+                                    <td>租客合約編號</td>
                                     <td>
                                         <select class="form-control" name="tenant_contract_id">
                                             @foreach($tenantContractIds as $tenantContractId)
@@ -41,8 +33,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>項目</td>
                                     <td>
                                         <select
@@ -71,8 +61,6 @@
                                             value="{{ $data['income_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>費用</td>
                                     <td>
                                         <input
@@ -98,4 +86,51 @@
         </div>
     </div>
 </div>
+<script id="validation">
+
+    $(document).ready(function () {
+
+        const rules = {
+            income_date: {
+                required: true
+            },
+            amount: {
+                required: true
+            },
+        };
+
+        const messages = {
+            income_date: {
+                required: '必須輸入'
+            },
+            amount: {
+                required: '必須輸入'
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        });
+
+    });
+
+
+
+</script>
 @endsection

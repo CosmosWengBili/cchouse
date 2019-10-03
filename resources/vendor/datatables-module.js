@@ -26,6 +26,30 @@ function renderDataTable(selectors, options) {
     options = (typeof options !== 'undefined') ? options : {};
     options['pageLength'] = options['pageLength'] || PAGELENGTH;
     options['language'] = options['language'] || LANGUAGE;
+    options['order'] = options['order'] || [[ 0, "desc" ]]; // default sort by id, desc
+    options['dom'] = 'Bfrtip';
+    options['buttons'] = [
+        {
+            text: '顯示所有資料',
+            className: 'btn-info btn-sm',
+            action: function ( e, dt, node, config ) {
+
+                let url = new URL(location.href)
+                url.searchParams.set('showAll', 1)
+                location.href = url.href
+            },
+        },
+        {
+            text: '顯示部份資料',
+            className: 'btn-info btn-sm',
+            action: function ( e, dt, node, config ) {
+
+                let url = new URL(location.href)
+                url.searchParams.set('showAll', 0)
+                location.href = url.href
+            },
+        }
+    ];
 
     /* DataTable Initialize */
     var tables = {}
@@ -106,6 +130,18 @@ function renderDataTable(selectors, options) {
 
         tables[parentTable].draw();
     });
+
+    /* Highlight searched text */
+    (function () {
+        Object.values(tables).forEach(function (table) {
+            table.on( 'draw', function () {
+                var body = $( table.table().body() );
+
+                body.unhighlight();
+                body.highlight( table.search() );
+            } );
+        });
+    })()
 }
 
 

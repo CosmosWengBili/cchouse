@@ -5,19 +5,11 @@
 @endphp
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -45,8 +37,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>抄表時間</td>
                                     <td>
                                         <input
@@ -67,8 +57,6 @@
                                             value="{{ $data['110v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>110v迄</td>
                                     <td>
                                         <input
@@ -89,8 +77,6 @@
                                             value="{{ $data['220v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>220v迄</td>
                                     <td>
                                         <input
@@ -111,8 +97,6 @@
                                             value="{{ $data['amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>應繳時間</td>
                                     <td>
                                         <input
@@ -134,8 +118,6 @@
                                             {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>備註</td>
                                     <td>
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
@@ -201,4 +183,81 @@
         getDegree();
     })();
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                ammeter_read_date: {
+                    required: true
+                },
+                "110v_start_degree": {
+                    required: true
+                },
+                "110v_end_degree": {
+                    required: true
+                },
+                "220v_start_degree": {
+                    required: true
+                },
+                "220v_end_degree": {
+                    required: true,
+                },
+                amount: {
+                    required: true,
+                },
+                due_time: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                ammeter_read_date: {
+                    required: '必須輸入'
+                },
+                "110v_start_degree": {
+                    required: '必須輸入'
+                },
+                "110v_end_degree": {
+                    required: '必須輸入'
+                },
+                "220v_start_degree": {
+                    required: '必須輸入'
+                },
+                "220v_end_degree": {
+                    required: '必須輸入',
+                },
+                amount: {
+                    required: '必須輸入',
+                },
+                due_time: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

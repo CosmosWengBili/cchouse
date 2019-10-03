@@ -15,27 +15,9 @@ class PayLog extends Model implements AuditableContract
     protected $casts = [
         'paid_at' => 'datetime:Y-m-d',
     ];
-    protected $fillable = [
-        'loggable_type',
-        'loggable_id',
-        'subject',
-        'payment_type',
-        'amount',
-        'virtual_account',
-        'paid_at',
-        'tenant_contract_id',
-        'receipt_type'
-    ];
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
-
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * Get the owning loggable model.
@@ -43,5 +25,10 @@ class PayLog extends Model implements AuditableContract
     public function loggable()
     {
         return $this->morphTo();
+    }
+
+    public function tenantContract()
+    {
+        return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
     }
 }

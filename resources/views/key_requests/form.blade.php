@@ -1,19 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -22,7 +14,7 @@
                     <form action="{{$action}}" method="POST">
                         @csrf
                         @method($method)
-                        <input 
+                        <input
                             class="form-control form-control-sm"
                             type="hidden"
                             name="key_id"
@@ -41,18 +33,16 @@
                                         value="{{ isset($data["request_date"]) ? $data['request_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>                          
-                            <tr>
                                 <td>@lang("model.KeyRequest.request_user_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
-                                        data-text="name" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
+                                        data-text="name"
                                         data-value="id"
                                         data-selected="{{ isset($data["request_user_id"]) ? $data['request_user_id'] : \Auth::user()->id }}"
                                         name="request_user_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -62,14 +52,12 @@
                                 <td>
                                     <select
                                         name="status"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                         value="{{ isset($data["status"]) ? $data['status'] : 'reserved' }}"
                                     >
                                         <option value="預約中">預約中</option>
                                         <option value="使用中">使用中</option>
-                                        @if ( $keeper_id == \Auth::user()->id )
-                                            <option value="已完成">已完成</option>
-                                        @endif
+                                        <option value="已完成">已完成</option>
                                     </select>
                                 </td>
                             </tr>
@@ -87,6 +75,32 @@
                                     </td>
                                 </tr>
                             @endif
+                            <tr>
+                                <td>@lang("model.KeyRequest.borrow_date")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="borrow_date"
+                                        value="{{ isset($data["borrow_date"]) ? $data['borrow_date'] : '' }}"
+                                    />
+                                </td>
+                                <td>@lang("model.KeyRequest.return_date")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="return_date"
+                                        value="{{ isset($data["return_date"]) ? $data['return_date'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@lang("model.KeyRequest.comment")</td>
+                                <td colspan="3">
+                                    <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
 
@@ -97,4 +111,45 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                request_date: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                request_date: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

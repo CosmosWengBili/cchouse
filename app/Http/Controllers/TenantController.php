@@ -27,9 +27,10 @@ class TenantController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $tenants = Tenant::select($this->whitelist('tenants'))
-            ->with($request->withNested)
-            ->get();
+        $tenants = $this->limitRecords(
+            Tenant::select($this->whitelist('tenants'))
+                ->with($request->withNested)
+        );
 
         $tenants = NestedToAttributeService::contactInfoToAttribute($tenants);
 
@@ -114,7 +115,9 @@ class TenantController extends Controller
             'company' => 'required',
             'job_position' => 'required',
             'company_address' => 'required',
-            'birth' => 'required'
+            'birth' => 'required|date',
+            'confirm_by' => 'required|min:1',
+            'confirm_at' => 'required|date',
         ]);
         $tenant = Tenant::create($validatedData);
 
@@ -155,9 +158,9 @@ class TenantController extends Controller
             'company' => 'required',
             'job_position' => 'required',
             'company_address' => 'required',
-            'confirm_by' => 'required',
-            'confirm_at' => 'required',
-            'birth' => 'required'
+            'confirm_by' => 'required|min:1',
+            'confirm_at' => 'required|date',
+            'birth' => 'required|date'
         ]);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [
@@ -236,7 +239,7 @@ class TenantController extends Controller
             // remove removed item
             $tenant
                 ->contactInfos()
-                ->where('contactable_type', $type)
+                ->where('contactable_type', Tenant::class)
                 ->whereNotIn('id', $keepIds)
                 ->delete();
 

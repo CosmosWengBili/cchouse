@@ -11,6 +11,9 @@
                 @lang("model.{$model_name}.{$layer}")
             @endif
         </h2>
+
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -39,7 +42,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
@@ -52,7 +55,7 @@
         @endif
     </div>
 </div>
-@include('shared.import_modal', ['layer' => $layer])
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

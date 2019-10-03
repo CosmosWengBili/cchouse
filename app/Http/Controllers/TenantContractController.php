@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\LandlordContract;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Validation\Rule;
 
@@ -36,10 +38,15 @@ class TenantContractController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $responseData
             ->index(
                 'tenant_contracts',
-                TenantContract::with($request->withNested)->get()
+                $this->limitRecords(
+                    TenantContract::withExtraInfo()->select($selectStr)->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 
@@ -93,7 +100,7 @@ class TenantContractController extends Controller
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
             'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|digits_between:1,11',
+            'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
@@ -112,10 +119,10 @@ class TenantContractController extends Controller
                 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11',
-            '220v_start_degree' => 'required|integer|digits_between:1,11',
+            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
+            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'required|integer|digits_between:1,11',
+            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
                 Rule::in(
@@ -123,7 +130,8 @@ class TenantContractController extends Controller
                 )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id'
+            'commissioner_id' => 'exists:users,id',
+            'comment' => 'present',
         ]);
 
         $validatedPaymentData = $request->validate([
@@ -168,8 +176,9 @@ class TenantContractController extends Controller
         $responseData
             ->show($tenantContract->load($request->withNested))
             ->relations($request->withNested);
+        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->sum('amount');
 
-        return view('tenant_contracts.show', $responseData->get());
+        return view('tenant_contracts.show', array_merge($responseData->get(), ['paid_diff' => $paid_diff]));
     }
 
     /**
@@ -193,12 +202,14 @@ class TenantContractController extends Controller
 
     /**
      * Show the form for extending a contract.
+     * @param Request        $request
+     * @param TenantContract $tenantContract
      *
-     * @param  \App\TenantContract  $tenantContract
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function extend(TenantContract $tenantContract)
+    public function extend(Request $request, TenantContract $tenantContract)
     {
+        /** @var TenantContract $tempContract */
         $tempContract = $this->tenantContractService->makeExtendedContract(
             $tenantContract
         );
@@ -206,6 +217,12 @@ class TenantContractController extends Controller
         $data = $responseData
             ->edit($tempContract, 'tenantContracts.create')
             ->get();
+        $data['data']['original_files'] = null;
+        $data['data']['carrier_files'] =  null;
+
+        // 租客帳單
+        $data['data']['tenant_payment'] = $tenantContract->tenantPayments->toArray() or [];
+//dd($data['data']['tenant_payment']);
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
         return view('tenant_contracts.form', $data);
@@ -241,7 +258,7 @@ class TenantContractController extends Controller
             'contract_start' => 'required|date',
             'contract_end' => 'required|date',
             'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|digits_between:1,11',
+            'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
             'electricity_payment_method' => [
@@ -260,10 +277,10 @@ class TenantContractController extends Controller
                 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' =>
                 'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11',
-            '220v_start_degree' => 'required|integer|digits_between:1,11',
+            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
+            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
             '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'required|integer|digits_between:1,11',
+            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
             'invoice_collection_method' => [
                 'required',
                 Rule::in(
@@ -271,9 +288,10 @@ class TenantContractController extends Controller
                 )
             ],
             'invoice_collection_number' => 'required|max:255',
-            'commissioner_id' => 'exists:users,id'
+            'commissioner_id' => 'exists:users,id',
+            'comment' => 'present',
         ]);
-        
+
         ReceiptService::compareReceipt($tenantContract, $validatedData);
 
         $tenantContract->update($validatedData);
@@ -298,17 +316,18 @@ class TenantContractController extends Controller
 
     public function electricityPaymentReport(TenantContract $tenantContract, int $year, int $month)
     {
-        $room =$tenantContract->room()->first();
+        $room = $tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
-        return view('buildings.electricity_payment_report', [
+        return view('tenant_contracts.electricity_payment_report', [
             'reportRows' => [$row],
             'year' => $year,
             'month' => $month,
         ]);
     }
 
-    public function sendElectricityPaymentReportSMS(Request $request) {
+    public function sendElectricityPaymentReportSMS(Request $request)
+    {
         $tenantContractId = intval($request->input('tenantContractId'));
         $year = intval($request->input('year'));
         $month = intval($request->input('month'));
@@ -318,11 +337,22 @@ class TenantContractController extends Controller
         return response()->json(true);
     }
 
-    public function electricityDegree(TenantContract $tenantContract) {
+    public function electricityDegree(TenantContract $tenantContract)
+    {
         return response()->json([
             'method' => $tenantContract->electricity_calculate_method,
             'pricePerDegree' => $tenantContract->electricity_price_per_degree,
             'pricePerDegreeSummer' => $tenantContract->electricity_price_per_degree_summer,
         ]);
+    }
+
+    public function payment_recheck(TenantContract $tenantContract)
+    {
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($tenantContract->load(['tenantPayments','tenantElectricityPayments','payLogs']))
+            ->relations(['tenantPayments','tenantElectricityPayments','payLogs']);
+
+        return view('tenant_contracts.payment_recheck', $responseData->get());
     }
 }

@@ -13,6 +13,7 @@ class Appliance extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
+    protected $hidden = ['deleted_at'];
     /**
      * Get the room this appliance belongs to.
      */

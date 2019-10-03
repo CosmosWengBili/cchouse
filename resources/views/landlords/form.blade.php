@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -26,9 +27,6 @@
                                             value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-
-                                <tr>
                                     <td>@lang("model.Landlord.certificate_number")</td>
                                     <td>
                                         <input
@@ -49,8 +47,6 @@
                                             value="{{ isset($data["birth"]) ? $data['birth'] : '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.note")</td>
                                     <td>
                                         <input
@@ -73,8 +69,6 @@
                                             {{ isset($data["is_legal_person"]) ? ($data['is_legal_person'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.is_collected_by_third_party")</td>
                                     <td>
                                         {{-- unchecked value for checkbox--}}
@@ -95,10 +89,11 @@
                                             type="text"
                                             name="bank_code"
                                             value="{{ isset($data["bank_code"]) ? $data['bank_code'] : '' }}"
+                                            maxlength="3"
+                                            pattern="\d*"
+                                            placeholder="例如新光銀行請輸入: 103"
                                         />
                                     </td>
-                                </tr> 
-                                <tr>
                                     <td>@lang("model.Landlord.branch_code")</td>
                                     <td>
                                         <input
@@ -106,9 +101,10 @@
                                             type="text"
                                             name="branch_code"
                                             value="{{ isset($data["branch_code"]) ? $data['branch_code'] : '' }}"
+                                            placeholder="分行名稱"
                                         />
                                     </td>
-                                </tr> 
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.account_name")</td>
                                     <td>
@@ -119,8 +115,6 @@
                                             value="{{ isset($data["account_name"]) ? $data['account_name'] : '' }}"
                                         />
                                     </td>
-                                </tr>   
-                                <tr>
                                     <td>@lang("model.Landlord.account_number")</td>
                                     <td>
                                         <input
@@ -130,11 +124,12 @@
                                             value="{{ isset($data["account_number"]) ? $data['account_number'] : '' }}"
                                         />
                                     </td>
-                                </tr>   
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.invoice_collection_method")</td>
                                     <td>
                                         <select
+                                            id="invoice_collection_method"
                                             class="form-control form-control-sm"
                                             name="invoice_collection_method"
                                             value="{{ isset($data["invoice_collection_method"]) ? $data['invoice_collection_method'] : '' }}"
@@ -144,8 +139,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Landlord.invoice_mailing_address")</td>
                                     <td>
                                         <input
@@ -155,18 +148,27 @@
                                             value="{{ isset($data["invoice_mailing_address"]) ? $data['invoice_mailing_address'] : '' }}"
                                         />
                                     </td>
-                                </tr>  
+                                </tr>
                                 <tr>
                                     <td>@lang("model.Landlord.invoice_collection_number")</td>
                                     <td>
                                         <input
+                                            id="invoice_collection_number"
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="invoice_collection_number"
                                             value="{{ isset($data["invoice_collection_number"]) ? $data['invoice_collection_number'] : '' }}"
                                         />
                                     </td>
-                                </tr> 
+                                    <td>@lang("model.Landlord.landlord_contracts")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            id="landlord_contract_id"
+                                        />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -187,4 +189,117 @@
         </div>
     </div>
 </div>
+<script>
+
+    const queryStringName = 'landlord_contract_id';
+    const inputId = 'landlord_contract_id';
+
+    const qs = window.myQueryString();
+    qs.setInputValue(queryStringName, inputId);
+    $('#' + inputId).addClass('d-none');
+
+
+    const toggleElement = {
+        selectElement: null,
+        toggledElement: null,
+        bind: function (selectElement, toggledElement) {
+            this.selectElement = selectElement;
+            this.toggledElement = toggledElement;
+
+            document.getElementById(this.selectElement.id)
+                .addEventListener('change', () => this.display())
+
+            return this
+        },
+        display: function () {
+            const option1 = '寄送';
+            const option2 = '載具';
+            const selectedValue = this.selectElement.value;
+
+            if (selectedValue === option1) {
+                this.toggledElement.classList.add('d-none');
+            } else if (selectedValue === option2) {
+                this.toggledElement.classList.remove('d-none');
+            }
+
+            return this
+        }
+    };
+
+    $(document).ready(function () {
+        toggleElement.bind(
+            document.getElementById('invoice_collection_method'),
+            document.getElementById('invoice_collection_number')
+        ).display()
+    })
+
+</script>
+<script id="validation">
+
+    $(document).ready(function () {
+
+        const rules = {
+            name: {
+                required: true,
+            },
+            certificate_number: {
+                required: true,
+            },
+            birth: {
+                dateISO: true,
+            },
+            bank_code: {
+                digits: true,
+                minlength: 3,
+                maxlength: 3,
+            },
+            account_number: {
+                digits: true
+            },
+            invoice_mailing_address: {
+                email: true
+            },
+            invoice_collection_number: {
+                digits: true
+            },
+        };
+
+        const messages = {
+            name: {
+                required: '必須輸入'
+            },
+            certificate_number: {
+                required: '必須輸入'
+            },
+            bank_code: {
+                minlength: "只能輸入 {0} 個數字",
+                maxlength: "只能輸入 {0} 個數字",
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        });
+
+    });
+
+
+
+</script>
 @endsection

@@ -27,13 +27,14 @@ class KeyRequestController extends Controller
         $responseData
             ->index(
                 'key_requests',
-                KeyRequest::select($this->whitelist('key_requests'))
-                    ->with($request->withNested)
-                    ->get()
+                $this->limitRecords(
+                    KeyRequest::select($this->whitelist('key_requests'))
+                        ->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 
-        return view('keyRequests.index', $responseData->get());
+        return view('key_requests.index', $responseData->get());
     }
 
     /**
@@ -69,9 +70,11 @@ class KeyRequestController extends Controller
             'key_id' => 'required|exists:keys,id',
             'request_date' => 'required|max:255',
             'status' => 'required',
-            'request_approved' => 'nullable'
+            'request_approved' => 'nullable',
+            'borrow_date' => 'nullable|date',
+            'return_date' => 'nullable|date',
+            'comment' => 'nullable',
         ]);
-
         $key_requests = KeyRequest::create($validatedData);
         return redirect($request->_redirect);
     }
@@ -122,17 +125,21 @@ class KeyRequestController extends Controller
     {
         $key_request = KeyRequest::find($id);
 
-        $using = $key_request->status == 'using' ? true : false;
+        $using = $key_request->status == '使用中' ? true : false;
 
         $validatedData = $request->validate([
             'request_user_id' => 'required|exists:users,id',
             'key_id' => 'required|exists:keys,id',
             'request_date' => 'required|max:255',
-            'status' => 'required'
+            'status' => 'required',
+            'request_approved' => 'nullable',
+            'borrow_date' => 'nullable|date',
+            'return_date' => 'nullable|date',
+            'comment' => 'nullable',
         ]);
 
         $key_request->update($validatedData);
-        if ($using && $validatedData['status'] == "finished") {
+        if ($using && $validatedData['status'] == "已完成") {
             NotificationService::notifyKeyRequestFinished(
                 $validatedData['key_id']
             );

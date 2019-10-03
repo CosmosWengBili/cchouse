@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\SmsService;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,8 +17,7 @@ class TenantContract extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-
-    protected $hidden = ['deleted_at'];
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.
@@ -25,6 +25,8 @@ class TenantContract extends Pivot implements AuditableContract
      * @var array
      */
     protected $guarded = [];
+
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -165,10 +167,32 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->documents()->where('document_type', 'original_file');
     }
 
+    /**
+     * Get all the payOff of this tenant contract.
+     */
+    public function payOff()
+    {
+        return $this->hasOne('App\PayOff', 'tenant_contract_id');
+    }
+
     public function calculateCurrentBalance() {
 
-        $unpaid = $this->tenantPayments()->sum('amount');
-        $electricityUnpaid = $this->tenantElectricityPayments()->sum('amount');
+        $month = 0;
+        $payment_date = '';
+
+        if( Carbon::now()->format('d') < $this->rent_pay_day ){
+            $month = Carbon::now()->subMonth()->month;
+            $payment_date = Carbon::create(Carbon::now()->year,$month,$this->rent_pay_day);
+            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<', $payment_date)->sum('amount');
+        }
+        else{
+            $month = Carbon::now()->month;
+            $payment_date = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
+            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+            $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+        }
+
         $paid = $this->payLogs()->sum('amount');
 
         return $paid - $unpaid - $electricityUnpaid;
@@ -186,7 +210,7 @@ class TenantContract extends Pivot implements AuditableContract
             ->where('contract_end', '>=', Carbon::today())
             ->where('contract_start', '<=', Carbon::today());
     }
-    
+
     /**
      * Get the receipts of this tenant contracts.
      */
@@ -205,6 +229,18 @@ class TenantContract extends Pivot implements AuditableContract
         ]);
         $shouldPay = $this->electricityPaymentAmount($year, $month);
         $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+    }
+
+    /**
+     * 取得下一期的 TenantContract
+     */
+    public function nextTenantContract() {
+        return $this->tenant
+             ->tenantContracts()
+             ->where('tenant_contract.id', '>', $this->id)
+             ->where('tenant_contract.contract_start', '>=', $this->contract_start)
+             ->orderBy('tenant_contract.contract_start', 'asc')
+             ->first();
     }
 
     private function electricityPaymentAmount($year, $month) {

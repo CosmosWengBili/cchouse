@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RelationExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
@@ -50,7 +52,7 @@ class ExcelController extends Controller
     public function export($model)
     {
         return Excel::download(
-            new MorphExport('App\\' . $model),
+            new MorphExport('App\\' . ucfirst($model)),
             $model . '.xlsx'
         );
     }
@@ -61,6 +63,16 @@ class ExcelController extends Controller
         return Excel::download(
             new MorphExport('App\\' . $model, true),
             $model . '.xlsx'
+        );
+    }
+
+    public function exportRelation(string $model, string $id, string $relation) {
+        $model = ucfirst(Str::camel($model));
+        $relation = Str::camel($relation);
+
+        return Excel::download(
+            new RelationExport('App\\' . $model, $id, $relation),
+            ucfirst($relation) . '.xlsx'
         );
     }
 
@@ -86,10 +98,10 @@ class ExcelController extends Controller
                     new ReceiptExport($receiptData, 'receipt'),
                     '收據報表.xlsx'
                 );
-                
+
 
                 break;
-            default: 
+            default:
                 break;
         }
     }

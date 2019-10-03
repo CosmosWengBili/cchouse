@@ -20,7 +20,7 @@ class Room extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -37,7 +37,6 @@ class Room extends Model implements AuditableContract
     protected $casts = [
         'needs_decoration' => 'boolean',
         'has_digital_tv' => 'boolean',
-        'can_keep_pets' => 'boolean'
     ];
 
     /**

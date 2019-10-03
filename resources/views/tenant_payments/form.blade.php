@@ -1,25 +1,10 @@
 @extends('layouts.app')
-
-@php
-    $tenantContracts = \App\TenantContract::pluck('id');
-    $subjects = \App\TenantPayment::pluck('subject');
-    $users = \App\User::pluck('name', 'id');
-@endphp
-
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -36,33 +21,24 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="tenant_contract_id"
+                                            data-toggle="selectize"
+                                            data-table="tenant_contract"
+                                            data-text="id"
+                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
-                                            @foreach($tenantContracts as $value)
-                                                <option
-                                                    value="{{$value}}"
-                                                    {{ ($data['tenant_contract_id'] ?? '') == $value ? 'selected' : '' }}
-                                                >
-                                                    {{$value}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>科目</td>
                                     <td>
                                         <select
                                             class="form-control form-control-sm"
                                             name="subject"
+                                            data-toggle="selectize"
+                                            data-table="tenant_payments"
+                                            data-text="subject"
+                                            data-value="subject"
+                                            data-selected="{{ $data['subject'] ?? '' }}"
                                         >
-                                            @foreach($subjects as $subject)
-                                                <option
-                                                    value="{{$subject}}"
-                                                    {{ ($data['subject'] ?? '') == $subject ? 'selected' : '' }}
-                                                >
-                                                    {{$subject}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
                                 </tr>
@@ -76,8 +52,6 @@
                                             value="{{ $data['due_time'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>費用</td>
                                     <td>
                                         <input
@@ -99,8 +73,6 @@
                                             {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>沖銷日期</td>
                                     <td>
                                         <input
@@ -117,19 +89,14 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="collected_by"
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-value="id"
+                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
-                                            @foreach($users as $id => $name)
-                                                <option
-                                                    value="{{$id}}"
-                                                    {{ ($data['collected_by'] ?? '') == $id ? 'selected' : '' }}
-                                                >
-                                                    {{$name}}
-                                                </option>
-                                            @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>是否顯示在報表</td>
                                     <td>
                                         <input type="hidden" value="0" name="is_visible_at_report"/>
@@ -152,8 +119,6 @@
                                             {{ ($data['is_pay_off'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>備註</td>
                                     <td>
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
@@ -168,10 +133,63 @@
         </div>
     </div>
 </div>
+    <script id="validation">
 
-<script>
-    $(document).ready(function() {
-        $('form select').select2();
-    });
-</script>
+        $(document).ready(function () {
+
+            const rules = {
+                due_time: {
+                    required: true
+                },
+                amount: {
+                    required: true
+                },
+                charge_off_date: {
+                    required: true
+                },
+                collected_by: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                due_time: {
+                    required: '必須輸入'
+                },
+                amount: {
+                    required: '必須輸入'
+                },
+                charge_off_date: {
+                    required: '必須輸入'
+                },
+                collected_by: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

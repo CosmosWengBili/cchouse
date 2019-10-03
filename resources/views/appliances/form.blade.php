@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">

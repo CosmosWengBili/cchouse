@@ -1,19 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -36,8 +28,6 @@
                                             value="{{ $data['title'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.city")</td>
                                     <td>
                                         <select
@@ -66,12 +56,10 @@
                                             @else
                                                 @foreach(config('enums.cities')['臺北市'] as $value)
                                                     <option value="{{$value}}">{{$value}}</option>
-                                                @endforeach                                                
+                                                @endforeach
                                             @endif
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.address")</td>
                                     <td>
                                         <input
@@ -92,8 +80,6 @@
                                             value="{{ $data['tax_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.building_type")</td>
                                     <td>
                                         <select
@@ -117,8 +103,6 @@
                                             value="{{ $data['floor'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.legal_usage")</td>
                                     <td>
                                         <select
@@ -144,8 +128,6 @@
                                             {{ isset($data["has_elevator"]) ? ($data['has_elevator'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.security_guard")</td>
                                     <td>
                                         <input
@@ -166,8 +148,6 @@
                                             value="{{ $data['management_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.first_floor_door_opening")</td>
                                     <td>
                                         <input
@@ -188,8 +168,6 @@
                                             value="{{ $data['public_area_door_opening'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.room_door_opening")</td>
                                     <td>
                                         <input
@@ -210,8 +188,6 @@
                                             value="{{ $data['main_ammeter_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.ammeter_serial_number_1")</td>
                                     <td>
                                         <input
@@ -232,8 +208,6 @@
                                             value="{{ $data['shared_electricity'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.electricity_payment_method")</td>
                                     <td>
                                         <select
@@ -257,8 +231,6 @@
                                             value="{{ $data['private_ammeter_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.water_meter_location")</td>
                                     <td>
                                         <input
@@ -279,8 +251,6 @@
                                             value="{{ $data['water_meter_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.water_payment_method")</td>
                                     <td>
                                         <select
@@ -304,8 +274,6 @@
                                             value="{{ $data['water_meter_reading_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.gas_meter_location")</td>
                                     <td>
                                         <input
@@ -326,8 +294,6 @@
                                             value="{{ $data['garbage_collection_location'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.garbage_collection_time")</td>
                                     <td>
                                         <input
@@ -351,8 +317,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.management_fee_contact")</td>
                                     <td>
                                         <input
@@ -373,8 +337,6 @@
                                             value="{{ $data['management_fee_contact_phone'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.distribution_method")</td>
                                     <td>
                                         <input
@@ -395,8 +357,6 @@
                                             value="{{ $data['administrative_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.accounting_group")</td>
                                     <td>
                                         <input
@@ -417,17 +377,15 @@
                                             value="{{ $data['rental_receipt'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.commissioner_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -435,18 +393,16 @@
                                 <tr>
                                     <td>@lang("model.Building.administrator_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="name" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
                                             data-selected="{{ $data['administrator_id'] ?? 0 }}"
                                             name="administrator_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Building.comment")</td>
                                     <td>
                                         <input
@@ -486,5 +442,190 @@
             $('[name=district]').append(`<option value='${value}'>${value}</option>`)
         })
     })
+</script>
+<script id="validation">
+
+    $(document).ready(function () {
+
+        const rules = {
+            title: {
+                required: true
+            },
+            address: {
+                required: true
+            },
+            tax_number: {
+                required: true
+            },
+            floor: {
+                required: true
+            },
+            security_guard: {
+                required: true,
+            },
+            management_count: {
+                required: true,
+            },
+            first_floor_door_opening: {
+                required: true
+            },
+            public_area_door_opening: {
+                required: true
+            },
+            room_door_opening: {
+                required: true
+            },
+            main_ammeter_location: {
+                required: true
+            },
+            ammeter_serial_number_1: {
+                required: true
+            },
+            shared_electricity: {
+                required: true
+            },
+            private_ammeter_location: {
+                required: true
+            },
+            water_meter_location: {
+                required: true
+            },
+            water_meter_serial_number: {
+                required: true
+            },
+            water_meter_reading_date: {
+                required: true
+            },
+            gas_meter_location: {
+                required: true
+            },
+            garbage_collection_location: {
+                required: true
+            },
+            garbage_collection_time: {
+                required: true
+            },
+            management_fee_contact: {
+                required: true
+            },
+            management_fee_contact_phone: {
+                required: true
+            },
+            distribution_method: {
+                required: true
+            },
+            administrative_number: {
+                required: true
+            },
+            accounting_group: {
+                required: true
+            },
+            rental_receipt: {
+                required: true
+            },
+        };
+
+        const messages = {
+            title: {
+                required: '必須輸入'
+            },
+            address: {
+                required: '必須輸入'
+            },
+            tax_number: {
+                required: '必須輸入'
+            },
+            floor: {
+                required: '必須輸入'
+            },
+            security_guard: {
+                required: '必須輸入',
+            },
+            management_count: {
+                required: '必須輸入',
+            },
+            first_floor_door_opening: {
+                required: '必須輸入'
+            },
+            public_area_door_opening: {
+                required: '必須輸入'
+            },
+            room_door_opening: {
+                required: '必須輸入'
+            },
+            main_ammeter_location: {
+                required: '必須輸入'
+            },
+            ammeter_serial_number_1: {
+                required: '必須輸入'
+            },
+            shared_electricity: {
+                required: '必須輸入'
+            },
+            private_ammeter_location: {
+                required: '必須輸入'
+            },
+            water_meter_location: {
+                required: '必須輸入'
+            },
+            water_meter_serial_number: {
+                required: '必須輸入'
+            },
+            water_meter_reading_date: {
+                required: '必須輸入'
+            },
+            gas_meter_location: {
+                required: '必須輸入'
+            },
+            garbage_collection_location: {
+                required: '必須輸入'
+            },
+            garbage_collection_time: {
+                required: '必須輸入'
+            },
+            management_fee_contact: {
+                required: '必須輸入'
+            },
+            management_fee_contact_phone: {
+                required: '必須輸入'
+            },
+            distribution_method: {
+                required: '必須輸入'
+            },
+            administrative_number: {
+                required: '必須輸入'
+            },
+            accounting_group: {
+                required: '必須輸入'
+            },
+            rental_receipt: {
+                required: '必須輸入'
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        });
+
+    });
+
+
+
 </script>
 @endsection

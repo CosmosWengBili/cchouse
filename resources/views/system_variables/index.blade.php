@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @php
-$systemVariables = \App\SystemVariable::VARIABLES;
+$systemVariables = \App\SystemVariable::variables();
 @endphp
 
 @section('content')
-@<div class="container">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -16,10 +16,9 @@ $systemVariables = \App\SystemVariable::VARIABLES;
                     @foreach($groups as $group)
                         <a
                             href="{{ route('system_variables.edit', [ 'system_variable' => $group ]) }}"
-                            class="py-3 m-3 font-weight-bold"
-                            style="display: block; background-color: #ff4444; color: #fff; text-align: center; font-size: 36px; text-decoration: none;"
+                            class="py-3 m-3 font-weight-bold btn btn-lg btn-danger"
                         >
-                            {{ $group }}
+                            @lang("general.".strtolower($group))
                         </a>
                     @endforeach
                 </div>

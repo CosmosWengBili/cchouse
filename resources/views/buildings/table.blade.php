@@ -14,11 +14,11 @@
 
         {{-- the route to create this kind of resource --}}
         <a class="btn btn-sm btn-success my-3" href="{{ route( 'buildings.create') }}">建立</a>
-        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
-        <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
-            <h3>Nothing here</h3>
+            <h3>目前沒有資料</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
@@ -44,7 +44,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=rooms;landlordContracts">查看</a>
@@ -58,7 +58,7 @@
         @endif
     </div>
 </div>
-@include('shared.import_modal', ['layer' => $layer])
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

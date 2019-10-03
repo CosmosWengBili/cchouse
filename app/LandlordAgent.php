@@ -18,6 +18,6 @@ class LandlordAgent extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-
-    protected $hidden = ['pivot'];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 }

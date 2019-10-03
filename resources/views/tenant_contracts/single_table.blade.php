@@ -13,9 +13,11 @@
             @endif
         </h2>
 
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
-            <h3>Nothing here</h3>
+            <h3>目前沒有資料</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
@@ -43,7 +45,7 @@
                         @foreach($object as $key => $value)
                             {{-- an even nested resource array --}}
                             @if ( $key != 'building' )
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endif
                         @endforeach
                         <td>

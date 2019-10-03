@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -11,6 +12,7 @@ class Deposit extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.
@@ -19,7 +21,7 @@ class Deposit extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

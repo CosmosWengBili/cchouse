@@ -22,6 +22,10 @@ class TenantContractService
     public function create($data, $payments = [])
     {
         $tenantContract = DB::transaction(function () use ($data, $payments) {
+
+            // insertGetId does not support auto created_at
+            $data['created_at'] = $data['updated_at'] = Carbon::now();
+
             // create tenant contract
             $tenantContractId = TenantContract::insertGetId($data);
             $tenantContract = TenantContract::find($tenantContractId);
@@ -31,7 +35,7 @@ class TenantContractService
                 'subject' => '租金',
                 'period' => '月',
                 'amount' => $tenantContract->rent,
-                'collected_by' => '公司'
+                'collected_by' => '房東'
             ];
 
             // generates all kinds of payments

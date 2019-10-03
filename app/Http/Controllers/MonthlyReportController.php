@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\TenantContract;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Responser\NestedRelationResponser;
 use App\Services\MonthlyReportService;
+use App\Exports\MonthlyTenantExport;
 use App\Building;
-use App\LandlordContract;
 use App\LandlordOtherSubject;
 
 class MonthlyReportController extends Controller
@@ -24,23 +28,25 @@ class MonthlyReportController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $whitelist = $this->whitelist('buildings');
-        $buildings = Building::select($whitelist)->select('buildings.*')
-            ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
-            ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
-            ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
-            ->where('landlord_contracts.is_collected_by_third_party', true)
-            ->groupBy('id')
-            ->get();
+        $columns = array_map(function ($column) { return "buildings.{$column}"; }, $this->whitelist('buildings'));
+        $selectColumns = array_merge($columns, Building::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+        $buildings = $this->limitRecords(
+            Building::withExtraInfo()
+                ->select($selectStr)
+                ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
+                ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
+                ->groupBy('id')
+        );
 
         $responseData
             ->index('buildings',$buildings)
             ->relations($request->withNested);
 
-        return view('monthly_reports.index', $responseData->get());    
+        return view('monthly_reports.index', $responseData->get());
     }
     public function show(building $building)
-    { 
+    {
         $month = Input::get('month') ?? Carbon::now()->month;
 
         // set object which would be used on blade date data
@@ -59,41 +65,22 @@ class MonthlyReportController extends Controller
                 'year' => $month_counter->year,
                 'month' => $month_counter->month,
             ];
-            $month_counter->addMonth(); 
+            $month_counter->addMonth();
         }
-
-        $public_room = $building->publicRoom();
 
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
-        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']); 
-        $data['building_id'] = $building->id;
+        $monthly_data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $eletricity_data = $service->getEletricityReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $monthly_data['building_id'] = $building->id;
         return view('monthly_reports.show')
-                ->with('data', $data)
+                ->with('data', $monthly_data)
+                ->with('eletricity_data', $eletricity_data)
                 ->with('month_options', $month_options)
-                ->with('report_used_date', $report_used_date)
-                ->with('public_room', $public_room);
+                ->with('report_used_date', $report_used_date);
     }
 
-    public function storeOtherSubjects(building $building, Request $request){
-        $landlord_other_subjects = Input::get('data');
-        $delete_ids = Input::get('deleteIds');
-
-        foreach( $landlord_other_subjects as $landlord_other_subject){
-            if( isset($landlord_other_subject['subject'])){
-                LandlordOtherSubject::create([
-                    'subject' => $landlord_other_subject['subject'],
-                    'subject_type' => '月結單',
-                    'income_or_expense' => ($landlord_other_subject['income'] != "") ? '收入' : '支出',
-                    'expense_date' => $landlord_other_subject['date'],
-                    'amount' => ($landlord_other_subject['income'] != "") ? $landlord_other_subject['income'] : $landlord_other_subject['expense'],
-                    'room_id' => $building->publicRoom()->id
-                ]);
-            }
-        }
-        LandlordOtherSubject::destroy($delete_ids);
-    }
 
     public function print(building $building){
 
@@ -110,13 +97,30 @@ class MonthlyReportController extends Controller
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
         $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $eletricity_data = $service->getEletricityReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
         $data['report_used_date'] = $report_used_date;
         $pdf_data = [
-            'data' => $data
+            'data' => $data,
+            'eletricity_data' => $eletricity_data
         ];
 
-        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);  
-        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');        
+        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);
+        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
+    }
+
+    public function print_tenant(building $building){
+
+        $month = Input::get('month');
+        $year = Input::get('year');
+        $building_lazy_load = Building::with(['rooms'])
+                                    ->where('id', '=', $building->id)
+                                    ->get()
+                                    ->first();
+
+        return Excel::download(
+            new MonthlyTenantExport($building_lazy_load, $year, $month),
+            $building->building_code.'_'.$building->location.'_'.$year.$month.'.xlsx'
+        );
     }
 
 }

@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
-                        新建 / 編輯表單
+                        @if( (string) request()->route()->getName() == "tenantContracts.extend" )
+                            延期續約
+                        @else
+                            新建 / 編輯表單
+                        @endif
                     </div>
                     <form action="{{$action}}" method="POST"  enctype="multipart/form-data">
                         @csrf
@@ -29,27 +25,25 @@
                                 <tr>
                                     <td>@lang("model.TenantContract.room_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="rooms" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="id"
                                             data-selected="{{ $data['room_id'] ?? 0 }}"
                                             name="room_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.tenant_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="tenants" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="tenants"
+                                            data-text="id"
                                             data-selected="{{ $data['tenant_id'] ?? 0 }}"
                                             name="tenant_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
@@ -64,8 +58,6 @@
                                             value="{{ $data['contract_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.set_other_rights")</td>
                                     <td>
 
@@ -88,8 +80,6 @@
                                             value="{{ $data['other_rights'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.sealed_registered")</td>
                                     <td>
 
@@ -112,8 +102,6 @@
                                             value="{{ $data['car_parking_floor'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.car_parking_type")</td>
                                     <td>
                                         <select
@@ -137,8 +125,6 @@
                                             value="{{ $data['car_parking_space_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.motorcycle_parking_floor")</td>
                                     <td>
                                         <input
@@ -159,8 +145,6 @@
                                             value="{{ $data['motorcycle_parking_space_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.motorcycle_parking_count")</td>
                                     <td>
                                         <input
@@ -183,8 +167,6 @@
                                             {{ isset($data["effective"]) ? ($data['effective'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.contract_start")</td>
                                     <td>
                                         <input
@@ -205,8 +187,6 @@
                                             value="{{ $data['contract_end'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.rent")</td>
                                     <td>
                                         <input
@@ -225,10 +205,12 @@
                                             type="number"
                                             name="rent_pay_day"
                                             value="{{ $data['rent_pay_day'] ?? '' }}"
+                                            placeholder="1日 ~ 31日"
+                                            min="1"
+                                            max="31"
+                                            step="1"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.deposit")</td>
                                     <td>
                                         <input
@@ -249,8 +231,6 @@
                                             value="{{ $data['deposit_paid'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_payment_method")</td>
                                     <td>
                                         <select
@@ -277,8 +257,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_price_per_degree")</td>
                                     <td>
                                         <input
@@ -301,8 +279,6 @@
                                             value="{{ $data['electricity_price_per_degree_summer'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.110v_start_degree")</td>
                                     <td>
                                         <input
@@ -323,8 +299,6 @@
                                             value="{{ $data['220v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.110v_end_degree")</td>
                                     <td>
                                         <input
@@ -345,8 +319,6 @@
                                             value="{{ $data['220v_end_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.invoice_collection_method")</td>
                                     <td>
                                         <select
@@ -370,19 +342,23 @@
                                             value="{{ $data['invoice_collection_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.commissioner_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="users" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="id"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.TenantContract.comment")</td>
+                                    <td colspan="3">
+                                        <textarea class="form-control" rows="5" name="comment">{{ $data['comment'] ?? '' }}</textarea>
                                     </td>
                                 </tr>
                             </tbody>
@@ -403,4 +379,152 @@
         </div>
     </div>
 </div>
+    <script>
+        const qs = window.myQueryString();
+        const tenantId = qs.getQueryStrings()['tenant_id'];
+        const $tenant_id = $('[name="tenant_id"]');
+        $tenant_id.attr('data-selected', tenantId)
+
+    </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                contract_serial_number: {
+                    required: true
+                },
+                other_rights: {
+                    required: true
+                },
+                car_parking_floor: {
+                    required: true
+                },
+                car_parking_space_number: {
+                    required: true
+                },
+                motorcycle_parking_space_number: {
+                    required: true,
+                },
+                motorcycle_parking_count: {
+                    required: true,
+                },
+                contract_start: {
+                    required: true
+                },
+                contract_end: {
+                    required: true
+                },
+                rent: {
+                    required: true
+                },
+                rent_pay_day: {
+                    required: true,
+                    min: 1,
+                    max: 31,
+                },
+                deposit: {
+                    required: true
+                },
+                deposit_paid: {
+                    required: true
+                },
+                electricity_price_per_degree: {
+                    required: true
+                },
+                electricity_price_per_degree_summer: {
+                    required: true
+                },
+                "110v_start_degree": {
+                    required: true
+                },
+                "110v_end_degree": {
+                    required: true
+                },
+                invoice_collection_number: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                contract_serial_number: {
+                    required: '必須輸入'
+                },
+                other_rights: {
+                    required: '必須輸入'
+                },
+                car_parking_floor: {
+                    required: '必須輸入'
+                },
+                car_parking_space_number: {
+                    required: '必須輸入'
+                },
+                motorcycle_parking_space_number: {
+                    required: '必須輸入',
+                },
+                motorcycle_parking_count: {
+                    required: '必須輸入',
+                },
+                contract_start: {
+                    required: '必須輸入'
+                },
+                contract_end: {
+                    required: '必須輸入'
+                },
+                rent: {
+                    required: '必須輸入'
+                },
+                rent_pay_day: {
+                    required: '必須輸入',
+                    min: "日期輸入錯誤 沒有 {0} 日",
+                    max: "日期輸入錯誤 沒有 {0} 日",
+                },
+                deposit: {
+                    required: '必須輸入'
+                },
+                deposit_paid: {
+                    required: '必須輸入'
+                },
+                electricity_price_per_degree: {
+                    required: '必須輸入'
+                },
+                electricity_price_per_degree_summer: {
+                    required: '必須輸入'
+                },
+                "110v_start_degree": {
+                    required: '必須輸入'
+                },
+                "110v_end_degree": {
+                    required: '必須輸入'
+                },
+                invoice_collection_number: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

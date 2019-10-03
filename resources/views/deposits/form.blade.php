@@ -1,19 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
+    @include('layouts.form_error')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -29,19 +20,17 @@
                                 <tr>
                                     <td>@lang("model.Deposit.tenant_contract_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="tenant_contract" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="tenant_contract"
+                                            data-text="id"
                                             data-selected="{{ $data['tenant_contract_id'] ?? 0 }}"
                                             name="tenant_contract_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
-                                        
+
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_date")</td>
                                     <td>
                                         <input
@@ -62,8 +51,6 @@
                                             value="{{ $data['deposit_collection_serial_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_confiscated_amount")</td>
                                     <td>
                                         <input
@@ -84,8 +71,6 @@
                                             value="{{ $data['deposit_returned_amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.confiscated_or_returned_date")</td>
                                     <td>
                                         <input
@@ -106,8 +91,6 @@
                                             value="{{ $data['invoicing_amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.invoice_date")</td>
                                     <td>
                                         <input
@@ -130,8 +113,6 @@
                                             {{ isset($data["is_deposit_collected"]) ? ($data['is_deposit_collected'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.comment")</td>
                                     <td>
                                         <input
@@ -152,4 +133,81 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                deposit_collection_date: {
+                    required: true
+                },
+                deposit_collection_serial_number: {
+                    required: true
+                },
+                deposit_confiscated_amount: {
+                    required: true
+                },
+                deposit_returned_amount: {
+                    required: true
+                },
+                confiscated_or_returned_date: {
+                    required: true,
+                },
+                invoicing_amount: {
+                    required: true,
+                },
+                invoice_date: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                deposit_collection_date: {
+                    required: '必須輸入'
+                },
+                deposit_collection_serial_number: {
+                    required: '必須輸入'
+                },
+                deposit_confiscated_amount: {
+                    required: '必須輸入'
+                },
+                deposit_returned_amount: {
+                    required: '必須輸入'
+                },
+                confiscated_or_returned_date: {
+                    required: '必須輸入',
+                },
+                invoicing_amount: {
+                    required: '必須輸入',
+                },
+                invoice_date: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

@@ -1,5 +1,15 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+
+    $appendLandlordQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['landlords.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('landlord_id', $data['id'] ?? null);
+
 @endphp
 
 <div class="card">
@@ -13,9 +23,9 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordContracts.create') }}">建立</a>
-        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-{{$layer}}">匯入 Excel</a>
-        <a class="btn btn-sm btn-secondary my-3" href="/export/{{Str::camel(substr($layer, 0, -1))}}">匯出 Excel</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordContracts.create', $appendLandlordQueryString) }}">建立</a>
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>
@@ -43,8 +53,19 @@
                         <tr>
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
-                                {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                @if (is_array($value) && $key === 'building')
+                                    <td>{{ $value['address'] }}</td>
+                                @elseif (is_array($value) && $key === 'landlords')
+                                    @php
+                                    $landlordNames = collect($value)->map(function ($item, $key) {
+                                        return collect($item)->only(['name'])->toArray();
+                                    });
+                                    @endphp
+                                    <td> {{ $landlordNames->implode('name', ',') }}</td>
+                                @else
+                                    {{-- an even nested resource array --}}
+                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
+                                @endif
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=landlords;building;documents">查看</a>
@@ -58,7 +79,7 @@
         @endif
     </div>
 </div>
-@include('shared.import_modal', ['layer' => $layer])
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

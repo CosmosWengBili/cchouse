@@ -8,15 +8,23 @@ use App\Responser\NestedRelationResponser;
 use App\TenantContract;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class PayLogController extends Controller
 {
     public function index(Request $request) {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $responseData
             ->index(
                 'tenant_contracts',
-                TenantContract::with($request->withNested)->active()->get()
+                $this->limitRecords(
+                    TenantContract::withExtraInfo()
+                        ->select($selectStr)
+                        ->with($request->withNested)
+                        ->active()
+                )
             )
             ->relations($request->withNested);
 

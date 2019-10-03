@@ -9,18 +9,20 @@ return [
     |
     |
     */
-    
+
     'bank_code' => 952,
 
     // default options and order of reversal
     'reversal' => [
+        '履約保證金',
         '更改繳款日租金',
-        '仲介服務費',
+        '仲介費',
+        '顧問費',
         '管理費',
         '清潔費',
+        '清潔費(公司)',
         '瓦斯費',
         '管理服務費',
-        '仲介費',
         '滯納金',
         '轉房費',
         '換約費',
@@ -36,6 +38,13 @@ return [
         '租金',
         '電費',
     ],
-    
+
     'debt_collection_delay_days' => 4,
+
+
+
+    'view' => [
+        // Show records in every index.blade.php.
+        'default_records_in_index_blade' => 200,
+    ]
 ];

@@ -1,19 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -29,18 +21,16 @@
                             <tr>
                                 <td>@lang("model.LandlordContract.building_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="buildings" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="buildings"
                                         data-text="address"
                                         data-selected="{{ isset($data["building_id"]) ? $data['building_id'] : '0' }}"
                                         name="building_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.commission_type")</td>
                                 <td>
                                     <select
@@ -65,8 +55,6 @@
                                         value="{{ isset($data["commission_start_date"]) ? $data['commission_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.commission_end_date")</td>
                                 <td>
                                     <input
@@ -87,8 +75,6 @@
                                         value="{{ isset($data["warranty_start_date"]) ? $data['warranty_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.warranty_end_date")</td>
                                 <td>
                                     <input
@@ -109,8 +95,6 @@
                                         value="{{ isset($data["rental_decoration_free_start_date"]) ? $data['rental_decoration_free_start_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.rental_decoration_free_end_date")</td>
                                 <td>
                                     <input
@@ -121,7 +105,6 @@
                                     />
                                 </td>
                             </tr>
-    
                             <tr>
                                 <td>@lang("model.LandlordContract.annual_service_fee_month_count")</td>
                                 <td>
@@ -132,9 +115,6 @@
                                         value="{{ isset($data["annual_service_fee_month_count"]) ? $data['annual_service_fee_month_count'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.LandlordContract.charter_fee")</td>
                                 <td>
                                     <input
@@ -156,9 +136,6 @@
                                         value="{{ isset($data["taxable_charter_fee"]) ? $data['taxable_charter_fee'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-
-                            <tr>
                                 <td>@lang("model.LandlordContract.agency_service_fee")</td>
                                 <td>
                                     <input
@@ -182,8 +159,6 @@
                                         @endforeach
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.rent_collection_time")</td>
                                 <td>
                                     <input
@@ -204,8 +179,6 @@
                                         value="{{ isset($data["rent_adjusted_date"]) ? $data['rent_adjusted_date'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.adjust_ratio")</td>
                                 <td>
                                     <input
@@ -226,8 +199,6 @@
                                         value="{{ isset($data["deposit_month_count"]) ? $data['deposit_month_count'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.LandlordContract.is_collected_by_third_party")</td>
                                 <td>
                                     <input type="hidden" value="0" name="is_collected_by_third_party"/>
@@ -238,29 +209,31 @@
                                         {{ isset($data["is_collected_by_third_party"]) ? ($data['is_collected_by_third_party'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
-                            </tr>   
+                            </tr>
                             <tr>
                                 <td>@lang("model.LandlordContract.is_notarized")</td>
                                 <td>
-                                    <input type="hidden" value="0" name="is_notarized"/>
-                                    <input
-                                        type="checkbox"
-                                        name="is_notarized"
-                                        value="1"
-                                        {{ isset($data["is_notarized"]) ? ($data['is_notarized'] ? 'checked' : '') : '' }}
-                                    />
+                                    @foreach(config('enums.landlord_contracts.is_notarized') as $notarizedText)
+                                        <label class="form-check-label">
+                                            <input
+                                                type="radio"
+                                                name="is_notarized"
+                                                value="{{ $notarizedText }}"
+                                                {{ $loop->first || (isset($data['is_notarized']) && ($data['is_notarized'] == $notarizedText)) ? 'checked': '' }}
+                                            />
+                                            {{ $notarizedText }}
+                                        </label>
+                                    @endforeach
                                 </td>
-                            </tr>                             
-                            <tr>
                                 <td>@lang("model.LandlordContract.commissioner_id")</td>
                                 <td>
-                                    <select 
-                                        data-toggle="selectize" 
-                                        data-table="users" 
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="users"
                                         data-text="name"
                                         data-selected="{{ isset($data["commissioner_id"]) ? $data['commissioner_id'] : '0' }}"
                                         name="commissioner_id"
-                                        class="form-control form-control-sm" 
+                                        class="form-control form-control-sm"
                                     >
                                     </select>
                                 </td>
@@ -275,6 +248,33 @@
                                         value="{{ isset($data["landlord_ids"]) ? $data['landlord_ids'] : '' }}"
                                     />
                                 </td>
+                                <td>@lang("model.LandlordContract.can_keep_pets")</td>
+                                <td>
+
+                                    <input type="hidden" value="0" name="can_keep_pets"/>
+                                    <input
+                                        type="checkbox"
+                                        name="can_keep_pets"
+                                        value="1"
+                                        {{ isset($data["can_keep_pets"]) ? ($data['can_keep_pets'] ? 'checked' : '') : '' }}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@lang("model.LandlordContract.gender_limit")</td>
+                                <td>
+                                    <select
+                                        class="form-control form-control-sm"
+                                        name="gender_limit"
+                                        value="{{ $data['gender_limit'] ?? '' }}"
+                                    />
+                                    @foreach(config('enums.landlord_contracts.gender_limit') as $value)
+                                        <option value="{{$value}}">{{$value}}</option>
+                                    @endforeach
+                                    </select>
+                                </td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             </tbody>
                         </table>
@@ -290,7 +290,12 @@
     </div>
 </div>
 <script>
-    $('[name="landlord_ids"]').selectize({
+    const qs = window.myQueryString();
+    const landlordId = qs.getQueryStrings()['landlord_id'];
+    const $landlordIds = $('[name="landlord_ids"]');
+    landlordId && $landlordIds.val(landlordId);
+
+    $select = $landlordIds.selectize({
         delimiter: ',',
         persist: false,
         create: function(input) {
@@ -301,4 +306,105 @@
         }
     });
 </script>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                warranty_start_date: {
+                    required: true
+                },
+                warranty_end_date: {
+                    required: true
+                },
+                rental_decoration_free_start_date: {
+                    required: true,
+                },
+                rental_decoration_free_end_date: {
+                    required: true,
+                },
+                agency_service_fee: {
+                    required: true
+                },
+                charter_fee: {
+                    required: true
+                },
+                taxable_charter_fee: {
+                    required: true
+                },
+                rent_collection_time: {
+                    required: true
+                },
+                rent_adjusted_date: {
+                    required: true
+                },
+                adjust_ratio: {
+                    required: true
+                },
+                deposit_month_count: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                warranty_start_date: {
+                    required: '必須輸入'
+                },
+                warranty_end_date: {
+                    required: '必須輸入'
+                },
+                rental_decoration_free_start_date: {
+                    required: '必須輸入',
+                },
+                rental_decoration_free_end_date: {
+                    required: '必須輸入',
+                },
+                charter_fee: {
+                    required: '必須輸入'
+                },
+                taxable_charter_fee: {
+                    required: '必須輸入'
+                },
+                rent_collection_time: {
+                    required: '必須輸入'
+                },
+                rent_adjusted_date: {
+                    required: '必須輸入'
+                },
+                adjust_ratio: {
+                    required: '必須輸入'
+                },
+                deposit_month_count: {
+                    required: '必須輸入'
+                },
+                agency_service_fee: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

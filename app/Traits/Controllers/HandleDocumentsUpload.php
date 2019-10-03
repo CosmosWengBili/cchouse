@@ -3,6 +3,7 @@ namespace App\Traits\Controllers;
 
 use App\Document;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
 
 trait HandleDocumentsUpload {
@@ -16,7 +17,7 @@ trait HandleDocumentsUpload {
 
             // 刪除標記為 delete 的檔案
             foreach ($existedFiles as $existedFile) {
-                if ($existedFile['_delete'] == '1') {
+                if (isset($existedFile['_delete']) && $existedFile['_delete'] == '1') {
                     Document::destroy($existedFile['id']);
                 }
             }
@@ -34,6 +35,44 @@ trait HandleDocumentsUpload {
                 $document->path = $newFile->store('documents');
 
                 $document->save();
+            }
+        }
+    }
+
+    protected function handleMultiDocumentsUpload(Model $modelInstance, array $documentTypes, int $formIndex)
+    {
+        foreach($documentTypes as $documentType) {
+
+            $existedFiles = request()->all("documents.{$documentType}");
+            $existedFiles = is_array($existedFiles) ? $existedFiles : [];
+
+            // 刪除標記為 delete 的檔案
+            foreach ($existedFiles as $existedFile) {
+                foreach ($existedFile as $file) {
+                    if (isset($file[$formIndex]['_delete']) && $file[$formIndex]['_delete'] == '1') {
+                        Document::destroy($existedFile[$formIndex]['id']);
+                    }
+                }
+            }
+
+            // 處理新增的檔案
+            $newFiles = request()->file("documents.{$documentType}");
+
+            if (isset($newFiles[$formIndex])) {
+                foreach ($newFiles as $newFormFiles) {
+                    /** @var UploadedFile $newFormFile */
+                    foreach ($newFormFiles as $newFormFile) {
+                        $document = new Document();
+
+                        $document->attachable_type = get_class($modelInstance);
+                        $document->attachable_id = $modelInstance->id;
+                        $document->document_type = $documentType;
+                        $document->filename = $newFormFile->getClientOriginalName();
+                        $document->path = $newFormFile->store('documents');
+
+                        $document->save();
+                    }
+                }
             }
         }
     }

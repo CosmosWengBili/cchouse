@@ -55,9 +55,9 @@ class AbnormalPaymentReceived extends Notification
      */
     public function toArray($notifiable)
     {
+        $url = env('APP_URL').'/tenantContracts/'.$this->tenantPayment->id.'/payment_recheck';
         return [
-            'tenantPayment' => $this->tenantPayment,
-            'url' => '/tenantContracts/'.$this->tenantPayment->id.'?with=paylogs;tenantPayment;tenantElectricityPayment',
+            'content' => 'please check url: <a target="_blank" href="'.$url.'">'.$url.'</a>',
         ];
     }
 }

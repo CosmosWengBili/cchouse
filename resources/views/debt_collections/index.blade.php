@@ -11,16 +11,16 @@
                 <a class="nav-link" href="#owner" data-toggle="tab">您的催收案件</a>
             </li>
         </ul>
-        <div class="tab-content pt-0">
+        <div class="tab-content w-100 pt-0">
             <div class="tab-pane fade active show" id="all">
-                <div class="col-md-12 mt-4">
+                <div class="col-md-12">
                     @foreach ( $data as $type => $entries)
                         @include('debt_collections.table', ['objects' => $entries, 'layer' => $type])
                     @endforeach
                 </div>
             </div>
             <div class="tab-pane fade" id="owner">
-                <div class="col-md-12 mt-4">
+                <div class="col-md-12">
                 @foreach ( $owner_data['data'] as $type => $entries)
                     @include('debt_collections.table', ['objects' => $entries, 'layer' => $type])
                 @endforeach

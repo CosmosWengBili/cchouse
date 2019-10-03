@@ -10,6 +10,7 @@
 
         {{-- the route to create this kind of resource --}}
         <a class="btn btn-sm btn-success my-3" href="{{ route( 'keys.create') }}">建立</a>
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
@@ -36,14 +37,14 @@
                     {{-- all the records --}}
                     @foreach ( $objects as $object )
                         @if ( in_array($object['id'], $unapproved_key) )
-                            <tr>
-                        @else
                             <tr class="bg-warning">
-                        @endif    
+                        @else
+                            <tr>
+                        @endif
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=room;keeper;keyRequests">查看</a>

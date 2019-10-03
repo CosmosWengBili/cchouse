@@ -18,6 +18,8 @@ class Receipt extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
+    
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * Get the tenant contracts.

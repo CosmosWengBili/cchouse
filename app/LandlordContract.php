@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Scopes\ExtraBuildingInfoScope;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -12,15 +14,22 @@ class LandlordContract extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use WithExtraInfo;
 
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
-
-    protected $casts = ['commission_start_date' => 'date',
-                        'commission_end_date' => 'date'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
     protected $appends = array('landlord_ids');
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'can_keep_pets' => 'boolean'
+    ];
 
     public function getLandlordIdsAttribute() {
         return implode(",",$this->landlords()->get()->pluck('id')->toArray());

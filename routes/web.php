@@ -27,6 +27,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
+            Route::get('landlords/createMulti', 'LandlordController@createMulti')->name('landlordMulti.create');
+            Route::post('landlords/store', 'LandlordController@storeMulti')->name('landlordMulti.store');
             Route::resource('landlords', 'LandlordController');
             Route::resource('contactInfos', 'ContactInfoController');
             Route::resource('landlordAgents', 'LandlordAgentController');
@@ -38,6 +40,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('tenantContracts', 'TenantContractController');
             Route::resource('companyIncomes', 'CompanyIncomeController');
             Route::get('tenantContracts/{tenantContract}/electricityDegree', 'TenantContractController@electricityDegree');
+            Route::get('tenantContracts/{tenantContract}/payment_recheck', 'TenantContractController@payment_recheck')
+                ->name('tenantContracts.paymentRecheck');
             Route::post(
                 'tenantContracts/sendElectricityPaymentReportSMS',
                 'TenantContractController@sendElectricityPaymentReportSMS'
@@ -47,6 +51,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('maintenances', 'MaintenanceController');
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
+            Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
 
             Route::group(['middleware' => 'payment.lock'], function () {
                 Route::resource('payLogs', 'PayLogController');
@@ -55,7 +60,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
             });
 
             Route::resource('shareholders', 'ShareHolderController');
-            Route::resource('deposits', 'DepositController');
 
             // receipts
             Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;
@@ -70,6 +74,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('upload/{model}', 'ExcelController@upload');
             Route::post('import/{model}', 'ExcelController@import');
             Route::get('export/{model}', 'ExcelController@export');
+            Route::get('export/{model}/{id}/{relation}', 'ExcelController@exportRelation');
             Route::get('example/{model}', 'ExcelController@example');
             Route::get('export/function/{function}', 'ExcelController@export_by_function');
 
@@ -81,8 +86,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             // monthly report
             Route::get('monthlyReports', 'MonthlyReportController@index')->name('monthlyReports.index');
             Route::get('monthlyReports/{building}', 'MonthlyReportController@show')->name('monthlyReports.show');
-            Route::post('monthlyReports/{building}/storeOtherSubjects', 'MonthlyReportController@storeOtherSubjects')->name('monthlyReports.storeOtherSubjects');
-            Route::get('monthlyReports/{building}/print', 'MonthlyReportController@print')->name('monthlyReports.print');;
+            Route::get('monthlyReports/{building}/print', 'MonthlyReportController@print')->name('monthlyReports.print');
+            Route::get('monthlyReports/{building}/print_tenant', 'MonthlyReportController@print_tenant')->name('monthlyReports.print_tenant');
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
@@ -91,7 +96,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');
             Route::put('systemVariables/{group}', 'SystemVariableController@update')->name('system_variables.update');
-            
+
+            // engineers tool
+            Route::get('engineers/api', 'EngineerController@api')->name('engineers.api');
+            Route::post('engineers/api/reversal', 'EngineerController@reversal')->name('engineers.reversal');
         });
     });
 

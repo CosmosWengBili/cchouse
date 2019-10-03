@@ -16,6 +16,7 @@
         @if(Route::has(Str::camel($layer) . '.create'))
             <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
         @endif
+        @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
@@ -45,7 +46,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td> {{ $value }}</td>
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 @if($layer == 'tenant_contracts')

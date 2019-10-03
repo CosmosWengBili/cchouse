@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Redis;
@@ -12,6 +13,7 @@ class Building extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.
@@ -20,7 +22,7 @@ class Building extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot'];
+    protected $hidden = ['pivot', 'deleted_at'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -72,11 +74,19 @@ class Building extends Model implements AuditableContract
     }
 
     /**
-     * Get the rooms of this building.
+     * Get the public room of this building.
      */
     public function publicRoom()
     {
         return $this->rooms()->where('room_code', '公用')->first();
+    }
+
+    /**
+     * Get the normal rooms of this building.
+     */
+    public function normalRooms()
+    {
+        return $this->rooms()->where('room_code', '!=', '公用')->get();
     }
 
     /**

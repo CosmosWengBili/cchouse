@@ -24,7 +24,10 @@ class RoomController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->index('rooms', Room::with($request->withNested)->get())
+            ->index(
+                'rooms',
+                $this->limitRecords(Room::with($request->withNested))
+            )
             ->relations($request->withNested);
 
         return view('rooms.index', $responseData->get());
@@ -86,11 +89,6 @@ class RoomController extends Controller
             'wifi_account' => 'required|max:255',
             'wifi_password' => 'required|max:255',
             'has_digital_tv' => 'required|boolean',
-            'can_keep_pets' => 'required|boolean',
-            'gender_limit' => [
-                'required',
-                Rule::in(config('enums.rooms.gender_limit'))
-            ],
             'comment' => 'required'
         ]);
 
@@ -101,12 +99,13 @@ class RoomController extends Controller
             'appliances.*.maintenance_phone' => 'required',
             'appliances.*.count' =>
                 'required_with:appliances|integer|digits_between:1,11',
-            'appliances.*.vendor' => 'required'
+            'appliances.*.vendor' => 'required',
+            'appliances.*.comment' => 'nullable',
         ]);
 
         $room = RoomService::create(
             $validatedData,
-            $validatedApplianceData['appliances']
+            $validatedApplianceData['appliances'] ?? []
         );
         $this->handleDocumentsUpload($room, ['picture']);
 
@@ -188,11 +187,6 @@ class RoomController extends Controller
             'wifi_account' => 'required|max:255',
             'wifi_password' => 'required|max:255',
             'has_digital_tv' => 'required|boolean',
-            'can_keep_pets' => 'required|boolean',
-            'gender_limit' => [
-                'required',
-                Rule::in(config('enums.rooms.gender_limit'))
-            ],
             'comment' => 'required'
         ]);
 
@@ -209,7 +203,7 @@ class RoomController extends Controller
         RoomService::update(
             $room,
             $validatedData,
-            $validatedApplianceData['appliances']
+            $validatedApplianceData['appliances'] ?? []
         );
         $this->handleDocumentsUpload($room, ['picture']);
 

@@ -1,19 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @include('layouts.form_error')
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 mt-5">
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
@@ -29,18 +21,16 @@
                                 <tr>
                                     <td>@lang("model.Room.building_id")</td>
                                     <td>
-                                        <select 
-                                            data-toggle="selectize" 
-                                            data-table="buildings" 
-                                            data-text="id" 
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="buildings"
+                                            data-text="id"
                                             data-selected="{{ $data['building_id'] ?? 0 }}"
                                             name="building_id"
-                                            class="form-control form-control-sm" 
+                                            class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.needs_decoration")</td>
                                     <td>
 
@@ -63,8 +53,6 @@
                                             value="{{ $data['room_code'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.virtual_account")</td>
                                     <td>
                                         <input
@@ -88,8 +76,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_number")</td>
                                     <td>
                                         <input
@@ -113,8 +99,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_attribute")</td>
                                     <td>
                                         <input
@@ -135,8 +119,6 @@
                                             value="{{ $data['living_room_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_count")</td>
                                     <td>
                                         <input
@@ -157,8 +139,6 @@
                                             value="{{ $data['bathroom_count'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.parking_count")</td>
                                     <td>
                                         <input
@@ -179,8 +159,6 @@
                                             value="{{ $data['ammeter_reading_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.rent_list_price")</td>
                                     <td>
                                         <input
@@ -201,8 +179,6 @@
                                             value="{{ $data['rent_reserve_price'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.rent_landlord")</td>
                                     <td>
                                         <input
@@ -223,8 +199,6 @@
                                             value="{{ $data['rent_actual'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.internet_form")</td>
                                     <td>
                                         <input
@@ -248,8 +222,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.management_fee")</td>
                                     <td>
                                         <input
@@ -271,8 +243,6 @@
                                             value="{{ $data['wifi_account'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.wifi_password")</td>
                                     <td>
                                         <input
@@ -295,35 +265,6 @@
                                             {{ isset($data["has_digital_tv"]) ? ($data['has_digital_tv'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Room.can_keep_pets")</td>
-                                    <td>
-
-                                        <input type="hidden" value="0" name="can_keep_pets"/>
-                                        <input
-                                            type="checkbox"
-                                            name="can_keep_pets"
-                                            value="1"
-                                            {{ isset($data["can_keep_pets"]) ? ($data['can_keep_pets'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Room.gender_limit")</td>
-                                    <td>
-                                        <select
-                                            class="form-control form-control-sm"
-                                            name="gender_limit"
-                                            value="{{ $data['gender_limit'] ?? '' }}"
-                                        />
-                                            @foreach(config('enums.rooms.gender_limit') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.comment")</td>
                                     <td>
                                         <input
@@ -334,9 +275,6 @@
                                         />
                                     </td>
                                 </tr>
-                                
-                                
-                                
                             </tbody>
                         </table>
 
@@ -353,4 +291,141 @@
         </div>
     </div>
 </div>
+    <script id="validation">
+
+        $(document).ready(function () {
+
+            const rules = {
+                room_code: {
+                    required: true
+                },
+                virtual_account: {
+                    required: true
+                },
+                room_number: {
+                    required: true
+                },
+                room_attribute: {
+                    required: true
+                },
+                living_room_count: {
+                    required: true,
+                },
+                room_count: {
+                    required: true,
+                },
+                bathroom_count: {
+                    required: true
+                },
+                parking_count: {
+                    required: true
+                },
+                ammeter_reading_date: {
+                    required: true
+                },
+                rent_list_price: {
+                    required: true
+                },
+                rent_reserve_price: {
+                    required: true
+                },
+                rent_landlord: {
+                    required: true
+                },
+                rent_actual: {
+                    required: true
+                },
+                internet_form: {
+                    required: true
+                },
+                management_fee: {
+                    required: true
+                },
+                wifi_account: {
+                    required: true
+                },
+                wifi_password: {
+                    required: true
+                },
+            };
+
+            const messages = {
+                room_code: {
+                    required: '必須輸入'
+                },
+                virtual_account: {
+                    required: '必須輸入'
+                },
+                room_number: {
+                    required: '必須輸入'
+                },
+                room_attribute: {
+                    required: '必須輸入'
+                },
+                living_room_count: {
+                    required: '必須輸入',
+                },
+                room_count: {
+                    required: '必須輸入',
+                },
+                bathroom_count: {
+                    required: '必須輸入'
+                },
+                parking_count: {
+                    required: '必須輸入'
+                },
+                ammeter_reading_date: {
+                    required: '必須輸入'
+                },
+                rent_list_price: {
+                    required: '必須輸入'
+                },
+                rent_reserve_price: {
+                    required: '必須輸入'
+                },
+                rent_landlord: {
+                    required: '必須輸入'
+                },
+                rent_actual: {
+                    required: '必須輸入'
+                },
+                internet_form: {
+                    required: '必須輸入'
+                },
+                management_fee: {
+                    required: '必須輸入'
+                },
+                wifi_account: {
+                    required: '必須輸入'
+                },
+                wifi_password: {
+                    required: '必須輸入'
+                },
+            };
+
+            $('form').validate({
+                rules: rules,
+                messages: messages,
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+                    error.addClass( "invalid-feedback" );
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.next( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+                }
+            });
+
+        });
+
+
+
+    </script>
 @endsection

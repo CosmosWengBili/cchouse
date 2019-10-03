@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -12,14 +12,15 @@ class Maintenance extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     const STATUSES = [
         'pending' => '待處理',
         'contact' => '聯繫中',
         'sent' => '已派工',
         'request' => '請款中',
-        'done' => '案件完成'
+        'done' => '案件完成',
+        'cancel' => '已取消',
     ];
     const WORK_TYPES = [
         'water_and_electricity' => '水電',
@@ -31,6 +32,7 @@ class Maintenance extends Model implements AuditableContract
         'wallpaper' => '壁紙',
         'internet' => '網路',
         'appliance' => '家電',
+        'clean' => '清潔',
         'others' => '其它'
     ];
 

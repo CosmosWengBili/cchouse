@@ -5,6 +5,11 @@
         <div class="row my-3">
             <div class="col-12 card">
                 <div class="card-body">
+                    @if($paid_diff != 0)
+                        <div class="alert alert-danger" role="alert">
+                            此案件繳費明細總額與銀行紀錄總額有差額： {{ $paid_diff }} 元。
+                        </div>
+                    @endif
                     <div class="card-title">
                         詳細資料
                         <a class="btn btn-primary" href="{{ route( 'tenantContracts.edit', $data['id']) }}">編輯</a>

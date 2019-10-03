@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\TenantContract;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
 
@@ -30,11 +31,16 @@ class ReceiptController extends Controller
         $type= Input::get('type')? Input::get('type') : 'invoice';
         $invoiceData = [];
         $receiptData = [];
+        $columns = array_map(function ($column) { return "tenant_contract.{$column}"; }, $this->whitelist('tenant_contracts'));
+        $selectColumns = array_merge($columns, TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+
         $tenant_contracts = $responseData
             ->index(
                 'tenant_contracts',
                 $this->limitRecords(
-                    TenantContract::select($this->whitelist('tenant_contracts'))
+                    TenantContract::withExtraInfo()
+                        ->select($selectStr)
                         ->where('contract_end', '>', Carbon::today()->subWeek())
                         ->with($request->withNested)
                 )

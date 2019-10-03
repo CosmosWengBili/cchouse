@@ -1,5 +1,13 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $appendRoomIdQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['rooms.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('room_id', $data['id'] ?? null);
 @endphp
 
 <div class="card">
@@ -13,7 +21,7 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keys.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'keys.create', $appendRoomIdQueryString) }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
@@ -49,7 +57,6 @@
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=room;keeper;keyRequests">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                             </td>
                         </tr>
                     @endforeach

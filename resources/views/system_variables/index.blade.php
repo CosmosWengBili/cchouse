@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-$systemVariables = \App\SystemVariable::VARIABLES;
+$systemVariables = \App\SystemVariable::variables();
 @endphp
 
 @section('content')

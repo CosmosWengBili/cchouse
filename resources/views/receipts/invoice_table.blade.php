@@ -44,5 +44,7 @@
     </div>
 </div>
 <script>
-    renderDataTable(["#invoice-table"]);
+    renderDataTable(["#invoice-table"], 
+        {"order": []}
+    );
 </script>

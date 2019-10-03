@@ -14,8 +14,9 @@ use App\SystemVariable;
 use App\Receipt;
 
 class ReceiptService
-{
-    public static function makeInvoiceData($start_date, $end_date)
+{   
+    public $invoice_count;
+    public function makeInvoiceData($start_date, $end_date)
     {
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
@@ -29,7 +30,7 @@ class ReceiptService
             ->get();
 
         // Init the variables which would be used inside invoice data for loop
-        $invoice_count = 0;
+        $this->invoice_count = 0;
         $invoice_item_count = 0;
         $payment_count = 0;
         $subtotal = 0;
@@ -49,7 +50,7 @@ class ReceiptService
                 continue;
             }
 
-            $data = self::makeInvoiceMockData();
+            $data = $this->makeInvoiceMockData();
 
             $invoice_item_count++;
             $pay_log_tenant_contract_id =
@@ -57,7 +58,7 @@ class ReceiptService
 
             // Update subtotal-use index
             if ($pay_log_tenant_contract_id != $current_tenant_contract_id) {
-                $invoice_count++;
+                $this->invoice_count++;
                 $invoice_item_count = 1;
                 $current_tenant_contract_id = $pay_log_tenant_contract_id;
                 $payment_count = 0;
@@ -94,10 +95,10 @@ class ReceiptService
             }
 
             // Set normal value
-            $data['invoice_count'] = $invoice_count;
+            $data['invoice_count'] = $this->invoice_count;
             $data['invoice_date'] = $pay_log->paid_at->format('Y-m-d');
             $data['invoice_item_idx'] = $invoice_item_count;
-            $data['invoice_item_name'] = self::makeInvoiceItemName(
+            $data['invoice_item_name'] = $this->makeInvoiceItemName(
                 $pay_log['loggable'],
                 'payment'
             );
@@ -142,7 +143,7 @@ class ReceiptService
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
                 $data['invoice_serial_number'] = $pay_log->loggable->receipts->first()['invoice_serial_number'];
-                $data['invoice_price'] = round($subtotal * $data['tax_rate']);
+                $data['invoice_price'] = $subtotal;
                 $data['subtotal'] = $subtotal;
                 $subtotal = 0;
             }
@@ -151,9 +152,10 @@ class ReceiptService
         }
 
         // Generate deposit interest, maintenance data and collection data
-        $deposit_interest_data = self::makeDepositInterest($start_date, $end_date);
-        $maintenance_data = self::makeMaintenance($start_date, $end_date);
-        $deposit_data = self::makeDeposits($start_date, $end_date);
+        $this->invoice_count ++;
+        $deposit_interest_data = $this->makeDepositInterest($start_date, $end_date);
+        $maintenance_data = $this->makeMaintenance($start_date, $end_date);
+        $deposit_data = $this->makeDeposits($start_date, $end_date);
 
         $invoice_data = array_merge(
             $invoice_data,
@@ -164,7 +166,7 @@ class ReceiptService
         return $invoice_data;
     }
 
-    public static function makeReceiptData($start_date, $end_date)
+    public function makeReceiptData($start_date, $end_date)
     {
         $receipt_data = array();
         $landlord_contract_ids = array();
@@ -245,7 +247,7 @@ class ReceiptService
         return $receipt_data;
     }
 
-    public static function makeDepositInterest($start_date, $end_date)
+    public function makeDepositInterest($start_date, $end_date)
     {
         // Set time cauculate used variables
         $start_year = $start_date->year;
@@ -281,7 +283,7 @@ class ReceiptService
                 ->get();
 
             foreach ($tenant_contracts as $contract_key => $tenant_contract) {
-                $data = self::makeInvoiceMockData();
+                $data = $this->makeInvoiceMockData();
                 $data['invoice_date'] = $date->format('Y-m-d');
                 $data['invoice_item_name'] = '押金設算息';
                 $deposit_interest = SystemVariable::where(
@@ -308,17 +310,16 @@ class ReceiptService
                 $data['actual_deposit_date'] = $date->format('Y-m-d');
                 $data['invoice_collection_number'] =
                     $tenant_contract->invoice_collection_number;
-                $data['invoice_price'] = round(
-                    $data['amount'] * $data['tax_rate']
-                );
+                $data['invoice_price'] = $data['amount'];
                 $data['invoice_serial_number'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
                 array_push($invoiceData, $data);
+                $this->invoice_count ++;
             }
         }
         return $invoiceData;
     }
 
-    public static function makeCollection($start_date, $end_date)
+    public function makeCollection($start_date, $end_date)
     {
         $collections = DebtCollection::where([
             'is_penalty_collected',
@@ -331,7 +332,7 @@ class ReceiptService
         // Genenate collection interest data
         $collection_data = array();
         foreach ($collections as $collection_key => $collection) {
-            $data = self::makeInvoiceMockData();
+            $data = $this->makeInvoiceMockData();
             $data['invoice_date'] = $collection->received_at->format('Y-m-d');
             $data['invoice_item_name'] = '行政手續費';
             $data['amount'] = 300;
@@ -355,16 +356,17 @@ class ReceiptService
             );
             $data['invoice_collection_number'] =
                 $tenant_contract->invoice_collection_number;
-            $data['invoice_price'] = round($data['amount'] * $data['tax_rate']);
+            $data['invoice_price'] = $data['amount'];
             $data['invoice_serial_number'] = $collection->receipts->first()['invoice_serial_number'];
 
             array_push($collection_data, $data);
+            $this->invoice_count ++;
         }
 
         return $collection_data;
     }
 
-    public static function makeMaintenance($start_date, $end_date)
+    public function makeMaintenance($start_date, $end_date)
     {
         // Retrieve data from LandlordPayment not Maintenance 
         $landlord_payments = LandlordPayment::where(
@@ -382,7 +384,7 @@ class ReceiptService
             $landlords = $landlord_payment->room->building->landlordContracts->last()
                 ->landlords;
             foreach ($landlords as $landlord_key => $landlord) {
-                $data = self::makeInvoiceMockData();
+                $data = $this->makeInvoiceMockData();
                 $data['invoice_date'] = $landlord_payment->created_at->format(
                     'Y-m-d'
                 );
@@ -409,17 +411,16 @@ class ReceiptService
                 ] = $landlord_payment->created_at->format('Y-m-d');
                 $data['invoice_collection_number'] =
                     $landlord->invoice_collection_number;
-                $data['invoice_price'] = round(
-                    $data['amount'] * $data['tax_rate']
-                );
+                $data['invoice_price'] = $data['tax_rate'];
                 $data['invoice_serial_number'] = $landlord_payment->receipts->first()['invoice_serial_number'];
 
                 array_push($maintenance_data, $data);
+                $this->invoice_count ++;
             }
         }
         return $maintenance_data;
     }
-    public static function makeDeposits($start_date, $end_date)
+    public function makeDeposits($start_date, $end_date)
     {
         $deposits = Deposit::where('deposit_confiscated_amount', '>', 1)
             ->whereBetween('confiscated_or_returned_date', [
@@ -435,7 +436,7 @@ class ReceiptService
             $landlords = $deposit->tenantContract->room->building->landlordContracts->last()
                 ->landlords;
             foreach ($landlords as $landlord_key => $landlord) {
-                $data = self::makeInvoiceMockData();
+                $data = $this->makeInvoiceMockData();
                 $data[
                     'invoice_date'
                 ] = $deposit->confiscated_or_returned_date->format('Y-m-d');
@@ -462,12 +463,11 @@ class ReceiptService
                 ] = $deposit->confiscated_or_returned_date->format('Y-m-d');
                 $data['invoice_collection_number'] =
                     $landlord->invoice_collection_number;
-                $data['invoice_price'] = round(
-                    $data['amount'] * $data['tax_rate']
-                );
+                $data['invoice_price'] = $data['tax_rate'];
                 $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
 
                 array_push($deposit_data, $data);
+                $this->invoice_count ++;
             }
         }
 
@@ -475,7 +475,7 @@ class ReceiptService
     }
 
     // Turn resources title to invoice item name
-    public static function makeInvoiceItemName($object, $type)
+    public function makeInvoiceItemName($object, $type)
     {
         if ($type == 'payment') {
             if ($object['subject'] == '維修費') {
@@ -509,10 +509,10 @@ class ReceiptService
     }
 
     // Create basic data structure for excel export module usage
-    public static function makeInvoiceMockData()
+    public function makeInvoiceMockData()
     {
         return [
-            'invoice_count' => 1,
+            'invoice_count' => $this->invoice_count,
             'invoice_item_idx' => 1,
             'quantity' => 1,
             'tax_type' => 1,

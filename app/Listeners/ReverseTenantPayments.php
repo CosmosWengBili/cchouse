@@ -82,7 +82,7 @@ class ReverseTenantPayments
                     'receipt_type'       => '發票'
                 ];
 
-                if( $payment->collected_by == '房東' || $payment->subject == '電費'){
+                if( $payment->collected_by == '房東'){
                     $payLogData['receipt_type'] = '收據';
                 }
                 // previously paid total amount for this tenant payment(which is not enough)
@@ -171,7 +171,7 @@ class ReverseTenantPayments
                     'tenant_contract_id' => $tenantContract->id,
                     'receipt_type'       => '發票'
                 ];
-                if( $payment->collected_by == '房東' || $payment->subject == '電費'){
+                if( $payment->collected_by == '房東'){
                     $payLogData['receipt_type'] = '收據';
                 }
                 $payments->last()->payLogs()->create($payLogData);

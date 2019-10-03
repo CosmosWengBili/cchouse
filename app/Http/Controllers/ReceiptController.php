@@ -40,13 +40,13 @@ class ReceiptController extends Controller
                 )
             )
             ->relations($request->withNested)->get();
-
+        $service = new ReceiptService();
         if(isset($start_date) && isset($end_date)){
             if( $type == 'invoice'){
-                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
             }
             else if( $type == 'receipt' ){
-                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
             }
         }
 

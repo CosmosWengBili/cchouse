@@ -13,11 +13,11 @@ class Shareholder extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
-    protected $casts = ['distribution_start_date' => 'date',
-                        'distribution_end_date' => 'date'];
+    protected $casts = ['distribution_start_date' => 'date:Y-m-d',
+                        'distribution_end_date' => 'date:Y-m-d'];
 
     protected $appends = array('building_ids');
 

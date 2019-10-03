@@ -59,7 +59,7 @@ class ShareholderController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required',
+            'contact_method' => 'required',
             'bank_name' => 'required',
             'bank_code' => 'required',
             'account_number' => 'required',
@@ -127,7 +127,7 @@ class ShareholderController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required',
+            'contact_method' => 'required',
             'bank_name' => 'required',
             'bank_code' => 'required',
             'account_number' => 'required',

@@ -197,7 +197,10 @@ return [
     'shareholders' => [
         'transfer_from' => [
             '兆居',
-            '兆基',
+            '兆舍',
+            '上海Roger個人',
+            '玉山兆基',
+            '第一銀行兆基'
         ],
         'distribution_method' => [
             '固定',

@@ -27,13 +27,13 @@
                                         value="{{ isset($data["name"]) ? $data['name'] : '' }}"
                                     />
                                 </td>
-                                <td>@lang("model.Shareholder.email")</td>
+                                <td>@lang("model.Shareholder.contact_method")</td>
                                 <td>
                                     <input
                                         class="form-control form-control-sm"
                                         type="text"
-                                        name="email"
-                                        value="{{ isset($data["email"]) ? $data['email'] : '' }}"
+                                        name="contact_method"
+                                        value="{{ isset($data["contact_method"]) ? $data['contact_method'] : '' }}"
                                     />
                                 </td>
                             </tr>
@@ -49,6 +49,19 @@
                                         {{ isset($data["is_remittance_fee_collected"]) ? ($data['is_remittance_fee_collected'] ? 'checked' : '') : '' }}
                                     />
                                 </td>
+                                <td>@lang("model.Shareholder.exchange_fee")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm is_remittance_fee_collected
+                                            {{ isset($data["is_remittance_fee_collected"]) ? ($data['is_remittance_fee_collected'] ? '' : 'd-none') : 'd-none' }}"
+                                        type="number"
+                                        name="exchange_fee"
+                                        min="1"
+                                        value="{{ isset($data["exchange_fee"]) ? $data['exchange_fee'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>@lang("model.Shareholder.bank_name")</td>
                                 <td>
                                     <input
@@ -56,6 +69,15 @@
                                         type="text"
                                         name="bank_name"
                                         value="{{ isset($data["bank_name"]) ? $data['bank_name'] : '' }}"
+                                    />
+                                </td>
+                                <td>@lang("model.Shareholder.bank_branch")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="bank_branch"
+                                        value="{{ isset($data["bank_branch"]) ? $data['bank_branch'] : '' }}"
                                     />
                                 </td>
                             </tr>
@@ -130,7 +152,7 @@
                                 <td>@lang("model.Shareholder.distribution_start_date")</td>
                                 <td>
                                     <input
-                                        class="form-control form-control-sm"
+                                        class="form-control form-control-sm validate_distribution_start_date"
                                         type="date"
                                         name="distribution_start_date"
                                         value="{{ isset($data["distribution_start_date"]) ? $data['distribution_start_date'] : '' }}"
@@ -156,13 +178,13 @@
                                         value="{{ isset($data["distribution_rate"]) ? $data['distribution_rate'] : '' }}"
                                     />
                                 </td>
-                                <td>@lang("model.Shareholder.investment_amount")</td>
+                                <td>@lang("model.Shareholder.distribution_amount")</td>
                                 <td>
                                     <input
                                         class="form-control form-control-sm"
                                         type="number"
-                                        name="investment_amount"
-                                        value="{{ isset($data["investment_amount"]) ? $data['investment_amount'] : '' }}"
+                                        name="distribution_amount"
+                                        value="{{ isset($data["distribution_amount"]) ? $data['distribution_amount'] : '' }}"
                                     />
                                 </td>
                             </tr>
@@ -176,6 +198,26 @@
                                         value="{{ isset($data["building_ids"]) ? $data['building_ids'] : '' }}"
                                     />
                                 </td>
+                                <td>@lang("model.Shareholder.investment_amount")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="number"
+                                        name="investment_amount"
+                                        value="{{ isset($data["investment_amount"]) ? $data['investment_amount'] : '' }}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@lang("model.Shareholder.method")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="method"
+                                        value="{{ isset($data["method"]) ? $data['method'] : '' }}"
+                                    />
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -186,6 +228,32 @@
         </div>
     </div>
 </div>
+    <script id="event">
+        $('input[name=is_remittance_fee_collected]').change(function () {
+            const $is_remittance_fee_collected = $('.is_remittance_fee_collected');
+            $is_remittance_fee_collected.hasClass('d-none')
+                ? $is_remittance_fee_collected.removeClass('d-none')
+                : $is_remittance_fee_collected.addClass('d-none');
+        });
+
+        $('select[name=distribution_method]').change(function () {
+            const value = $(this).find('option:checked').val();
+            toggleRateAmount(value);
+        })
+
+        function toggleRateAmount(selectedText) {
+            if (selectedText === '浮動') {
+                $('input[name=distribution_rate]').removeClass('d-none');
+                $('input[name=distribution_amount]').addClass('d-none');
+            } else if (selectedText === '固定') {
+                $('input[name=distribution_rate]').addClass('d-none');
+                $('input[name=distribution_amount]').removeClass('d-none');
+            }
+        }
+    </script>
+    <script id="init">
+        toggleRateAmount($('select[name=distribution_method]').val());
+    </script>
 <script>
 $('[name="building_ids"]').selectize({
     delimiter: ',',
@@ -201,6 +269,16 @@ $('[name="building_ids"]').selectize({
     <script id="validation">
 
         $(document).ready(function () {
+            $.validator.addMethod("validate_distribution_start_date", function(distribution_start_date, element) {
+                const distribution_end_date =  $('input[name=distribution_end_date]').val()
+                if (distribution_start_date.length !== 0 && distribution_end_date.length === 0 ) {
+                    return false;
+                }
+                if (distribution_start_date > distribution_end_date) {
+                    return false;
+                }
+                return true;
+            }, "分配起需小於分配迄");
 
             const rules = {
                 name: {
@@ -213,7 +291,9 @@ $('[name="building_ids"]').selectize({
                     required: true
                 },
                 bank_code: {
-                    required: true
+                    required: true,
+                    maxlength: 7,
+                    minlength: 7,
                 },
                 account_number: {
                     required: true,
@@ -225,7 +305,7 @@ $('[name="building_ids"]').selectize({
                     required: true
                 },
                 distribution_start_date: {
-                    required: true
+                    required: true,
                 },
                 distribution_end_date: {
                     required: true
@@ -234,6 +314,9 @@ $('[name="building_ids"]').selectize({
                     required: true
                 },
                 investment_amount: {
+                    required: true
+                },
+                method: {
                     required: true
                 },
             };
@@ -261,7 +344,7 @@ $('[name="building_ids"]').selectize({
                     required: '必須輸入'
                 },
                 distribution_start_date: {
-                    required: '必須輸入'
+                    required: '必須輸入',
                 },
                 distribution_end_date: {
                     required: '必須輸入'
@@ -270,6 +353,9 @@ $('[name="building_ids"]').selectize({
                     required: '必須輸入'
                 },
                 investment_amount: {
+                    required: '必須輸入'
+                },
+                method: {
                     required: '必須輸入'
                 },
             };

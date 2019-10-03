@@ -124,7 +124,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="tenant_contract_id"
-                                            disabled
+                                            readonly
                                             value="{{ $data['tenant_contract_id'] ?? '' }}"
                                         />
                                     </td>
@@ -134,7 +134,7 @@
                                             class="form-control form-control-sm set-date"
                                             type="date"
                                             name="reported_at"
-                                            disabled
+                                            readonly
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
                                     </td>
@@ -173,7 +173,7 @@
                                     <td>
                                         <select
                                             name="commissioner_id"
-                                            disabled
+                                            readonly
                                             class="form-control form-control-sm"
                                             data-toggle="selectize"
                                             data-table="users"
@@ -222,7 +222,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="service_comment"
-                                            disabled
+                                            readonly
                                             value="{{ $data['service_comment'] ?? '' }}"
                                         />
                                     </td>
@@ -252,7 +252,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="incident_details"
-                                            disabled
+                                            readonly
                                             value="{{ $data['incident_details'] ?? '' }}"
                                         />
                                     </td>
@@ -262,7 +262,7 @@
                                     <td>
                                         <select
                                             name="incident_type"
-                                            disabled
+                                            readonly
                                             class="form-control form-control-sm"
                                             value="{{ $data['incident_type'] ?? ''}}"
                                         >
@@ -275,7 +275,7 @@
                                     <td>
                                         <select
                                             name="work_type"
-                                            disabled
+                                            readonly
                                             class="form-control form-control-sm"
                                             value="{{ $data['work_type'] ?? ''}}"
                                         >

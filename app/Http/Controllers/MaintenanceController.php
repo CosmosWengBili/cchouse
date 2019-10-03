@@ -115,11 +115,12 @@ class MaintenanceController extends Controller
     public function show(Request $request, Maintenance $maintenance)
     {
         $responseData = new NestedRelationResponser();
-        $responseData
-            ->show($maintenance->load($request->withNested))
-            ->relations($request->withNested);
+        $data = $responseData->show($maintenance->load($request->withNested))
+                            ->relations($request->withNested)
+                            ->get();
+        $data['documents'] = $maintenance->documents;
 
-        return view('maintenances.show', $responseData->get());
+        return view('maintenances.show', $data);
     }
 
     /**

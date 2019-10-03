@@ -187,6 +187,7 @@ class ScheduleService
 
     public static function setReceiptType(){
 
+        // set receipt type for patment '租金'
         $landlord_contracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                                 ->where('commission_end_date', '>', Carbon::today())
                                                 ->with(['building.rooms.activeContracts.payLogs'])->get();
@@ -231,6 +232,19 @@ class ScheduleService
                     }
                 }
 
+            }
+        }
+
+        // set receipt type for patment '電費' with commission type is '代管'
+        $landlord_contracts = $landlord_contracts->where('commission_type', '代管');
+        foreach( $landlord_contracts as $landlord_contract ){
+            $rooms = $landlord_contract->building->rooms;
+            foreach( $rooms as $room ){
+                foreach( $room->activeContracts as $tenant_contract){
+                    $paylogs = $tenant_contract->payLogs()->where('payment_type', '電費')
+                                                        ->where('receipt_type', '發票');
+                    $paylogs->update(['receipt_type'=>'收據']);
+                }
             }
         }
     }

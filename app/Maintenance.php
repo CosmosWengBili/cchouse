@@ -19,7 +19,8 @@ class Maintenance extends Model implements AuditableContract
         'contact' => '聯繫中',
         'sent' => '已派工',
         'request' => '請款中',
-        'done' => '案件完成'
+        'done' => '案件完成',
+        'cancel' => '已取消',
     ];
     const WORK_TYPES = [
         'water_and_electricity' => '水電',
@@ -31,6 +32,7 @@ class Maintenance extends Model implements AuditableContract
         'wallpaper' => '壁紙',
         'internet' => '網路',
         'appliance' => '家電',
+        'clean' => '清潔',
         'others' => '其它'
     ];
 

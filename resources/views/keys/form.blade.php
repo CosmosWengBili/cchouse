@@ -19,15 +19,6 @@
                         <table class="table table-bordered">
                             <tbody>
                             <tr>
-                                <td>@lang("model.Key.key_name")</td>
-                                <td>
-                                    <input
-                                        class="form-control form-control-sm"
-                                        type="text"
-                                        name="key_name"
-                                        value="{{ isset($data["key_name"]) ? $data['key_name'] : '' }}"
-                                    />
-                                </td>
                                 <td>@lang("model.Key.keeper_id")</td>
                                 <td>
                                     <select
@@ -41,14 +32,12 @@
                                     >
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Key.room_id")</td>
                                 <td>
                                     <select
                                         data-toggle="selectize"
                                         data-table="rooms"
-                                        data-text="id"
+                                        data-text="room_code"
                                         data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
                                         name="room_id"
                                         class="form-control form-control-sm"
@@ -56,8 +45,46 @@
                                     </select>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>@lang("model.Key.scrap_date")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="date"
+                                        name="scrap_date"
+                                        value="{{ isset($data["scrap_date"]) ? $data['scrap_date'] : '' }}"
+                                    />
+                                </td>
+                                <td>@lang("model.Key.comment")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="text"
+                                        name="comment"
+                                        value="{{ isset($data["scrap_date"]) ? $data['scrap_date'] : '' }}"
+                                        placeholder="非必填"
+                                    />
+                                </td>
+                            </tr>
+                            @if (request()->route()->getName() === 'keys.edit')
+                                <tr>
+                                    <td>@lang("model.Key.is_scraped")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="is_scraped"/>
+                                        <input
+                                            type="checkbox"
+                                            name="is_scraped"
+                                            value="1"
+                                            {{ isset($data["is_scraped"]) ? ($data['is_scraped'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
+                                </tr>
+                            @endif
                             </tbody>
                         </table>
+
+                        <h3 class="mt-3">鑰匙</h3>
+                        @include('documents.inputs', ['documentType' => 'key_file', 'documents' => $data['key_files']])
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
@@ -66,6 +93,12 @@
         </div>
     </div>
 </div>
+    <script id="set_room_id">
+        const qs = window.myQueryString();
+        const roomId = qs.getQueryStrings()['room_id'];
+        const $roomId = $('[name="room_id"]');
+        roomId && $roomId.attr('data-selected', roomId)
+    </script>
     <script id="validation">
 
         $(document).ready(function () {

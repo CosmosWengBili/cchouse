@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\ReversalErrorCase;
+use App\KeyRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
@@ -52,7 +53,7 @@ class ScheduleService
         // escrow is 2 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(2),
-            'commission_type' => '代管'
+            'commission_type' => '代管',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -64,7 +65,7 @@ class ScheduleService
         // charter is 6 months
         LandlordContract::where([
             'commission_end_date' => Carbon::today()->addMonth(6),
-            'commission_type' => '包租'
+            'commission_type' => '包租',
         ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
@@ -119,7 +120,9 @@ class ScheduleService
     public function notifyBirth()
     {
         $landlord_names = Landlord::where(
-            'birth','like', '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
+            'birth',
+            'like',
+            '%' . Carbon::today()->addWeek(2)->format('m-d') . '%'
         )->pluck('name')->toArray();
         foreach (User::all() as $key => $user) {
             $user->notify(new TextNotify(implode(" ", $landlord_names)));
@@ -141,18 +144,21 @@ class ScheduleService
     }
     public function notifyMaintenanceStatus()
     {
+        // 超過『預計處理日期』 時，且『狀態』不是『案件完成』和 『已取消』才跳通知
         $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
                                             ->where('code', 'MaintenanceNotifyRequiredDays')
                                             ->first()->value;
         $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);
-        $maintenances = Maintenance::where('status', '!=', 'done')
-            ->where('updated_at', '<=', $limitDatetime)
+        $maintenances = Maintenance::whereNotIn('status', ['案件完成', '已取消'])
+            ->where('expected_service_date', '<=', $limitDatetime)
             ->get();
         foreach ($maintenances as $maintenance) {
             $commissioner = $maintenance->commissioner()->first();
+            // 通知附上連結，點擊後到對應的維修清潔的查看頁面
+            $url = route('maintenances.show', [$maintenance->id]);
             $commissioner->notify(
                 new TextNotify(
-                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 未更新，煩請抽空查看。"
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。" . '<a href="' . $url . '">點我</a>'
                 )
             );
         }
@@ -168,7 +174,7 @@ class ScheduleService
 
         foreach ($tenantPayments as $tenantPayment) {
             $tenantPayment->tenantContract->debtCollections()->create([
-                'status' => '催收中'
+                'status' => '催收中',
             ]);
         }
     }
@@ -188,7 +194,7 @@ class ScheduleService
 
     public function notifyReversalErrorCases()
     {
-        if(ReversalErrorCase::where('status', '未結案')->exists()) {
+        if (ReversalErrorCase::where('status', '未結案')->exists()) {
             $users = User::group('管理組')->get();
             $users->each(function ($user) {
                 $user->notify(new TextNotify('尚有未結案之異常沖銷案件'));
@@ -196,27 +202,27 @@ class ScheduleService
         }
     }
 
-    public static function setReceiptType(){
+    public static function setReceiptType()
+    {
 
         $landlord_contracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                                 ->where('commission_end_date', '>', Carbon::today())
                                                 ->with(['building.rooms.activeContracts.payLogs'])->get();
 
-        foreach($landlord_contracts as $contract_key => $landlord_contract){
-            if(
-                $landlord_contract->commission_type == '包租' &&
+        foreach ($landlord_contracts as $contract_key => $landlord_contract) {
+            if ($landlord_contract->commission_type == '包租' &&
                 !in_array(
                     true,
                     $landlord_contract->landlords
                         ->pluck('is_legal_person')
                         ->toArray()
                 )
-            ){
+            ) {
                 $landlord_pay_logs = new Collection();
                 $rooms = $landlord_contract->building->rooms;
 
-                foreach($rooms as $room_key => $room){
-                    if( isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person){
+                foreach ($rooms as $room_key => $room) {
+                    if (isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person) {
                         $landlord_pay_logs = $landlord_pay_logs->merge($room->activeContracts->first()->payLogs->where('subject', '=', '租金'));
                     }
                 }
@@ -226,22 +232,19 @@ class ScheduleService
                 $last_month_pay = 0;
                 $this_month_pay = 0;
 
-                foreach($landlord_pay_logs as $pay_log_key => $landlord_pay_log){
-                    if( $landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month ){
+                foreach ($landlord_pay_logs as $pay_log_key => $landlord_pay_log) {
+                    if ($landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month) {
                         $last_month_pay += $landlord_pay_log['amount'];
-                    }
-                    else if( $landlord_pay_log['paid_at'] >= $first_day_of_this_month  ){
+                    } elseif ($landlord_pay_log['paid_at'] >= $first_day_of_this_month) {
                         $this_month_pay += $landlord_pay_log['amount'];
                     }
 
-                    if($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
-                        $landlord_pay_log->update(['receipt_type'=>'發票']);
-                    }
-                    else{
-                        $landlord_pay_log->update(['receipt_type'=>'收據']);
+                    if ($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
+                        $landlord_pay_log->update(['receipt_type' => '發票']);
+                    } else {
+                        $landlord_pay_log->update(['receipt_type' => '收據']);
                     }
                 }
-
             }
         }
     }
@@ -257,12 +260,12 @@ class ScheduleService
                                             ->where('commission_end_date', '>', Carbon::today())
                                             ->get();
 
-        foreach( $landlordContracts as $landlordContract ){
-            $data = $service->getMonthlyReport( $landlordContract, $month, $year );
+        foreach ($landlordContracts as $landlordContract) {
+            $data = $service->getMonthlyReport($landlordContract, $month, $year);
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
 
             // store carry forward if current day it the last day of the month
-            if( Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d') ){
+            if (Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d')) {
                 $monthlyReport = MonthlyReport::create(['year' => $year,
                     'month' => $month,
                     'carry_forward' => $revenue,
@@ -270,10 +273,50 @@ class ScheduleService
             }
 
             // store to Redis each time
-            Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
+            Redis::set('monthlyRepost:carry:' . $landlordContract->id, $revenue);
         }
     }
     // public function anotherNotification($data) {
     //     //
     // }
+
+    /**
+     * 預約中 使用中 已完成
+     * 超過預計借日 borrow_date，狀態仍未到使用中
+     * 超過預計還日 return_date，狀態仍未到已歸還
+     * 以上 通知鑰匙保管者和借閱者
+     */
+    public function notifyKeyRequestBorrowAllowed()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+
+        // 1. get all by conditions
+
+        $keyRequests = KeyRequest::where('borrow_date', '<', $today)
+            ->where('status', '預約中')
+
+            ->orWhere(function ($query) use ($today) {
+                $query->where('return_date', '<', $today);
+                $query->where('status', '<>', '已完成');
+            })
+            ->get();
+
+        // 2. send notifications.
+        /** @var KeyRequest $keyRequest */
+        foreach ($keyRequests as $keyRequest) {
+            // send to request user 借用人
+            $keyRequest->requestUser->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+
+            // send to holder 保管人
+            User::find($keyRequest->key->keeper_id)->notify(
+                new TextNotify(
+                    "請更新鑰匙出借紀錄。"
+                )
+            );
+        }
+    }
 }

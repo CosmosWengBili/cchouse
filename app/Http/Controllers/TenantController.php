@@ -239,7 +239,7 @@ class TenantController extends Controller
             // remove removed item
             $tenant
                 ->contactInfos()
-                ->where('contactable_type', $type)
+                ->where('contactable_type', Tenant::class)
                 ->whereNotIn('id', $keepIds)
                 ->delete();
 

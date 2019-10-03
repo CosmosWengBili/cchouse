@@ -3,6 +3,6 @@
 </ul>
 
 <!-- Tab panes -->
-<div class="tab-content">
+<div class="tab-content bg-white">
     {{ $relation_contents }}
 </div>

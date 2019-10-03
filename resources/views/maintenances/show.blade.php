@@ -21,6 +21,25 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <div class="mt-5"></div>
+                        <div class="card-title">
+                            @if (empty($documents))
+                                <h3>無圖片</h3>
+                            @else
+                                <h3>圖片</h3>
+                            @endif
+                        </div>
+                        {{-- for showing the target returned --}}
+                        <div class="row">
+                            @foreach($documents as $document)
+                                <div class="col-lg-3 col-md-4 col-6">
+                                    <a href="#" class="d-block mb-4 h-100">
+                                        <img class="img-fluid img-thumbnail" src="{{ $document->url() }}" />
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                     <hr>
 

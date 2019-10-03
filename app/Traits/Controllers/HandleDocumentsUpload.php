@@ -17,7 +17,7 @@ trait HandleDocumentsUpload {
 
             // 刪除標記為 delete 的檔案
             foreach ($existedFiles as $existedFile) {
-                if ($existedFile['_delete'] == '1') {
+                if (isset($existedFile['_delete']) && $existedFile['_delete'] == '1') {
                     Document::destroy($existedFile['id']);
                 }
             }

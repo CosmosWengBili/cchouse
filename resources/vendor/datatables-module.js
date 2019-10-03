@@ -50,7 +50,7 @@ function renderDataTable(selectors, options) {
             },
         }
     ];
-    
+
     /* DataTable Initialize */
     var tables = {}
     for (var i = 0; i < selectors.length; i++) {
@@ -130,6 +130,18 @@ function renderDataTable(selectors, options) {
 
         tables[parentTable].draw();
     });
+
+    /* Highlight searched text */
+    (function () {
+        Object.values(tables).forEach(function (table) {
+            table.on( 'draw', function () {
+                var body = $( table.table().body() );
+
+                body.unhighlight();
+                body.highlight( table.search() );
+            } );
+        });
+    })()
 }
 
 

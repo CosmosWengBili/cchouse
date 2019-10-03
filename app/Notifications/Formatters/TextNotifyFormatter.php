@@ -6,8 +6,7 @@ class TextNotifyFormatter extends BaseFormatter {
 
     static function canFormat($notification): bool
     {
-        return $notification->type == 'App\Notifications\TextNotify' ||
-               $notification->type == 'App\Notifications\AbnormalPaymentReceived';
+        return $notification->type == 'App\Notifications\TextNotify';
     }
 
     function header(): string

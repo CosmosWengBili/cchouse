@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\TenantContract;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -13,7 +15,6 @@ use App\Responser\NestedRelationResponser;
 use App\Services\MonthlyReportService;
 use App\Exports\MonthlyTenantExport;
 use App\Building;
-use App\LandlordContract;
 use App\LandlordOtherSubject;
 
 class MonthlyReportController extends Controller
@@ -27,10 +28,12 @@ class MonthlyReportController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $whitelist = $this->whitelist('buildings');
+        $columns = array_map(function ($column) { return "buildings.{$column}"; }, $this->whitelist('buildings'));
+        $selectColumns = array_merge($columns, Building::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $buildings = $this->limitRecords(
-            Building::select($whitelist)->select('buildings.*')
-                ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
+            Building::withExtraInfo()
+                ->select($selectStr)
                 ->where('landlord_contracts.commission_start_date', '<', Carbon::today())
                 ->where('landlord_contracts.commission_end_date', '>', Carbon::today())
                 ->groupBy('id')

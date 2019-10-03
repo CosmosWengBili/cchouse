@@ -11,15 +11,23 @@ use App\TenantContract;
 use App\TenantPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PayOffController extends Controller
 {
     public function index(Request $request) {
         $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $responseData
             ->index(
                 'tenant_contracts',
-                $this->limitRecords(TenantContract::with($request->withNested)->active())
+                $this->limitRecords(
+                    TenantContract::withExtraInfo()
+                        ->with($request->withNested)
+                        ->active()
+                        ->select($selectStr)
+                )
             )
             ->relations($request->withNested);
 

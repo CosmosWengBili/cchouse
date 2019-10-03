@@ -36,7 +36,7 @@ class DebtCollectionController extends Controller
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         $debtCollections = $this->limitRecords(
-            DebtCollection::extraInfo()->select($selectStr)->with($request->withNested)
+            DebtCollection::withExtraInfo()->select($selectStr)->with($request->withNested)
         );
 
         $responseData
@@ -44,7 +44,7 @@ class DebtCollectionController extends Controller
             ->relations($request->withNested);
 
         $owner_query = $this->limitRecords(
-            DebtCollection::extraInfo()
+            DebtCollection::withExtraInfo()
                 ->select($selectStr)
                 ->where(['collector_id' => Auth::id()])
                 ->with($request->withNested),

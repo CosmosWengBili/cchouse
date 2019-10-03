@@ -122,12 +122,24 @@
                         </table>
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
+                        <button class="mt-5 btn btn-danger"
+                                type="button"
+                                onclick="location.href='{{ url()->route('landlordPayments.index') }}'"
+                        >
+                            回總表
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+    <script id="set_room_id">
+        const qs = window.myQueryString();
+        const roomId = qs.getQueryStrings()['room_id'];
+        const $roomId = $('[name="room_id"]');
+        roomId && $roomId.attr('data-selected', roomId)
+    </script>
     <script id="validation">
 
         $(document).ready(function () {

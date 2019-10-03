@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Redis;
@@ -12,6 +13,7 @@ class Building extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.

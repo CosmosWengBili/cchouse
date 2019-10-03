@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -12,7 +12,7 @@ class Key extends Model implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     protected $guarded = [];
     protected $hidden = ['pivot', 'deleted_at'];
@@ -38,5 +38,19 @@ class Key extends Model implements AuditableContract
     public function keyRequests()
     {
         return $this->hasMany('App\KeyRequest');
+    }
+
+    public function documents()
+    {
+        return $this->morphMany('App\Document', 'attachable');
+    }
+
+    /**
+     * Get key's documents.
+     * 鑰匙相關照片
+     */
+    public function keyDocuments()
+    {
+        return $this->documents()->where('document_type', 'key_file');
     }
 }

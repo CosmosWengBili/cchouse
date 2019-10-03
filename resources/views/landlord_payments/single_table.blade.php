@@ -12,9 +12,6 @@
             @endif
         </h2>
 
-        {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success" href="{{ route( 'landlordContracts.create') }}">建立</a>
-
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
             <h3>目前沒有資料</h3>

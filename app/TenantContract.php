@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Services\SmsService;
-use App\Traits\ExtraInfo;
+use App\Traits\WithExtraInfo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,7 +17,7 @@ class TenantContract extends Pivot implements AuditableContract
 {
     use SoftDeletes;
     use AuditableTrait;
-    use ExtraInfo;
+    use WithExtraInfo;
 
     /**
      * The attributes that aren't mass assignable.
@@ -229,6 +229,18 @@ class TenantContract extends Pivot implements AuditableContract
         ]);
         $shouldPay = $this->electricityPaymentAmount($year, $month);
         $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+    }
+
+    /**
+     * 取得下一期的 TenantContract
+     */
+    public function nextTenantContract() {
+        return $this->tenant
+             ->tenantContracts()
+             ->where('tenant_contract.id', '>', $this->id)
+             ->where('tenant_contract.contract_start', '>=', $this->contract_start)
+             ->orderBy('tenant_contract.contract_start', 'asc')
+             ->first();
     }
 
     private function electricityPaymentAmount($year, $month) {

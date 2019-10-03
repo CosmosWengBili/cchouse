@@ -19,12 +19,11 @@ mix.scripts(['resources/vendor/dashboard.js',
         'resources/vendor/todolist.js',
         'resources/vendor/datatables.js',
         'resources/vendor/select2.js',
+        'resources/vendor/jquery/jquery.highlight.js',
         'resources/vendor/datatables-module.js',
         'node_modules/selectize/dist/js/standalone/selectize.min.js',
         'node_modules/selectize/dist/js/selectize.min.js'
     ], 'public/js/vendor.js')
     .js('resources/js/global.js', 'public/js/app.js')
     .sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/datatables.scss', 'public/css/datatables.css')
-    .sass('resources/sass/select2.scss', 'public/css/select2.css')
-    .less('node_modules/selectize/dist/less/selectize.less', 'public/css/vendor.css');
+    .sass('resources/sass/vendor.scss', 'public/css/vendor.css');

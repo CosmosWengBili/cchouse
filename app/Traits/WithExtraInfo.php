@@ -4,8 +4,8 @@ namespace App\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-trait ExtraInfo {
-    public function scopeExtraInfo(Builder $builder) {
+trait WithExtraInfo {
+    public function scopeWithExtraInfo(Builder $builder) {
         $tableName = $this->getTable();
 
         return $this->joinRequiredTable($builder)->groupBy("{$tableName}.id");
@@ -19,6 +19,11 @@ trait ExtraInfo {
         $tableName = $this->getTable();
 
         switch ($tableName) {
+            case 'buildings':
+                return $builder
+                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'buildings.id')
+                        ->join('rooms', 'buildings.id', '=', 'rooms.building_id');
+                break;
             case 'landlord_contracts':
                 return $builder
                         ->join('buildings', 'buildings.id', '=', "{$tableName}.building_id")
@@ -26,6 +31,7 @@ trait ExtraInfo {
                 break;
             case 'tenant_contract':
             case 'keys':
+            case 'landlord_payments':
                 return $builder
                         ->join('rooms', 'rooms.id', '=', "{$tableName}.room_id")
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
@@ -33,6 +39,8 @@ trait ExtraInfo {
                 break;
             case 'debt_collections':
             case 'maintenances':
+            case 'deposits':
+            case 'company_incomes':
                 return $builder
                         ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
                         ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
@@ -58,10 +66,19 @@ trait ExtraInfo {
                     'GROUP_CONCAT(rooms.room_status) AS room_status',
                 ];
                 break;
+            case 'buildings':
+                $extraSelects = [
+                    'GROUP_CONCAT(landlord_contracts.commission_type) AS commission_type',
+                    'GROUP_CONCAT(rooms.room_number) AS room_number',
+                    'GROUP_CONCAT(rooms.room_status) AS room_status',
+                ];
+                break;
             case 'tenant_contract':
             case 'keys':
             case 'debt_collections':
             case 'maintenances':
+            case 'company_incomes':
+            case 'landlord_payments':
                 $extraSelects = [
                     'landlord_contracts.commission_type AS commission_type',
                     'buildings.building_code AS building_code',

@@ -15,7 +15,7 @@ class SystemVariableController extends Controller
 
     public function edit(string $group)
     {
-        $defaultVariables = array_filter(SystemVariable::VARIABLES, function (
+        $defaultVariables = array_filter(SystemVariable::variables(), function (
             $variable
         ) use ($group) {
             return $variable['group'] == $group;

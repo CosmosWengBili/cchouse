@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\TenantContract;
 use Carbon\Carbon;
 
 use App\LandlordPayment;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditor;
 
 use App\Services\ReceiptService;
@@ -26,31 +29,26 @@ class LandlordPaymentController extends Controller
     {
         $responseData = new NestedRelationResponser();
 
-        $whitelist = $this->whitelist('landlord_payments');
-        foreach ($whitelist as $key => $value) {
-            $whitelist[$key] = 'landlord_payments.' . $value;
-        }
-
-
+        $columns = array_map(function ($column) { return "landlord_payments.{$column}"; }, $this->whitelist('landlord_payments'));
+        $selectColumns = array_merge($columns, TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
         $landlordPayment = $this->limitRecords(
-            LandlordPayment::select($whitelist)
-                ->join('rooms', 'landlord_payments.room_id', '=', 'rooms.id')
-                ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                ->join(
-                    'landlord_contracts',
-                    'buildings.id',
-                    '=',
-                    'landlord_contracts.building_id'
-                )
+            LandlordPayment::withExtraInfo()
+                ->select($selectStr)
                 ->where('commission_end_date', '>', Carbon::today())
                 ->groupBy('id')
-        );
+        )
+            ->filter(function ($item, $key) {
+                if (Str::contains($item->subject, '維修')) {
+                    return $item;
+                }
+            });
 
-        $responseData
+        $data = $responseData
             ->index('landlord_payments', $landlordPayment)
-            ->relations($request->withNested);
-
-        return view('landlord_payments.index', $responseData->get());
+            ->relations($request->withNested)
+            ->get();
+        return view('landlord_payments.index', $data);
     }
 
     /**
@@ -86,7 +84,7 @@ class LandlordPaymentController extends Controller
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
             'amount' => 'required|integer|digits_between:1,11',
-            'comment' => 'required'
+            'comment' => 'nullable'
         ]);
 
         $landlordPayment = LandlordPayment::create($validatedData);
@@ -146,7 +144,7 @@ class LandlordPaymentController extends Controller
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
             'amount' => 'required|integer|digits_between:1,11',
-            'comment' => 'required'
+            'comment' => 'nullable'
         ]);
 
         ReceiptService::compareReceipt($landlordPayment, $validatedData);

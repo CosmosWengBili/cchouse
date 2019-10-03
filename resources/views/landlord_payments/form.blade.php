@@ -122,6 +122,12 @@
                         </table>
 
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
+                        <button class="mt-5 btn btn-danger"
+                                type="button"
+                                onclick="location.href='{{ url()->route('landlordPayments.index') }}'"
+                        >
+                            回總表
+                        </button>
                     </form>
                 </div>
             </div>

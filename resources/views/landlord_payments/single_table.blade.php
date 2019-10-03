@@ -12,9 +12,6 @@
             @endif
         </h2>
 
-        {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success" href="{{ route( 'landlordContracts.create') }}">建立</a>
-
         {{-- you should handle the empty array logic --}}
         @if (empty($object))
             <h3>目前沒有資料</h3>
@@ -51,9 +48,7 @@
                         <td>
                             <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
                             <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                            @if (! ($layer === 'buildings' && request()->route()->getName() === 'landlordPayments.show'))
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
-                            @endif
+                            <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
                         </td>
                     </tr>
                 </tbody>

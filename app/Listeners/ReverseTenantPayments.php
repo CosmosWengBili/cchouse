@@ -79,8 +79,12 @@ class ReverseTenantPayments
                     'virtual_account'    => $virtualAccount,
                     'paid_at'            => $paidAt,
                     'tenant_contract_id' => $tenantContract->id,
+                    'receipt_type'       => '發票'
                 ];
 
+                if( $payment->collected_by == '房東' || $payment->subject == '電費'){
+                    $payLogData['receipt_type'] = '收據';
+                }
                 // previously paid total amount for this tenant payment(which is not enough)
                 // it will be 0 if the payment wasn't paid before
                 $alreadyPaid = $payment->payLogs->sum('amount');
@@ -165,7 +169,11 @@ class ReverseTenantPayments
                     'paid_at'            => $paidAt,
                     'amount'             => $amount,
                     'tenant_contract_id' => $tenantContract->id,
+                    'receipt_type'       => '發票'
                 ];
+                if( $payment->collected_by == '房東' || $payment->subject == '電費'){
+                    $payLogData['receipt_type'] = '收據';
+                }
                 $payments->last()->payLogs()->create($payLogData);
             }
 

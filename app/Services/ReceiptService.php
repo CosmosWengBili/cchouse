@@ -44,8 +44,7 @@ class ReceiptService
         foreach ($pay_logs as $pay_log_key => $pay_log) {
             // Check whether the payments could be added to invoice data
             if (
-                $pay_log['loggable']['collected_by'] != '公司' &&
-                $pay_log['loggable']['subject'] != '電費'
+                $pay_log->receipt_type == '收據'
             ) {
                 continue;
             }

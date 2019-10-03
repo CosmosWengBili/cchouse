@@ -3,6 +3,17 @@
 @section('content')
 @php
     $now = \Carbon\Carbon::now();
+
+    $total = 0;
+    for ($i = 5; $i >= 0; $i--) {
+        $current = $now->copy()->subMonth($i);
+        $entries = $companyIncomes[$current->month] ?? [];
+        $type = 'company_incomes';
+        $model_name = 'CompanyIncome';
+        foreach ($entries as $entry) {
+            $total += $entry['amount'] ?? 0;
+        }
+    }
 @endphp
 
 <div class="container">
@@ -32,10 +43,6 @@
                         $entries = $companyIncomes[$current->month] ?? [];
                         $type = 'company_incomes';
                         $model_name = 'CompanyIncome';
-                        $total = 0;
-                        foreach ($entries as $entry) {
-                            $total += $entry['amount'] ?? 0;
-                        }
                     @endphp
                     <div class="tab-pane fade {{ $i == 5 ? 'show active' : ''  }}" id="pane-{{ $current->year }}-{{ $current->month }}" role="tabpanel">
                         <div class="card">

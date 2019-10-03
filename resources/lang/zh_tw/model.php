@@ -495,7 +495,7 @@ return [
         "tenant_contract_id" => "租客合約編號",
         "subject" => "項目",
         "income_date" => "收入時間",
-        "amount" => "費用",
+        "amount" => "收入",
         "comment" => "備註",
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
@@ -505,6 +505,7 @@ return [
         'room_number' => '房號',
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
+        "invoice_serial_number" => "發票號碼",
     ],
     'PayLog' => [
         "id" => '編號',

@@ -9,6 +9,7 @@ use App\TenantContract;
 use App\TenantElectricityPayment;
 use App\LandlordContract;
 use App\LandlordPayment;
+use App\LandlordOtherSubject;
 use App\Deposit;
 use App\SystemVariable;
 use App\Receipt;
@@ -21,6 +22,7 @@ class ReceiptService
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
             ->where('receipt_type', '=', '發票')
+            ->where('loggable_type', '!=', 'OverPayment')
             ->orderBy('virtual_account', 'DESC')
             ->orderBy('paid_at', 'ASC')
             ->with([
@@ -156,12 +158,14 @@ class ReceiptService
         $deposit_interest_data = $this->makeDepositInterest($start_date, $end_date);
         $maintenance_data = $this->makeMaintenance($start_date, $end_date);
         $deposit_data = $this->makeDeposits($start_date, $end_date);
-
+        $landlord_other_subject_data = $this->makeLandlordOtherSubjects($start_date, $end_date);
+        
         $invoice_data = array_merge(
             $invoice_data,
             $deposit_interest_data,
             $maintenance_data,
-            $deposit_data
+            $deposit_data,
+            $landlord_other_subject_data
         );
         return $invoice_data;
     }
@@ -474,6 +478,58 @@ class ReceiptService
         return $deposit_data;
     }
 
+    public function makeLandlordOtherSubjects($start_date, $end_date)
+    {
+        $landlord_other_subjects = LandlordOtherSubject::where('is_invoiced', true)
+            ->whereBetween('expense_date', [
+                $start_date,
+                $end_date
+            ])
+            ->with(['room.building.landlordContracts'])
+            ->get();
+
+        // Genenate landlord_other_subject data
+        $landlord_other_subject_data = array();
+        foreach ($landlord_other_subjects as $landlord_other_subject) {
+            $landlords = $landlord_other_subject->room->building->landlordContracts->last()->landlords;
+            $initial_amount = $landlord_other_subject->amount;
+            $per_amount = round($initial_amount / $landlords->count());
+            foreach ($landlords as $landlord_key => $landlord) {
+                $data = $this->makeInvoiceMockData();
+                $data['invoice_date'] = '';
+                $data['invoice_item_name'] = $landlord_other_subject->invoice_item_name;
+                $data['amount'] = $per_amount;
+
+                // Set value for maping relative payment model
+                $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
+                $data['data_table_id'] = $landlord_other_subject->id;
+                $data['data_receipt_id'] = $landlord_other_subject->receipts->first()['id'];
+
+                if ($landlord->is_legal_person) {
+                    $data['company_number'] = $landlord->certificate_number;
+                    $data['company_name'] = $landlord->name;
+                }
+                $data['room_code'] = $landlord_other_subject->room->room_code;
+                $data['room_number'] = $landlord_other_subject->room->room_number;
+                $data['deposit_date'] = $landlord_other_subject->expense_date;
+                $data['actual_deposit_date'] = $landlord_other_subject->expense_date;
+                $data['invoice_collection_number'] = $landlord->invoice_collection_number;
+                $data['invoice_price'] = $per_amount;
+                $data['invoice_serial_number'] = $landlord_other_subject->receipts->first()['invoice_serial_number'];
+
+                if( $landlord->id == $landlords->last()->id ){
+                    $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
+                    $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
+                }
+                
+                array_push($landlord_other_subject_data, $data);
+                $this->invoice_count ++;
+            }
+        }
+
+        return $landlord_other_subject_data;
+        
+    }
     // Turn resources title to invoice item name
     public function makeInvoiceItemName($object, $type)
     {

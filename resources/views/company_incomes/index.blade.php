@@ -48,7 +48,7 @@
                         <div class="card">
                             @if(count($entries) > 0)
                                 @include('company_incomes.table', ['objects' => $entries, 'layer' => $type])
-                                <div class="my-3 mx-3 h3">總計： {{$total}}元</div>
+                                <div class="my-3 mx-3 h3">總計： <span class="countAmount">{{$total}}</span>元</div>
                             @else
                                 <div class="text-center h3 my-5 py-5">尚無紀錄</div>
                             @endif
@@ -60,3 +60,4 @@
     </div>
 </div>
 @endsection
+

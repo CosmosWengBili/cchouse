@@ -17,7 +17,7 @@ class CompanyIncomeController extends Controller
         $startAt = $endAt->copy()->subMonth(5)->startOfMonth(); // 近六個月（含本月）
         $selectColumns = array_merge(['company_incomes.*'], CompanyIncome::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
-        $companyIncomes = CompanyIncome::withExtraInfo()->with(['receipts:id,invoice_serial_number'])
+        $companyIncomes = CompanyIncome::withExtraInfo()
             ->whereBetween('income_date', [$startAt, $endAt])
             ->select($selectStr)
             ->get()
@@ -25,26 +25,6 @@ class CompanyIncomeController extends Controller
                 return $companyIncome->income_date->month;
             })
             ->toArray();
-
-        // unset receipts and take invoice_serial_number out only
-        foreach ($companyIncomes as &$items) {
-            foreach ($items as &$companyIncome) {
-                if (! (isset($companyIncome['receipts']) && count($companyIncome['receipts']) > 0)) {
-                    unset($companyIncome['receipts']);
-                    $companyIncome['invoice_serial_number'] = '';
-                    continue;
-                }
-
-                $receipts = $companyIncome['receipts'];
-                unset($companyIncome['receipts']);
-
-                $invoice_serial_number = [];
-                foreach ($receipts as $receipt) {
-                    $invoice_serial_number[] = $receipt['invoice_serial_number'];
-                }
-                $companyIncome['invoice_serial_number'] = join(',', $invoice_serial_number);
-            }
-        }
 
         return view('company_incomes.index', ['companyIncomes' => $companyIncomes]);
     }

@@ -46,7 +46,7 @@
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
                                 {{-- an even nested resource array --}}
-                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
+                                <td {!! $key === 'amount' ? 'class="amount"': '' !!}>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
@@ -59,5 +59,20 @@
     </div>
 </div>
 <script>
-    renderDataTable(["#{{$tableId}}"]);
+    renderDataTable(["#{{$tableId}}"], {
+        drawCallback: function( settings ) {
+            cal()
+        }
+    });
+
+    function cal() {
+        let total = 0;
+        $('td.amount').each(function (index, td) {
+            total += parseInt($(td).text()) || 0
+        })
+
+        $('span.countAmount').each(function (index, span) {
+            $(span).text(total)
+        })
+    }
 </script>

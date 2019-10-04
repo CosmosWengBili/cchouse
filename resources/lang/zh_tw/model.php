@@ -431,6 +431,7 @@ return [
         'building_ids' => '物件編號',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
+        'building_code' => '物件代碼',
         'contact_method' => '聯絡方式',
         'exchange_fee' => '匯費',
         'bank_branch' => '銀行分行',

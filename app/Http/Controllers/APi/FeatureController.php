@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 
@@ -17,7 +18,7 @@ class FeatureController extends Controller
         $table = Input::get('table');
         $text = preg_replace("/[\'\"]+/", '', Input::get('text'));
         $value = preg_replace("/[\'\"]+/", '', Input::get('value'));
-        
+
         $whitelist = Schema::getColumnListing($table);
 
         if (in_array($text, $whitelist)) {
@@ -29,5 +30,24 @@ class FeatureController extends Controller
             return response('invalid');
         }
     }
+
+    public function shareHolders(Request $request)
+    {
+        $building_code = explode(',', $request->input('building_code', 0));
+
+        $data = [];
+        $buildings = App\Building::whereIn('building_code', $building_code)->get();
+
+        foreach ($buildings as $building) {
+            if ($building->shareholders->count()) {
+                foreach($building->shareholders as $shareholder) {
+                    if (!isset($data[$shareholder['id']])) {
+                        $data[$shareholder['id']] = $shareholder;
+                    }
+                }
+            }
+        }
+
+        return response()->json($data);
+    }
 }
-?>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Building;
 use App\Shareholder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -70,13 +71,25 @@ class ShareholderController extends Controller
             'distribution_method' => 'required',
             'distribution_start_date' => 'required|date',
             'distribution_end_date' => 'required|date',
-            'distribution_rate' => 'required',
-            'investment_amount' => 'required'
+            'distribution_rate' => 'nullable',
+            'distribution_amount' => 'nullable',
+            'investment_amount' => 'required',
+            'method' => 'required',
+            'bank_branch' => 'required',
+            'exchange_fee' => 'required',
         ]);
 
+        is_null($validatedData['distribution_rate']) and ($validatedData['distribution_rate'] = 0);
+        is_null($validatedData['distribution_amount']) and ($validatedData['distribution_amount'] = 0);
+        is_null($validatedData['exchange_fee']) and ($validatedData['exchange_fee'] = 0);
+
         $shareholder = Shareholder::create($validatedData);
-        if($request->building_ids != ''){
-            $shareholder->buildings()->sync(explode(",", $request->building_ids));
+
+        $building_code = array_wrap($request->input('building_code'));
+        // get building ids by building_code
+        $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
+        if(! empty($building_ids)){
+            $shareholder->buildings()->sync($building_ids);
         }
         else{
             $shareholder->buildings()->sync(array());

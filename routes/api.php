@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['namespace' => 'Api'], function () {
     Route::post('selectize', 'FeatureController@selectize');
+    Route::post('shareHolders', 'FeatureController@shareHolders');
 });
 
 Route::group(['middleware' => ['api', 'cors']], function () {

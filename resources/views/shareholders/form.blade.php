@@ -18,6 +18,32 @@
                         <table class="table table-bordered">
                             <tbody>
                             <tr>
+                                <td>@lang("model.Shareholder.building_code")</td>
+                                <td colspan="3">
+                                    <div class="input-group mb-3">
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            id="building_code"
+                                            name="building_code"
+                                            value="{{ isset($data["building_code"]) ? $data['building_code'] : '' }}"
+                                        />
+                                        <div class="input-group-append">
+                                            <button
+                                                id="get_share_holders"
+                                                type="button"
+                                                class="btn btn-outline-info"
+                                            >
+                                                送出
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <select id="share_holders"></select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>@lang("model.Shareholder.name")</td>
                                 <td>
                                     <input
@@ -189,15 +215,6 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>@lang("model.Shareholder.building_ids")</td>
-                                <td>
-                                    <input
-                                        class="form-control form-control-sm"
-                                        type="text"
-                                        name="building_ids"
-                                        value="{{ isset($data["building_ids"]) ? $data['building_ids'] : '' }}"
-                                    />
-                                </td>
                                 <td>@lang("model.Shareholder.investment_amount")</td>
                                 <td>
                                     <input
@@ -241,6 +258,67 @@
             toggleRateAmount(value);
         })
 
+        $('select#share_holders').change(function () {
+            const $checkedOption = $(this).find('option:checked');
+            fillInputs($checkedOption)
+        });
+
+
+        $('#get_share_holders').click(function () {
+            const data = {
+                building_code: $('#building_code').val() || '',
+            }
+
+            $.post('/api/shareHolders', data)
+                .then(response => {
+                    if (typeof response !== 'string') {
+                        fillSelect(response);
+                    } else {
+                        alert('找不到對應的股東');
+                    }
+                });
+        });
+
+        function fillInputs($checkedOption) {
+            const shareHolderInfo = $checkedOption.data();
+            $('input[name=account_name]').val(shareHolderInfo.account_name || '')
+            $('input[name=account_number]').val(shareHolderInfo.account_number || '')
+            $('input[name=bank_code]').val(shareHolderInfo.bank_code || '')
+            $('input[name=bank_name]').val(shareHolderInfo.bank_name || '')
+            $('input[name=contact_method]').val(shareHolderInfo.contact_method || '')
+            $('input[name=name]').val(shareHolderInfo.name || '')
+            $('input[name=bank_branch]').val(shareHolderInfo.bank_branch || '')
+        }
+
+        function fillSelect(shareHolders) {
+            if (shareHolders.length === 0) {
+                return;
+            }
+
+            $('#share_holders').html('');
+            Object.values(shareHolders).map((shareHolder, index) => {
+                // 姓名、contact_method、銀行名稱、銀行代碼、銀行帳號、銀行戶名
+                const $share_holders = $('#share_holders');
+                if (index === 0) {
+                    $share_holders.append('<option value="">請選擇</option>');
+                }
+
+                const option = `<option value="${shareHolder.id}"
+                                        data-name="${shareHolder.name}"
+                                        data-contact_method="${shareHolder.contact_method}"
+                                        data-bank_name="${shareHolder.bank_name}"
+                                        data-bank_code="${shareHolder.bank_code}"
+                                        data-account_number="${shareHolder.account_number}"
+                                        data-account_name="${shareHolder.account_name}"
+                                        data-bank_branch="${shareHolder.bank_branch}"
+                                >
+                                    ${shareHolder.name}
+                                </option>`;
+                $share_holders.append(option);
+            });
+
+        }
+
         function toggleRateAmount(selectedText) {
             if (selectedText === '浮動') {
                 $('input[name=distribution_rate]').removeClass('d-none');
@@ -254,18 +332,6 @@
     <script id="init">
         toggleRateAmount($('select[name=distribution_method]').val());
     </script>
-<script>
-$('[name="building_ids"]').selectize({
-    delimiter: ',',
-    persist: false,
-    create: function(input) {
-        return {
-            value: input,
-            text: input
-        }
-    }
-});
-</script>
     <script id="validation">
 
         $(document).ready(function () {

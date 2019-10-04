@@ -176,6 +176,8 @@ class MaintenanceController extends Controller
         $this->handleDocumentsUpload($maintenance, ['picture']);
         $maintenance = $maintenance->update($validatedData);
 
+        ReceiptService::compareReceipt($maintenance, $validatedData);
+
         return redirect($request->_redirect);
     }
 

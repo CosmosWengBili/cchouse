@@ -8,7 +8,7 @@ use App\TenantPayment;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use App\LandlordContract;
-use App\LandlordPayment;
+use App\Maintenance;
 use App\LandlordOtherSubject;
 use App\Deposit;
 use App\SystemVariable;
@@ -22,7 +22,7 @@ class ReceiptService
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
             ->where('receipt_type', '=', '發票')
-            ->where('loggable_type', '!=', 'OverPayment')
+            ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment'])
             ->orderBy('virtual_account', 'DESC')
             ->orderBy('paid_at', 'ASC')
             ->with([
@@ -260,7 +260,7 @@ class ReceiptService
         $end_idx =
             $end_date == $end_date->copy()->endOfMonth()
                 ? $end_date->month
-                : $end_date->subMonth()->month;
+                : $end_date->copy()->subMonth()->month;
 
         $end_idx = $end_idx - $start_idx + 12 * ($end_year - $start_year);
         $current_date = $start_date->endOfMonth();
@@ -323,100 +323,49 @@ class ReceiptService
         return $invoiceData;
     }
 
-    public function makeCollection($start_date, $end_date)
-    {
-        $collections = DebtCollection::where([
-            'is_penalty_collected',
-            '=',
-            true
-        ])
-            ->whereBetween(['received_at', [$start_date, $end_date]])
-            ->with(['tenantContract.tenant', 'tenantContract.room']);
-
-        // Genenate collection interest data
-        $collection_data = array();
-        foreach ($collections as $collection_key => $collection) {
-            $data = $this->makeInvoiceMockData();
-            $data['invoice_date'] = $collection->received_at->format('Y-m-d');
-            $data['invoice_item_name'] = '行政手續費';
-            $data['amount'] = 300;
-
-            // Set value for maping relative payment model
-            $data['data_table'] = __('general.' . $collection->getTable());  
-            $data['data_table_id'] = $collection->id;
-            $data['data_receipt_id'] = $collection->receipts->first()['id'];
-
-            if ($collection->tenant_contract->tenant->is_legal_person) {
-                $data['company_number'] =
-                    $tenant_contract->tenant->certificate_number;
-                $data['company_name'] = $tenant_contract->tenant->name;
-            }
-            $data['comment'] = '';
-            $data['room_code'] = $tenant_contract->room->room_code;
-            $data['room_number'] = $tenant_contract->room->room_number;
-            $data['deposit_date'] = $collection->received_at->format('Y-m-d');
-            $data['actual_deposit_date'] = $collection->received_at->format(
-                'Y-m-d'
-            );
-            $data['invoice_collection_number'] =
-                $tenant_contract->invoice_collection_number;
-            $data['invoice_price'] = $data['amount'];
-            $data['invoice_serial_number'] = $collection->receipts->first()['invoice_serial_number'];
-
-            array_push($collection_data, $data);
-            $this->invoice_count ++;
-        }
-
-        return $collection_data;
-    }
-
     public function makeMaintenance($start_date, $end_date)
     {
         // Retrieve data from LandlordPayment not Maintenance 
-        $landlord_payments = LandlordPayment::where(
-            'subject',
-            'like',
-            '維修案件'
-        )
-            ->whereBetween('collection_date', [$start_date, $end_date])
-            ->with(['room.building.landlordContracts'])
-            ->get();
+        $maintenances = Maintenance::where('afford_by','房東')
+                                    ->whereBetween('closed_date', [$start_date, $end_date])
+                                    ->with(['tenantContract.room.building.landlordContracts'])
+                                    ->get();
 
         // Genenate maintenance data
         $maintenance_data = array();
-        foreach ($landlord_payments as $payment_key => $landlord_payment) {
-            $landlords = $landlord_payment->room->building->landlordContracts->last()
+        foreach ($maintenances as $maintenance) {
+            $landlords = $maintenance->tenantContract->room->building->landlordContracts->last()
                 ->landlords;
+            $initial_amount = $maintenance->price;
+            $per_amount = round($initial_amount / $landlords->count());
             foreach ($landlords as $landlord_key => $landlord) {
                 $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = $landlord_payment->created_at->format(
-                    'Y-m-d'
-                );
+                $data['invoice_date'] = '';
                 $data['invoice_item_name'] = '管理服務費(維修費)';
-                $data['amount'] = $landlord_payment->amount;
+                $data['amount'] = $per_amount;
 
                 // Set value for maping relative payment model
-                $data['data_table'] = __('general.' . $landlord_payment->getTable()); 
-                $data['data_table_id'] = $landlord_payment->id;
-                $data['data_receipt_id'] = $landlord_payment->receipts->first()['id'];
+                $data['data_table'] = __('general.' . $maintenance->getTable()); 
+                $data['data_table_id'] = $maintenance->id;
+                $data['data_receipt_id'] = $maintenance->receipts->first()['id'];
 
                 if ($landlord->is_legal_person) {
                     $data['company_number'] = $landlord->certificate_number;
                     $data['company_name'] = $landlord->name;
                 }
                 $data['comment'] = '';
-                $data['room_code'] = $landlord_payment->room->room_code;
-                $data['room_number'] = $landlord_payment->room->room_number;
-                $data['deposit_date'] = $landlord_payment->created_at->format(
-                    'Y-m-d'
-                );
-                $data[
-                    'actual_deposit_date'
-                ] = $landlord_payment->created_at->format('Y-m-d');
-                $data['invoice_collection_number'] =
-                    $landlord->invoice_collection_number;
-                $data['invoice_price'] = $data['tax_rate'];
-                $data['invoice_serial_number'] = $landlord_payment->receipts->first()['invoice_serial_number'];
+                $data['room_code'] = $maintenance->tenantContract->room->room_code;
+                $data['room_number'] = $maintenance->tenantContract->room->room_number;
+                $data['deposit_date'] = $maintenance->closed_date;
+                $data['actual_deposit_date'] = $maintenance->closed_date;
+                $data['invoice_collection_number'] = $landlord->invoice_collection_number;
+                $data['invoice_price'] = $per_amount;
+                $data['invoice_serial_number'] = $maintenance->receipts->first()['invoice_serial_number'];
+
+                if( $landlord->id == $landlords->last()->id ){
+                    $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
+                    $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
+                }
 
                 array_push($maintenance_data, $data);
                 $this->invoice_count ++;
@@ -426,53 +375,48 @@ class ReceiptService
     }
     public function makeDeposits($start_date, $end_date)
     {
-        $deposits = Deposit::where('deposit_confiscated_amount', '>', 1)
-            ->whereBetween('confiscated_or_returned_date', [
-                $start_date,
-                $end_date
-            ])
-            ->with(['tenantContract.room.building.landlordContracts'])
-            ->get();
-
+        $deposits = PayLog::whereBetween('paid_at', [$start_date, $end_date])
+                            ->where('receipt_type', '=', '發票')
+                            ->where('loggable_type', '=', 'App\Deposit')
+                            ->orderBy('virtual_account', 'DESC')
+                            ->orderBy('paid_at', 'ASC')
+                            ->get();
         // Genenate deposit data
         $deposit_data = array();
         foreach ($deposits as $deposit_key => $deposit) {
-            $landlords = $deposit->tenantContract->room->building->landlordContracts->last()
-                ->landlords;
-            foreach ($landlords as $landlord_key => $landlord) {
-                $data = $this->makeInvoiceMockData();
-                $data[
-                    'invoice_date'
-                ] = $deposit->confiscated_or_returned_date->format('Y-m-d');
+            $data = $this->makeInvoiceMockData();
+            $data['invoice_date'] = '';
+            if( $deposit->subject == "訂金(房東)" ){
                 $data['invoice_item_name'] = '管理服務費';
-                $data['amount'] = $deposit->deposit_confiscated_amount;
-
-                // Set value for maping relative payment model
-                $data['data_table'] =  __('general.' . $deposit->getTable()); 
-                $data['data_table_id'] = $deposit->id;
-                $data['data_receipt_id'] = $deposit->receipts->first()['id'];
-
-                if ($landlord->is_legal_person) {
-                    $data['company_number'] = $landlord->certificate_number;
-                    $data['company_name'] = $landlord->name;
-                }
-                $data['room_code'] = $deposit->tenantContract->room->room_code;
-                $data['room_number'] =
-                    $deposit->tenantContract->room->room_number;
-                $data[
-                    'deposit_date'
-                ] = $deposit->confiscated_or_returned_date->format('Y-m-d');
-                $data[
-                    'actual_deposit_date'
-                ] = $deposit->confiscated_or_returned_date->format('Y-m-d');
-                $data['invoice_collection_number'] =
-                    $landlord->invoice_collection_number;
-                $data['invoice_price'] = $data['tax_rate'];
-                $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
-
-                array_push($deposit_data, $data);
-                $this->invoice_count ++;
             }
+            else if( $deposit->subject == "訂金" ){
+                $data['invoice_item_name'] = '違約金';
+            }
+            $data['amount'] = $deposit->amount;
+
+            // Set value for maping relative payment model
+            $data['data_table'] =  __('general.' . $deposit->getTable()); 
+            $data['data_table_id'] = $deposit->id;
+            $data['data_receipt_id'] = $deposit->receipts->first()['id'];
+
+            // ToDo: uncomment when Deposit been finished
+            // if ($deposit->loggable->payer_is_legal_person) {
+            //     $data['company_number'] = $deposit->loggable->payer_certification_number;
+            //     $data['company_name'] = $deposit->loggable->payer_name;
+            // }
+            // $data['room_code'] = $deposit->loggable->room->room_code;
+            // $data['room_number'] = $deposit->loggable->room->room_number;
+            $data['room_code'] = '';
+            $data['room_number'] = '';
+
+            $data['deposit_date'] = $deposit->paid_at->format('Y-m-d');
+            $data['actual_deposit_date'] = $deposit->paid_at->format('Y-m-d');
+            $data['invoice_collection_number'] = '';
+            $data['invoice_price'] = $deposit->amount;
+            $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
+
+            array_push($deposit_data, $data);
+            $this->invoice_count ++;
         }
 
         return $deposit_data;
@@ -503,7 +447,9 @@ class ReceiptService
                 // Set value for maping relative payment model
                 $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
                 $data['data_table_id'] = $landlord_other_subject->id;
-                $data['data_receipt_id'] = $landlord_other_subject->receipts->first()['id'];
+                $data['data_receipt_id'] = $landlord_other_subject->receipts
+                                                                  ->where('receiver', $landlord->name)
+                                                                  ->first()['id'];
 
                 if ($landlord->is_legal_person) {
                     $data['company_number'] = $landlord->certificate_number;
@@ -515,7 +461,9 @@ class ReceiptService
                 $data['actual_deposit_date'] = $landlord_other_subject->expense_date;
                 $data['invoice_collection_number'] = $landlord->invoice_collection_number;
                 $data['invoice_price'] = $per_amount;
-                $data['invoice_serial_number'] = $landlord_other_subject->receipts->first()['invoice_serial_number'];
+                $data['invoice_serial_number'] = $landlord_other_subject->receipts
+                                                                        ->where('receiver', $landlord->name)
+                                                                        ->first()['invoice_serial_number'];
 
                 if( $landlord->id == $landlords->last()->id ){
                     $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
@@ -633,18 +581,13 @@ class ReceiptService
                         NotificationService::notifyReceiptUpdated($model);
                     }
                     break;
-                case 'DebtCollection':
-                    if($model['is_penalty_collected'] != $data['is_penalty_collected']){
-                        NotificationService::notifyReceiptUpdated($model);
-                    }  
-                    break; 
-                case 'Deposit':
-                    if($model['deposit_confiscated_amount'] != $data['deposit_confiscated_amount'] || $model['confiscated_or_returned_date'] != $data['confiscated_or_returned_date']){
+                case 'PayLog':
+                    if($model['amount'] != $data['amount'] || $model['paid_at'] != $data['paid_at']){
                         NotificationService::notifyReceiptUpdated($model);
                     }   
                     break;       
-                case 'LandlordPayment':
-                    if(!strpos($model['subject'], "維修案件") && ($model['amount'] != $data['amount'] || $model['collection_date'] != $data['collection_date'])){
+                case 'Maintenance':
+                    if(($model['price'] != $data['price'] || $model['closed_date'] != $data['closed_date'])){
                         NotificationService::notifyReceiptUpdated($model);
                     }   
                     break;

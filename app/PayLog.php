@@ -31,4 +31,11 @@ class PayLog extends Model implements AuditableContract
     {
         return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
     }
+    /**
+     * Get the receipts of this deposit.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
+    }
 }

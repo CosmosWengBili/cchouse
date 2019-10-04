@@ -41,11 +41,4 @@ class Deposit extends Model implements AuditableContract
         return $this->belongsTo('App\TenantContract');
     }
 
-    /**
-     * Get the receipts of this deposit.
-     */
-    public function receipts()
-    {
-        return $this->morphToMany('App\Receipt', 'receiptable');
-    }
 }

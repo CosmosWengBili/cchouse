@@ -25,11 +25,4 @@ class LandlordPayment extends Model implements AuditableContract
         return $this->belongsTo('App\Room');
     }
 
-    /**
-     * Get the receipts of this landlord payment.
-     */
-    public function receipts()
-    {
-        return $this->morphToMany('App\Receipt', 'receiptable');
-    }
 }

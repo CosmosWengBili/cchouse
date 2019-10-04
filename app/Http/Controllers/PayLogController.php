@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\PayLog;
+use App\Services\ReceiptService;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\TenantContract;
@@ -89,6 +90,8 @@ class PayLogController extends Controller
             'virtual_account' => 'required',
             'paid_at' => 'required',
         ]);
+
+        ReceiptService::compareReceipt($payLog, $validatedData);
         $payLog->update($validatedData);
 
         return redirect()->route('tenantPayments.index');

@@ -7,7 +7,6 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Deposit;
 use App\Services\DepositService;
-use App\Services\ReceiptService;
 use Illuminate\Support\Facades\DB;
 
 class DepositController extends Controller
@@ -123,7 +122,6 @@ class DepositController extends Controller
             'comment' => 'required',
         ]);
 
-        ReceiptService::compareReceipt($deposit, $validatedData);
         DepositService::update($deposit, $validatedData);
 
         return redirect($request->_redirect);

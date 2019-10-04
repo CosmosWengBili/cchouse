@@ -41,6 +41,12 @@ trait WithExtraInfo {
             case 'debt_collections':
             case 'maintenances':
             case 'deposits':
+                return $builder
+                    ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                    ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                break;
             case 'company_incomes':
                 return $builder
                         ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")

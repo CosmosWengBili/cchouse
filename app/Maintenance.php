@@ -120,4 +120,9 @@ class Maintenance extends Model implements AuditableContract
 
         return $price - $cost;
     }
+
+    public function companyIncomes()
+    {
+        return $this->morphMany('App\CompanyIncome', 'incomable');
+    }
 }

@@ -110,7 +110,7 @@ class TenantContract extends Pivot implements AuditableContract
      */
     public function companyIncomes()
     {
-        return $this->hasMany('App\CompanyIncome', 'tenant_contract_id');
+        return $this->morphMany('App\CompanyIncome', 'incomable');
     }
 
     /**

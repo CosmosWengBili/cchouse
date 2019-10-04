@@ -23,7 +23,12 @@ class CompanyIncome extends Model implements AuditableContract
 
     protected $hidden = ['pivot', 'deleted_at'];
 
-    protected $casts = ['income_date' => 'date'];
+    protected $casts = ['income_date' => 'date:Y-m-d'];
+
+    public function incomable()
+    {
+        return $this->morphTo();
+    }
 
     /**
      * Get the tenant contract that this income is made from.
@@ -31,5 +36,10 @@ class CompanyIncome extends Model implements AuditableContract
     public function tenantContract()
     {
         return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
+    }
+
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
     }
 }

@@ -113,18 +113,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>是否為點交</td>
-                                    <td>
-                                        <input type="hidden" value="0" name="is_pay_off"/>
-                                        <input
-                                            type="checkbox"
-                                            name="is_pay_off"
-                                            value="1"
-                                            {{ ($data['is_pay_off'] ?? false) ? 'checked' : '' }}
-                                        />
-                                    </td>
                                     <td>備註</td>
-                                    <td>
+                                    <td colspan="3">
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
                                     </td>
                                 </tr>

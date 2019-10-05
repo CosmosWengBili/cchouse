@@ -52,7 +52,6 @@ class TenantPaymentController extends Controller
             'charge_off_date' => '',
             'collected_by' => 'required',
             'is_visible_at_report' => 'required',
-            'is_pay_off' => 'required',
             'comment' => '',
         ]);
         $tenantPayment = TenantPayment::create($validatedData);
@@ -92,7 +91,6 @@ class TenantPaymentController extends Controller
             'charge_off_date' => '',
             'collected_by' => 'required',
             'is_visible_at_report' => 'required',
-            'is_pay_off' => 'required',
             'comment' => '',
         ]);
         ReceiptService::compareReceipt($tenantPayment, $validatedData);

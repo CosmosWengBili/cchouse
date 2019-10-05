@@ -50,29 +50,29 @@ class ScheduleService
     // daily task to notify users that some contracts due in 2 months
     public function notifyContractDue()
     {
-        // escrow is 2 months
+        // 代管 is 2 months, 包租 is 6 months
         LandlordContract::where([
-            'commission_end_date' => Carbon::today()->addMonth(2),
-            'commission_type' => '代管',
-        ])
+                'commission_end_date' => Carbon::today()->addMonth(2),
+                'commission_type' => '代管',
+            ])
+            ->orWhere([
+                'commission_end_date' => Carbon::today()->addMonth(6),
+                'commission_type' => '包租',
+            ])
             ->with(['commissioner','building:id,city,district,address','landlords:name'])
             ->get()
             ->each(function ($landlordContract) {
                 $landlordContract->commissioner->notify(
                     new LandlordContractDue($landlordContract)
                 );
-            });
-        // charter is 6 months
-        LandlordContract::where([
-            'commission_end_date' => Carbon::today()->addMonth(6),
-            'commission_type' => '包租',
-        ])
-            ->with(['commissioner','building:id,city,district,address','landlords:name'])
-            ->get()
-            ->each(function ($landlordContract) {
-                $landlordContract->commissioner->notify(
-                    new LandlordContractDue($landlordContract)
-                );
+                $account_users =  User::whereHas("groups", function($q){
+                        $q->where("name", "帳務組"); })
+                        ->get();
+                foreach( $account_users as $account_user ){
+                    $account_user->notify(
+                        new LandlordContractDue($landlordContract)
+                    );
+                }
             });
     }
 

@@ -93,12 +93,15 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="collected_by"
-                                            data-toggle="selectize"
-                                            data-table="users"
-                                            data-text="name"
-                                            data-value="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
+                                            @foreach(config('enums.tenant_payments.collected_by') as $value)
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ ($data['collected_by'] ?? '') == $value ? 'selected' : '' }}
+                                                >
+                                                    {{$value}}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </td>
                                     <td>是否顯示在報表</td>

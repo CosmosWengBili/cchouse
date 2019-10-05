@@ -413,6 +413,20 @@
                                         />
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>@lang("model.Building.electricity_payment_method")</td>
+                                    <td>
+                                        <select
+                                            class="form-control form-control-sm"
+                                            name="electricity_payment_method"
+                                            value="{{ $data['electricity_payment_method'] ?? '' }}"
+                                        >
+                                            @foreach(config('enums.buildings.electricity_payment_method') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 

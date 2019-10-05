@@ -23,7 +23,7 @@ class TenantElectricityPaymentController extends Controller
             TenantContract::withExtraInfo()
                 ->select($selectStr)
                 ->where('contract_end', '>', Carbon::now())
-                ->where('tenant_contract.electricity_payment_method', '公司代付')
+                ->where('buildings.electricity_payment_method', '公司代付')
                 ->with($request->withNested)
         );
 

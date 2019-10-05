@@ -9,6 +9,7 @@ jobs:
       # Specify the version you desire here
       - image: msglight4874/ci-laravel-php:7.3-node-browsers-0.0.1
       - image: circleci/mysql:5.7-ram
+      - image: circleci/redis:5.0
         environment:
           MYSQL_ROOT_PASSWORD: ''
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'

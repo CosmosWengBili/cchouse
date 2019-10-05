@@ -72,7 +72,7 @@ class TenantPaymentControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $tenantPayment = factory(TenantPayment::class)->create();
+        $tenantPayment = factory(TenantPayment::class)->create(['is_charge_off_done' => false]);
         $res = $this->call('DELETE', route($this->routeName . '.destroy', [$tenantPayment->id]));
         $res->assertOk();
     }

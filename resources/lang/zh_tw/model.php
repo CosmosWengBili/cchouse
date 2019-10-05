@@ -274,7 +274,7 @@ return [
         'main_ammeter_location' => '台電總電表位址',
         'ammeter_serial_number_1' => '台電電號1( 可能多個 )',
         'shared_electricity' => '公電',
-        'electricity_payment_method' => '台電帳單付款方式',
+        'taiwan_electricity_payment_method' => '台電帳單付款方式',
         'private_ammeter_location' => '自設分電表位置',
         'water_meter_location' => '自來水表位置',
         'water_meter_serial_number' => '自來水表表號',

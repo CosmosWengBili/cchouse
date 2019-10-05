@@ -208,12 +208,12 @@
                                             value="{{ $data['shared_electricity'] ?? '' }}"
                                         />
                                     </td>
-                                    <td>@lang("model.Building.electricity_payment_method")</td>
+                                    <td>@lang("model.Building.taiwan_electricity_payment_method")</td>
                                     <td>
                                         <select
                                             class="form-control form-control-sm"
-                                            name="electricity_payment_method"
-                                            value="{{ $data['electricity_payment_method'] ?? '' }}"
+                                            name="taiwan_electricity_payment_method"
+                                            value="{{ $data['taiwan_electricity_payment_method'] ?? '' }}"
                                         />
                                             @foreach(config('enums.buildings.payment_methods') as $value)
                                                 <option value="{{$value}}">{{$value}}</option>

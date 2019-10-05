@@ -79,7 +79,7 @@ class BuildingControllerTest extends TestCase
             'main_ammeter_location' => '1樓',
             'ammeter_serial_number_1' => '123456',
             'shared_electricity' => '123456',
-            'electricity_payment_method' => '業主代繳',
+            'taiwan_electricity_payment_method' => '業主代繳',
             'private_ammeter_location' => '1F',
             'water_meter_location' => '1F',
             'water_meter_serial_number' => '123',

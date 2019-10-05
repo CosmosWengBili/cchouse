@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\SystemVariable;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use App\TenantPayment;
@@ -9,16 +10,21 @@ use Carbon\Carbon;
 class TenantPaymentService
 {
     public static function buildTenantPaymentTableRows(string $roomCode, string $tenantName, Carbon $startDate, Carbon $endDate) {
+        $subjects = SystemVariable::where('group', 'Reversal')->orderBy('order', 'desc')->pluck('code'); // order 小的在後面
         $tenantContractIds = self::findTenantContractIdsBy($roomCode, $tenantName);
         $rows = [];
         $tenantPayments = TenantPayment::whereIn('tenant_contract_id', $tenantContractIds)
-                            ->whereBetween('due_time', [$startDate, $endDate])->get();
+                            ->whereBetween('due_time', [$startDate, $endDate])
+                            ->get()
+                            ->sortBy(function ($tp) use ($subjects) {
+                                // 資料按 `日期` 再按 `沖銷順序` 排序
+                                return $tp->due_time . '#' . ($subjects->search($tp->subject) + 10);
+                            });
         $tenantElectricityPayments = TenantElectricityPayment::whereIn('tenant_contract_id', $tenantContractIds)
                                         ->whereBetween('due_time', [$startDate, $endDate])->get();
-        $payments = $tenantPayments->concat($tenantElectricityPayments)->sortByDesc('due_time');
+        $payments = $tenantPayments->concat($tenantElectricityPayments);
 
         foreach ($payments as $payment) {
-
             $rows[] = [
                 '應繳科目編號' => $payment->id,
                 '應繳科目' =>  $payment->subject,

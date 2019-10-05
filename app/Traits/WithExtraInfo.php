@@ -31,6 +31,11 @@ trait WithExtraInfo {
                         ->join('rooms', 'buildings.id', '=', 'rooms.building_id');
                 break;
             case 'tenant_contract':
+                return $builder
+                    ->join('rooms', 'rooms.id', '=', "{$tableName}.room_id")
+                    ->join('tenants', 'tenants.id', '=', "{$tableName}.tenant_id")
+                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
             case 'keys':
             case 'landlord_payments':
                 return $builder
@@ -87,6 +92,16 @@ trait WithExtraInfo {
                 ];
                 break;
             case 'tenant_contract':
+                $extraSelects = [
+                    'tenants.name AS tenant_name',
+                    'landlord_contracts.commission_type AS commission_type',
+                    'buildings.building_code AS building_code',
+                    'buildings.title AS building_title',
+                    'CONCAT(buildings.city, buildings.district, address) AS building_location',
+                    'rooms.room_number AS room_number',
+                    'rooms.room_status AS room_status',
+                ];
+                break;
             case 'keys':
             case 'debt_collections':
             case 'maintenances':

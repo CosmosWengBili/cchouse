@@ -378,6 +378,7 @@ return [
         'currentBalance' => '目前餘額',
         'building' => '物件',
         'room' => '房',
+        'rooms' => '房',
         'tenant_payments' => '租客帳單',
         'tenant_electricity_payments' => '租客電費',
         'debt_collections' => '催收',

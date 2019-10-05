@@ -2,6 +2,10 @@
 @section('content')
     @include('layouts.form_error')
 
+@php
+    $tenantContractId = Request::get('tenantContractId') ?? $data['tenant_contract_id'] ?? '';
+@endphp
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 mt-5">
@@ -24,7 +28,7 @@
                                             data-toggle="selectize"
                                             data-table="tenant_contract"
                                             data-text="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
+                                            data-selected="{{ $tenantContractId ?? '' }}"
                                         >
                                         </select>
                                     </td>

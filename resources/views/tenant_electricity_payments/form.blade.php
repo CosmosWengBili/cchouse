@@ -2,6 +2,7 @@
 
 @php
     $tenantContracts = \App\TenantContract::pluck('id');
+    $tenantContractId = Request::get('tenantContractId') ?? $data['tenant_contract_id'] ?? '';
 @endphp
 
 @section('content')
@@ -30,7 +31,7 @@
                                             @foreach($tenantContracts as $value)
                                                 <option
                                                     value="{{$value}}"
-                                                    {{ ($data['tenant_contract_id'] ?? '') == $value ? 'selected' : '' }}
+                                                    {{ $tenantContractId == $value ? 'selected' : '' }}
                                                 >
                                                     {{$value}}
                                                 </option>

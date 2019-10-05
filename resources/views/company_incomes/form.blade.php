@@ -20,19 +20,6 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>租客合約編號</td>
-                                    <td>
-                                        <select class="form-control" name="tenant_contract_id">
-                                            @foreach($tenantContractIds as $tenantContractId)
-                                                <option
-                                                    value="{{$tenantContractId}}"
-                                                    {{ ($data['tenant_contract_id'] ?? '') == $tenantContractId ? 'selected' : '' }}
-                                                >
-                                                    {{$tenantContractId}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
                                     <td>項目</td>
                                     <td>
                                         <select

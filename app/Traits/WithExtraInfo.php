@@ -49,7 +49,7 @@ trait WithExtraInfo {
                 break;
             case 'company_incomes':
                 return $builder
-                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.incomable_id")
                         ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
@@ -57,7 +57,8 @@ trait WithExtraInfo {
                             $query->on('company_incomes.id', '=', 'receiptables.receiptable_id');
                             $query->join('receipts', 'receipts.id', '=', 'receiptables.receiptable_id')
                                 ->where('receiptables.receiptable_type', '=', 'App\CompanyIncome');
-                        });
+                        })
+                        ->where('incomable_type', 'App\TenantContract');
                 break;
             default:
                 return $builder;

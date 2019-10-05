@@ -136,7 +136,7 @@ class TenantContractServiceTest extends TestCase
                 'subject' => '租金',
                 'due_time' => $date,
                 'amount' => $newContract->rent,
-                'collected_by' => '公司',
+                'collected_by' => '房東',
                 'period' => '月',
             ]);
         }

@@ -510,6 +510,8 @@ return [
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
         "invoice_serial_number" => "發票號碼",
+        "incomable_id" => "來源資料編號",
+        "incomable_type" => "來源資料"
     ],
     'PayLog' => [
         "id" => '編號',

@@ -37,6 +37,16 @@
             <?php endif; ?>
             <div class="container-fluid page-body-wrapper">
                 <div class="main-panel">
+                    <div class="ajax-errors"
+                         style="display: none; z-index: 10000; position: fixed; top: 50px; left: 50%; transform: translateX(-50%)"
+                    >
+                        <div class="alert alert-danger pt-4" style="background-color: #ffcccc;" role="alert">
+                            <ul class="m-0 p-0 px-3"></ul>
+                        </div>
+                        <button type="button" class="close" style="position: absolute; top: 0px ; right: 5px">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     @yield('content')
                 </div>
                 <!-- main-panel ends -->

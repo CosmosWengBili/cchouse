@@ -107,6 +107,9 @@ class TenantPaymentController extends Controller
      */
     public function destroy(TenantPayment $tenantPayment)
     {
+        if ($tenantPayment->is_charge_off_done) {
+            return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
+        }
         $tenantPayment->delete();
         return response()->json(true);
     }

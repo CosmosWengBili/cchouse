@@ -1,16 +1,20 @@
 <?php
 namespace App\Services;
 
+use App\TenantContract;
 use App\TenantElectricityPayment;
 use App\TenantPayment;
 use Carbon\Carbon;
 
 class TenantPaymentService
 {
-    public static function buildTenantPaymentTableRows(Carbon $startDate, Carbon $endDate) {
+    public static function buildTenantPaymentTableRows(string $roomCode, string $tenantName, Carbon $startDate, Carbon $endDate) {
+        $tenantContractIds = self::findTenantContractIdsBy($roomCode, $tenantName);
         $rows = [];
-        $tenantPayments = TenantPayment::whereBetween('due_time', [$startDate, $endDate])->get();
-        $tenantElectricityPayments = TenantElectricityPayment::whereBetween('due_time', [$startDate, $endDate])->get();
+        $tenantPayments = TenantPayment::whereIn('tenant_contract_id', $tenantContractIds)
+                            ->whereBetween('due_time', [$startDate, $endDate])->get();
+        $tenantElectricityPayments = TenantElectricityPayment::whereIn('tenant_contract_id', $tenantContractIds)
+                                        ->whereBetween('due_time', [$startDate, $endDate])->get();
         $payments = $tenantPayments->concat($tenantElectricityPayments)->sortByDesc('due_time');
 
         foreach ($payments as $payment) {
@@ -48,5 +52,16 @@ class TenantPaymentService
         }
 
         return $rows;
+    }
+
+
+    private static function findTenantContractIdsBy($roomCode, $tenantName)
+    {
+        return TenantContract::join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+            ->join('tenants', 'tenants.id', '=', "tenant_contract.tenant_id")
+            ->where('rooms.room_code', $roomCode)
+            ->where('tenants.name', $tenantName)
+            ->select('tenant_contract.id')
+            ->pluck('tenant_contract.id');
     }
 }

@@ -115,6 +115,8 @@ class TenantPaymentController extends Controller
 
     private function indexByDate(Request $request) {
         $data = [];
+        $roomCode = $request->input('room_code');
+        $tenantName = $request->input('tenant_name');
         $startDateString = $request->input('start_date');
         $endDateString = $request->input('end_date');
 
@@ -122,7 +124,7 @@ class TenantPaymentController extends Controller
             $startDate = Carbon::parse($startDateString);
             $endDate = Carbon::parse($endDateString);
 
-            $data['tableRows'] = $this->buildTableRows($startDate, $endDate);
+            $data['tableRows'] = $this->buildTableRows($roomCode, $tenantName, $startDate, $endDate);
         }
 
         return view('tenant_payments.index_by_date', $data);
@@ -145,7 +147,7 @@ class TenantPaymentController extends Controller
         return view('tenant_payments.index_by_contract', $data);
     }
 
-    private function buildTableRows($startDate, $endDate) {
-        return TenantPaymentService::buildTenantPaymentTableRows($startDate, $endDate);
+    private function buildTableRows(string $roomCode, string $tenantName, Carbon $startDate, Carbon$endDate) {
+        return TenantPaymentService::buildTenantPaymentTableRows($roomCode, $tenantName, $startDate, $endDate);
     }
 }

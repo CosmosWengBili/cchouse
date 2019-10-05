@@ -371,7 +371,7 @@ return [
         '110v_end_degree' => '110v 結度',
         '220v_end_degree' => '220v 結度',
         'invoice_collection_method' => '發票領取方式',
-        'invoice_collection_number' => '發票領取號碼',
+        'invoice_collection_number' => '載具號碼',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'commissioner_id' => '專員編號',

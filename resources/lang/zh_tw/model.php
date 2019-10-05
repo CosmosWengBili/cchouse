@@ -489,6 +489,7 @@ return [
         "amount" => "費用",
         "invoice_serial_number" => "發票號碼",
         "is_charge_off_done" => "是否已沖銷",
+        "charge_off_date" => "沖銷日期",
         "due_time" => '應繳時間',
         "comment" => "備註",
         'created_at' => '建立時間',

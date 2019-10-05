@@ -53,7 +53,8 @@ class TenantElectricityPaymentController extends Controller
             "amount" => "required",
             "due_time" => "required",
             "is_charge_off_done" => "required",
-            "comment" => "required",
+            'charge_off_date' => '',
+            'comment' => '',
         ]);
         $tenantPayment = TenantElectricityPayment::create($validatedData);
 
@@ -103,7 +104,8 @@ class TenantElectricityPaymentController extends Controller
             "amount" => "required",
             "due_time" => "required",
             "is_charge_off_done" => "required",
-            "comment" => "required",
+            'charge_off_date' => '',
+            'comment' => '',
         ]);
         ReceiptService::compareReceipt($tenantElectricityPayment, $validatedData);
         $tenantElectricityPayment->update($validatedData);

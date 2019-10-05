@@ -144,9 +144,6 @@
                 amount: {
                     required: true
                 },
-                charge_off_date: {
-                    required: true
-                },
                 collected_by: {
                     required: true
                 },
@@ -157,9 +154,6 @@
                     required: '必須輸入'
                 },
                 amount: {
-                    required: '必須輸入'
-                },
-                charge_off_date: {
                     required: '必須輸入'
                 },
                 collected_by: {

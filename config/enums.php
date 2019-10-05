@@ -291,7 +291,7 @@ return [
         'data_table_id',
         'company_number',
         'company_name',
-        'room_code',
+        'building_code',
         'room_number',
         'deposit_date',
         'actual_deposit_date',
@@ -316,7 +316,7 @@ return [
         '租金票到期日'
     ],
     'receipt_en' =>[
-        'room_code',
+        'building_code',
         'group',
         'city',
         'district',

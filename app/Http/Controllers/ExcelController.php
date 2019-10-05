@@ -81,25 +81,25 @@ class ExcelController extends Controller
     {
         switch($function){
             case 'invoice':
+                $service = new ReceiptService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
 
                 return Excel::download(
                     new ReceiptExport($invoiceData, 'invoice'),
                     '發票報表.xlsx'
                 );
             case 'receipt':
+                $service = new ReceiptService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
 
                 return Excel::download(
                     new ReceiptExport($receiptData, 'receipt'),
                     '收據報表.xlsx'
                 );
-
-
                 break;
             default:
                 break;

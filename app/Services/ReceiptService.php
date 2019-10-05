@@ -220,20 +220,15 @@ class ReceiptService
         foreach ($landlord_contracts as $contract_key => $landlord_contract) {
             $data = array();
             // Combine relative room_code value
-            $data['room_code'] = implode(
-                ',',
-                $landlord_contract->building->rooms
-                    ->pluck('room_code')
-                    ->toArray()
-            );
-            $data['group'] = 'A';
+            $data['building_code'] = $landlord_contract->building->building_code;
+            $data['group'] = $landlord_contract->building->group;
             $data['city'] = $landlord_contract->building->city;
             $data['district'] = $landlord_contract->building->district;
             $data['address'] = $landlord_contract->building->address;
             $data['tax_number'] = $landlord_contract->building->tax_number;
             // Combine relative landlord name value
             $data['landlord_name'] = implode(
-                ',',
+                '、',
                 $landlord_contract->landlords->pluck('name')->toArray()
             );
             $data['taxable_charter_fee'] =

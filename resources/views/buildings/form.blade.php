@@ -28,6 +28,24 @@
                                             value="{{ $data['title'] ?? '' }}"
                                         />
                                     </td>
+                                    <td>@lang("model.Building.building_code")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="building_code"
+                                            value="{{ $data['building_code'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Building.group")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="group"
+                                            value="{{ $data['group'] ?? '' }}"
+                                        />
+                                    </td>
                                     <td>@lang("model.Building.city")</td>
                                     <td>
                                         <select

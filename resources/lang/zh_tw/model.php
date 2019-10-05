@@ -257,6 +257,8 @@ return [
     'Building' => [
         'id' => '編號',
         'title' => '簡稱',
+        'buidling_code' => '物件代碼',
+        'group' => '組別',
         'city' => '縣市',
         'district' => '區域',
         'address' => '地址',

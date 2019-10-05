@@ -66,6 +66,8 @@ class BuildingController extends Controller
     {
         $validatedData = $request->validate([
             'title' => 'required|max:255',
+            'building_code' => 'required|max:255',
+            'group' => 'required|max:255',
             'city' => [
                 'required',
                 Rule::in(array_keys(config('enums.cities')))
@@ -158,6 +160,8 @@ class BuildingController extends Controller
     {
         $validatedData = $request->validate([
             'title' => 'required|max:255',
+            'building_code' => 'required|max:255',
+            'group' => 'required|max:255',
             'city' => [
                 'required',
                 Rule::in(array_keys(config('enums.cities')))

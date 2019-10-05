@@ -60,6 +60,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             });
 
             Route::resource('shareholders', 'ShareHolderController');
+            Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
 
             // receipts
             Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;

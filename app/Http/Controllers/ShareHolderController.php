@@ -76,7 +76,7 @@ class ShareholderController extends Controller
             'investment_amount' => 'required',
             'method' => 'required',
             'bank_branch' => 'required',
-            'exchange_fee' => 'required',
+            'exchange_fee' => 'nullable',
         ]);
 
         is_null($validatedData['distribution_rate']) and ($validatedData['distribution_rate'] = 0);
@@ -88,10 +88,9 @@ class ShareholderController extends Controller
         $building_code = array_wrap($request->input('building_code'));
         // get building ids by building_code
         $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
-        if(! empty($building_ids)){
+        if (! empty($building_ids)) {
             $shareholder->buildings()->sync($building_ids);
-        }
-        else{
+        } else {
             $shareholder->buildings()->sync(array());
         }
         return redirect($request->_redirect);
@@ -123,9 +122,12 @@ class ShareholderController extends Controller
     public function edit(Shareholder $shareholder)
     {
         $responseData = new FormDataResponser();
+        $data = $responseData->edit($shareholder, 'shareholders.update')->get();
+        $data['data']['building_code'] = $shareholder->buildings()->pluck('building_code')->unique()->implode(',');
+
         return view(
             'shareholders.form',
-            $responseData->edit($shareholder, 'shareholders.update')->get()
+            $data
         );
     }
 
@@ -151,15 +153,22 @@ class ShareholderController extends Controller
             'distribution_method' => 'required',
             'distribution_start_date' => 'required|date',
             'distribution_end_date' => 'required|date',
-            'distribution_rate' => 'required',
-            'investment_amount' => 'required'
+            'distribution_rate' => 'nullable',
+            'distribution_amount' => 'nullable',
+            'investment_amount' => 'required',
+            'method' => 'required',
+            'bank_branch' => 'required',
+            'exchange_fee' => 'nullable',
         ]);
 
         $shareholder->update($validatedData);
-        if($request->building_ids != ''){
-            $shareholder->buildings()->sync(explode(",", $request->building_ids));
-        }
-        else{
+
+        $building_code = array_wrap($request->input('building_code'));
+        // get building ids by building_code
+        $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
+        if (! empty($building_ids)) {
+            $shareholder->buildings()->sync($building_ids);
+        } else {
             $shareholder->buildings()->sync(array());
         }
 

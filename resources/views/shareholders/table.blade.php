@@ -1,6 +1,6 @@
 
 @php
-$tableId = "model-{$model_name}-{$layer}-" . rand();
+    $tableId = "model-{$model_name}-{$layer}-" . rand();
 @endphp
 <div class="card">
     <div class="card-body table-responsive">
@@ -23,30 +23,30 @@ $tableId = "model-{$model_name}-{$layer}-" . rand();
             <div class="table-responsive">
                 <table id="{{$tableId}}" class="display table" style="width:100%">
                     <thead>
-                        @php
-                            $model_name = ucfirst(Str::camel(Str::Singular($layer)));
-                        @endphp
-                        @foreach ( array_keys($objects[0]) as $field)
-                            <th>@lang("model.{$model_name}.{$field}")</th>
-                        @endforeach
-                        <th>功能</th>
+                    @php
+                        $model_name = ucfirst(Str::camel(Str::Singular($layer)));
+                    @endphp
+                    @foreach ( array_keys($objects[0]) as $field)
+                        <th>@lang("model.{$model_name}.{$field}")</th>
+                    @endforeach
+                    <th>功能</th>
                     </thead>
                     <tbody>
-                        {{-- all the records --}}
-                        @foreach ( $objects as $object )
-                            <tr>
-                                {{-- render all attributes --}}
-                                @foreach($object as $key => $value)
-                                    {{-- an even nested resource array --}}
-                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
-                                @endforeach
-                                <td>
-                                    <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=buildings">查看</a>
-                                    <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
-                                    <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
-                                </td>
-                            </tr>
-                        @endforeach
+                    {{-- all the records --}}
+                    @foreach ( $objects as $object )
+                        <tr>
+                            {{-- render all attributes --}}
+                            @foreach($object as $key => $value)
+                                {{-- an even nested resource array --}}
+                                <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
+                            @endforeach
+                            <td>
+                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=buildings">查看</a>
+                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">刪除</a>
+                            </td>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
             </div>
@@ -54,6 +54,17 @@ $tableId = "model-{$model_name}-{$layer}-" . rand();
     </div>
 </div>
 
+<style>
+    td:before {
+        content: '';
+        display: block;
+        min-width: 85px;
+    }
+</style>
 <script>
-    renderDataTable(["#{{$tableId}}"]);
+    renderDataTable(["#{{$tableId}}"], {
+        columnDefs: [
+            { className: "set_min_width", targets: "_all" },
+        ],
+    });
 </script>

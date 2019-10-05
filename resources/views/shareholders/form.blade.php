@@ -26,20 +26,23 @@
                                             type="text"
                                             id="building_code"
                                             name="building_code"
+                                            {{ isset($data["building_code"]) ? 'readonly' : '' }}
                                             value="{{ isset($data["building_code"]) ? $data['building_code'] : '' }}"
                                         />
                                         <div class="input-group-append">
                                             <button
                                                 id="get_share_holders"
                                                 type="button"
-                                                class="btn btn-outline-info"
+                                                class="btn btn-outline-info {{ isset($data["building_code"]) ? 'd-none' : '' }}"
                                             >
                                                 送出
                                             </button>
                                         </div>
                                     </div>
                                     <div>
-                                        <select id="share_holders"></select>
+                                        <select id="share_holders"
+                                                class="{{ isset($data["building_code"]) ? 'd-none' : '' }}"
+                                        ></select>
                                     </div>
                                 </td>
                             </tr>

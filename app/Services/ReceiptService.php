@@ -17,8 +17,12 @@ use App\Receipt;
 class ReceiptService
 {   
     public $invoice_count;
+    public $global_data;
     public function makeInvoiceData($start_date, $end_date)
     {
+        $this->global_data = [
+            'tenant' => [], 'landlord' => [],  'company' => []  
+        ];
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
             ->where('receipt_type', '=', '發票')
@@ -38,7 +42,6 @@ class ReceiptService
         $subtotal = 0;
         $comment = '';
         $current_tenant_contract_id = 0;
-        $invoice_data = array();
 
         // Init the variables which would be used to detect whether over landlord rent price
         $building_price_map = array();
@@ -110,7 +113,7 @@ class ReceiptService
             $data['tax_rate'] = 0.05;
 
             // Set value for maping relative payment model
-            $data['data_table'] = __('general.' . $pay_log->loggable->getTable()); 
+            $data['data_table'] = __('general.' . $pay_log->loggable->getTable()) .' , '. $pay_log->loggable->subject; 
             $data['data_table_id'] = $pay_log->loggable->id;
             $data['data_receipt_id'] = $pay_log->loggable->receipts->first()['id'];
 
@@ -149,8 +152,13 @@ class ReceiptService
                 $data['subtotal'] = $subtotal;
                 $subtotal = 0;
             }
-
-            array_push($invoice_data, $data);
+            if( $pay_log->loggable->subject == "租金" ){
+                array_push($this->global_data['company'], $data);
+            }
+            else{
+                array_push($this->global_data['tenant'], $data);
+            }
+            
         }
 
         // Generate deposit interest, maintenance data and collection data
@@ -160,14 +168,7 @@ class ReceiptService
         $deposit_data = $this->makeDeposits($start_date, $end_date);
         $landlord_other_subject_data = $this->makeLandlordOtherSubjects($start_date, $end_date);
         
-        $invoice_data = array_merge(
-            $invoice_data,
-            $deposit_interest_data,
-            $maintenance_data,
-            $deposit_data,
-            $landlord_other_subject_data
-        );
-        return $invoice_data;
+        return $this->global_data;
     }
 
     public function makeReceiptData($start_date, $end_date)
@@ -276,7 +277,6 @@ class ReceiptService
         }
 
         // Genenate deposit interest data
-        $invoiceData = array();
         foreach ($date_data as $date_key => $date) {
             $tenant_contracts = TenantContract::where([
                 ['contract_end', '>', $date],
@@ -316,11 +316,11 @@ class ReceiptService
                     $tenant_contract->invoice_collection_number;
                 $data['invoice_price'] = $data['amount'];
                 $data['invoice_serial_number'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
-                array_push($invoiceData, $data);
+
+                array_push($this->global_data['tenant'], $data);
                 $this->invoice_count ++;
             }
         }
-        return $invoiceData;
     }
 
     public function makeMaintenance($start_date, $end_date)
@@ -332,7 +332,6 @@ class ReceiptService
                                     ->get();
 
         // Genenate maintenance data
-        $maintenance_data = array();
         foreach ($maintenances as $maintenance) {
             $landlords = $maintenance->tenantContract->room->building->landlordContracts->last()
                 ->landlords;
@@ -367,11 +366,10 @@ class ReceiptService
                     $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
                 }
 
-                array_push($maintenance_data, $data);
+                array_push($this->global_data['landlord'], $data);
                 $this->invoice_count ++;
             }
         }
-        return $maintenance_data;
     }
     public function makeDeposits($start_date, $end_date)
     {
@@ -382,7 +380,6 @@ class ReceiptService
                             ->orderBy('paid_at', 'ASC')
                             ->get();
         // Genenate deposit data
-        $deposit_data = array();
         foreach ($deposits as $deposit_key => $deposit) {
             $data = $this->makeInvoiceMockData();
             $data['invoice_date'] = '';
@@ -415,11 +412,9 @@ class ReceiptService
             $data['invoice_price'] = $deposit->amount;
             $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
 
-            array_push($deposit_data, $data);
+            array_push($this->global_data['tenant'], $data);
             $this->invoice_count ++;
         }
-
-        return $deposit_data;
     }
 
     public function makeLandlordOtherSubjects($start_date, $end_date)
@@ -433,7 +428,6 @@ class ReceiptService
             ->get();
 
         // Genenate landlord_other_subject data
-        $landlord_other_subject_data = array();
         foreach ($landlord_other_subjects as $landlord_other_subject) {
             $landlords = $landlord_other_subject->room->building->landlordContracts->last()->landlords;
             $initial_amount = $landlord_other_subject->amount;
@@ -469,13 +463,10 @@ class ReceiptService
                     $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
                     $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
                 }
-                
-                array_push($landlord_other_subject_data, $data);
+                array_push($this->global_data['landlord'], $data);
                 $this->invoice_count ++;
             }
         }
-
-        return $landlord_other_subject_data;
         
     }
     // Turn resources title to invoice item name

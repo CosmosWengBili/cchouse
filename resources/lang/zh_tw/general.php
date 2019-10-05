@@ -7,5 +7,8 @@ return [
     'pay_logs' => '繳費紀錄', 
     'landlord_other_subjects' => '雜支', 
     'payment' => '應繳帳單',
-    'reversal' => '沖銷'
+    'reversal' => '沖銷',
+    'landlord' => '房東',
+    'tenant' => '租客',
+    'company' => '公司'
 ];

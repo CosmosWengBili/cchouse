@@ -104,7 +104,7 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td>是否顯示在報表</td>
+                                    <td>是否顯示在月結單</td>
                                     <td>
                                         <input type="hidden" value="0" name="is_visible_at_report"/>
                                         <input

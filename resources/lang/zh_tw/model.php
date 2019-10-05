@@ -471,7 +471,7 @@ return [
         "charge_off_date" => "沖銷日期",
         "invoice_serial_number" => "發票號碼",
         "collected_by" => "收取者",
-        "is_visible_at_report" => "是否顯示在報表",
+        "is_visible_at_report" => "是否顯示在月結單",
         "is_pay_off" => "是否為點交",
         "period" => '期數',
         "comment" => "備註",

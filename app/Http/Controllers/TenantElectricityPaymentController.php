@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TenantElectricityPaymentExport;
 use App\PayLog;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
@@ -13,6 +14,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TenantElectricityPaymentController extends Controller
 {
@@ -133,6 +135,10 @@ class TenantElectricityPaymentController extends Controller
              });
 
         return response()->json(true);
+    }
+
+    public function downloadImportFile() {
+        return Excel::download(new TenantElectricityPaymentExport(), '電費批次匯入表.xlsx');
     }
 
     private function findRelatedTenantContracts($type = null, $startDate = null, $endDate = null, $roomCode = null)

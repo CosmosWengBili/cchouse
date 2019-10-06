@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\LandlordContract;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -302,8 +303,13 @@ class TenantContractController extends Controller
         return response()->json(true);
     }
 
-    public function electricityPaymentReport(TenantContract $tenantContract, int $year, int $month)
+    public function electricityPaymentReport(string $data)
     {
+        $data = explode('|', base64_decode($data));
+        $tenantContract = TenantContract::find(intval($data[0], 10));
+        $year = intval($data[1], 10);
+        $month =  intval($data[2], 10);
+        $createdAt = Carbon::createFromTimestamp($data[3]);
         $room = $tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
@@ -311,6 +317,7 @@ class TenantContractController extends Controller
             'reportRows' => [$row],
             'year' => $year,
             'month' => $month,
+            'createdAt' => $createdAt,
         ]);
     }
 

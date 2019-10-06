@@ -20,11 +20,9 @@ class TenantElectricityPaymentController extends Controller
         $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
         $tenantContracts = $this->limitRecords(
-            TenantContract::withExtraInfo()
-                ->select($selectStr)
-                ->where('contract_end', '>', Carbon::now())
-                ->where('buildings.electricity_payment_method', '公司代付')
-                ->with($request->withNested)
+            $this->findRelatedTenantContracts()
+                 ->select($selectStr)
+                 ->with($request->withNested)
         );
 
         $data = $responseData
@@ -127,5 +125,27 @@ class TenantElectricityPaymentController extends Controller
         }
         $tenantElectricityPayment->delete();
         return response()->json(true);
+    }
+
+    public function sendReportSMSToAll(Request $request) {
+        $year = intval($request->input('year'));
+        $month = intval($request->input('month'));
+
+        $this->findRelatedTenantContracts()
+             ->chunk(100, function($tenantContracts) use ($year, $month) {
+                 foreach($tenantContracts as $tenantContract)
+                 {
+                     $tenantContract->sendElectricityPaymentReportSMS($year, $month);
+                 }
+             });
+
+        return response()->json(true);
+    }
+
+    private function findRelatedTenantContracts()
+    {
+        return TenantContract::withExtraInfo()
+                               ->where('contract_end', '>', Carbon::now())
+                               ->where('buildings.electricity_payment_method', '公司代付');
     }
 }

@@ -22,10 +22,9 @@
                         <p>僅顯示有效合約中，電費繳款方式為【公司代付】的電費單</p>
 
                         {{-- the route to create this kind of resource --}}
-                        @if(Route::has(Str::camel($layer) . '.create'))
-                            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
-                        @endif
+                        <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
                         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
+                        <a class="btn btn-sm btn-danger my-3" href="#" data-toggle="modal" data-target='#send-report-to-all-by-sms-model'>電費報表全部發送</a>
 
                         {{-- you should handle the empty array logic --}}
                         @if (empty($entries))
@@ -84,4 +83,66 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="send-report-to-all-by-sms-model">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">發送全部電費報表簡訊<span class="js-fill-id"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="sms-year">年份：</label>
+                        <div class="col-10">
+                            <select name="year" id="sms-year" class="form-control form-control-sm">
+                                @php
+                                    $now = \Carbon\Carbon::now();
+                                    $currentYear = $now->year;
+                                    $currentMonth = $now->month;
+                                @endphp
+                                @for ($i = 0; $i < 10; $i++)
+                                    <option value="{{ $currentYear - $i }}">{{ $currentYear - $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="sms-month">年份：</label>
+                        <div class="col-10">
+                            <select name="month" id="sms-month" class="form-control">
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ ($currentMonth == $i) ? 'selected="selected"' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary js-submit">送出</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        $('#send-report-to-all-by-sms-model button.js-submit').on('click', function () {
+            const year = $('select[name="year"]').val();
+            const month = $('select[name="month"]').val();
+            const data =  { year: year, month: month };
+
+            $.post("{{ route('tenantElectricityPayments.sendReportSMSToAll') }}", data, function () {
+                alert('發送成功');
+                $('#send-report-to-all-by-sms-model').modal('hide');
+                $('.modal-backdrop').remove();
+            }).fail(function () {
+                alert('發送失敗');
+            })
+        })
+    })();
+</script>
 @endsection

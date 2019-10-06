@@ -58,6 +58,10 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 Route::resource('tenantPayments', 'TenantPaymentController');
                 Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             });
+            Route::post(
+                'tenantElectricityPayments/sendReportSMSToAll',
+                'TenantElectricityPaymentController@sendReportSMSToAll'
+            )->name('tenantElectricityPayments.sendReportSMSToAll');
 
             Route::resource('shareholders', 'ShareHolderController');
 

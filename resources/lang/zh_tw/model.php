@@ -528,6 +528,7 @@ return [
         "paid_at" => "匯款時間",
         "tenant_contract_id" => "租客合約編號",
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'receipt_type' => '收據類型',
     ]
 ];

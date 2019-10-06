@@ -4,6 +4,16 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 my-4">
+            <div class="d-flex justify-content-center">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link{{ Request::get('type') != 'charged' ? ' active' : '' }}" href="{{ route('tenantElectricityPayments.index') }}">主資料</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{{ Request::get('type') == 'charged' ? ' active' : '' }}" href="{{ route('tenantElectricityPayments.index', ['type' => 'charged']) }}">儲值電</a>
+                    </li>
+                </ul>
+            </div>
             {{-- for showing multiple types of entries returned --}}
             @foreach ( $data as $layer => $entries)
                 @php
@@ -187,7 +197,7 @@
                         <label class="col-2 col-form-label">預覽</label>
                         <div class="col-10">
                             <div style="word-break: break-word;" class="mt-2">
-                                <a href="" target="_blank" id="preview-report-link"></a>
+                                <a href="" id="preview-report-link"></a>
                             </div>
                         </div>
                     </div>
@@ -211,7 +221,7 @@
 
 
         function changePreviewLink() {
-            var timestamp = Math.floor((new Date()) / 1000);
+            var timestamp = Math.floor(new Date() / 1000);
             var data = btoa([
                 tenantContractId,
                 year,

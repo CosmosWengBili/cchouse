@@ -69,20 +69,6 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('07:00')
                 ->runInBackground();
 
-        $schedule->call(ScheduleService::make('notifyTenantElectricityPaymentReport'))
-                ->name('Notify Tenant for electricity payment report every month')
-                ->before(function () {
-                    // Task is about to start...
-                })
-                ->after(function () {
-                    // Task is complete...
-                })
-                ->dailyAt('00:30')
-                ->when(function () {
-                    return Carbon::now()->endOfMonth()->isToday();
-                })
-                ->runInBackground();
-
         $schedule->call(ScheduleService::make('notifyReversalErrorCases'))
                 ->name('Notify User for unclosed ReversalErrorCases every day')
                 ->before(function () {

@@ -396,6 +396,7 @@ return [
         'sum_paid' => '已繳總額',
         "comment" => "備註",
         'tenant_name' => "租客姓名",
+        'buildings' => " 物件",
     ],
     'DebtCollection' => [
         'id' => '編號',

@@ -35,8 +35,8 @@
                         <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
                         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
                         <a class="btn btn-sm btn-danger my-3" href="#" data-toggle="modal" data-target='#send-report-to-all-by-sms-model'>電費報表全部發送</a>
-                        <a class="btn btn-sm btn-secondary my-3" href="{{ route('tenantElectricityPayments.downloadImportFile') }}">批次匯入資料下載</a>
-                        <a class="btn btn-sm btn-secondary my-3" href="#" id="batch-import">批次匯入</a>
+                        @include('tenant_electricity_payments.import_modal')
+                        <a class="btn btn-sm btn-secondary my-3" href="#" data-toggle="modal" data-target="#import-tenant_electricity_payments">批次匯入</a>
 
                         {{-- you should handle the empty array logic --}}
                         @if (empty($entries))

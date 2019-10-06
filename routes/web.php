@@ -57,6 +57,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 'tenantElectricityPayments/downloadImportFile',
                 'TenantElectricityPaymentController@downloadImportFile'
             )->name('tenantElectricityPayments.downloadImportFile');
+            Route::post('tenantElectricityPayments/importFile', 'TenantElectricityPaymentController@importFile')
+                 ->name('tenantElectricityPayments.importFile');
             Route::post(
                 'tenantElectricityPayments/sendReportSMSToAll',
                 'TenantElectricityPaymentController@sendReportSMSToAll'

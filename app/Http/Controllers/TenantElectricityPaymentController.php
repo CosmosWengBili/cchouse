@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\TenantElectricityPaymentExport;
+use App\Imports\TenantElectricityPaymentImport;
 use App\PayLog;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
@@ -139,6 +140,17 @@ class TenantElectricityPaymentController extends Controller
 
     public function downloadImportFile() {
         return Excel::download(new TenantElectricityPaymentExport(), '電費批次匯入表.xlsx');
+    }
+
+    public function importFile(Request $request) {
+        try {
+            Excel::import(
+                new TenantElectricityPaymentImport(),
+                $request->file('excel')
+            );
+        } catch (\Throwable $th) {
+            return redirect()->back()->withErrors([$th->getMessage()]);
+        }
     }
 
     private function findRelatedTenantContracts($type = null, $startDate = null, $endDate = null, $roomCode = null)

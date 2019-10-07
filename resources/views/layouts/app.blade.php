@@ -31,6 +31,7 @@
         <script src={{ asset('js/app.js') }}></script>
     </head>
     <body>
+        @yield('bootstrap_modal')
         <div class="container-scroller">
             <?php if (Auth::check()) : ?>
                 @include('layouts.nav')

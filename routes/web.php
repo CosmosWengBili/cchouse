@@ -59,6 +59,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             });
 
+            Route::get('shareholders/export', 'ShareHolderController@exportReport')->name('shareholders.export');
             Route::resource('shareholders', 'ShareHolderController');
             Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
 

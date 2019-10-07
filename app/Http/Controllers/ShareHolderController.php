@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Building;
+use App\Exports\ShareholderExport;
 use App\Shareholder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ShareholderController extends Controller
 {
@@ -185,5 +188,17 @@ class ShareholderController extends Controller
     {
         $shareholder->delete();
         return response()->json(true);
+    }
+
+    public function exportReport(Request $request)
+    {
+        $year = $request->input('year', now()->format('Y'));
+        $month = $request->input('month', now()->format('m'));
+        $date = Carbon::create($year, $month);
+
+        return Excel::download(
+            new ShareholderExport($date),
+            "Shareholder-{$date->format('Y-m')}.xlsx"
+        );
     }
 }

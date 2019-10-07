@@ -10,6 +10,10 @@
         <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
+        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal">
+            出帳明細
+        </button>
+
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
             <h3>尚無紀錄</h3>

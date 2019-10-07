@@ -148,7 +148,7 @@ class TenantPaymentController extends Controller
         return view('tenant_payments.index_by_contract', $data);
     }
 
-    private function buildTableRows(string $roomCode, string $tenantName, Carbon $startDate, Carbon$endDate) {
+    private function buildTableRows(?string $roomCode, ?string $tenantName, Carbon $startDate, Carbon$endDate) {
         return TenantPaymentService::buildTenantPaymentTableRows($roomCode, $tenantName, $startDate, $endDate);
     }
 }

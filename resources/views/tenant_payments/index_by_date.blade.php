@@ -11,10 +11,10 @@
                         <input type="hidden" name="by" value="date" />
                         <div class="form-row">
                             <div class="col">
-                                <input type="text" class="form-control form-control-sm" name="room_code" placeholder="物件代碼" value="{{ Request::get('room_code') ?? '' }}" required>
+                                <input type="text" class="form-control form-control-sm" name="room_code" placeholder="物件代碼" value="{{ Request::get('room_code') ?? '' }}">
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control form-control-sm" name="tenant_name" placeholder="租客姓名" value="{{ Request::get('tenant_name') ?? '' }}" required>
+                                <input type="text" class="form-control form-control-sm" name="tenant_name" placeholder="租客姓名" value="{{ Request::get('tenant_name') ?? '' }}">
                             </div>
                             <div class="col">
                                 <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}" required>

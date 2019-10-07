@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class TenantPaymentService
 {
-    public static function buildTenantPaymentTableRows(string $roomCode, string $tenantName, Carbon $startDate, Carbon $endDate) {
+    public static function buildTenantPaymentTableRows(?string $roomCode, ?string $tenantName, Carbon $startDate, Carbon $endDate) {
         $subjects = SystemVariable::where('group', 'Reversal')->orderBy('order', 'desc')->pluck('code'); // order 小的在後面
         $tenantContractIds = self::findTenantContractIdsBy($roomCode, $tenantName);
         $rows = [];
@@ -62,11 +62,16 @@ class TenantPaymentService
 
     private static function findTenantContractIdsBy($roomCode, $tenantName)
     {
-        return TenantContract::join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
-            ->join('tenants', 'tenants.id', '=', "tenant_contract.tenant_id")
-            ->where('rooms.room_code', $roomCode)
-            ->where('tenants.name', $tenantName)
-            ->select('tenant_contract.id')
-            ->pluck('tenant_contract.id');
+        $relation = TenantContract::select('tenant_contract.id');
+        if (!is_null($roomCode)) {
+            $relation = $relation->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                                 ->where('rooms.room_code', $roomCode);
+        }
+        if (!is_null($tenantName)) {
+            $relation = $relation->join('tenants', 'tenants.id', '=', "tenant_contract.tenant_id")
+                                 ->where('tenants.name', $tenantName);
+        }
+
+        return $relation->pluck('tenant_contract.id');
     }
 }

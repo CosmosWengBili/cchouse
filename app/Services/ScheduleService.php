@@ -178,19 +178,6 @@ class ScheduleService
             ]);
         }
     }
-    public function notifyTenantElectricityPaymentReport()
-    {
-        $now = Carbon::now();
-        $year = $now->year;
-        $month = $now->month;
-
-        TenantContract::where('contract_end', '>', $now)
-            ->where('electricity_payment_method', '公司代付')
-            ->get()
-            ->each(function ($tenantContract) use ($year, $month) {
-                $tenantContract->sendElectricityPaymentReportSMS($year, $month);
-            });
-    }
 
     public function notifyReversalErrorCases()
     {

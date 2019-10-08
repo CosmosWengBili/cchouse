@@ -222,11 +222,11 @@ class TenantContract extends Pivot implements AuditableContract
     public function sendElectricityPaymentReportSMS(int $year, int $month) {
         $smsService = resolve(SmsService::class);
         $mobile = $this->tenant()->first()->phones()->first()->value;
+        $createdAt = Carbon::now()->getTimestamp();
         $url = route('tenantContracts.electricityPaymentReport', [
-            'tenantContract' => $this->id,
-            'year' => $year,
-            'month' => $month
+            'data' => base64_encode("{$this->id}|{$year}|${month}|{$createdAt}")
         ]);
+
         $shouldPay = $this->electricityPaymentAmount($year, $month);
         $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
     }

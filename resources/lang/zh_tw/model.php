@@ -396,6 +396,7 @@ return [
         'sum_paid' => '已繳總額',
         "comment" => "備註",
         'tenant_name' => "租客姓名",
+        'buildings' => " 物件",
     ],
     'DebtCollection' => [
         'id' => '編號',
@@ -527,6 +528,7 @@ return [
         "paid_at" => "匯款時間",
         "tenant_contract_id" => "租客合約編號",
         'created_at' => '建立時間',
-        'updated_at' => '更新時間'
+        'updated_at' => '更新時間',
+        'receipt_type' => '收據類型',
     ]
 ];

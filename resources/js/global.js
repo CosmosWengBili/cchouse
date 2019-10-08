@@ -1,3 +1,7 @@
+import Swal from "sweetalert2";
+
+window.Swal = Swal;
+
 $(document).ready(function () {
 
     $.ajaxSetup({

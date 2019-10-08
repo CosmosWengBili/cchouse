@@ -133,55 +133,41 @@ class Room extends Model implements AuditableContract
 
     public function buildElectricityPaymentData(int $year, int $month) {
         $thisMonth = new Carbon("$year-$month-1");
-        $lastMonth = $thisMonth->copy()->subMonth(1);
-        $last2Month = $thisMonth->copy()->subMonth(2);
-        $last3Month = $thisMonth->copy()->subMonth(3);
+        $range = [$thisMonth->copy()->startOfMonth(), $thisMonth->copy()->endOfMonth()];
         $result = [
-            "{$last3Month->month}月應付" => null,
-            "{$last3Month->month}月已付" => null,
-            "{$last2Month->month}月應付" => null,
-            "{$last2Month->month}月已付" => null,
-            "{$lastMonth->month}月應付" => null,
-            "{$lastMonth->month}月已付" => null,
-            "上期 110v 起" => null,
-            "上期 220v 起" => null,
-            "本期 110v 結" => null,
-            "本期 220v 結" => null,
-            "元 / 度" => null,
-            "用電金額" => null,
-            "前期電費欠額" => null,
-            "本期應付金額" => null,
+            "上期 110v 起" => 'N/A',
+            "上期 220v 起" => 'N/A',
+            "本期 110v 結" => 'N/A',
+            "本期 220v 結" => 'N/A',
+            "元 / 度" => 'N/A',
+            "用電金額" => 'N/A',
+            "前期電費欠額" => 'N/A',
+            "本期應付金額" => 'N/A',
             "房號" => $this->room_number,
         ];
 
-        $tenantElectricityPayments = $this->tenantElectricityPayments()
-            ->whereBetween('due_time', [
-                $last3Month->startOfMonth(),
-                $thisMonth->endOfMonth()
-            ])->get();
-
-        foreach ($tenantElectricityPayments as $tenantElectricityPayment) {
-            $month = $tenantElectricityPayment->due_time->month;
-
-            # 本期
-            if ($month == $thisMonth->month) {
-                $result['上期 110v 起'] = $tenantElectricityPayment['110v_start_degree'];
-                $result['上期 220v 起'] = $tenantElectricityPayment['220v_start_degree'];
-                $result['本期 110v 結'] = $tenantElectricityPayment['110v_end_degree'];;
-                $result['本期 220v 結'] = $tenantElectricityPayment['220v_end_degree'];
-                if (in_array($month, [7, 8, 9, 10])) {
-                    $result['元 / 度'] = $tenantElectricityPayment->tenantContract()->first()['electricity_price_per_degree_summer'];
-                } else {
-                    $result['元 / 度'] = $tenantElectricityPayment->tenantContract()->first()['electricity_price_per_degree'];
-                }
-                $result['用電金額'] = $tenantElectricityPayment->amount;
+        $tenantElectricityPayment = $this->tenantElectricityPayments()
+                                         ->whereBetween('due_time', $range)
+                                         ->first(); // 本期應繳電費
+        if ($tenantElectricityPayment) {
+            $result['上期 110v 起'] = $tenantElectricityPayment['110v_start_degree'];
+            $result['上期 220v 起'] = $tenantElectricityPayment['220v_start_degree'];
+            $result['本期 110v 結'] = $tenantElectricityPayment['110v_end_degree'];;
+            $result['本期 220v 結'] = $tenantElectricityPayment['220v_end_degree'];
+            if (in_array($month, [7, 8, 9, 10])) {
+                $result['元 / 度'] = $tenantElectricityPayment->tenantContract()->first()['electricity_price_per_degree_summer'];
             } else {
-                $result["{$month}月應付"] = $tenantElectricityPayment->amount;
-                $result["{$month}月已付"] = $tenantElectricityPayment->payLogs()->sum('amount');
+                $result['元 / 度'] = $tenantElectricityPayment->tenantContract()->first()['electricity_price_per_degree'];
             }
+            $result['用電金額'] = $tenantElectricityPayment->amount;
         }
-        $result['前期電費欠額'] = ($result["{$lastMonth->month}月應付"] ?? 0) - ($result["{$lastMonth->month}月已付"] ?? 0);
-        $result['本期應付金額'] = ($result['用電金額'] ?? 0) + $result['前期電費欠額'] ?? 0;
+        // 本月以前的未繳電費總額
+        $lackAmount = $this->tenantElectricityPayments()
+                           ->where('due_time', '<', $range[0])
+                           ->where('is_charge_off_done', false)
+                           ->sum('amount');
+        $result['前期電費欠額'] = $lackAmount;
+        $result['本期應付金額'] = $result['前期電費欠額'] + ($result['用電金額'] != 'N/A' ? $result['用電金額'] : 0);
 
         return $result;
     }

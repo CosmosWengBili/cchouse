@@ -53,12 +53,21 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('debtCollections', 'DebtCollectionController');
             Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
 
+            Route::get(
+                'tenantElectricityPayments/downloadImportFile',
+                'TenantElectricityPaymentController@downloadImportFile'
+            )->name('tenantElectricityPayments.downloadImportFile');
+            Route::post('tenantElectricityPayments/importFile', 'TenantElectricityPaymentController@importFile')
+                 ->name('tenantElectricityPayments.importFile');
+            Route::post(
+                'tenantElectricityPayments/sendReportSMSToAll',
+                'TenantElectricityPaymentController@sendReportSMSToAll'
+            )->name('tenantElectricityPayments.sendReportSMSToAll');
             Route::group(['middleware' => 'payment.lock'], function () {
                 Route::resource('payLogs', 'PayLogController');
                 Route::resource('tenantPayments', 'TenantPaymentController');
                 Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             });
-
             Route::resource('shareholders', 'ShareHolderController');
 
             // receipts
@@ -105,10 +114,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
 
     Auth::routes();
 
-    Route::get(
-        'tenantContracts/{tenantContract}/electricityPaymentReport/{year}/{month}',
-        'TenantContractController@electricityPaymentReport'
-    )->name('tenantContracts.electricityPaymentReport');
+    Route::get('electricityPaymentReport/{data}', 'TenantContractController@electricityPaymentReport')
+           ->name('tenantContracts.electricityPaymentReport');
 });
 
 

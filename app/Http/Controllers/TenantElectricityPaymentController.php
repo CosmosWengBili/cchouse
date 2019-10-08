@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TenantElectricityPaymentExport;
+use App\Imports\TenantElectricityPaymentImport;
+use App\PayLog;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\Services\ReceiptService;
@@ -12,27 +15,18 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TenantElectricityPaymentController extends Controller
 {
     public function index(Request $request) {
-        $responseData = new NestedRelationResponser();
-        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
-        $selectStr = DB::raw(join(', ', $selectColumns));
-        $tenantContracts = $this->limitRecords(
-            TenantContract::withExtraInfo()
-                ->select($selectStr)
-                ->where('contract_end', '>', Carbon::now())
-                ->where('buildings.electricity_payment_method', '公司代付')
-                ->with($request->withNested)
-        );
+        $type = $request->input('type');
 
-        $data = $responseData
-            ->index('TenantContracts', $tenantContracts)
-            ->relations($request->withNested)
-            ->get();
-
-        return view('tenant_electricity_payments.index', $data);
+        if ($type == 'charged') { // 儲值電
+            return $this->renderChargedIndex($request);
+        } else {
+            return $this->renderIndex($request);
+        }
     }
 
     public function create() {
@@ -127,5 +121,94 @@ class TenantElectricityPaymentController extends Controller
         }
         $tenantElectricityPayment->delete();
         return response()->json(true);
+    }
+
+    public function sendReportSMSToAll(Request $request) {
+        $year = intval($request->input('year'));
+        $month = intval($request->input('month'));
+
+        $this->findRelatedTenantContracts()
+             ->chunk(100, function($tenantContracts) use ($year, $month) {
+                 foreach($tenantContracts as $tenantContract)
+                 {
+                     $tenantContract->sendElectricityPaymentReportSMS($year, $month);
+                 }
+             });
+
+        return response()->json(true);
+    }
+
+    public function downloadImportFile() {
+        return Excel::download(new TenantElectricityPaymentExport(), '電費批次匯入表.xlsx');
+    }
+
+    public function importFile(Request $request) {
+        try {
+            Excel::import(
+                new TenantElectricityPaymentImport(),
+                $request->file('excel')
+            );
+        } catch (\Throwable $th) {
+            return redirect()->back()->withErrors([$th->getMessage()]);
+        }
+    }
+
+    private function findRelatedTenantContracts($type = null, $startDate = null, $endDate = null, $roomCode = null)
+    {
+        $relation = TenantContract::withExtraInfo();
+
+        if ($type == 'charged') {
+            $relation = $relation->where('rooms.electricity_virtual_account', '!=', '');
+        }
+
+        return $relation->where('contract_end', '>', Carbon::now())
+                        ->where('buildings.electricity_payment_method', '公司代付');
+    }
+
+    private function renderIndex(Request $request)
+    {
+        $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+        $tenantContracts = $this->limitRecords(
+            $this->findRelatedTenantContracts()
+                ->select($selectStr)
+                ->with($request->withNested)
+        );
+        $data = $responseData
+            ->index('TenantContracts', $tenantContracts)
+            ->relations($request->withNested)
+            ->get();
+
+        return view('tenant_electricity_payments.index', $data);
+    }
+
+    private function renderChargedIndex(Request $request) {
+        $roomCode = $request->input('room_code');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $relation = PayLog::join('tenant_electricity_payments', 'pay_logs.loggable_id', '=', 'tenant_electricity_payments.id')
+                          ->join('tenant_contract', 'tenant_contract.id', '=', "tenant_electricity_payments.tenant_contract_id")
+                          ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                          ->where('rooms.electricity_virtual_account', '!=', '')
+                          ->where('loggable_type', 'App\TenantElectricityPayment');
+
+        if ($roomCode) {
+            $relation = $relation->where('rooms.room_code', $roomCode);
+        }
+        if ($startDate) {
+            $startDate = Carbon::parse($startDate);
+            $relation->where('pay_logs.paid_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $endDate = Carbon::parse($endDate);
+            $relation->where('pay_logs.paid_at', '<=', $endDate);
+        }
+
+        $relation = $relation->select('pay_logs.*')->groupBy('pay_logs.id');
+        $responseData = new NestedRelationResponser();
+        $data = $responseData->index('PayLogs', $relation->get())->get();
+
+        return view('tenant_electricity_payments.charged_index', $data);
     }
 }

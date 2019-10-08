@@ -413,7 +413,6 @@ return [
     'Shareholder' => [
         'id' => '編號',
         'name' => '姓名',
-        'email' => 'email',
         'bank_name' => '銀行名稱',
         'bank_code'=> '銀行代碼',
         'account_number' => '銀行帳號',

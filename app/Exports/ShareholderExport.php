@@ -89,7 +89,7 @@ class ShareholderExport implements WithMultipleSheets
                 'carry_forward' => $row->carry_forward,             // 月結單金額
                 'actual_money' => $actual_money,                    // 實收金額
                 $row->name,                                         // 業主
-                'money' => $money,                                  // 應付業主 按照 monthly_service 產生 shareholder 負擔費用的邏輯
+                'money' => $money,                                  // 應付業主
                 'method' => $row->method,                           // 方式
                 $row->transfer_from,                                // 匯出銀行
                 'amount_receivable' => $amount_receivable,          // 應收金額 < 0 然後顯示的數字要乘於 -1
@@ -109,8 +109,8 @@ class ShareholderExport implements WithMultipleSheets
 
     private function getDataFromMonthlyReport(LandlordContract $landlord_contract, $month, $year)
     {
-        $data = (new MonthlyReportService())->getMonthlyReport($landlord_contract, $month, $year);
-        return collect($data->toArray()['shareholders'])->reduce(function ($carry, $item) {
+        $data = (new MonthlyReportService())->getShareholdersInfo($landlord_contract, $month, $year);
+        return collect($data)->reduce(function ($carry, $item) {
             return $carry + $item['distribution_fee'];
         }, 0);
     }

@@ -21,6 +21,7 @@ use App\Notifications\TenantContractDueInTwoMonths;
 use App\Notifications\TextNotify;
 
 use App\Services\MonthlyReportService;
+use App\Services\ReceiptService;
 
 class ScheduleService
 {
@@ -205,58 +206,52 @@ class ScheduleService
     public static function setReceiptType()
     {
 
-        // set receipt type for patment '租金'
-        $landlord_contracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+        // set receipt type for payment '租金'
+        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                                 ->where('commission_end_date', '>', Carbon::today())
+                                                ->where('commission_type', '包租')
                                                 ->with(['building.rooms.activeContracts.payLogs'])->get();
+        $service = new ReceiptService;
+        $startDate = Carbon::today()->startOfMonth();
+        $endDate = Carbon::today()->endOfMonth();
 
-        foreach ($landlord_contracts as $contract_key => $landlord_contract) {
-            if ($landlord_contract->commission_type == '包租' &&
-                !in_array(
-                    true,
-                    $landlord_contract->landlords
-                        ->pluck('is_legal_person')
-                        ->toArray()
-                )
-            ) {
-                $landlord_pay_logs = new Collection();
-                $rooms = $landlord_contract->building->rooms;
-
-                foreach ($rooms as $room_key => $room) {
-                    if (isset($room->activeContracts->first()->tenant) && !$room->activeContracts->first()->tenant->is_legal_person) {
-                        $landlord_pay_logs = $landlord_pay_logs->merge($room->activeContracts->first()->payLogs->where('subject', '=', '租金'));
+        foreach ($landlordContracts as $landlordContract) {
+            
+            $taxableCharterFee = $service->countTaxableCharterFee($landlordContract, Carbon::today()->year, Carbon::today()->month);
+            $rooms = $landlordContract->building->normalRooms();
+            $paidAmount = 0;
+    
+            foreach( $rooms as $room ){
+                $tenantContract = $room->activeContracts()->first();
+                if(is_null($tenantContract)){}
+                else{
+                    $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                                                            ->where('subject', '租金')
+                                                            ->whereBetween('due_time', [$startDate, $endDate]);          
+                    if(!$tenantContract->tenant->is_legal_person){
+                        $paidAmount += $rentPayments->sum('amount');
                     }
-                }
-
-                $first_day_of_last_month = Carbon::today()->subMonth()->startOfMonth();
-                $first_day_of_this_month = Carbon::today()->startOfMonth();
-                $last_month_pay = 0;
-                $this_month_pay = 0;
-
-                foreach ($landlord_pay_logs as $pay_log_key => $landlord_pay_log) {
-                    if ($landlord_pay_log['paid_at'] >= $first_day_of_last_month && $landlord_pay_log['paid_at'] < $first_day_of_this_month) {
-                        $last_month_pay += $landlord_pay_log['amount'];
-                    } elseif ($landlord_pay_log['paid_at'] >= $first_day_of_this_month) {
-                        $this_month_pay += $landlord_pay_log['amount'];
-                    }
-
-                    if ($last_month_pay > $landlord_contract['taxable_charter_fee'] || $this_month_pay > $landlord_contract['taxable_charter_fee']) {
-                        $landlord_pay_log->update(['receipt_type' => '發票']);
-                    } else {
-                        $landlord_pay_log->update(['receipt_type' => '收據']);
+                    foreach($rentPayments as $rentPayment){
+                        $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount){
+                            if( $taxableCharterFee < $paidAmount){
+                                $payLog->update(['receipt_type' => '發票']);
+                            }
+                            else{
+                                $payLog->update(['receipt_type' => '收據']);
+                            }
+                        });
                     }
                 }
             }
         }
-
         // set receipt type for patment '電費' with commission type is '代管'
-        $landlord_contracts = $landlord_contracts->where('commission_type', '代管');
-        foreach( $landlord_contracts as $landlord_contract ){
-            $rooms = $landlord_contract->building->rooms;
+        $landlordContracts = $landlordContracts->where('commission_type', '代管');
+        foreach( $landlordContracts as $landlordContract ){
+            $rooms = $landlordContract->building->rooms;
             foreach( $rooms as $room ){
-                foreach( $room->activeContracts as $tenant_contract){
-                    $paylogs = $tenant_contract->payLogs()->where('payment_type', '電費')
-                                                        ->where('receipt_type', '發票');
+                foreach( $room->activeContracts as $tenantContract){
+                    $paylogs = $tenantContract->payLogs()->where('payment_type', '電費')
+                                                          ->where('receipt_type', '發票');
                     $paylogs->update(['receipt_type'=>'收據']);
                 }
             }

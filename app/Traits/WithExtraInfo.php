@@ -2,6 +2,7 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 trait WithExtraInfo {
@@ -40,12 +41,24 @@ trait WithExtraInfo {
             case 'debt_collections':
             case 'maintenances':
             case 'deposits':
+                return $builder
+                    ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                    ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                break;
             case 'company_incomes':
                 return $builder
-                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.incomable_id")
                         ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
+                        ->leftJoin('receiptables', function (JoinClause $query) {
+                            $query->on('company_incomes.id', '=', 'receiptables.receiptable_id');
+                            $query->join('receipts', 'receipts.id', '=', 'receiptables.receiptable_id')
+                                ->where('receiptables.receiptable_type', '=', 'App\CompanyIncome');
+                        })
+                        ->where('incomable_type', 'App\TenantContract');
                 break;
             default:
                 return $builder;
@@ -77,7 +90,6 @@ trait WithExtraInfo {
             case 'keys':
             case 'debt_collections':
             case 'maintenances':
-            case 'company_incomes':
             case 'landlord_payments':
                 $extraSelects = [
                     'landlord_contracts.commission_type AS commission_type',
@@ -86,6 +98,17 @@ trait WithExtraInfo {
                     'CONCAT(buildings.city, buildings.district, address) AS building_location',
                     'rooms.room_number AS room_number',
                     'rooms.room_status AS room_status',
+                ];
+                break;
+            case 'company_incomes':
+                $extraSelects = [
+                    'landlord_contracts.commission_type AS commission_type',
+                    'buildings.building_code AS building_code',
+                    'buildings.title AS building_title',
+                    'CONCAT(buildings.city, buildings.district, address) AS building_location',
+                    'rooms.room_number AS room_number',
+                    'rooms.room_status AS room_status',
+                    'GROUP_CONCAT(DISTINCT(receipts.invoice_serial_number)) AS invoice_serial_number',
                 ];
                 break;
             default:

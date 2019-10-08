@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\CompanyIncome::class, function (Faker $faker) {
     return [
-        'tenant_contract_id' => factory(\App\TenantContract::class),
+        'incomable_id' => 1,
+        'incomable_type' => factory(\App\TenantContract::class)
     ];
 });

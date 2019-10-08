@@ -110,7 +110,7 @@ class TenantContract extends Pivot implements AuditableContract
      */
     public function companyIncomes()
     {
-        return $this->hasMany('App\CompanyIncome', 'tenant_contract_id');
+        return $this->morphMany('App\CompanyIncome', 'incomable');
     }
 
     /**
@@ -165,6 +165,14 @@ class TenantContract extends Pivot implements AuditableContract
     public function originalFiles()
     {
         return $this->documents()->where('document_type', 'original_file');
+    }
+
+    /**
+     * Get all the payOff of this tenant contract.
+     */
+    public function payOff()
+    {
+        return $this->hasOne('App\PayOff', 'tenant_contract_id');
     }
 
     public function calculateCurrentBalance() {

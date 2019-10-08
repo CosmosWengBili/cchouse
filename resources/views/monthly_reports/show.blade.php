@@ -11,17 +11,10 @@
 .monthly-report .room span.left-bottom{
     position: absolute;
     bottom: 0px;
-    left: 40%;
+    left: 42%;
 }
-.monthly-report .add-subject{
-    position: absolute;
-    top: -10%;
-    left: 95%
-}
-.monthly-report .delete-subject{
-    position: absolute;
-    top: -10%;
-    left: 140%
+.electricity-report div{
+    border: 1px solid gray;
 }
 </style>
 <div class="container-fluid">
@@ -29,6 +22,9 @@
         <div class="card-body table-responsive" style="padding: 5rem;">
             <a href="{{route('monthlyReports.print', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
                 輸出為 PDF
+            </a> |
+            <a href="{{route('monthlyReports.print_tenant', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
+                輸出租客報表
             </a>
             @include('monthly_reports.tabs', ['by' => 'contract'])
             <div class="row justify-content-center monthly-report mt-3">
@@ -54,7 +50,7 @@
                 <div class="col-3"></div>
 
                 <div class="col-1">物件代碼</div>
-                <div class="col-8">{{implode(",", $data['meta']['building_code']->toArray())}}</div>
+                <div class="col-8">{{$data['meta']['building_code']}}</div>
                 <div class="col-1 bg-gray">本月收入</div>
                 <div class="col-2">{{$data['meta']['total_income']}}</div>
 
@@ -71,7 +67,7 @@
                 <div class="col-12">&nbsp;</div>
 
                 <div class="col-1">匯款帳號</div>
-                <div class="col-8">{{implode(",", $data['meta']['account_numbers']->toArray())}}</div>
+                <div class="col-8">{{implode(",", $data['meta']['account_numbers'])}}</div>
                 <div class="col-1 bg-gray">
                     @if( $data['meta']['total_income'] - $data['meta']['total_expense'] > 0 )
                         本月實收
@@ -79,7 +75,7 @@
                         本月應付
                     @endif
                 </div>
-                <div class="col-2">{{ abs($data['meta']['total_income'] - $data['meta']['total_expense'])}}</div>
+                <div class="col-2">{{ $data['meta']['total_income'] - $data['meta']['total_expense']}}</div>
 
                 <div class="col-12">&nbsp;</div>
 
@@ -89,12 +85,11 @@
                 <div class="col-2 bg-highlight px-3 text-center">{{$report_used_date['next_month']}}月{{$data['meta']['rent_collection_time']}}日</div>
                 {{-- Meta data end --}}
                 {{-- Room data --}}
-                <div class="col-6 text-center border-top border-dark">租約起迄日及租金條件</div>
-                <div class="col-6 text-center border-top border-dark">入帳月份及收入支出金額</div>
                 <div class="col-12 row px-0 text-center bg-gray mb-0">
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
-                        <div class="col-8"></div>
+                        <div class="col-1"></div>
+                        <div class="col-7 text-left">說明</div>
                         <div class="col-2">入帳日</div>
                         <div class="col-1">收入</div>
                         <div class="col-1">支出</div>
@@ -109,6 +104,8 @@
                         @elseif( $room['meta']['management_fee_mode'] == "固定" )
                             (服務費 {{ $room['meta']['management_fee'] }})
                         @endif
+                        <br/>
+                        狀態:  {{ $room['meta']['status'] }}
                     </div>
                     <div class="col-10 row px-0">
                         @php
@@ -211,22 +208,18 @@
                             @else
                                 <div class="col-1 text-center"></div>
                                 <div class="col-1 text-center">{{ abs($detail_data['amount']) }}</div>
-                            @endif
+                            @endif                          
                         @endforeach
-                        <div class="col-8 px-5">
-                            <input class="w-100 landlord-other-subject">
-                        </div>
-                        <div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>
-                        <div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>
-                        <div class="col-1 text-center position-relative">
-                            <input class="w-100 landlord-other-expense">
-                            <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>
-                            <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>
-                        </div>
+                        <div class="col-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
+                        <div class="col-8"></div>
+                        <div class="col-2 text-center"><span >小計</span></div>
+                        <div class="col-1 text-center"><span>{{ $data['details']['meta']['total_incomes'] }}</span></div>
+                        <div class="col-1 text-center"><span>{{ $data['details']['meta']['total_expenses'] }}</span></div>  
                    </div>
                 </div>                
                 {{-- Detail data end --}}
                 {{-- Shareholder data --}}
+                @if( !empty($data['shareholders'] ))
                 <div class="col-12 row px-0 border border-dark">
                     <div class="col-2 text-center border border-dark py-4 my-0">
                         股東分配
@@ -241,7 +234,8 @@
                             <div class="col-1 text-center">{{ $shareholder['distribution_fee'] }}</div>
                         @endforeach
                     </div>
-                </div>                  
+                </div>
+                @endif                
                 {{-- Shareholder data end --}}
                 {{-- Footer --}}
                 <div class="col-12 row px-0 text-center mb-0">
@@ -257,7 +251,7 @@
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
                         <div class="col-8"></div>
-                        <div class="col-2">本公司服務費</div>
+                        <div class="col-2">服務費</div>
                         <div class="col-1">{{$data['meta']['total_management_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
@@ -266,83 +260,54 @@
                     <div class="col-2"></div>
                     <div class="col-10 row px-0">
                         <div class="col-8"></div>
-                        <div class="col-2">仲介費合計</div>
+                        <div class="col-2">仲介費</div>
                         <div class="col-1">{{$data['meta']['total_agency_fee']}}</div>
                         <div class="col-1"></div>
                     </div>
-                </div>    
-                <div class="col-3">
-                    <button id="save-other-subjects" class="btn btn-block btn-success">儲存</button>
-                </div>                          
+                </div>                            
                 {{-- Footer end --}}
+            </div>
+            <h3 class="text-center py-4">電費報表</h3>
+            <div class="row electricity-report">
+                {{-- Electricity start --}}
+                {{-- Meta start --}}
+                <div class="col-1 font-weight-bold">年度</div>
+                <div class="col-1">{{ $eletricity_data['meta']['year'] }}</div>
+                <div class="col-1 font-weight-bold">月度</div>
+                <div class="col-1">{{ $eletricity_data['meta']['month'] }}</div>
+                <div class="col-1 font-weight-bold">製表日</div>
+                <div class="col-2">{{ $eletricity_data['meta']['produce_date'] }}</div>
+                <div class="col-5"> </div>
+                {{-- Meta end --}}
+                {{-- header start --}}
+                <div class="col-1 font-weight-bold">110v起</div>
+                <div class="col-1 font-weight-bold">220v起</div>
+                <div class="col-1 font-weight-bold">110v結</div>
+                <div class="col-1 font-weight-bold">220v結</div>
+                <div class="col-1 font-weight-bold">元/度</div>
+                <div class="col-1 font-weight-bold">用電金額</div>
+                <div class="col-1 font-weight-bold">欠額</div>
+                <div class="col-1 font-weight-bold">應付金額</div>
+                <div class="col-1 font-weight-bold">房號</div>
+                <div class="col-1 font-weight-bold">入帳金額</div>
+                <div class="col-2 font-weight-bold">繳款日</div>
+                {{-- header end --}}
+                @foreach( $eletricity_data['rooms'] as $room_data )
+                    <div class="col-1">{{$room_data['start_110v']}}</div>
+                    <div class="col-1">{{$room_data['start_220v']}}</div>
+                    <div class="col-1">{{$room_data['end_110v']}}</div>
+                    <div class="col-1">{{$room_data['end_220v']}}</div>
+                    <div class="col-1">{{$room_data['electricity_price_per_degree']}}</div>
+                    <div class="col-1">{{$room_data['current_amount']}}</div>
+                    <div class="col-1">{{$room_data['debt']}}</div>
+                    <div class="col-1">{{$room_data['should_paid']}}</div>
+                    <div class="col-1">{{$room_data['room_number']}}</div>
+                    <div class="col-1">{{$room_data['pay_log_amount']}}</div>
+                    <div class="col-2">{{$room_data['pay_log_date']}}</div>                    
+                @endforeach
+                {{-- Electricity end --}}
             </div>
         </div>
     </div>
 </div>
-<script>
-    $('body').on('click', '.add-subject', function(){
-        const $buttons = $(this).parent().find('button')
-        $buttons.remove()
-
-        const element = 
-        '<div class="col-8 px-5">' +
-        '   <input class="w-100 landlord-other-subject">' +
-        '</div>' +
-        '<div class="col-2 text-center"><input class="w-100 landlord-other-date" type="date"></div>' +
-        '<div class="col-1 text-center"><input class="w-100 landlord-other-income"></div>' +
-        '<div class="col-1 text-center position-relative">' +
-        '   <input class="w-100 landlord-other-expense">' +
-        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
-        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>' +
-        '</div>'
-        
-        $('#detail-data').append(element)
-    })
-    $('body').on('click', '.delete-subject', function(){
-        const element =
-        '   <button class="btn btn-sm btn-success rounded-pill add-subject">+</button>'  +
-        '   <button class="btn btn-sm btn-danger rounded-pill delete-subject">-</button>'
-
-        // delete one by one bacause of element structure
-        $(this).parent().prev().prev().prev().prev().append(element)
-        $(this).parent().prev().prev().prev().remove()
-        $(this).parent().prev().prev().remove()
-        $(this).parent().prev().remove()
-        $(this).parent().remove()
-    })
-
-    $('#save-other-subjects').on('click', function(){
-        const apiURL = '{{ route('monthlyReports.storeOtherSubjects', $data['building_id']) }}';
-
-        // add new landlord other subject data
-        const addedData = $.map($('.landlord-other-subject'), function(subject, index){
-            var tmpData = {
-                'subject' : subject.value,
-                'date' : $('.landlord-other-date')[index].value,
-                'income' : $('.landlord-other-income')[index].value,
-                'expense' : $('.landlord-other-expense')[index].value,
-            }
-            return tmpData;
-        })
-
-        // delete deleted subjects
-        const totalIds = $('#total_landlord_other_subject_id').val().split(',')
-        const keepIds = $.map($('.delete-real-subject'), function(subject, index){
-            return subject.dataset.id
-        })
-        const deleteIds = totalIds.filter(x => !keepIds.includes(x));
-
-        $.post(apiURL, { data: addedData, deleteIds:  deleteIds}, function (data) {
-            location.reload();
-        })
-    })
-
-    // delete one by one bacause of element structure
-    $('.delete-real-subject').on('click', function(){
-        $(this).parent().next().next().next().remove()
-        $(this).parent().next().next().remove()
-        $(this).parent().next().remove()
-        $(this).parent().remove()
-    })
-</script>
 @endsection

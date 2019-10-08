@@ -45,7 +45,7 @@ class AutoReversalTest extends TestCase
             'room_code' => 'test room',
             'virtual_account' => config('finance.bank_code') . '9216813322423450',
             'management_fee_mode' => '比例',
-            'management_fee' => 3,
+            'management_fee' => 3.0,
             'rent_actual' => 5000,
         ]);
 
@@ -139,14 +139,16 @@ class AutoReversalTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $newContract->id,
+            'incomable_id' => $newContract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => 150,
         ]);
 
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $newContract->id,
+            'incomable_id' => $newContract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '電費',
             'income_date' => '2019-08-10',
             'amount' => 100,
@@ -274,13 +276,15 @@ class AutoReversalTest extends TestCase
             'virtual_account' => '9529216813322423450',
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
+            'incomable_id' => $contract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => 3,
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
+            'incomable_id' => $contract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '電費',
             'income_date' => '2019-08-10',
             'amount' => 100,
@@ -328,7 +332,8 @@ class AutoReversalTest extends TestCase
             'virtual_account' => '9529216813322423450',
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $nextContract->id,
+            'incomable_id' => $nextContract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => 3,
@@ -388,7 +393,8 @@ class AutoReversalTest extends TestCase
             'virtual_account' => '9529216813322423450',
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
+            'incomable_id' => $contract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => intval(round(5401 * $contract->room->management_fee / 100)) ,
@@ -448,7 +454,8 @@ class AutoReversalTest extends TestCase
             'virtual_account' => '9529216813322423450',
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
+            'incomable_id' => $contract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => intval(round($contract->room->management_fee * (5401 / 10000))),
@@ -509,7 +516,8 @@ class AutoReversalTest extends TestCase
             'virtual_account' => '9529216813322423450',
         ]);
         $this->assertDatabaseHas('company_incomes', [
-            'tenant_contract_id' => $contract->id,
+            'incomable_id' => $contract->id,
+            'incomable_type' => "App\\TenantContract",
             'subject' => '租金',
             'income_date' => '2019-08-10',
             'amount' => intval(round(100 * $contract->room->management_fee / 100)) ,

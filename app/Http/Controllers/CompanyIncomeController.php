@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class CompanyIncomeController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $endAt = Carbon::now();
         $startAt = $endAt->copy()->subMonth(5)->startOfMonth(); // 近六個月（含本月）
         $selectColumns = array_merge(['company_incomes.*'], CompanyIncome::extraInfoColumns());
@@ -28,7 +29,8 @@ class CompanyIncomeController extends Controller
         return view('company_incomes.index', ['companyIncomes' => $companyIncomes]);
     }
 
-    public function show(Request $request, CompanyIncome $companyIncome) {
+    public function show(Request $request, CompanyIncome $companyIncome)
+    {
         $responseData = new NestedRelationResponser();
         $responseData
             ->show($companyIncome->load($request->withNested))
@@ -37,35 +39,40 @@ class CompanyIncomeController extends Controller
         return view('company_incomes.show', $responseData->get());
     }
 
-    public function create() {
+    public function create()
+    {
         $responser = new FormDataResponser();
         $data = $responser->create(CompanyIncome::class, 'companyIncomes.store')->get();
 
         return view('company_incomes.form', $data);
     }
 
-    public function edit(CompanyIncome $companyIncome) {
+    public function edit(CompanyIncome $companyIncome)
+    {
         $responser = new FormDataResponser();
         $data = $responser->edit($companyIncome, 'companyIncomes.update')->get();
 
         return view('company_incomes.form', $data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validatedData = $this->fetchValidateData($request);
         CompanyIncome::create($validatedData);
 
         return redirect($request->_redirect);
     }
 
-    public function update(Request $request, CompanyIncome $companyIncome) {
+    public function update(Request $request, CompanyIncome $companyIncome)
+    {
         $validatedData = $this->fetchValidateData($request);
         $companyIncome->update($validatedData);
 
         return redirect($request->_redirect);
     }
 
-    private function fetchValidateData(Request $request) {
+    private function fetchValidateData(Request $request)
+    {
         return $request->validate([
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'subject' => 'required',

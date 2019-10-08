@@ -18,7 +18,7 @@ class Receipt extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
@@ -67,5 +67,10 @@ class Receipt extends Model implements AuditableContract
     public function debtCollections()
     {
         return $this->morphedByMany('App\DebtCollection', 'receiptable');
+    }
+
+    public function companyIncomes()
+    {
+        return $this->morphedByMany('App\CompanyIncome', 'receiptable');
     }
 }

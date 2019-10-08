@@ -35,7 +35,7 @@ class TenantContractService
                 'subject' => '租金',
                 'period' => '月',
                 'amount' => $tenantContract->rent,
-                'collected_by' => '公司'
+                'collected_by' => '房東'
             ];
 
             // generates all kinds of payments

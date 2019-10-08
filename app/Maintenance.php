@@ -128,4 +128,9 @@ class Maintenance extends Model implements AuditableContract
     {
         return $this->morphToMany('App\Receipt', 'receiptable');
     }
+    
+    public function companyIncomes()
+    {
+        return $this->morphMany('App\CompanyIncome', 'incomable');
+    }
 }

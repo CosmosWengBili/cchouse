@@ -36,12 +36,15 @@ class SystemVariableSeeder extends Seeder
             'code'  => 'default_records_in_index_blade',
             'value' => config('finance.view.default_records_in_index_blade', 200),
         ]);
-
-        // 押金設算息
         DB::table('system_variables')->insert([
-            'code'  => 'deposit_rate',
-            'value' => '00087'
+            'group' => 'Maintenance',
+            'code'  => 'MaintenanceNotifyRequiredDays',
+            'value' => 10,
         ]);
-        //  !!! 不在 SystemVariable::variables()  中的 variable，無法在前台修改 !!!
+        DB::table('system_variables')->insert([
+            'group' => 'Management',
+            'code'  => 'deposit_rate',
+            'value' => 0.00087,
+        ]);
     }
 }

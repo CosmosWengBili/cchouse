@@ -31,7 +31,9 @@
                         $model_name = ucfirst(Str::camel(Str::Singular($layer)));
                     @endphp
                     @foreach ( array_keys($objects[0]) as $field)
-                        <th>@lang("model.{$model_name}.{$field}")</th>
+                        @if(!in_array($field, ['id']))
+                            <th>@lang("model.{$model_name}.{$field}")</th>
+                        @endif
                     @endforeach
                     <th>功能</th>
                 </thead>
@@ -41,15 +43,17 @@
                         <tr>
                             {{-- render all attributes --}}
                             @foreach($object as $key => $value)
-                                {{-- an even nested resource array --}}
-                                @if($key === 'currentBalance')
-                                    <td
-                                        style="color: {{ $value < 0 ? 'red' : 'black' }}"
-                                    >
-                                        {{ $value }}
-                                    </td>
-                                @else
-                                    <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
+                                @if(!in_array($key, ['id']))
+                                    {{-- an even nested resource array --}}
+                                    @if($key === 'currentBalance')
+                                        <td
+                                            style="color: {{ $value < 0 ? 'red' : 'black' }}"
+                                        >
+                                            {{ $value }}
+                                        </td>
+                                    @else
+                                        <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
+                                    @endif
                                 @endif
                             @endforeach
                             <td>

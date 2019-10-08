@@ -74,11 +74,19 @@ class Building extends Model implements AuditableContract
     }
 
     /**
-     * Get the rooms of this building.
+     * Get the public room of this building.
      */
     public function publicRoom()
     {
         return $this->rooms()->where('room_code', '公用')->first();
+    }
+
+    /**
+     * Get the normal rooms of this building.
+     */
+    public function normalRooms()
+    {
+        return $this->rooms()->where('room_code', '!=', '公用')->get();
     }
 
     /**

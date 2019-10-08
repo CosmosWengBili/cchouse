@@ -155,9 +155,10 @@ class ReverseTenantPayments
 
                 // determine who gets the income
                 $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
-                $electricityPaymentCollectedByCompany = $payment->subject == '電費' &&
-                    $tenantContract->electricity_payment_method != '自行帳單繳付';
-                if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany) {
+                $electricityPaymentMethod = $tenantContract->room->building->electricity_payment_method;
+                $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod != '自行帳單繳付';
+                $rentPayment = $payment->subject == '租金';
+                if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
                     // generate company income
                     $incomeData = [
                         'subject'     => $payLogData['subject'],
@@ -188,7 +189,7 @@ class ReverseTenantPayments
                     $incomeData = [
                         'subject' => $payLogData['subject'],
                         'income_date' => $payLogData['paid_at'],
-                        'amount' => 0,
+                        'amount' => 0
                     ];
                     if ($tenantContract->room->management_fee_mode == '比例') {
                         $income = intval(round($amount * $tenantContract->room->management_fee / 100));

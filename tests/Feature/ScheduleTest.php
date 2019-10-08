@@ -16,6 +16,14 @@ class ScheduleTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Artisan::call('migrate');
+        Artisan::call('db:seed');
+
+    }
     /**
      * @TODO: Fix test and remove ignore group.
      * @group ignore
@@ -70,7 +78,7 @@ class ScheduleTest extends TestCase
             'main_ammeter_location' => '',
             'ammeter_serial_number_1' => '',
             'shared_electricity' => '',
-            'electricity_payment_method' => '',
+            'taiwan_electricity_payment_method' => '',
             'private_ammeter_location' => '',
             'water_meter_location' => '',
             'water_meter_serial_number' => '',
@@ -111,8 +119,6 @@ class ScheduleTest extends TestCase
             'wifi_account' => '',
             'wifi_password' => '',
             'has_digital_tv' => 0,
-            'can_keep_pets' => 0,
-            'gender_limit' => '',
             'comment' => '',
         ]);
 
@@ -122,7 +128,7 @@ class ScheduleTest extends TestCase
             'commission_end_date' => Carbon::now()->addMonths(2),
             'rent_adjusted_date' => Carbon::now(),
             'adjust_ratio' => $adjust_ratio,
-            'commission_type' => '',
+            'commission_type' => '代管',
             'annual_service_fee_month_count' => 1,
             'charter_fee' => 1,
             'taxable_charter_fee' => 1,
@@ -131,16 +137,8 @@ class ScheduleTest extends TestCase
             'deposit_month_count' => 1,
             'is_collected_by_third_party' => 1,
             'is_notarized' => 1,
-            'bank_code' => 1,
-            'branch_code' => 1,
-            'account_name' => '',
-            'account_number' => '',
-            'invoice_collection_method' => '',
-            'invoice_collection_number' => '',
-            'invoice_mailing_address' => '',
         ]);
 
-        DB::table('buildings')->where('id', $buildingId)->update(['landlord_contract_id' => $landlordContractId]);
 
         // run schedule event
         Artisan::call('schedule:run');
@@ -153,7 +151,7 @@ class ScheduleTest extends TestCase
                 ->contains(function ($value, $key) use ($userId, $landlordContractId){
                     return ($value->notifiable_type === 'App\User')
                         && ($value->notifiable_id === $userId)
-                        && ($value->type === 'App\Notifications\ContractDueInTwoMonths')
+                        && ($value->type === 'App\Notifications\LandlordContractDue')
                         && ($value->data['landlordContract']['id'] === $landlordContractId);
                 })
         );

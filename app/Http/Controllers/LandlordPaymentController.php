@@ -30,7 +30,7 @@ class LandlordPaymentController extends Controller
         $responseData = new NestedRelationResponser();
 
         $columns = array_map(function ($column) { return "landlord_payments.{$column}"; }, $this->whitelist('landlord_payments'));
-        $selectColumns = array_merge($columns, TenantContract::extraInfoColumns());
+        $selectColumns = array_merge($columns, LandlordPayment::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
         $landlordPayment = $this->limitRecords(
             LandlordPayment::withExtraInfo()

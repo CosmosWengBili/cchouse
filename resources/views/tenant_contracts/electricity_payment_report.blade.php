@@ -12,7 +12,7 @@ integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw
                 <div>
                     <span class="d-inline-block mr-3">年度：{{ $year }}</span>
                     <span class="d-inline-block mr-3" >月度：{{ $month }} </span>
-                    <span class="d-inline-block mr-3">製表日：{{ \Carbon\Carbon::now()->format('Y/m/d') }}</span>
+                    <span class="d-inline-block mr-3">製表日：{{ $createdAt->format('Y/m/d') }}</span>
                 </div>
                 @forelse($reportRows as $reportRow)
                     <div class="table-responsive my-3">
@@ -44,10 +44,7 @@ integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw
                             $startYear = $month - 3 <= 0 ? $year - 1 : $year;
                             $startMonth = (($month + 12) - 3) % 12;
                         @endphp
-                        這是 {{ $startYear }}年{{ $startMonth }}月~{{ $year }}年{{ $month }}月 抄表結算的電費，請您核對繳款金額，<br />
-                        並於下個繳租日前完成繳納，溢繳的預收電費將於下期費用扣抵結算，謝謝。<br />
-                        如有疑問請電話聯繫我們。
-                        <p class="h3">※ 網路為免費提供，請勿私裝分享器，如斷線不負立即修復之責任</p>
+                        <p class="h3">※ 依合約約定，遲繳 4 天以上將會產生行政處理費</p>
                     </p>
                 @endif
             </div>

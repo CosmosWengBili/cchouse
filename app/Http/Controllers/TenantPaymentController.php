@@ -49,11 +49,10 @@ class TenantPaymentController extends Controller
             'due_time' => 'required',
             'amount' => 'required',
             'is_charge_off_done' => 'required',
-            'charge_off_date' => 'required',
+            'charge_off_date' => '',
             'collected_by' => 'required',
             'is_visible_at_report' => 'required',
-            'is_pay_off' => 'required',
-            'comment' => 'required',
+            'comment' => '',
         ]);
         $tenantPayment = TenantPayment::create($validatedData);
 
@@ -89,11 +88,10 @@ class TenantPaymentController extends Controller
             'due_time' => 'required',
             'amount' => 'required',
             'is_charge_off_done' => 'required',
-            'charge_off_date' => 'required',
+            'charge_off_date' => '',
             'collected_by' => 'required',
             'is_visible_at_report' => 'required',
-            'is_pay_off' => 'required',
-            'comment' => 'required',
+            'comment' => '',
         ]);
         ReceiptService::compareReceipt($tenantPayment, $validatedData);
         $tenantPayment->update($validatedData);
@@ -109,12 +107,17 @@ class TenantPaymentController extends Controller
      */
     public function destroy(TenantPayment $tenantPayment)
     {
+        if ($tenantPayment->is_charge_off_done) {
+            return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
+        }
         $tenantPayment->delete();
         return response()->json(true);
     }
 
     private function indexByDate(Request $request) {
         $data = [];
+        $roomCode = $request->input('room_code');
+        $tenantName = $request->input('tenant_name');
         $startDateString = $request->input('start_date');
         $endDateString = $request->input('end_date');
 
@@ -122,7 +125,7 @@ class TenantPaymentController extends Controller
             $startDate = Carbon::parse($startDateString);
             $endDate = Carbon::parse($endDateString);
 
-            $data['tableRows'] = $this->buildTableRows($startDate, $endDate);
+            $data['tableRows'] = $this->buildTableRows($roomCode, $tenantName, $startDate, $endDate);
         }
 
         return view('tenant_payments.index_by_date', $data);
@@ -145,7 +148,7 @@ class TenantPaymentController extends Controller
         return view('tenant_payments.index_by_contract', $data);
     }
 
-    private function buildTableRows($startDate, $endDate) {
-        return TenantPaymentService::buildTenantPaymentTableRows($startDate, $endDate);
+    private function buildTableRows(?string $roomCode, ?string $tenantName, Carbon $startDate, Carbon$endDate) {
+        return TenantPaymentService::buildTenantPaymentTableRows($roomCode, $tenantName, $startDate, $endDate);
     }
 }

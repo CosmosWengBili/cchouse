@@ -89,7 +89,13 @@ class BuildingController extends Controller
             'main_ammeter_location' => 'required|max:255',
             'ammeter_serial_number_1' => 'required|max:255',
             'shared_electricity' => 'required|max:255',
-            'electricity_payment_method' => 'required|max:255',
+            'taiwan_electricity_payment_method' => 'required|max:255',
+            'electricity_payment_method' => [
+                'required',
+                Rule::in(
+                    config('enums.buildings.electricity_payment_method')
+                )
+            ],
             'private_ammeter_location' => 'required|max:255',
             'water_meter_location' => 'required|max:255',
             'water_meter_serial_number' => 'required|max:255',
@@ -181,7 +187,13 @@ class BuildingController extends Controller
             'main_ammeter_location' => 'required|max:255',
             'ammeter_serial_number_1' => 'required|max:255',
             'shared_electricity' => 'required|max:255',
-            'electricity_payment_method' => 'required|max:255',
+            'taiwan_electricity_payment_method' => 'required|max:255',
+            'electricity_payment_method' => [
+                'required',
+                Rule::in(
+                    config('enums.buildings.electricity_payment_method')
+                )
+            ],
             'private_ammeter_location' => 'required|max:255',
             'water_meter_location' => 'required|max:255',
             'water_meter_serial_number' => 'required|max:255',

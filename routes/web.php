@@ -52,7 +52,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
             Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
-
+            Route::resource('shareholders', 'ShareHolderController');
+            Route::get('shareholders/export', 'ShareHolderController@exportReport')->name('shareholders.export');
+            Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
+          
+            // payments
             Route::get(
                 'tenantElectricityPayments/downloadImportFile',
                 'TenantElectricityPaymentController@downloadImportFile'
@@ -68,7 +72,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 Route::resource('tenantPayments', 'TenantPaymentController');
                 Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             });
-            Route::resource('shareholders', 'ShareHolderController');
 
             // receipts
             Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;

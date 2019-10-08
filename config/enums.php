@@ -82,6 +82,11 @@ return [
             '公司代繳',
             '業主代繳',
         ],
+        'electricity_payment_method' => [
+            '儲值電表',
+            '自行帳單繳付',
+            '公司代付',
+        ],
     ],
 
     'rooms' => [
@@ -110,11 +115,6 @@ return [
         'car_parking_type' => [
             '機械式',
             '平面式',
-        ],
-        'electricity_payment_method' => [
-            '儲值電表',
-            '自行帳單繳付',
-            '公司代付',
         ],
         'electricity_calculate_method' => [
             '固定',
@@ -197,7 +197,10 @@ return [
     'shareholders' => [
         'transfer_from' => [
             '兆居',
-            '兆基',
+            '兆舍',
+            '上海Roger個人',
+            '玉山兆基',
+            '第一銀行兆基'
         ],
         'distribution_method' => [
             '固定',

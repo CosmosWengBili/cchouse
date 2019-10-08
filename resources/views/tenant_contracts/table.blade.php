@@ -1,14 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
-
-    $appendTenantQueryString = (function ($key, $value) {
+    $appendCreateParams = (function () use ($data) {
         $routeName = request()->route()->getName();
-        $appendRouteName = ['tenants.show'];
-        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
-        return $canAppend
-            ? [ $key => $value ]
-            : [];
-    }) ('tenant_id', $data['id'] ?? null);
+        switch ($routeName) {
+            case 'tenants.show':
+                return ['tenant_id' => $data['id'] ?? null];
+            default:
+                return [];
+        }
+    })();
 @endphp
 
 <div class="card">
@@ -22,7 +22,7 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel(Str::Plural($layer)) . '.create', $appendTenantQueryString) }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel(Str::Plural($layer)) . '.create', $appendCreateParams) }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}

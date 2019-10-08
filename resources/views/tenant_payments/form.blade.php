@@ -2,6 +2,10 @@
 @section('content')
     @include('layouts.form_error')
 
+@php
+    $tenantContractId = Request::get('tenantContractId') ?? $data['tenant_contract_id'] ?? '';
+@endphp
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 mt-5">
@@ -24,7 +28,7 @@
                                             data-toggle="selectize"
                                             data-table="tenant_contract"
                                             data-text="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
+                                            data-selected="{{ $tenantContractId ?? '' }}"
                                         >
                                         </select>
                                     </td>
@@ -89,15 +93,18 @@
                                         <select
                                             class="form-control form-control-sm"
                                             name="collected_by"
-                                            data-toggle="selectize"
-                                            data-table="users"
-                                            data-text="name"
-                                            data-value="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? '' }}"
                                         >
+                                            @foreach(config('enums.tenant_payments.collected_by') as $value)
+                                                <option
+                                                    value="{{$value}}"
+                                                    {{ ($data['collected_by'] ?? '') == $value ? 'selected' : '' }}
+                                                >
+                                                    {{$value}}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </td>
-                                    <td>是否顯示在報表</td>
+                                    <td>是否顯示在月結單</td>
                                     <td>
                                         <input type="hidden" value="0" name="is_visible_at_report"/>
                                         <input
@@ -109,18 +116,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>是否為點交</td>
-                                    <td>
-                                        <input type="hidden" value="0" name="is_pay_off"/>
-                                        <input
-                                            type="checkbox"
-                                            name="is_pay_off"
-                                            value="1"
-                                            {{ ($data['is_pay_off'] ?? false) ? 'checked' : '' }}
-                                        />
-                                    </td>
                                     <td>備註</td>
-                                    <td>
+                                    <td colspan="3">
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
                                     </td>
                                 </tr>
@@ -144,9 +141,6 @@
                 amount: {
                     required: true
                 },
-                charge_off_date: {
-                    required: true
-                },
                 collected_by: {
                     required: true
                 },
@@ -157,9 +151,6 @@
                     required: '必須輸入'
                 },
                 amount: {
-                    required: '必須輸入'
-                },
-                charge_off_date: {
                     required: '必須輸入'
                 },
                 collected_by: {

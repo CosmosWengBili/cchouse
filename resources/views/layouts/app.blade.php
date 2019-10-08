@@ -31,12 +31,23 @@
         <script src={{ asset('js/app.js') }}></script>
     </head>
     <body>
+        @yield('bootstrap_modal')
         <div class="container-scroller">
             <?php if (Auth::check()) : ?>
                 @include('layouts.nav')
             <?php endif; ?>
             <div class="container-fluid page-body-wrapper">
                 <div class="main-panel">
+                    <div class="ajax-errors"
+                         style="display: none; z-index: 10000; position: fixed; top: 50px; left: 50%; transform: translateX(-50%)"
+                    >
+                        <div class="alert alert-danger pt-4" style="background-color: #ffcccc;" role="alert">
+                            <ul class="m-0 p-0 px-3"></ul>
+                        </div>
+                        <button type="button" class="close" style="position: absolute; top: 0px ; right: 5px">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     @yield('content')
                 </div>
                 <!-- main-panel ends -->
@@ -58,5 +69,14 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
         </script>
         <!-- End plugin js for this page -->
+        @if($errors->any())
+            <script>
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: '{{$errors->first()}}',
+                })
+            </script>
+        @endif
     </body>
 </html>

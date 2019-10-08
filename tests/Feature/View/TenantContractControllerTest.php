@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\TenantContract;
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,13 +93,14 @@ class TenantContractControllerTest extends TestCase
     public function testElectricityPaymentReport()
     {
         $tenantContract = factory(TenantContract::class)->create();
-
-        $data = [
-            'electricityPaymentReport?' => $tenantContract->id,
-            'year?' => 2019,
-            'month?' => 8,
-        ];
-        $res = $this->call('GET', route($this->routeName . '.electricityPaymentReport', $data));
+        $now = Carbon::now()->getTimestamp();
+        $data = base64_encode(join([
+            $tenantContract->id,
+            2019,
+            8,
+            $now
+        ], '|'));
+        $res = $this->call('GET', route($this->routeName . '.electricityPaymentReport', ['data' => $data]));
         $res->assertOk();
     }
 

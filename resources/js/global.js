@@ -1,3 +1,7 @@
+import Swal from "sweetalert2";
+
+window.Swal = Swal;
+
 $(document).ready(function () {
 
     $.ajaxSetup({
@@ -19,23 +23,40 @@ $(document).ready(function () {
             }
         }
     })
-    
-    
+
+
     window.setDefaultDateAsToday();
 });
 $(document).on('click', 'a.jquery-postback', function (e) {
     e.preventDefault();
     if (confirm('是否刪除?')) {
-        $.post({
-            type: $(this).data('method'),
-            url: $(this).attr('href')
-        }).done(function () {
+        var $target = $(this);
+        var method = $target.data('method');
+        var url = $target.attr('href');
+
+
+        $.post({ type: method, url: url }, function () {
             location.reload();
+        }).fail(function (resp) {
+            const content = resp.responseJSON;
+            var $errorsContainer = $('.ajax-errors');
+            var $errorsList = $errorsContainer.find('ul');
+            content.errors.forEach(function (errorMsg) {
+                $errorsList.append('<li>' + errorMsg + '</li>');
+            });
+            $errorsContainer.show();
         });
     } else {
         alert("取消刪除")
     }
+});
 
+$(document).on('click', '.ajax-errors > .close', function () {
+    var $errorsContainer = $('.ajax-errors');
+    var $errorsList = $errorsContainer.find('ul');
+    $errorsContainer.fadeOut(400, function () {
+        $errorsList.empty();
+    });
 });
 
 
@@ -69,7 +90,7 @@ window.realtimeSelect = function (selectizeElements) {
                         options: options,
                         sortField: 'text'
                     });
-                    
+
                     return options;
                 } else {
                     alert('SQL Query issue');
@@ -101,15 +122,15 @@ window.realtimeSelect = function (selectizeElements) {
  * @type {{getQueryStrings, setInputValue}}
  */
 window.myQueryString = function () {
-    
+
     let queryStrings = [];
     const url = new URL(location.href);
     const { searchParams } = url;
-    
+
     for (let [key, value] of searchParams.entries()) {
         queryStrings[key] = value;
     }
-    
+
     /**
      * get url query string
      * @returns {Array}
@@ -117,7 +138,7 @@ window.myQueryString = function () {
     function getQueryStrings() {
         return queryStrings;
     }
-    
+
     /**
      * set value, from query string, to an input by input id
      * @param queryStringKey
@@ -126,19 +147,19 @@ window.myQueryString = function () {
      * @return boolean
      */
     function setInputValue(queryStringKey, inputId, setName=true) {
-    
+
         const $input = $('#' + inputId);
         const queryStringValue = queryStrings[queryStringKey] || null;
         if ($input.length === 0 || queryStringValue === null) {
             return false;
         }
-        
+
         $input.val(queryStringValue);
         setName && $input.attr('name', inputId)
-        
+
         return true;
     }
-    
+
     return {
         getQueryStrings,
         setInputValue

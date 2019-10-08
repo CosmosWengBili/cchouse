@@ -78,7 +78,7 @@ class ScheduleTest extends TestCase
             'main_ammeter_location' => '',
             'ammeter_serial_number_1' => '',
             'shared_electricity' => '',
-            'electricity_payment_method' => '',
+            'taiwan_electricity_payment_method' => '',
             'private_ammeter_location' => '',
             'water_meter_location' => '',
             'water_meter_serial_number' => '',

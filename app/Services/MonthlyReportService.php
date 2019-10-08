@@ -184,7 +184,6 @@ class MonthlyReportService
                             $data['meta']['total_agency_fee'] += $agency_fee;
                             $roomData['meta']['room_total_expense'] += $agency_fee;
                         }
-
                     }
                 }
             }
@@ -303,18 +302,11 @@ class MonthlyReportService
     public function getShareholdersInfo(LandlordContract $landlordContract, $month, $year)
     {
         $shareholdersInfo = [];
-        $start_date = Carbon::create($year, $month);
 
         foreach ($landlordContract->building->shareholders as $shareholder) {
-            $max_period = $shareholder->distribution_start_date->diffInMonths($shareholder->distribution_end_date) + 1;
-            $current_period = $shareholder->distribution_start_date->diffInMonths($start_date) + 1;
-
             $distribution_fee = $this->getDistributionFee($landlordContract, $shareholder, $month, $year);
 
             $shareholdersInfo[] = [
-                'name' => $shareholder->name,
-                'current_period' => $current_period,
-                'max_period' => $max_period,
                 'distribution_fee' => $distribution_fee,
             ];
         }

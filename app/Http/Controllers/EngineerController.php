@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 
 class EngineerController extends Controller
 {
@@ -41,29 +43,30 @@ class EngineerController extends Controller
     }
 
     // download specific table file
+    // download specific table file
     public function export_by_function($function)
     {
         switch($function){
             case 'invoice':
+                $service = new InvoiceService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
 
                 return Excel::download(
-                    new ReceiptExport($invoiceData, 'invoice'),
+                    new InvoiceExport($invoiceData),
                     '發票報表.xlsx'
                 );
             case 'receipt':
+                $service = new ReceiptService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
 
                 return Excel::download(
-                    new ReceiptExport($receiptData, 'receipt'),
+                    new ReceiptExport($receiptData, $buildingData),
                     '收據報表.xlsx'
                 );
-
-
                 break;
             default:
                 break;

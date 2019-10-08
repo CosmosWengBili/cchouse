@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\Services\TenantPaymentService;
-use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 use App\TenantContract;
 use App\TenantPayment;
 use Carbon\Carbon;
@@ -93,7 +93,7 @@ class TenantPaymentController extends Controller
             'is_visible_at_report' => 'required',
             'comment' => '',
         ]);
-        ReceiptService::compareReceipt($tenantPayment, $validatedData);
+        InvoiceService::compareReceipt($tenantPayment, $validatedData);
         $tenantPayment->update($validatedData);
 
         return redirect($request->_redirect);

@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Input;
 
 use App\Exports\MorphExport;
+use App\Exports\InvoiceExport;
 use App\Exports\ReceiptExport;
 use App\Imports\MorphImport;
 
 use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 
 class ExcelController extends Controller
 {
@@ -81,13 +83,16 @@ class ExcelController extends Controller
     {
         switch($function){
             case 'invoice':
-                $service = new ReceiptService();
+                $service = new InvoiceService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
-
+                $invoiceData = [];
+                $initData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                foreach( $initData as $receiverData ){
+                    $invoiceData = array_merge($invoiceData, $receiverData);
+                }
                 return Excel::download(
-                    new ReceiptExport($invoiceData, 'invoice'),
+                    new InvoiceExport($invoiceData),
                     '發票報表.xlsx'
                 );
             case 'receipt':
@@ -97,7 +102,7 @@ class ExcelController extends Controller
                 $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
 
                 return Excel::download(
-                    new ReceiptExport($receiptData, 'receipt'),
+                    new ReceiptExport($receiptData, $buildingData),
                     '收據報表.xlsx'
                 );
                 break;

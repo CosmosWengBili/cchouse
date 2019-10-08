@@ -16,7 +16,7 @@ use App\TenantContract;
 use App\Building;
 use App\Traits\Controllers\HandleDocumentsUpload;
 use App\Services\TenantContractService;
-use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
@@ -281,7 +281,7 @@ class TenantContractController extends Controller
             'comment' => 'present',
         ]);
 
-        ReceiptService::compareReceipt($tenantContract, $validatedData);
+        InvoiceService::compareReceipt($tenantContract, $validatedData);
 
         $tenantContract->update($validatedData);
         $this->handleDocumentsUpload($tenantContract, [

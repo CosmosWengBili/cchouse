@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
+use App\Services\InvoiceService;
 use App\Services\ReceiptService;
 
 class ReceiptController extends Controller
@@ -52,14 +53,16 @@ class ReceiptController extends Controller
                 )
             )
             ->relations($request->withNested)->get();
-        $service = new ReceiptService();
+        
         if(isset($start_date) && isset($end_date)){
             if( $type == 'invoice'){
+                $service = new InvoiceService();
                 $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
             }
         }
         else if(isset($receipt_year) && isset($receipt_month)){
             if( $type == 'receipt' ){
+                $service = new ReceiptService();
                 $receiptData = $service->makeReceiptData($receipt_year, $receipt_month);
             }
         }
@@ -83,7 +86,7 @@ class ReceiptController extends Controller
         $end_date = Input::get('end_date');
         $invoiceData = [];
         if(isset($start_date) && isset($end_date)){
-            $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+            $invoiceData = InvoiceService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
         }
         return view('receipts.edit_invoice')
             ->with('invoiceData', $invoiceData);
@@ -98,7 +101,7 @@ class ReceiptController extends Controller
     public function update_invoice(Request $request)
     {
         $receipts = Input::get('receipts');
-        ReceiptService::updateInvoiceNumber($receipts);
+        InvoiceService::updateInvoiceNumber($receipts);
 
         return redirect($request->_redirect);
     }

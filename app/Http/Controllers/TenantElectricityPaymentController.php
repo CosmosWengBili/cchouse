@@ -23,7 +23,7 @@ class TenantElectricityPaymentController extends Controller
             TenantContract::withExtraInfo()
                 ->select($selectStr)
                 ->where('contract_end', '>', Carbon::now())
-                ->where('tenant_contract.electricity_payment_method', '公司代付')
+                ->where('buildings.electricity_payment_method', '公司代付')
                 ->with($request->withNested)
         );
 
@@ -53,7 +53,8 @@ class TenantElectricityPaymentController extends Controller
             "amount" => "required",
             "due_time" => "required",
             "is_charge_off_done" => "required",
-            "comment" => "required",
+            'charge_off_date' => '',
+            'comment' => '',
         ]);
         $tenantPayment = TenantElectricityPayment::create($validatedData);
 
@@ -103,7 +104,8 @@ class TenantElectricityPaymentController extends Controller
             "amount" => "required",
             "due_time" => "required",
             "is_charge_off_done" => "required",
-            "comment" => "required",
+            'charge_off_date' => '',
+            'comment' => '',
         ]);
         ReceiptService::compareReceipt($tenantElectricityPayment, $validatedData);
         $tenantElectricityPayment->update($validatedData);
@@ -120,6 +122,9 @@ class TenantElectricityPaymentController extends Controller
      */
     public function destroy(TenantElectricityPayment $tenantElectricityPayment)
     {
+        if ($tenantElectricityPayment->is_charge_off_done) {
+            return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
+        }
         $tenantElectricityPayment->delete();
         return response()->json(true);
     }

@@ -223,25 +223,13 @@
                                 </tr>
                                 <tr>
                                     <td>@lang("model.TenantContract.deposit_paid")</td>
-                                    <td>
+                                    <td colspan="3">
                                         <input
                                             class="form-control form-control-sm"
                                             type="number"
                                             name="deposit_paid"
                                             value="{{ $data['deposit_paid'] ?? '' }}"
                                         />
-                                    </td>
-                                    <td>@lang("model.TenantContract.electricity_payment_method")</td>
-                                    <td>
-                                        <select
-                                            class="form-control form-control-sm"
-                                            name="electricity_payment_method"
-                                            value="{{ $data['electricity_payment_method'] ?? '' }}"
-                                        />
-                                            @foreach(config('enums.tenant_contract.electricity_payment_method') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
                                     </td>
                                 </tr>
                                 <tr>

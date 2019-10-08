@@ -2,6 +2,7 @@
 
 @php
     $tenantContracts = \App\TenantContract::pluck('id');
+    $tenantContractId = Request::get('tenantContractId') ?? $data['tenant_contract_id'] ?? '';
 @endphp
 
 @section('content')
@@ -30,7 +31,7 @@
                                             @foreach($tenantContracts as $value)
                                                 <option
                                                     value="{{$value}}"
-                                                    {{ ($data['tenant_contract_id'] ?? '') == $value ? 'selected' : '' }}
+                                                    {{ $tenantContractId == $value ? 'selected' : '' }}
                                                 >
                                                     {{$value}}
                                                 </option>
@@ -118,8 +119,19 @@
                                             {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
-                                    <td>備註</td>
+                                    <td>沖銷日期</td>
                                     <td>
+                                        <input
+                                            type="date"
+                                            name="charge_off_date"
+                                            class="form-control form-control-sm"
+                                            value="{{ $data['charge_off_date'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>備註</td>
+                                    <td colspan="3">
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>
                                     </td>
                                 </tr>

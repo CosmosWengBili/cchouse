@@ -8,13 +8,28 @@
             <div class="card">
                 <div class="card-body">
                     <form class="my-3" method="get">
-                        <div class="form-group w-50 d-flex">
-                            <input type="hidden" name="by" value="date" />
-                            <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}">
-                            <div class="font-weight-bold mx-3" style="line-height: 41px;">至</div>
-                            <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}">
-                            <button class="btn btn-success btn-sm m-1" type="submit">查詢</button>
+                        <input type="hidden" name="by" value="date" />
+                        <div class="form-row">
+                            <div class="col">
+                                <input type="text" class="form-control form-control-sm" name="room_code" placeholder="物件代碼" value="{{ Request::get('room_code') ?? '' }}">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control form-control-sm" name="tenant_name" placeholder="租客姓名" value="{{ Request::get('tenant_name') ?? '' }}">
+                            </div>
+                            <div class="col">
+                                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}" required>
+                            </div>
+                            <div class="col" style="flex: 0 0;">
+                                <span class="font-weight-bold" style="line-height: 41px;">至</span>
+                            </div>
+                            <div class="col">
+                                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}" required>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-success btn-sm m-1" type="submit">查詢</button>
+                            </div>
                         </div>
+
                     </form>
 
                     @if(isset($tableRows))
@@ -36,21 +51,19 @@
                                     <th></th>
                                 </tr>
                                 <tr>
-                                    <th>科目編號</th>
                                     <th>科目類別</th>
                                     <th>費用</th>
-                                    <th>日期</th>
+                                    <th>應繳日期</th>
                                     <th>是否已沖銷</th>
                                     <th>繳費科目</th>
                                     <th>費用</th>
-                                    <th>日期</th>
-                                    <th>科目編號</th>
+                                    <th>應繳日期</th>
+                                    <th>入帳日期</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($tableRows as $row)
                                         <tr>
-                                            <td>{{ $row['應繳科目編號'] ?? '' }}</td>
                                             <td>{{ $row['應繳科目'] ?? '' }}</td>
                                             <td>
                                                 @php
@@ -69,8 +82,8 @@
                                                 @endphp
                                                 {{ $pay }}
                                             </td>
+                                            <td>{{ $row['繳費應繳日期'] ?? '' }}</td>
                                             <td>{{ $row['繳費日期'] ?? '' }}</td>
-                                            <td>{{ $row['繳納科目編號'] ?? '' }}</td>
                                         </tr>
                                     @empty
                                         <tr>

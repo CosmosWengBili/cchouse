@@ -103,12 +103,6 @@ class TenantContractController extends Controller
             'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
-            'electricity_payment_method' => [
-                'required',
-                Rule::in(
-                    config('enums.tenant_contract.electricity_payment_method')
-                )
-            ],
             'electricity_calculate_method' => [
                 'required',
                 Rule::in(
@@ -261,12 +255,6 @@ class TenantContractController extends Controller
             'rent_pay_day' => 'required|integer|between:1,31',
             'deposit' => 'required|integer|digits_between:1,11',
             'deposit_paid' => 'required|integer|digits_between:1,11',
-            'electricity_payment_method' => [
-                'required',
-                Rule::in(
-                    config('enums.tenant_contract.electricity_payment_method')
-                )
-            ],
             'electricity_calculate_method' => [
                 'required',
                 Rule::in(

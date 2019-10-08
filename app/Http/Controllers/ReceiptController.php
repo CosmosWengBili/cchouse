@@ -26,9 +26,15 @@ class ReceiptController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
+
+        $type= Input::get('type')? Input::get('type') : 'invoice';
+        // for invoice search
         $start_date = Input::get('start_date');
         $end_date = Input::get('end_date');
-        $type= Input::get('type')? Input::get('type') : 'invoice';
+        // for receipt search
+        $receipt_year = Input::get('receipt_year');
+        $receipt_month = Input::get('receipt_month');
+
         $invoiceData = [];
         $receiptData = [];
         $columns = array_map(function ($column) { return "tenant_contract.{$column}"; }, $this->whitelist('tenant_contracts'));
@@ -51,8 +57,10 @@ class ReceiptController extends Controller
             if( $type == 'invoice'){
                 $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
             }
-            else if( $type == 'receipt' ){
-                $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+        }
+        else if(isset($receipt_year) && isset($receipt_month)){
+            if( $type == 'receipt' ){
+                $receiptData = $service->makeReceiptData($receipt_year, $receipt_month);
             }
         }
 

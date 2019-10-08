@@ -171,80 +171,46 @@ class ReceiptService
         return $this->global_data;
     }
 
-    public function makeReceiptData($start_date, $end_date)
+    public function makeReceiptData($year, $month)
     {
-        $receipt_data = array();
-        $landlord_contract_ids = array();
-
-        // Init pay logs data
-        $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
-                    ->where('receipt_type', '=', '收據')
-                    ->with([
-                        'loggable.tenantContract.tenant',
-                        'loggable.tenantContract.room.building.landlordContracts'
-                    ])
-                    ->get();
-
-        // Set every receipt's actual pay amount
-        foreach($pay_logs as $log_key => $pay_log){
-            $current_landlord_contract = $pay_log->loggable->tenantContract->room->building->activeContracts();
-            array_push($landlord_contract_ids, $current_landlord_contract->id);
-
-            $landlord_contract_key = $current_landlord_contract->id;
-            if (
-                isset(
-                    $landlord_contract_receipt_map[
-                        $landlord_contract_key
-                    ]
-                )
-            ) {
-                $landlord_contract_receipt_map[
-                    $landlord_contract_key
-                ] += $pay_log->amount;
-            } else {
-                $landlord_contract_receipt_map[$landlord_contract_key] =
-                    $pay_log->amount;
-            }
-        }
-        
-        // Query all landlord contract which have relationship with pay logs
-        $landlord_contract_ids = array_unique($landlord_contract_ids);
-        $landlord_contracts = LandlordContract::whereIn(
-            'id',
-            $landlord_contract_ids
-        )
-            ->with(['landlords', 'building.rooms'])
-            ->get();
+        $receiptData = array();
+        $selectedStartDate = Carbon::create($year, $month);
+        $selectedEndDate = $selectedStartDate->copy()->endOfMonth();
+        $landlordContracts = LandlordContract::where('commission_end_date', '>', $selectedStartDate)
+                                                ->where('commission_start_date', '<', $selectedEndDate)
+                                                ->where('commission_type', '包租')
+                                                ->with(['landlords', 'building.rooms'])
+                                                ->get();
 
         // Set normal value
-        foreach ($landlord_contracts as $contract_key => $landlord_contract) {
+        foreach ($landlordContracts as $landlordContract) {
             $data = array();
             // Combine relative room_code value
-            $data['building_code'] = $landlord_contract->building->building_code;
-            $data['group'] = $landlord_contract->building->group;
-            $data['city'] = $landlord_contract->building->city;
-            $data['district'] = $landlord_contract->building->district;
-            $data['address'] = $landlord_contract->building->address;
-            $data['tax_number'] = $landlord_contract->building->tax_number;
+            $data['building_code'] = $landlordContract->building->building_code;
+            $data['group'] = $landlordContract->building->group;
+            $data['city'] = $landlordContract->building->city;
+            $data['district'] = $landlordContract->building->district;
+            $data['address'] = $landlordContract->building->address;
+            $data['tax_number'] = $landlordContract->building->tax_number;
             // Combine relative landlord name value
             $data['landlord_name'] = implode(
                 '、',
-                $landlord_contract->landlords->pluck('name')->toArray()
+                $landlordContract->landlords->pluck('name')->toArray()
             );
-            $data['taxable_charter_fee'] =
-                $landlord_contract->taxable_charter_fee;
+            $taxableCharteFee = $this->countTaxableCharterFee($landlordContract, $year, $month);
+            $data['taxable_charter_fee'] = $taxableCharteFee;
             $data['actual_charter_fee'] =
-                $landlord_contract_receipt_map[$landlord_contract->id];
+                $this->countActualCharterFee($landlordContract, $taxableCharteFee, $selectedStartDate, $selectedEndDate);
             $data['rent_collection_time'] =
-                $landlord_contract->rent_collection_time;
+                $landlordContract->rent_collection_time;
             $data['rent_collection_year'] = Carbon::now()->year;
             $data['commission_end_date'] =
-                $landlord_contract->commission_end_date;
+                Carbon::create($landlordContract->commission_end_date)->format('Y/m/d');
 
-            array_push($receipt_data, $data);
+            array_push($receiptData, $data);
         }
 
-        return $receipt_data;
+        return $receiptData;
     }
 
     public function makeDepositInterest($start_date, $end_date)
@@ -593,4 +559,52 @@ class ReceiptService
         }
     }
 
+    public function countTaxableCharterFee($landlordContract, $year, $month){
+        $commission_start_date = Carbon::parse($landlordContract->commission_start_date);
+        $commission_end_date = Carbon::parse($landlordContract->commission_end_date);
+
+        //check whether first commission month of landlordContract
+        if( $year == $commission_start_date->year && $month == $commission_start_date->month){
+            return $landlordContract->taxable_charter_fee*($commission_start_date->daysInMonth - $commission_start_date->day + 1) / $commission_start_date->daysInMonth; 
+        }
+        //check whether last commission month of landlordContract
+        else if($year == $commission_end_date->year && $month == $commission_end_date->month){
+            return $landlordContract->taxable_charter_fee * $commission_start_date->day / $commission_start_date->daysInMonth; 
+        }
+        else{
+            return  $landlordContract->taxable_charter_fee;
+        }
+    }
+    
+    public function countActualCharterFee($landlordContract, $this_month_taxable_charter_fee, $start_date, $end_date){
+
+        $rooms = $landlordContract->building->normalRooms();
+
+        $should_paid_amount = 0;
+        $paid_amount = 0;
+        $should_ignored_amount = 0;
+
+        foreach( $rooms as $room ){
+            $tenantContract = $room->activeContracts()->first();
+            if(is_null($tenantContract)){}
+            else{
+                $should_paid_amount += $tenantContract->rent;
+                $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                                                        ->where('subject', '租金')
+                                                        ->whereBetween('due_time', [$start_date, $end_date])
+                                                        ->sum('amount');
+                $paid_amount += $temp_paid;
+                if($tenantContract->tenant->is_legal_person && $temp_paid != 0){
+                    $should_ignored_amount += $temp_paid;
+                }
+            }
+        }
+        if( ($should_paid_amount - $should_ignored_amount)/$should_paid_amount > $this_month_taxable_charter_fee ){
+            return ($should_paid_amount - $should_ignored_amount)/$should_paid_amount * $this_month_taxable_charter_fee;
+        }
+        else{
+            return ($should_paid_amount - $should_ignored_amount);
+        }
+        
+    }
 }

@@ -6,8 +6,8 @@
         </h2>
         <form action="/receipts" meth="GET">
             <input type="hidden" name="type" value="receipt">
-            開始日期 <input type="date" name="start_date">
-            結束日期 <input type="date" name="end_date">
+            <input name="receipt_year"> 年
+            <input name="receipt_month"> 月
             <input class="btn btn-primary"  type="submit" value="送出">
         </form>
 

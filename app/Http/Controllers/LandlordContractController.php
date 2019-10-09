@@ -177,6 +177,7 @@ class LandlordContractController extends Controller
                 'required|integer|digits_between:1,11',
             'charter_fee' => 'required|integer|digits_between:1,11',
             'taxable_charter_fee' => 'required|integer|digits_between:1,11',
+            'agency_service_fee' => 'nullable',
             'rent_collection_frequency' => 'required|max:255',
             'rent_collection_time' => 'required|integer|digits_between:1,11',
             'rent_adjusted_date' => 'required|date',

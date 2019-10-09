@@ -402,7 +402,9 @@ class InvoiceService
                 return '管理服務費(預收清潔費)';
             } elseif ($object['subject'] == '租金') {
                 return '租金收入';
-            } elseif (
+            } elseif ($object['subject'] == '設備扣款') {
+                return '違約金';
+            }elseif (
                 in_array($object['subject'], ['轉房費', '換約費', '滯納金'])
             ) {
                 return '行政手續費';

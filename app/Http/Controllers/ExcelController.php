@@ -97,12 +97,12 @@ class ExcelController extends Controller
                 );
             case 'receipt':
                 $service = new ReceiptService();
-                $start_date = Input::get('start_date');
-                $end_date = Input::get('end_date');
-                $receiptData = $service->makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $receipt_year = Input::get('receipt_year');
+                $receipt_month = Input::get('receipt_month');
+                $receiptData = $service->makeReceiptData($receipt_year, $receipt_month);
 
                 return Excel::download(
-                    new ReceiptExport($receiptData, $buildingData),
+                    new ReceiptExport($receiptData['receipt'], $receiptData['receipt_building']),
                     '收據報表.xlsx'
                 );
                 break;

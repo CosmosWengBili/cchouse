@@ -72,7 +72,9 @@ class ReceiptController extends Controller
             ->with('receiptData', $receiptData)
             ->with('type', $type)
             ->with('start_date', $start_date)
-            ->with('end_date', $end_date);
+            ->with('end_date', $end_date)
+            ->with('receipt_year', $receipt_year)
+            ->with('receipt_month', $receipt_month);
     }
 
     /**

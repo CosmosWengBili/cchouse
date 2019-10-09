@@ -16,9 +16,13 @@ use App\Receipt;
 
 class ReceiptService
 {   
+    public $globalData;
+
     public function makeReceiptData($year, $month)
     {
-        $receiptData = array();
+        $this->globalData = [
+            'receipt' => [], 'receipt_building' => []
+        ];
         $selectedStartDate = Carbon::create($year, $month);
         $selectedEndDate = $selectedStartDate->copy()->endOfMonth();
         $landlordContracts = LandlordContract::where('commission_end_date', '>', $selectedStartDate)
@@ -28,6 +32,37 @@ class ReceiptService
                                                 ->get();
 
         // Set normal value
+        foreach ($landlordContracts as $landlordContract) {
+            $rooms = $landlordContract->building->normalRooms();
+            foreach( $rooms as $room ){
+                $tenantContracts = $room->activeContracts()->get();
+                foreach( $tenantContracts as $tenantContract){
+                    $payments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                                                                ->where('subject', '租金')
+                                                                ->whereBetween('due_time', [$selectedStartDate, $selectedEndDate])
+                                                                ;
+                    if($tenantContract->tenant->is_legal_person && $payments->sum('amount') != 0){
+                        foreach( $payments as $payment){
+                            $data = array();
+                            $data['building_code'] = $room->building->building_code;
+                            $data['room_number'] = $room->room_number;
+                            $data['tenant_name'] = $tenantContract->tenant->name;
+                            $data['paid_at'] = $payment->due_time;
+                            $data['amount'] = $payment->amount;
+                            $data['group'] = $room->building->group;
+
+                            array_push($this->globalData['receipt'], $data);
+                        }
+                    }
+                }
+            }            
+        }
+
+        $this->makeReceiptBuildingData($landlordContracts, $selectedStartDate, $selectedEndDate);
+        return $this->globalData;
+    }
+
+    public function makeReceiptBuildingData($landlordContracts, $selectedStartDate, $selectedEndDate){
         foreach ($landlordContracts as $landlordContract) {
             $data = array();
             // Combine relative room_code value
@@ -42,7 +77,7 @@ class ReceiptService
                 '、',
                 $landlordContract->landlords->pluck('name')->toArray()
             );
-            $taxableCharteFee = $this->countTaxableCharterFee($landlordContract, $year, $month);
+            $taxableCharteFee = $this->countTaxableCharterFee($landlordContract, $selectedStartDate->year, $selectedStartDate->month);
             $data['taxable_charter_fee'] = $taxableCharteFee;
             $data['actual_charter_fee'] =
                 $this->countActualCharterFee($landlordContract, $taxableCharteFee, $selectedStartDate, $selectedEndDate);
@@ -52,10 +87,8 @@ class ReceiptService
             $data['commission_end_date'] =
                 Carbon::create($landlordContract->commission_end_date)->format('Y/m/d');
 
-            array_push($receiptData, $data);
+            array_push($this->globalData['receipt_building'], $data);
         }
-
-        return $receiptData;
     }
 
     public function countTaxableCharterFee($landlordContract, $year, $month){
@@ -84,26 +117,32 @@ class ReceiptService
         $should_ignored_amount = 0;
 
         foreach( $rooms as $room ){
-            $tenantContract = $room->activeContracts()->first();
-            if(is_null($tenantContract)){}
-            else{
-                $should_paid_amount += $tenantContract->rent;
-                $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
-                                                        ->where('subject', '租金')
-                                                        ->whereBetween('due_time', [$start_date, $end_date])
-                                                        ->sum('amount');
-                $paid_amount += $temp_paid;
-                if($tenantContract->tenant->is_legal_person && $temp_paid != 0){
-                    $should_ignored_amount += $temp_paid;
+            $tenantContracts = $room->activeContracts();
+            foreach( $tenantContracts as $tenantContract){
+                if(is_null($tenantContract)){}
+                else{
+                    $should_paid_amount += $tenantContract->rent;
+                    $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                                                            ->where('subject', '租金')
+                                                            ->whereBetween('due_time', [$start_date, $end_date])
+                                                            ->sum('amount');
+                    $paid_amount += $temp_paid;
+                    if($tenantContract->tenant->is_legal_person && $temp_paid != 0){
+                        $should_ignored_amount += $temp_paid;
+                    }
                 }
             }
         }
-        if( ($should_paid_amount - $should_ignored_amount)/$should_paid_amount > $this_month_taxable_charter_fee ){
-            return ($should_paid_amount - $should_ignored_amount)/$should_paid_amount * $this_month_taxable_charter_fee;
+        if( $should_paid_amount == 0 ){
+            return 0;
         }
         else{
-            return ($should_paid_amount - $should_ignored_amount);
+            if( ($should_paid_amount - $should_ignored_amount)/$should_paid_amount > $this_month_taxable_charter_fee ){
+                return ($should_paid_amount - $should_ignored_amount)/$should_paid_amount * $this_month_taxable_charter_fee;
+            }
+            else{
+                return ($should_paid_amount - $should_ignored_amount);
+            }
         }
-        
     }
 }

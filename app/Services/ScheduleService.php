@@ -209,24 +209,26 @@ class ScheduleService
             $paidAmount = 0;
     
             foreach( $rooms as $room ){
-                $tenantContract = $room->activeContracts()->first();
-                if(is_null($tenantContract)){}
-                else{
-                    $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
-                                                            ->where('subject', '租金')
-                                                            ->whereBetween('due_time', [$startDate, $endDate]);          
-                    if(!$tenantContract->tenant->is_legal_person){
-                        $paidAmount += $rentPayments->sum('amount');
-                    }
-                    foreach($rentPayments as $rentPayment){
-                        $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount){
-                            if( $taxableCharterFee < $paidAmount){
-                                $payLog->update(['receipt_type' => '發票']);
-                            }
-                            else{
-                                $payLog->update(['receipt_type' => '收據']);
-                            }
-                        });
+                $tenantContracts = $room->activeContracts()->get();
+                foreach( $tenantContracts as $tenantContract){
+                    if(is_null($tenantContract)){}
+                    else{
+                        $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                                                                ->where('subject', '租金')
+                                                                ->whereBetween('due_time', [$startDate, $endDate]);          
+                        if(!$tenantContract->tenant->is_legal_person){
+                            $paidAmount += $rentPayments->sum('amount');
+                        }
+                        foreach($rentPayments as $rentPayment){
+                            $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount){
+                                if( $taxableCharterFee < $paidAmount){
+                                    $payLog->update(['receipt_type' => '發票']);
+                                }
+                                else{
+                                    $payLog->update(['receipt_type' => '收據']);
+                                }
+                            });
+                        }
                     }
                 }
             }

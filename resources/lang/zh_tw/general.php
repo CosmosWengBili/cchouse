@@ -10,5 +10,7 @@ return [
     'reversal' => '沖銷',
     'landlord' => '房東',
     'tenant' => '租客',
-    'company' => '公司'
+    'company' => '公司',
+    'receipt' => '收據',
+    'receipt_building' => '物件'
 ];

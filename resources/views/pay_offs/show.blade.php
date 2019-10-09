@@ -2,108 +2,596 @@
 @section('content')
 
 <div class="container">
-    <div class="row justify-content-center my-3">
-        <div class="col-8 card my-3">
-            <form class="mt-3 mb-1" method="get">
-                <div class="form-group m-0">
-                    <label style="vertical-align: text-top;" for="pay-off-date">產生點交報表：</label>
-                    <input type="date" name="payOffDate" class="form-control-sm" id="pay-off-date" value="{{ optional($payOffDate)->format('Y-m-d') }}">
-                    <button type="submit" class="btn btn-info btn-xs">送出</button>
-                </div>
-            </form>
-            <hr class="mt-1">
-            @if(isset($payOffData))
-                @php
-                    $refundAmount = 0;
-                @endphp
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th>110v 電費度數</th>
-                            <td colspan="2">{{ $payOffData['110v_end_degree'] }} 度</td>
-                        </tr>
-                        <tr>
-                            <th>220v 電費度數</th>
-                            <td colspan="2">{{ $payOffData['220v_end_degree'] }} 度</td>
-                        </tr>
-                        <tr>
-                            <th>科目</th>
-                            <th>費用</th>
-                            <th>備註</th>
-                        </tr>
-                        @foreach($payOffData['fees'] as $fee)
+    <div class="justify-content-center">
+        <div class="row my-3">
+            <div class="col-12 card">
+                <div class="card-body">
+                    <div class="card-title"></div>
+
+                    <form class="mt-3 mb-1" method="get">
+                        <div class="form-group m-0">
+                            <label style="vertical-align: text-top;" for="pay-off-date">產生點交報表：</label>
+                            <input type="date" name="payOffDate" class="form-control-sm" id="pay-off-date" value="{{ optional($payOffDate)->format('Y-m-d') }}">
+                            <button type="submit" class="btn btn-info btn-xs">送出</button>
+                        </div>
+                    </form>
+                    <hr class="mt-1">
+
+
+
+                    @if(isset($payOffData))
+                        @php
+                            $refundAmount = 0;
+                        @endphp
+
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">
+                                <div class="d-inline-flex flex-grow-1 font-weight-bolder">承租方式: </div>
+                                <div id="commission_type" class="d-inline-flex">{{ $headerInfo['commission_type'] }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-inline-flex font-weight-bolder">退租方式: </div>
+                                <div class="d-inline-flex">
+                                    <select name="return_ways" id="return_ways">
+                                        @foreach(config('enums.pay_logs.return_ways') as $return_way)
+                                            <option value="{{ $return_way }}"
+                                                {{request()->input('return_ways', '中途退租') === $return_way ? 'selected': ''}}
+                                            >
+                                                {{ $return_way }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-inline-flex font-weight-bolder">租客姓名: </div>
+                                <div class="d-inline-flex">{{ $headerInfo['tenant_name'] }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-inline-flex font-weight-bolder">房代號: </div>
+                                <div class="d-inline-flex">
+                                    <a
+                                        target="_blank"
+                                        href="{{ route('rooms.show', $headerInfo['room_id']) }}"
+                                    >
+                                        {{ $headerInfo['room_id'] }}
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-inline-flex font-weight-bolder">地址: </div>
+                                <div class="d-inline-flex">{{ $headerInfo['location'] }}</div>
+                            </li>
+                        </ul>
+
+                        <table class="table table-bordered">
+                            <tbody>
                             <tr>
-                                <td>{{ $fee['subject'] }}</td>
-                                <td>
-                                    @php
-                                        $refundAmount += $fee['amount'];
-                                    @endphp
-                                    {{ $fee['amount'] }}  元
+                                <th>110v 電費度數</th>
+                                <td colspan="3">
+                                    <form id="e_110v_form" onsubmit="return false;">
+                                        <div class="input-group w-50">
+                                            <span class="align-self-center"><span class="old-110v">{{ $payOffData['110v_end_degree'] }}</span> 度</span>
+                                            <input
+                                                class="form-control form-control-sm ml-3"
+                                                type="number"
+                                                id="e_110v"
+                                                name="e_110v"
+                                                value="{{ $payOffData['110v_end_degree'] }}"
+                                                min="{{ $payOffData['110v_end_degree'] }}"
+                                            />
+                                            <div class="input-group-append">
+                                                <button
+                                                    id="cal_110v"
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-info"
+                                                >
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                    計算
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </td>
-                                <td>{{ $fee['comment'] }}</td>
                             </tr>
-                        @endforeach
-                        <tr class="functions-row">
-                            <td colspan="3" class="text-center">
-                                <button class="btn btn-success btn-xs js-new-item">新增項目</button>
-                                <button class="btn btn-info btn-xs js-save-payments">儲存</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>應退金額</th>
-                            <td>{{ $refundAmount }}</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            @else
-                <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
-            @endif
+                            <tr>
+                                <th>220v 電費度數</th>
+                                <td colspan="3">
+                                    <form id="e_220v_form" onsubmit="return false;">
+                                        <div class="input-group w-50">
+                                            <span class="align-self-center"><span class="old-220v">{{ $payOffData['220v_end_degree'] }}</span> 度</span>
+                                            <input
+                                                class="form-control form-control-sm ml-3"
+                                                type="number"
+                                                id="e_220v"
+                                                name="e_220v"
+                                                value="{{ $payOffData['220v_end_degree'] }}"
+                                                min="{{ $payOffData['220v_end_degree'] }}"
+                                            />
+                                            <div class="input-group-append">
+                                                <button
+                                                    id="cal_220v"
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-info"
+                                                >
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                    計算
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </from>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>科目</th>
+                                <th>負擔方</th>
+                                <th>費用</th>
+                                <th>備註</th>
+                            </tr>
+                            @foreach($payOffData['fees'] as $fee)
+                                @continue($fee['is_showed'] === false)
+                                <tr class="old-payment">
+                                    <td><span class="subject">{{ $fee['subject'] }}</span></td>
+                                    <td></td>
+                                    <td>
+                                        @php
+                                            $refundAmount += $fee['amount'];
+                                        @endphp
+                                        @if ($fee['subject'] === '履保金')
+                                            <span id="deposit_paid" class="amount">{{ $fee['amount'] }}</span> 元
+                                        @else
+                                            <span class="amount">{{ $fee['amount'] }}</span>  元
+                                        @endif
+                                    </td>
+                                    <td><span class="comment">{{ $fee['comment'] }}</span></td>
+                                </tr>
+                            @endforeach
+                            <tr class="functions-row">
+                                <td colspan="4" class="text-center">
+                                    <button class="btn btn-success btn-xs js-new-item">新增項目</button>
+                                    <button class="btn btn-info btn-xs js-save-payments">儲存</button>
+                                    <label for="exchange_fee">匯費</label>
+                                    <input type="checkbox" id="exchange_fee" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>應退房客金額</th>
+                                <td colspan="3">
+                                    <div class="d-inline-flex">
+                                        <div class="align-content-center">
+                                            <span id="refund_amount">{{ $payOffData['sums']['應退金額'] }}</span>
+                                            <input id="edit_refund_amount"
+                                                   type="number"
+                                                   step="1"
+                                                   value="{{ $payOffData['sums']['應退金額'] }}"
+                                                   class="d-none"
+                                            >
+                                            <span>元</span>
+                                            <button id="edit_refund" class="btn btn-xs btn-primary">編輯</button>
+                                            <button id="update_refund" class="btn btn-xs btn-info d-none">確認</button>
+                                            <button id="reset_refund" class="btn btn-xs btn-secondary">恢復</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>兆基應收</th>
+                                <td colspan="3"><span id="should-received">{{ $payOffData['sums']['兆基應收'] }}</span> 元</td>
+                            </tr>
+                            <tr>
+                                <th>業主應付</th>
+                                <td colspan="3"><span id="should-pay">{{ $payOffData['sums']['業主應付'] }}</span> 元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    @else
+                        <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
+                    @endif
+                </div>
+            </div>
         </div>
-        </div>
+    </div>
 </div>
 
+<style>
+    tr > td:first-child,
+    tr > td:nth-child(1),
+    tr > td:nth-child(2),
+    tr > td:nth-child(3) {
+        width: 200px
+    }
+</style>
+
 <script>
+
+    $('#cal_110v, #cal_220v').click(function () {
+        const res_110 = validate_110v.element( "#e_110v" );
+        const res_220 = validate_220v.element( "#e_220v" );
+        if (res_110 && res_220) {
+            calculatePrice($(this));
+        }
+    });
+
+    function calculatePrice($clickedButton) {
+
+        const tenantContractsId = '{{ $tenantContract->id }}';
+        const e_110v_end = parseInt({{ $payOffData['110v_end_degree'] }});
+        const e_220v_end = parseInt({{ $payOffData['220v_end_degree'] }});
+        const input_110v = parseInt($('#e_110v').val());
+        const input_220v = parseInt($('#e_220v').val());
+        const template =`
+            <tr class="cal-v">
+                <td>電費</td>
+                <td>
+                    <select class="form-control form-control-sm" name="collected_by">
+                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
+                        <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
+                        @endforeach
+            </select>
+            </td>
+        <td>
+        <input class="form-control form-control-sm electricity-amount" type="number" id="cal_v" name="cal_v" readonly>
+        </td>
+        <td>
+        <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
+        </td>
+    </tr>`;
+
+        $clickedButton.find('span').removeClass('d-none');
+        $.get('/tenantContracts/' + tenantContractsId + '/electricityDegree')
+            .then(function (data) {
+                console.log(data)
+                const pricePerDegree = data.pricePerDegree || 0;
+                const pricePerDegreeSummer = data.pricePerDegreeSummer || 0;
+                const readMonth = (new Date).getMonth() + 1;
+                const ratio = [7, 8, 9, 10].includes(readMonth) ? pricePerDegreeSummer : pricePerDegree;
+                const amount = _.round (
+                    _.multiply (
+                        _.add (
+                            _.subtract(input_110v, e_110v_end),
+                            _.subtract(input_220v, e_220v_end)
+                        ),
+                        ratio
+                    )
+                );
+
+                let $calV = $('table tr.cal-v');
+                if ($calV.length === 0) {
+                    $(template).insertBefore($functionsRow);
+                } else {
+                    $calV.remove();
+                    $(template).insertBefore($functionsRow);
+                }
+                $('#cal_v').val(amount * -1);
+            })
+            .always(function () {
+                $clickedButton.find('span').addClass('d-none');
+            })
+    }
+
+</script>
+
+<script>
+
+    $('#return_ways').change(function () {
+        const selectedText = $(this).val();
+        const payOffDate = window.myQueryString().getQueryStrings()['payOffDate'];
+        const url = new URL(location.href);
+        location.href = url.protocol + '//' + url.host + url.pathname + `?payOffDate=${payOffDate}&return_ways=${selectedText}`;
+
+    });
+
+    $('#exchange_fee').change(function () {
+        if ($(this).prop('checked')) {
+            // add item
+            const template =`
+            <tr class="exchange-fee">
+                <td>匯費</td>
+                <td>
+                    <select class="form-control form-control-sm" name="collected_by">
+                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
+                        <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                <input class="form-control form-control-sm exchange-fee-amount" type="number" name="amount" readonly value="-30">
+                </td>
+                <td>
+                <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
+                </td>
+            </tr>`;
+            $(template).insertBefore($functionsRow);
+
+        } else {
+            // remove item
+            $('table tr.exchange-fee').remove();
+        }
+
+        // 重新計算應退房客金額
+        countTenantPayment();
+    });
+
+
+</script>
+
+<script>
+
+    // 應退金額的 Object
+    const EditRefund = {
+        unchangedRefund: $('#edit_refund_amount').val(),
+        $refund_amount: $('#refund_amount'),
+        $edit_refund_amount: $('#edit_refund_amount'),
+        $edit_refund_button: $('#edit_refund'),
+        $update_refund_button: $('#update_refund'),
+        toggleRefund: function () {
+            if (this.$edit_refund_amount.hasClass('d-none')) {
+                this.$edit_refund_amount.removeClass('d-none');
+                this.$refund_amount.addClass('d-none');
+                this.$update_refund_button.removeClass('d-none');
+                this.$edit_refund_button.addClass('d-none');
+            } else {
+                this.$edit_refund_amount.addClass('d-none');
+                this.$refund_amount.removeClass('d-none');
+                this.$update_refund_button.addClass('d-none');
+                this.$edit_refund_button.removeClass('d-none');
+            }
+        },
+        updateRefund: function () {
+            this.$refund_amount.text(this.$edit_refund_amount.val());
+        },
+        resetRefund: function () {
+            this.$edit_refund_amount.val(this.unchangedRefund);
+            this.$refund_amount.text(this.unchangedRefund);
+        },
+        setRefund: function (value) {
+            this.$edit_refund_amount.val(value);
+            this.$refund_amount.text(value);
+        },
+    };
+
+    $('#edit_refund').click(function () {
+        EditRefund.toggleRefund();
+    });
+    $('#update_refund').click(function () {
+        EditRefund.updateRefund();
+        EditRefund.toggleRefund();
+    });
+    $('#reset_refund').click(function () {
+        EditRefund.resetRefund();
+    });
+
+
+    $(document).on('change', 'input.edit-new-item-amount', function () {
+        countTenantPayment();
+    });
+
+    /**
+     * 計算 應退房客金額
+     */
+    function countTenantPayment() {
+        const originalRefund = EditRefund.unchangedRefund;
+        const editAmount = document.querySelectorAll('input.edit-new-item-amount');
+        let sum = parseInt(originalRefund);
+        editAmount.forEach(function (element, key) {
+            sum = _.add(sum, parseInt(element.value) );
+        });
+        EditRefund.setRefund(sum);
+    }
+
+
+</script>
+<script>
+
+
+    const $functionsRow = $('.functions-row');
+
     (function () {
-        const $functionsRow = $('.functions-row');
         const apiURL = '{{ route('payOffs.storePayOffPayments', $tenantContract->id) }}';
         const payOffDate = '{{ optional($payOffDate)->format('Y-m-d')}}';
         const template = `
            <tr class="new-payment">
                <td>
-                  <select class="form-control form-control-sm" name="subject">
+                  <select class="form-control form-control-sm select-subjects" name="subject">
                       @foreach(config('enums.tenant_payments.subject') as $subject)
-                          <option value="{{ $subject }}">{{ $subject }}</option>
+            <option value="{{ $subject }}" {{$loop->first ? 'selected' : ''}}>{{ $subject }}</option>
                       @endforeach
-                  </select>
-               </td>
-               <td>
-                  <input class="form-control form-control-sm" type="number" name="amount" value="0">
-               </td>
-               <td>
-                  <input class="form-control form-control-sm" type="text" name="comment">
-               </td>
-           </tr>
-        `;
+            </select>
+         </td>
+         <td></td>
+         <td>
+            <input class="form-control form-control-sm edit-new-item-amount" type="number" name="amount" value="0">
+         </td>
+         <td>
+            <input class="form-control form-control-sm" type="text" name="comment">
+         </td>
+     </tr>
+`;
 
         $('.js-new-item').on('click', function () {
             $(template).insertBefore($functionsRow);
+            setSubjectSelect($('select.select-subjects'));
         });
 
         $('.js-save-payments').on('click', function () {
-            const payments = [];
-            $('.new-payment').each(function () {
-                const subject = $(this).find('select[name="subject"]').val();
-                const amount = Number($(this).find('input[name="amount"]').val());
-                const comment = $(this).find('input[name="comment"]').val();
 
-                payments.push({ subject, amount, comment, payOffDate });
-            });
+            const res_110 = validate_110v.element( "#e_110v" );
+            const res_220 = validate_220v.element( "#e_220v" );
+            const has_cal_v = $('tr.cal-v').length;
+            if (!res_110 || !res_220 || !has_cal_v) {
+                alert('請輸入手動抄表的度數，並計算之。');
+                return;
+            }
+            const postData = makeSendData();
 
-            $.post(apiURL, { payments }, function () {
-                location.reload();
+            $.post(apiURL, postData, function (data) {
+                console.log(data)
+                // location.reload();
             })
         });
+
+
     })();
+
+    function makeSendData() {
+        return {
+            header: {
+                pay_off_date: $('#pay-off-date').val(),
+                commission_type: $('#commission_type').text(),
+                return_ways: $('#return_ways').val(),
+            },
+            electricity: {
+                old_110v: $('span.old-110v').text(),
+                old_220v: $('span.old-220v').text(),
+                final_110v: $('#e_110v').val(),
+                final_220v: $('#e_220v').val(),
+            },
+            items: createItems(),
+            sums: {
+                refund_amount: $('#refund_amount').text(),
+                should_received: $('#should-received').text(),
+                should_pay: $('#should-pay').text(),
+            }
+        };
+
+        function createItems() {
+            let items = Array();
+
+            // 從伺服器來的資料
+            $('tr.old-payment').each(function (index, item) {
+                const temp = {
+                    subject: $(item).find('span.subject').text(),
+                    collected_by: '',
+                    amount: $(item).find('span.amount').text(),
+                    comment: '',
+                    is_old: true,
+                };
+
+                items.push(temp);
+            });
+
+            // 匯費
+            const $exchange_fee = $('tr.exchange-fee');
+            if ($exchange_fee.length !== 0) {
+                const exchange_fee = {
+                    subject: '匯費',
+                    collected_by: $exchange_fee.find('select[name=collected_by]').val(),
+                    amount: $exchange_fee.find('input.exchange-fee-amount').val(),
+                    comment: $exchange_fee.find('input.exchange-fee-comment').val(),
+                    is_old: false,
+                };
+
+                items.push(exchange_fee);
+            }
+
+            // 電費
+            const $cal_v = $('tr.cal-v');
+            const electricity_fee = {
+                subject: '電費',
+                collected_by: $cal_v.find('select[name=collected_by]').val(),
+                amount: $cal_v.find('input.electricity-amount').val(),
+                comment: $cal_v.find('input.electricity-comment').val(),
+                is_old: false,
+            };
+
+            items.push(electricity_fee);
+
+            // 新增項目
+            const $new_payment = $('tr.new-payment');
+            $new_payment.each(function (index, item) {
+                const temp = {
+                    subject: $(item).find('select').val(),
+                    collected_by: '',
+                    amount: $(item).find('input.edit-new-item-amount').val(),
+                    comment: $(item).find('input[name=comment]').val(),
+                    is_old: false,
+                };
+
+                items.push(temp);
+            });
+
+
+            return items;
+        }
+    }
+
+</script>
+
+<script>
+    function setSubjectSelect($select)
+    {
+        $select.selectize({
+            maxItems: 1,
+            valueField: 'title',
+            labelField: 'title',
+            options: [
+                    @foreach(config('enums.tenant_payments.subject') as $subject)
+                { title: "{{ $subject  }}" },
+                @endforeach
+            ],
+            create: true,
+            sortField: 'title',
+        });
+    }
+</script>
+
+<script id="validation">
+
+    $.validator.addMethod('gtEnd110v', function(value, element) {
+        return value >= parseInt({{ $payOffData['110v_end_degree'] }});
+    }, '輸入的110v度數須大於等於上期期末度數');
+    $.validator.addMethod('gtEnd220v', function(value, element) {
+        return value >= parseInt({{ $payOffData['220v_end_degree'] }});
+    }, '輸入的220v度數須大於等於上期期末度數');
+
+
+    const validate_110v = $("#e_110v_form").validate({
+        rules: {
+            e_110v: {
+                required: true,
+                gtEnd110v: true,
+            }
+        },
+        errorElement: "em",
+        errorPlacement: function ( error, element ) {
+            error.addClass( "invalid-feedback" );
+            if ( element.prop( "type" ) === "checkbox" ) {
+                error.insertAfter( element.next( "label" ) );
+            } else {
+                error.insertAfter( element );
+            }
+        },
+        highlight: function ( element, errorClass, validClass ) {
+            $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        }
+    })
+
+    const validate_220v = $("#e_220v_form").validate({
+            rules: {
+                e_220v: {
+                    required: true,
+                    gtEnd220v: true,
+                }
+            },
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
+                }
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
+        })
+
 </script>
 @endsection

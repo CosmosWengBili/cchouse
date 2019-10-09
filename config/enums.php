@@ -250,6 +250,11 @@ return [
             '租金雜費',
             '電費',
         ],
+        'return_ways' => [
+            '中途退租',
+            '到期退租',
+            '協調退租',
+        ]
     ],
 
     'landlord_other_subjects' => [

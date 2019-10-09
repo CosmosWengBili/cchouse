@@ -17,7 +17,7 @@ class AlterShareholdersTable extends Migration
             $table->renameColumn('email', 'contact_method');
             $table->integer('exchange_fee')->default(0)->comment('匯費');
             $table->string('bank_branch')->comment('銀行分行');
-            $table->integer('distribution_amount')->comment('分配金額');
+//            $table->integer('distribution_amount')->comment('分配金額');
             $table->string('method')->comment('方式');
         });
     }

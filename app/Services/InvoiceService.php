@@ -206,8 +206,9 @@ class InvoiceService
                 ->get();
 
             foreach ($tenantContracts as $tenantContract) {
-                if( $tenantContract ){
-
+                
+                if( $tenantContract->room->building->activeContracts()->commission_type == '代管' ){          
+                    continue;
                 }
                 $data = $this->makeInvoiceMockData();
                 $data['invoice_date'] = $date->format('Y-m-d');
@@ -215,7 +216,7 @@ class InvoiceService
                 $depositInterest = SystemVariable::where(
                     'code',
                     '=',
-                    'deposit_rate'
+                    'depositRate'
                 )->first()->value;
                 $data['amount'] = round(
                     $tenantContract->deposit_paid * $depositInterest

@@ -146,7 +146,7 @@ class ScheduleService
     public function notifyMaintenanceStatus()
     {
         // 超過『預計處理日期』 時，且『狀態』不是『案件完成』和 『已取消』才跳通知
-        $notifyRequiredDays = SystemVariable::where('group', 'Maintenance')
+        $notifyRequiredDays = SystemVariable::where('group', 'Maintenances')
                                             ->where('code', 'MaintenanceNotifyRequiredDays')
                                             ->first()->value;
         $limitDatetime = Carbon::now()->subDays($notifyRequiredDays);

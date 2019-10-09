@@ -171,33 +171,33 @@ class InvoiceService
         return $this->global_data;
     }
 
-    public function makeDepositInterest($start_date, $end_date)
+    public function makeDepositInterest($startDate, $endDate)
     {
         // Set time cauculate used variables
-        $start_year = $start_date->year;
-        $end_year = $end_date->year;
-        $start_idx = $start_date->month;
-        $end_idx =
-            $end_date == $end_date->copy()->endOfMonth()
-                ? $end_date->month
-                : $end_date->copy()->subMonth()->month;
+        $startYear = $startDate->year;
+        $endYear = $endDate->year;
+        $startIdx = $startDate->month;
+        $endIdx =
+            $endDate == $endDate->copy()->endOfMonth()
+                ? $endDate->month
+                : $endDate->copy()->subMonth()->month;
 
-        $end_idx = $end_idx - $start_idx + 12 * ($end_year - $start_year);
-        $current_date = $start_date->endOfMonth();
-        $date_data = array();
+        $endIdx = $endIdx - $startIdx + 12 * ($endYear - $startYear);
+        $currentDate = $startDate->endOfMonth();
+        $dateData = array();
 
         // Find each deposit interest point during period
-        for ($month_idx = 0; $month_idx <= $end_idx; $month_idx++) {
-            array_push($date_data, $current_date);
-            $current_date = $current_date
+        for ($monthIdx = 0; $monthIdx <= $endIdx; $monthIdx++) {
+            array_push($dateData, $currentDate);
+            $currentDate = $currentDate
                 ->copy()
                 ->addMonthsWithoutOverflow(1)
                 ->endOfMonth();
         }
 
         // Genenate deposit interest data
-        foreach ($date_data as $date_key => $date) {
-            $tenant_contracts = TenantContract::where([
+        foreach ($dateData as $date) {
+            $tenantContracts = TenantContract::where([
                 ['contract_end', '>', $date],
                 ['contract_start', '<', $date],
                 ['deposit_paid', '>', 0]
@@ -205,36 +205,39 @@ class InvoiceService
                 ->with(['tenant', 'room'])
                 ->get();
 
-            foreach ($tenant_contracts as $contract_key => $tenant_contract) {
+            foreach ($tenantContracts as $tenantContract) {
+                if( $tenantContract ){
+
+                }
                 $data = $this->makeInvoiceMockData();
                 $data['invoice_date'] = $date->format('Y-m-d');
                 $data['invoice_item_name'] = '押金設算息';
-                $deposit_interest = SystemVariable::where(
+                $depositInterest = SystemVariable::where(
                     'code',
                     '=',
                     'deposit_rate'
                 )->first()->value;
                 $data['amount'] = round(
-                    $tenant_contract->deposit_paid * $deposit_interest
+                    $tenantContract->deposit_paid * $depositInterest
                 );
-                $data['data_table'] = $data['data_table'] =  __('general.' . $tenant_contract->getTable()); 
-                $data['data_table_id'] = $tenant_contract->id;
-                $data['data_receipt_id'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['id'];
+                $data['data_table'] = $data['data_table'] =  __('general.' . $tenantContract->getTable()); 
+                $data['data_table_id'] = $tenantContract->id;
+                $data['data_receipt_id'] = $tenantContract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['id'];
 
-                if ($tenant_contract->tenant->is_legal_person) {
+                if ($tenantContract->tenant->is_legal_person) {
                     $data['company_number'] =
-                        $tenant_contract->tenant->certificate_number;
-                    $data['company_name'] = $tenant_contract->tenant->name;
+                        $tenantContract->tenant->certificate_number;
+                    $data['company_name'] = $tenantContract->tenant->name;
                 }
                 $data['comment'] = '';
-                $data['building_code'] = $tenant_contract->room->building->building_code;
-                $data['room_number'] = $tenant_contract->room->room_number;
+                $data['building_code'] = $tenantContract->room->building->building_code;
+                $data['room_number'] = $tenantContract->room->room_number;
                 $data['deposit_date'] = $date->format('Y-m-d');
                 $data['actual_deposit_date'] = $date->format('Y-m-d');
                 $data['invoice_collection_number'] =
-                    $tenant_contract->invoice_collection_number;
+                    $tenantContract->invoice_collection_number;
                 $data['invoice_price'] = $data['amount'];
-                $data['invoice_serial_number'] = $tenant_contract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
+                $data['invoice_serial_number'] = $tenantContract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
 
                 array_push($this->global_data['tenant'], $data);
                 $this->invoice_count ++;

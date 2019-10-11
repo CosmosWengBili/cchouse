@@ -535,5 +535,6 @@ return [
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'receipt_type' => '收據類型',
+        "due_time" => "應繳時間",
     ]
 ];

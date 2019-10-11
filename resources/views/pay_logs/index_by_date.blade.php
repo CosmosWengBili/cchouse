@@ -23,6 +23,8 @@
                     @foreach ( $data as $type => $entries)
                         @include('pay_logs.table', ['objects' => $entries, 'layer' => $type])
                     @endforeach
+
+                    <p class="h2 my-3">總額： ${{$total}}</p>
                 </div>
             </div>
         </div>

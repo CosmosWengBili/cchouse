@@ -6,6 +6,9 @@ use App\PayLog;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\TenantContract;
+use App\TenantElectricityPayment;
+use App\TenantPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -122,21 +125,34 @@ class PayLogController extends Controller
     }
 
     private function indexByDate(Request $request) {
-        $responseData = new NestedRelationResponser();
-        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
-        $selectStr = DB::raw(join(', ', $selectColumns));
-        $responseData
-            ->index(
-                'tenant_contracts',
-                $this->limitRecords(
-                    TenantContract::withExtraInfo()
-                        ->select($selectStr)
-                        ->with($request->withNested)
-                        ->active()
-                )
-            )
-            ->relations($request->withNested);
+        $payLogs = PayLog::query();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        return view('pay_logs.index_by_date', $responseData->get());
+        if($startDate) {
+            $startDate = Carbon::parse($startDate);
+            $payLogs->where('paid_at', '>=', $startDate);
+        }
+        if($endDate) {
+            $startDate = Carbon::parse($startDate);
+            $payLogs->where('paid_at', '>=', $startDate);
+        }
+
+        $commonSelectStr = DB::raw(join(', ', ['pay_logs.*', 'due_time AS due_time']));
+        $normalPayLogs = (clone $payLogs)
+            ->join('tenant_payments', 'pay_logs.loggable_id', '=', "tenant_payments.id")
+            ->where('pay_logs.loggable_type', TenantPayment::class)
+            ->select($commonSelectStr);
+        $electricityPayLogs = (clone $payLogs)
+            ->join('tenant_electricity_payments', 'pay_logs.loggable_id', '=', "tenant_electricity_payments.id")
+            ->where('pay_logs.loggable_type', TenantElectricityPayment::class)
+            ->select($commonSelectStr);
+        $payLogs = $normalPayLogs->union($electricityPayLogs);
+
+        $responseData = new NestedRelationResponser();
+        $responseData->index('pay_logs', $this->limitRecords($payLogs));
+        $total = $payLogs->sum('amount');
+
+        return view('pay_logs.index_by_date', array_merge($responseData->get(), ['total' => $total]));
     }
 }

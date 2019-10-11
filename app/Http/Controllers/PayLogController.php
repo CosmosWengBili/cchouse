@@ -122,6 +122,21 @@ class PayLogController extends Controller
     }
 
     private function indexByDate(Request $request) {
-        return response()->json(true);
+        $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+        $responseData
+            ->index(
+                'tenant_contracts',
+                $this->limitRecords(
+                    TenantContract::withExtraInfo()
+                        ->select($selectStr)
+                        ->with($request->withNested)
+                        ->active()
+                )
+            )
+            ->relations($request->withNested);
+
+        return view('pay_logs.index_by_date', $responseData->get());
     }
 }

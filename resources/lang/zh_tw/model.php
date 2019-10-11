@@ -444,6 +444,7 @@ return [
     ],
     'Deposit' => [
         'id' => '編號',
+        'room_id' => '房編號',
         'tenant_contracts' => '租客合約',
         'tenant_contract_id' => '租客合約編號',
         'deposit_collection_date' => '收訂日期',

@@ -18,6 +18,18 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
+                                    <td>@lang("model.Deposit.room_id")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="id"
+                                            data-selected="{{ $data['room_id'] ?? 0 }}"
+                                            name="room_id"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
                                     <td>@lang("model.Deposit.tenant_contract_id")</td>
                                     <td>
                                         <select
@@ -29,8 +41,9 @@
                                             class="form-control form-control-sm"
                                         >
                                         </select>
-
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_date")</td>
                                     <td>
                                         <input
@@ -40,8 +53,6 @@
                                             value="{{ $data['deposit_collection_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_serial_number")</td>
                                     <td>
                                         <input
@@ -51,6 +62,8 @@
                                             value="{{ $data['deposit_collection_serial_number'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.deposit_confiscated_amount")</td>
                                     <td>
                                         <input
@@ -60,8 +73,6 @@
                                             value="{{ $data['deposit_confiscated_amount'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_returned_amount")</td>
                                     <td>
                                         <input
@@ -71,6 +82,8 @@
                                             value="{{ $data['deposit_returned_amount'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.confiscated_or_returned_date")</td>
                                     <td>
                                         <input
@@ -80,8 +93,6 @@
                                             value="{{ $data['confiscated_or_returned_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.invoicing_amount")</td>
                                     <td>
                                         <input
@@ -91,6 +102,8 @@
                                             value="{{ $data['invoicing_amount'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.invoice_date")</td>
                                     <td>
                                         <input
@@ -100,8 +113,6 @@
                                             value="{{ $data['invoice_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.payer_name")</td>
                                     <td>
                                         <input
@@ -111,6 +122,8 @@
                                             value="{{ $data['payer_name'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.payer_certification_number")</td>
                                     <td>
                                         <input
@@ -120,8 +133,6 @@
                                             value="{{ $data['payer_certification_number'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.payer_is_legal_person")</td>
                                     <td>
                                         <input type="hidden" value="0" name="payer_is_legal_person"/>
@@ -132,6 +143,8 @@
                                             {{ ($data["payer_is_legal_person"] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.payer_phone")</td>
                                     <td>
                                         <input
@@ -141,8 +154,6 @@
                                             value="{{ $data['payer_phone'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.receiver")</td>
                                     <td>
                                         <select
@@ -155,6 +166,8 @@
                                         >
                                         </select>
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.appointment_date")</td>
                                     <td>
                                         <input
@@ -164,8 +177,6 @@
                                             value="{{ $data['appointment_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.is_deposit_collected")</td>
                                     <td>
 
@@ -177,8 +188,10 @@
                                             {{ isset($data["is_deposit_collected"]) ? ($data['is_deposit_collected'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.comment")</td>
-                                    <td>
+                                    <td colspan="3">
                                         <input
                                             class="form-control form-control-sm"
                                             type="text"

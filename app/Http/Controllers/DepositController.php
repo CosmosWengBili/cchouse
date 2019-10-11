@@ -55,6 +55,7 @@ class DepositController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'deposit_collection_date' => 'required|date',
             'deposit_collection_serial_number' => 'required|max:255',
@@ -117,7 +118,8 @@ class DepositController extends Controller
     public function update(Request $request, Deposit $deposit)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'room_id' => 'required|exists:rooms,id',
+            'tenant_contract_id' => 'nullable|exists:tenant_contract,id',
             'deposit_collection_date' => 'required|date',
             'deposit_collection_serial_number' => 'required|max:255',
             'deposit_confiscated_amount' => 'nullable|integer|digits_between:1,11',

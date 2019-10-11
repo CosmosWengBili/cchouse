@@ -65,6 +65,12 @@ class DepositController extends Controller
             'invoice_date' => 'required|date',
             'is_deposit_collected' => 'required|boolean',
             'comment' => 'required',
+            'payer_name' => 'nullable',
+            'payer_certification_number' => 'nullable',
+            'payer_is_legal_person' => 'boolean',
+            'payer_phone' => 'nullable',
+            'receiver' => 'nullable|exists:users,id',
+            'appointment_date' => 'nullable|date',
         ]);
 
         $deposit = Deposit::create($validatedData);
@@ -121,6 +127,12 @@ class DepositController extends Controller
             'invoice_date' => 'required|date',
             'is_deposit_collected' => 'required|boolean',
             'comment' => 'required',
+            'payer_name' => 'nullable',
+            'payer_certification_number' => 'nullable',
+            'payer_is_legal_person' => 'boolean',
+            'payer_phone' => 'nullable',
+            'receiver' => 'nullable|exists:users,id',
+            'appointment_date' => 'nullable|date',
         ]);
 
         ReceiptService::compareReceipt($deposit, $validatedData);

@@ -30,7 +30,9 @@ class Deposit extends Model implements AuditableContract
      */
     protected $casts = [
         'is_deposit_collected' => 'boolean',
-        'confiscated_or_returned_date' => 'datetime:Y-m-d'
+        'confiscated_or_returned_date' => 'datetime:Y-m-d',
+        'payer_is_legal_person' => 'boolean',
+        'appointment_date' => 'date',
     ];
 
     /**

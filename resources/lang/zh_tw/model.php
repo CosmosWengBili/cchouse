@@ -466,6 +466,12 @@ return [
         'room_number' => '房號',
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
+        'payer_name' => '付訂人姓名',
+        'payer_certification_number' => '付訂人證號',
+        'payer_is_legal_person' => '付訂人是否為法人',
+        'payer_phone' => '電話',
+        'receiver' => '收訂金的專員',
+        'appointment_date' => '約定起租日',
     ],
     'TenantPayment' => [
         "id" => '編號',

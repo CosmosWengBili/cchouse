@@ -24,7 +24,6 @@ class DepositService
                 CompanyIncome::create([
                     'incomable_type' => Deposit::class,
                     'incomable_id' => $deposit->id,
-                    'tenant_contract_id' => $deposit->tenantContract->id,
                     'subject' => '訂金',
                     'income_date' => Carbon::today(),
                     'amount' => $newValues['deposit_confiscated_amount'],

@@ -102,6 +102,70 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.Deposit.payer_name")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="payer_name"
+                                            value="{{ $data['payer_name'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Deposit.payer_certification_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="payer_certification_number"
+                                            value="{{ $data['payer_certification_number'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Deposit.payer_is_legal_person")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="payer_is_legal_person"/>
+                                        <input
+                                            type="checkbox"
+                                            name="payer_is_legal_person"
+                                            value="1"
+                                            {{ ($data["payer_is_legal_person"] ?? false) ? 'checked' : '' }}
+                                        />
+                                    </td>
+                                    <td>@lang("model.Deposit.payer_phone")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="payer_phone"
+                                            value="{{ $data['payer_phone'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Deposit.receiver")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
+                                            name="receiver"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
+                                    <td>@lang("model.Deposit.appointment_date")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="date"
+                                            name="appointment_date"
+                                            value="{{ $data['appointment_date'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.is_deposit_collected")</td>
                                     <td>
 

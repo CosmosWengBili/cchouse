@@ -453,7 +453,7 @@ return [
         'confiscated_or_returned_date' => '沒/退訂日期',
         'invoicing_amount' => '收訂金額',
         'invoice_date' => '發票日期',
-        'is_deposit_collected' => '已收訂',
+        'is_deposit_collected' => '已簽約',
         'comment' => '備註',
         'tenantContracts' => '租客合約',
         'rooms' => '房',

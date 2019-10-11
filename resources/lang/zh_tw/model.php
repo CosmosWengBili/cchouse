@@ -451,7 +451,7 @@ return [
         'deposit_confiscated_amount' => '沒定金額',
         'deposit_returned_amount' => '退訂金額',
         'confiscated_or_returned_date' => '沒/退訂日期',
-        'invoicing_amount' => '應開立金額',
+        'invoicing_amount' => '收訂金額',
         'invoice_date' => '發票日期',
         'is_deposit_collected' => '已收訂',
         'comment' => '備註',

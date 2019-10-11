@@ -44,6 +44,14 @@ class Deposit extends Model implements AuditableContract
     }
 
     /**
+     * Get the room of deposit.
+     */
+    public function room()
+    {
+        return $this->belongsTo('App\Room');
+    }
+
+    /**
      * Get the receipts of this deposit.
      */
     public function receipts()

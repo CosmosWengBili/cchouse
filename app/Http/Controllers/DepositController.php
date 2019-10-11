@@ -58,6 +58,7 @@ class DepositController extends Controller
     {
         $validatedData = $this->validatedData($request, true);
         $deposit = Deposit::create($validatedData);
+        $deposit->room->update(['room_status' => '已收訂']);
 
         return redirect($request->_redirect);
     }

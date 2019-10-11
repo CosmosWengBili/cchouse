@@ -69,12 +69,12 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
         </script>
         <!-- End plugin js for this page -->
-        @if($errors->any())
+        @if(Session::has('alert'))
             <script>
                 Swal.fire({
                     type: 'error',
                     title: 'Oops...',
-                    text: '{{$errors->first()}}',
+                    text: '{{Session::get('alert')}}',
                 })
             </script>
         @endif

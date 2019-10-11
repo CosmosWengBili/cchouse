@@ -13,22 +13,12 @@ use Illuminate\Support\Facades\DB;
 class PayLogController extends Controller
 {
     public function index(Request $request) {
-        $responseData = new NestedRelationResponser();
-        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
-        $selectStr = DB::raw(join(', ', $selectColumns));
-        $responseData
-            ->index(
-                'tenant_contracts',
-                $this->limitRecords(
-                    TenantContract::withExtraInfo()
-                        ->select($selectStr)
-                        ->with($request->withNested)
-                        ->active()
-                )
-            )
-            ->relations($request->withNested);
+        $by = $request->input('by');
 
-        return view('pay_logs.index', $responseData->get());
+        if ($by == 'date') {
+            return $this->indexByDate($request);
+        }
+        return $this->indexByContract($request);
     }
 
     /**
@@ -104,6 +94,34 @@ class PayLogController extends Controller
     public function destroy(PayLog $payLog)
     {
         $payLog->delete();
+        return response()->json(true);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    private function indexByContract(Request $request)
+    {
+        $responseData = new NestedRelationResponser();
+        $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
+        $selectStr = DB::raw(join(', ', $selectColumns));
+        $responseData
+            ->index(
+                'tenant_contracts',
+                $this->limitRecords(
+                    TenantContract::withExtraInfo()
+                        ->select($selectStr)
+                        ->with($request->withNested)
+                        ->active()
+                )
+            )
+            ->relations($request->withNested);
+
+        return view('pay_logs.index', $responseData->get());
+    }
+
+    private function indexByDate(Request $request) {
         return response()->json(true);
     }
 }

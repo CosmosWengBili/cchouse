@@ -66,7 +66,9 @@ class CheckPaymentLock
 
     private function needToCheck(Request $request) {
         $noCheckUserIds = [1];
-        if (in_array(Auth::user()->id, $noCheckUserIds)) {
+        $user = Auth::user();
+        $userId = $user ? $user->id : null;
+        if (in_array($userId, $noCheckUserIds)) {
             return false;
         }
 

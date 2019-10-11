@@ -118,7 +118,7 @@ class PayLogController extends Controller
             )
             ->relations($request->withNested);
 
-        return view('pay_logs.index', $responseData->get());
+        return view('pay_logs.index_by_contract', $responseData->get());
     }
 
     private function indexByDate(Request $request) {

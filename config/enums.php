@@ -332,6 +332,11 @@ return [
         'rent_collection_time',
         'rent_collection_year',
         'commission_end_date'
+    ],
+    'deposits' => [
+        'returned_method' => [
+            '現金',
+            '匯款',
+        ]
     ]
-
 ];

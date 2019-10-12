@@ -125,6 +125,20 @@ class DepositController extends Controller
         return response()->json(true);
     }
 
+    public function return(Request $request, Deposit $deposit){
+        $validatedData = $request->validate([
+            "deposit_returned_amount" => 'required',
+            "confiscated_or_returned_date" => 'required',
+            "returned_method" => 'required',
+            "returned_bank" => 'nullable',
+            "returned_serial_number" => 'nullable',
+        ]);
+        $deposit->update($validatedData);
+        $deposit->room->update(['room_status' => '待出租']);
+
+        return redirect(route('deposits.index'));
+    }
+
     private function validatedData(Request $request, bool $checkCollected = false) {
         $room_id = $request->input('room_id');
 

@@ -49,6 +49,7 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
+                                <button class="btn btn-info" data-type="退訂" data-deposit-id="{{ $object['id'] }}">退訂</button>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContract;tenantContract.room;tenantContract.room.building">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" data-fill-delete-reason="true" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
@@ -60,6 +61,108 @@
         @endif
     </div>
 </div>
+
+<div class="modal" tabindex="-1" id="deposit-modal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">訂金操作</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary js-submit">送出</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="return-template">
+    <form class="js-return-form" action="" method="post">
+        @csrf
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">退訂金額</label>
+            <div class="col">
+                <input type="number" class="form-control" name="deposit_returned_amount" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">退訂日期</label>
+            <div class="col">
+                <input type="date" class="form-control" name="confiscated_or_returned_date" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">退訂方式</label>
+            <div class="col">
+                <select class="form-control" name="returned_method" required>
+                    @foreach(config('enums.deposits.returned_method') as $value)
+                        <option value="{{$value}}">{{$value}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-group row js-returned-serial-number-row">
+            <label class="col-sm-3 col-form-label js-cash">退訂單號</label>
+            <div class="col">
+                <input type="text" class="form-control" name="returned_serial_number" required>
+            </div>
+        </div>
+        <div class="form-group row js-returned-bank-row" style="display: none;">
+            <label class="col-sm-3 col-form-label">退訂銀行</label>
+            <div class="col">
+                <input type="text" class="form-control" name="returned_bank" disabled required>
+            </div>
+        </div>
+        <input type="submit" class="d-none">
+    </form>
+</template>
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var $returnBtns = $('button[data-type="退訂"]');
+        var $modal = $('#deposit-modal');
+        var $modalBody = $modal.find('.modal-body');
+        var $returnTemplate = $('template#return-template').html();
+
+        $returnBtns.on('click', function () {
+            var $target = $(this);
+            var depositId = $target.data('deposit-id');
+
+            $modalBody.html($returnTemplate);
+            var $form = $modalBody.find('form');
+
+            $form.attr('action', '/deposits/' + depositId + '/return');
+            $modal.modal('show');
+        });
+        $modalBody.on('change', 'select[name="returned_method"]', function () {
+            var method = $(this).val();
+            var $serialNumRow = $modalBody.find('.js-returned-serial-number-row');
+            var $bankRow = $modalBody.find('.js-returned-bank-row');
+
+            if (method === '匯款') {
+                $serialNumRow.hide();
+                $bankRow.show();
+                $bankRow.find('input[name="returned_bank"]').attr('disabled', false);
+                $serialNumRow.find('input[name="returned_serial_number"]').attr('disabled', true);
+            } else {
+                $bankRow.hide();
+                $serialNumRow.show();
+                $bankRow.find('input[name="returned_bank"]').attr('disabled', true);
+                $serialNumRow.find('input[name="returned_serial_number"]').attr('disabled', false);
+            }
+        });
+        $modal.find('.js-submit').on('click', function () {
+            var submit = $modalBody.find('input[type="submit"]');
+            submit.click();
+        });
+    });
 </script>

@@ -50,6 +50,7 @@
                             @endforeach
                             <td>
                                 <button class="btn btn-info" data-type="退訂" data-deposit-id="{{ $object['id'] }}">退訂</button>
+                                <button class="btn btn-info" data-type="沒訂" data-invoicing-amount="{{ $object['invoicing_amount'] }}" data-deposit-id="{{ $object['id'] }}">沒訂</button>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContract;tenantContract.room;tenantContract.room.building">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" data-fill-delete-reason="true" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
@@ -123,16 +124,54 @@
     </form>
 </template>
 
+<template id="confiscate-template">
+    <form class="js-return-form" action="" method="post">
+        @csrf
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">沒訂類型</label>
+            <div class="col">
+                <select class="form-control" name="confiscate_type">
+                    <option value="全額沒定" selected>全額沒定</option>
+                    <option value="部分沒定">部分沒定</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">沒定金額</label>
+            <div class="col">
+                <input type="number" class="form-control" name="deposit_confiscated_amount" readonly required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">沒定日期</label>
+            <div class="col">
+                <input type="date" class="form-control" name="confiscated_or_returned_date" required>
+            </div>
+        </div>
+        <div class="form-group row js-company-allocation-amount-row" style="display: none;">
+            <label class="col-sm-3 col-form-label">公司分配金額</label>
+            <div class="col">
+                <input type="number" class="form-control" name="company_allocation_amount" required disabled>
+            </div>
+        </div>
+        <input type="submit" class="d-none">
+    </form>
+</template>
+
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var $returnBtns = $('button[data-type="退訂"]');
+        var $confiscatedBtns = $('button[data-type="沒訂"]');
         var $modal = $('#deposit-modal');
         var $modalBody = $modal.find('.modal-body');
         var $returnTemplate = $('template#return-template').html();
+        var $confiscateTemplate = $('template#confiscate-template').html();
 
+        // 退訂
         $returnBtns.on('click', function () {
             var $target = $(this);
             var depositId = $target.data('deposit-id');
@@ -160,6 +199,40 @@
                 $serialNumRow.find('input[name="returned_serial_number"]').attr('disabled', false);
             }
         });
+
+        var tmpAmount = '';
+        // 沒定
+        $confiscatedBtns.on('click', function () {
+            var $target = $(this);
+            var depositId = $target.data('deposit-id');
+            var invoicingAmount = $target.data('invoicing-amount');
+            tmpAmount = invoicingAmount;
+
+            $modalBody.html($confiscateTemplate);
+            var $form = $modalBody.find('form');
+            $form.find('input[name="deposit_confiscated_amount"]').val(invoicingAmount);
+            $form.attr('action', '/deposits/' + depositId + '/confiscate');
+
+            $modal.modal('show');
+        });
+        $modalBody.on('change', 'select[name="confiscate_type"]', function () {
+            var method = $(this).val();
+            var $companyAllocationAmountRow = $modalBody.find('.js-company-allocation-amount-row');
+            var $amountInput = $modalBody.find('input[name="deposit_confiscated_amount"]');
+            var $allocationInput = $companyAllocationAmountRow.find('input');
+
+            if (method === '部分沒定') {
+                $companyAllocationAmountRow.show();
+                $amountInput.attr('readonly', false);
+                $allocationInput.attr('disabled', false);
+            } else {
+                $companyAllocationAmountRow.hide();
+                $modalBody.find('input[name="deposit_confiscated_amount"]').val(tmpAmount);
+                $amountInput.attr('readonly', true);
+                $allocationInput.attr('disabled', true);
+            }
+        });
+
         $modal.find('.js-submit').on('click', function () {
             var submit = $modalBody.find('input[type="submit"]');
             submit.click();

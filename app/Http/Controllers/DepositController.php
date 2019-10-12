@@ -139,6 +139,18 @@ class DepositController extends Controller
         return redirect(route('deposits.index'));
     }
 
+    public function confiscate(Request $request, Deposit $deposit){
+        $validatedData = $request->validate([
+            "deposit_confiscated_amount" => 'required',
+            "confiscated_or_returned_date" => 'required',
+            "company_allocation_amount" => 'nullable',
+        ]);
+        $deposit->update($validatedData);
+        $deposit->room->update(['room_status' => '待出租']);
+
+        return redirect(route('deposits.index'));
+    }
+
     private function validatedData(Request $request, bool $checkCollected = false) {
         $room_id = $request->input('room_id');
 

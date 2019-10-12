@@ -474,6 +474,10 @@ return [
         'payer_phone' => '電話',
         'receiver' => '收訂金的專員',
         'appointment_date' => '約定起租日',
+        'returned_method' => '退訂方式',
+        'returned_serial_number' => '退訂單號',
+        'returned_bank' => '退訂銀行',
+        'company_allocation_amount' => '公司分配金額',
     ],
     'TenantPayment' => [
         "id" => '編號',

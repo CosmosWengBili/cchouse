@@ -72,7 +72,7 @@ class TenantContractService
         TenantContract $oldTenantContract,
         $months = 1
     ) {
-        $endedAt = Carbon::create($oldTenantContract->contract_end);
+        $endedAt = Carbon::create($oldTenantContract->contract_end->format('Y-m-d'));
         $newStart = $endedAt->copy()->addDay();
 
         $newTenantContract = $oldTenantContract->replicate(['deleted_at']);

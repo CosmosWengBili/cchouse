@@ -24,6 +24,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 'buildings/{building}/electricityPaymentReport/{year}/{month}',
                 'BuildingController@electricityPaymentReport'
             )->name('buildings.electricityPaymentReport');
+            Route::get('rooms/{room}/deposits', 'RoomController@deposits')->name('rooms.deposits');
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
@@ -55,7 +56,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('shareholders', 'ShareHolderController');
             Route::get('shareholders/export', 'ShareHolderController@exportReport')->name('shareholders.export');
             Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
-          
+
             // payments
             Route::get(
                 'tenantElectricityPayments/downloadImportFile',

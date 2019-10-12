@@ -133,8 +133,11 @@ class DepositController extends Controller
             "returned_bank" => 'nullable',
             "returned_serial_number" => 'nullable',
         ]);
-        $deposit->update($validatedData);
-        $deposit->room->update(['room_status' => '待出租']);
+
+        DB::transaction(function () use ($deposit, $validatedData) {
+            $deposit->update($validatedData);
+            $deposit->room->update(['room_status' => '未出租']);
+        });
 
         return redirect(route('deposits.index'));
     }
@@ -145,8 +148,11 @@ class DepositController extends Controller
             "confiscated_or_returned_date" => 'required',
             "company_allocation_amount" => 'nullable',
         ]);
-        $deposit->update($validatedData);
-        $deposit->room->update(['room_status' => '待出租']);
+
+        DB::transaction(function () use ($deposit, $validatedData) {
+            $deposit->update($validatedData);
+            $deposit->room->update(['room_status' => '未出租']);
+        });
 
         return redirect(route('deposits.index'));
     }

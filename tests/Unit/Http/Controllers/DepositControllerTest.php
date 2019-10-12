@@ -1,17 +1,15 @@
 <?php
 namespace Tests\Unit\Http\Controllers;
 
-use Carbon\Carbon;
+use App\Deposit;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class DepositControllerTest extends TestCase
 {
     use RefreshDatabase;
-    use WithoutMiddleware;
 
     private $roomId;
 
@@ -19,6 +17,8 @@ class DepositControllerTest extends TestCase
     {
         parent::setUp();
 
+        $user = factory(User::class)->create(['id' => 1]);
+        $this->be($user);
         $buildingId = DB::table('buildings')->insertGetId(['title' => 'test building']);
 
         $this->roomId = DB::table('rooms')->insertGetId(['building_id' => $buildingId, 'room_code' => 'test room']);
@@ -46,5 +46,37 @@ class DepositControllerTest extends TestCase
         $msg = $errors[0];
 
         $this->assertEquals($msg, "房編號 {$this->roomId} 已簽約");
+    }
+
+    /** @test */
+    public function it_change_room_status_after_returned() {
+        $depositId = DB::table('deposits')->insertGetId(['room_id' => $this->roomId, 'is_deposit_collected' => true]);
+        $deposit = Deposit::find($depositId);
+        $room = $deposit->room;
+        $room->update(['room_status' => '已出租']);
+
+        $this->post(route('deposits.return', ['deposit' => $depositId]), [
+            "deposit_returned_amount" => 100,
+            "confiscated_or_returned_date" => '2019-10-10',
+            "returned_method" => '匯款',
+            "returned_bank" => '台新銀行',
+        ]);
+
+        $this->assertEquals('未出租', $room->fresh()->room_status);
+    }
+
+    /** @test */
+    public function it_change_room_status_after_confiscated() {
+        $depositId = DB::table('deposits')->insertGetId(['room_id' => $this->roomId, 'is_deposit_collected' => true]);
+        $deposit = Deposit::find($depositId);
+        $room = $deposit->room;
+        $room->update(['room_status' => '已出租']);
+
+        $this->post(route('deposits.confiscate', ['deposit' => $depositId]), [
+            "deposit_confiscated_amount" => 1000,
+            "confiscated_or_returned_date" => '2019-10-10',
+        ]);
+
+        $this->assertEquals('未出租', $room->fresh()->room_status);
     }
 }

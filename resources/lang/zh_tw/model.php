@@ -345,6 +345,7 @@ return [
     'TenantContract' => [
         'id' => '編號',
         'room_id' => '室編號',
+        'room_code' => '房代號',
         'tenant_id' => '租客編號',
         'contract_serial_number' => '契約序號',
         'set_other_rights' => '設定他項權利',

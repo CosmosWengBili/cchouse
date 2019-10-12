@@ -1,5 +1,5 @@
 <?php
-
+namespace Tests\Unit\Services;
 
 use App\Services\PayOffService;
 use App\TenantContract;

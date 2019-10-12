@@ -93,7 +93,7 @@ class UbotPaymentService {
         $aesKey = $this->getUBotAESKey();
         $iv = $this->getUBotAESIV();
         $sha256HashedData = base64_encode(hash('sha256', $this->dataString, true));
-        $aesEncryptedData =  base64_encode(openssl_encrypt($sha256HashedData, "AES-128-CBC", base64_decode($aesKey), OPENSSL_RAW_DATA, $iv))
+        $aesEncryptedData = base64_encode(openssl_encrypt($sha256HashedData, "AES-128-CBC", base64_decode($aesKey), OPENSSL_RAW_DATA, $iv));
 
         return $aesEncryptedData;
     }
@@ -102,7 +102,7 @@ class UbotPaymentService {
     private function validateSignature() {
         $publicKey = $this->getUBotPublicKey();
 
-        return !!openssl_verify($this->dataString, base64_decode($this->signature), $publicKey, OPENSSL_ALGO_SHA256);
+        return !!openssl_verify($this->mac, base64_decode($this->signature), $publicKey, OPENSSL_ALGO_SHA256);
     }
 
     private function validateMac() {

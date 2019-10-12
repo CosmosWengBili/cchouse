@@ -133,11 +133,7 @@ class DepositController extends Controller
             'tenant_contract_id' => 'nullable|exists:tenant_contract,id',
             'deposit_collection_date' => 'required|date',
             'deposit_collection_serial_number' => 'required|max:255',
-            'deposit_confiscated_amount' => 'required|integer|digits_between:1,11',
-            'deposit_returned_amount' => 'required|integer|digits_between:1,11',
-            'confiscated_or_returned_date' => 'required|date',
             'invoicing_amount' => 'required|integer|digits_between:1,11',
-            'invoice_date' => 'required|date',
             'is_deposit_collected' => [
                 'required',
                 'boolean',

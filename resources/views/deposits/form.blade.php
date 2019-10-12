@@ -64,35 +64,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Deposit.deposit_confiscated_amount")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="deposit_confiscated_amount"
-                                            value="{{ $data['deposit_confiscated_amount'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Deposit.deposit_returned_amount")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="deposit_returned_amount"
-                                            value="{{ $data['deposit_returned_amount'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Deposit.confiscated_or_returned_date")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="confiscated_or_returned_date"
-                                            value="{{ $data['confiscated_or_returned_date'] ?? '' }}"
-                                        />
-                                    </td>
                                     <td>@lang("model.Deposit.invoicing_amount")</td>
                                     <td>
                                         <input
@@ -100,17 +71,6 @@
                                             type="number"
                                             name="invoicing_amount"
                                             value="{{ $data['invoicing_amount'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Deposit.invoice_date")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="invoice_date"
-                                            value="{{ $data['invoice_date'] ?? '' }}"
                                         />
                                     </td>
                                     <td>@lang("model.Deposit.payer_name")</td>
@@ -221,21 +181,9 @@
                 deposit_collection_serial_number: {
                     required: true
                 },
-                deposit_confiscated_amount: {
-                    required: true
-                },
-                deposit_returned_amount: {
-                    required: true
-                },
-                confiscated_or_returned_date: {
-                    required: true,
-                },
                 invoicing_amount: {
                     required: true,
-                },
-                invoice_date: {
-                    required: true
-                },
+                }
             };
 
             const messages = {
@@ -245,21 +193,9 @@
                 deposit_collection_serial_number: {
                     required: '必須輸入'
                 },
-                deposit_confiscated_amount: {
-                    required: '必須輸入'
-                },
-                deposit_returned_amount: {
-                    required: '必須輸入'
-                },
-                confiscated_or_returned_date: {
-                    required: '必須輸入',
-                },
                 invoicing_amount: {
                     required: '必須輸入',
-                },
-                invoice_date: {
-                    required: '必須輸入'
-                },
+                }
             };
 
             $('form').validate({
@@ -283,8 +219,5 @@
             });
 
         });
-
-
-
     </script>
 @endsection

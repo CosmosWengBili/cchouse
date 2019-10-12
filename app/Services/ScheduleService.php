@@ -207,7 +207,6 @@ class ScheduleService
             $taxableCharterFee = $service->countTaxableCharterFee($landlordContract, Carbon::today()->year, Carbon::today()->month);
             $rooms = $landlordContract->building->normalRooms();
             $paidAmount = 0;
-    
             foreach( $rooms as $room ){
                 $tenantContracts = $room->activeContracts()->get();
                 foreach( $tenantContracts as $tenantContract){
@@ -215,13 +214,14 @@ class ScheduleService
                     else{
                         $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
                                                                 ->where('subject', '租金')
-                                                                ->whereBetween('due_time', [$startDate, $endDate]);          
-                        if(!$tenantContract->tenant->is_legal_person){
+                                                                ->whereBetween('due_time', [$startDate, $endDate]); 
+                        $is_legal_person = $tenantContract->tenant->is_legal_person;         
+                        if(!$is_legal_person){
                             $paidAmount += $rentPayments->sum('amount');
                         }
                         foreach($rentPayments as $rentPayment){
-                            $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount){
-                                if( $taxableCharterFee < $paidAmount){
+                            $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount, $is_legal_person){
+                                if( $taxableCharterFee < $paidAmount || $is_legal_person){
                                     $payLog->update(['receipt_type' => '發票']);
                                 }
                                 else{

@@ -107,7 +107,7 @@ class DepositObserver
         switch ($type) {
             case 'deleted':
                 $reason = $deposit->reason_of_deletions;
-                $content = "訂金({編號: {$id}) 資料已於 {$now} 被刪除，原因：${$reason}。";
+                $content = "訂金({編號: {$id}) 資料已於 {$now} 被刪除，原因：{$reason}。";
                 break;
             default:
                 $comment = $deposit->comment;

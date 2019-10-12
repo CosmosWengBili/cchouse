@@ -33,19 +33,32 @@ $(document).on('click', 'a.jquery-postback', function (e) {
         var $target = $(this);
         var method = $target.data('method');
         var url = $target.attr('href');
-
-
-        $.post({ type: method, url: url }, function () {
-            location.reload();
-        }).fail(function (resp) {
-            const content = resp.responseJSON;
-            var $errorsContainer = $('.ajax-errors');
-            var $errorsList = $errorsContainer.find('ul');
-            content.errors.forEach(function (errorMsg) {
-                $errorsList.append('<li>' + errorMsg + '</li>');
-            });
-            $errorsContainer.show();
+        var showReasonInput = $target.attr('fill-delete-reason') === 'true';
+        var promise = showReasonInput ? Promise.resolve({}) : Swal.fire({
+            input: 'textarea',
+            inputPlaceholder: '請填寫刪除原因...',
+            inputAttributes: { 'required': 'required' },
+            showCancelButton: true,
+            confirmButtonText: '確定',
+            cancelButtonText: '取消',
         });
+
+
+        promise.then(function (result) {
+            var reason = result.value;
+            $.post({ type: method, url: url, data:{ reason: reason } }, function () {
+                location.reload();
+            })
+            .fail(function (resp) {
+                const content = resp.responseJSON;
+                var $errorsContainer = $('.ajax-errors');
+                var $errorsList = $errorsContainer.find('ul');
+                content.errors.forEach(function (errorMsg) {
+                    $errorsList.append('<li>' + errorMsg + '</li>');
+                });
+                $errorsContainer.show();
+            });
+        })
     } else {
         alert("取消刪除")
     }

@@ -112,11 +112,15 @@ class DepositController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Deposit  $deposit
+     * @param Request $request
+     * @param \App\Deposit $deposit
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy(Deposit $deposit)
+    public function destroy(Request $request, Deposit $deposit)
     {
+        $reason = $request->input('reason');
+        $deposit->update(['reason_of_deletions' => $reason]);
         $deposit->delete();
         return response()->json(true);
     }

@@ -21,7 +21,7 @@ class Deposit extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot', 'deleted_at'];
+    protected $hidden = ['pivot', 'deleted_at', 'reason_of_deletions'];
 
     /**
      * The attributes that should be cast to native types.

@@ -12,13 +12,6 @@ class DepositService
    public static function update(Deposit $deposit, $newValues) {
 
         DB::transaction(function () use ($deposit, $newValues) {
-
-            if ($newValues['is_deposit_collected']) {
-                // set the room as rented
-                $deposit->tenantContract->room->update([
-                    'room_status' => '已出租'
-                ]);
-            }
             if (isset($newValues['confiscated_or_returned_date']) && isset($newValues['deposit_confiscated_amount']) && $newValues['deposit_confiscated_amount'] != 0 ) {
                 // make new company income
                 CompanyIncome::create([

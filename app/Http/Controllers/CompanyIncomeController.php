@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CompanyIncome;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
+use App\Services\InvoiceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,6 +68,7 @@ class CompanyIncomeController extends Controller
     {
         $validatedData = $this->fetchValidateData($request);
         $companyIncome->update($validatedData);
+        InvoiceService::compareReceipt($companyIncome, $validatedData);
 
         return redirect($request->_redirect);
     }

@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\PayLog;
 use App\TenantPayment;
+use App\CompanyIncome;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use App\LandlordContract;
@@ -173,76 +174,39 @@ class InvoiceService
 
     public function makeDepositInterest($startDate, $endDate)
     {
-        // Set time cauculate used variables
-        $startYear = $startDate->year;
-        $endYear = $endDate->year;
-        $startIdx = $startDate->month;
-        $endIdx =
-            $endDate == $endDate->copy()->endOfMonth()
-                ? $endDate->month
-                : $endDate->copy()->subMonth()->month;
 
-        $endIdx = $endIdx - $startIdx + 12 * ($endYear - $startYear);
-        $currentDate = $startDate->endOfMonth();
-        $dateData = array();
-
-        // Find each deposit interest point during period
-        for ($monthIdx = 0; $monthIdx <= $endIdx; $monthIdx++) {
-            array_push($dateData, $currentDate);
-            $currentDate = $currentDate
-                ->copy()
-                ->addMonthsWithoutOverflow(1)
-                ->endOfMonth();
-        }
+        $depositInterests = CompanyIncome::whereBetween('income_date', [$startDate, $endDate])
+                                         ->where('subject', '押金設算息')
+                                         ->get();
 
         // Genenate deposit interest data
-        foreach ($dateData as $date) {
-            $tenantContracts = TenantContract::where([
-                ['contract_end', '>', $date],
-                ['contract_start', '<', $date],
-                ['deposit_paid', '>', 0]
-            ])
-                ->with(['tenant', 'room'])
-                ->get();
+        foreach ($depositInterests as $depositInterest) {
 
-            foreach ($tenantContracts as $tenantContract) {
-                
-                if( $tenantContract->room->building->activeContracts()->commission_type == '代管' ){          
-                    continue;
-                }
-                $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = $date->format('Y-m-d');
-                $data['invoice_item_name'] = '押金設算息';
-                $depositInterest = SystemVariable::where(
-                    'code',
-                    '=',
-                    'depositRate'
-                )->first()->value;
-                $data['amount'] = round(
-                    $tenantContract->deposit_paid * $depositInterest
-                );
-                $data['data_table'] = $data['data_table'] =  __('general.' . $tenantContract->getTable()); 
-                $data['data_table_id'] = $tenantContract->id;
-                $data['data_receipt_id'] = $tenantContract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['id'];
+            $data = $this->makeInvoiceMockData();
+            $data['invoice_date'] = '';
+            $data['invoice_item_name'] = $depositInterest->subject;
+            $data['amount'] = $depositInterest->amount;
+            $data['data_table'] = $data['data_table'] =  __('general.' . $depositInterest->getTable()); 
+            $data['data_table_id'] = $depositInterest->id;
+            $data['data_receipt_id'] = $depositInterest->receipts->first()['id'];
 
-                if ($tenantContract->tenant->is_legal_person) {
-                    $data['company_number'] =
-                        $tenantContract->tenant->certificate_number;
-                    $data['company_name'] = $tenantContract->tenant->name;
-                }
-                $data['comment'] = '';
-                $data['building_code'] = $tenantContract->room->building->building_code;
-                $data['room_number'] = $tenantContract->room->room_number;
-                $data['deposit_date'] = $date->format('Y-m-d');
-                $data['actual_deposit_date'] = $date->format('Y-m-d');
-                $data['invoice_collection_number'] =
-                    $tenantContract->invoice_collection_number;
-                $data['invoice_price'] = $data['amount'];
-                $data['invoice_serial_number'] = $tenantContract->receipts->where('date', $date->format('Y-m-d').' 00:00:00')->first()['invoice_serial_number'];
-
-                array_push($this->global_data['tenant'], $data);
-                $this->invoice_count ++;
+            $tenantContract = $depositInterest->incomable()->get()[0];
+            if ($tenantContract->tenant->is_legal_person) {
+                $data['company_number'] =
+                    $tenantContract->tenant->certificate_number;
+                $data['company_name'] = $tenantContract->tenant->name;
             }
+            $data['comment'] = $depositInterest->comment;
+            $data['building_code'] = $tenantContract->room->building->building_code;
+            $data['room_number'] = $tenantContract->room->room_number;
+            $data['deposit_date'] = $depositInterest->income_date;
+            $data['actual_deposit_date'] = $depositInterest->income_date;
+            $data['invoice_collection_number'] = $tenantContract->invoice_collection_number;
+            $data['invoice_price'] = $depositInterest->amount;
+            $data['invoice_serial_number'] = $tenantContract->receipts->first()['invoice_serial_number'];
+
+            array_push($this->global_data['tenant'], $data);
+            $this->invoice_count ++;
         }
     }
 
@@ -492,8 +456,8 @@ class InvoiceService
     public static function compareReceipt($model, $data){
         if($model->receipts->isNotEmpty()){
             switch (class_basename($model)) {
-                case 'TenantContract':
-                    if($model['deposit_paid'] != $data['deposit_paid']){
+                case 'ComanyIncome':
+                    if($model['subject'] == '押金設算息' && $model['amount'] != $data['amount']){
                         NotificationService::notifyReceiptUpdated($model);
                     }
                     break;

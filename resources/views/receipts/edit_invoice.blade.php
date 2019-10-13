@@ -38,8 +38,7 @@
                                     <tr>
                                         <td>{{ $object['invoice_count']}}</td>
                                         <td>
-                                            <input type="hidden" name="receipts[{{$object['data_table']}}][{{$data_idx}}][{{$object['data_table_id']}}][invoice_date]" value="{{ $object['invoice_date']}}">
-                                            {{ $object['invoice_date']}}
+                                            <input type="text" name="receipts[{{$object['data_table']}}][{{$data_idx}}][{{$object['data_table_id']}}][invoice_date]" value="{{ $object['invoice_date']}}">
                                         </td>
                                         <td>{{ $object['invoice_item_idx']}}</td>
                                         <td>{{ $object['invoice_item_name']}}</td>
@@ -51,7 +50,7 @@
                                         <td>{{ $object['data_table_id']}}</td>
                                         <td>{{ $object['company_number']}}</td>
                                         <td>{{ $object['company_name']}}</td>
-                                        <td>{{ $object['room_code']}}</td>
+                                        <td>{{ $object['building_code']}}</td>
                                         <td>{{ $object['room_number']}}</td>
                                         <td>{{ $object['deposit_date']}}</td>
                                         <td>{{ $object['actual_deposit_date']}}</td>
@@ -64,7 +63,7 @@
                                             <input type="hidden" name="receipts[{{$object['data_table']}}][{{$data_idx}}][{{$object['data_table_id']}}][invoice_price]" value="{{ $object['invoice_price']}}">
                                             {{ $object['invoice_price']}}
                                         </td>
-                                        <td>{{ $object['comment']}}</td>
+                                        <td><input type="text" name="receipts[{{$object['data_table']}}][{{$data_idx}}][{{$object['data_table_id']}}][comment]" value="{{$object['comment']}}"></td>
                                         <td>{{ $object['subtotal']}}</td>
                                     </tr>
                                 @endforeach
@@ -82,7 +81,8 @@
 
 <script>
     renderDataTable(["#invoice-table"], {
-        'pageLength' : 500
+        'pageLength' : 500,
+        "order": []
     });
 </script>
 @endsection

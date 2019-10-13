@@ -34,6 +34,6 @@ class LandlordOtherSubject extends Model implements AuditableContract
      */
     public function receipts()
     {
-        return $this->morphToMany('App\Receipt', 'receiptable');
+        return $this->morphMany('App\Receipt', 'receiptable');
     }
 }

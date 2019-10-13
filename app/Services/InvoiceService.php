@@ -102,7 +102,7 @@ class InvoiceService
 
             // Set normal value
             $data['invoice_count'] = $this->invoice_count;
-            $data['invoice_date'] = $pay_log->paid_at->format('Y-m-d');
+            $data['invoice_date'] = $pay_log->loggable->receipts()->first()['date'];
             $data['invoice_item_idx'] = $invoice_item_count;
             $data['invoice_item_name'] = $this->makeInvoiceItemName(
                 $pay_log['loggable'],
@@ -116,7 +116,7 @@ class InvoiceService
             // Set value for maping relative payment model
             $data['data_table'] = __('general.' . $pay_log->loggable->getTable()) .' , '. $pay_log->loggable->subject; 
             $data['data_table_id'] = $pay_log->loggable->id;
-            $data['data_receipt_id'] = $pay_log->loggable->receipts->first()['id'];
+            $data['data_receipt_id'] = $pay_log->loggable->receipts()->first()['id'];
 
             $subtotal += $pay_log->loggable->amount;
             $comment =
@@ -128,7 +128,7 @@ class InvoiceService
             // Make subtotal row
 
             if ($payment_count == $invoice_item_count) {
-                $data['invoice_item_idx'] = $data['invoice_item_idx'] + 1;
+                $data['invoice_item_idx'] = $data['invoice_item_idx'];
                 if (
                     $pay_log->loggable->tenantContract->tenant->is_legal_person
                 ) {
@@ -148,7 +148,7 @@ class InvoiceService
                 );
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
-                $data['invoice_serial_number'] = $pay_log->loggable->receipts->first()['invoice_serial_number'];
+                $data['invoice_serial_number'] = $pay_log->loggable->receipts()->first()['invoice_serial_number'];
                 $data['invoice_price'] = $subtotal;
                 $data['subtotal'] = $subtotal;
                 $subtotal = 0;
@@ -183,12 +183,12 @@ class InvoiceService
         foreach ($depositInterests as $depositInterest) {
 
             $data = $this->makeInvoiceMockData();
-            $data['invoice_date'] = '';
+            $data['invoice_date'] = $depositInterest->receipts()->first()['date'];
             $data['invoice_item_name'] = $depositInterest->subject;
             $data['amount'] = $depositInterest->amount;
             $data['data_table'] = $data['data_table'] =  __('general.' . $depositInterest->getTable()); 
             $data['data_table_id'] = $depositInterest->id;
-            $data['data_receipt_id'] = $depositInterest->receipts->first()['id'];
+            $data['data_receipt_id'] = $depositInterest->receipts()->first()['id'];
 
             $tenantContract = $depositInterest->incomable()->get()[0];
             if ($tenantContract->tenant->is_legal_person) {
@@ -199,11 +199,11 @@ class InvoiceService
             $data['comment'] = $depositInterest->comment;
             $data['building_code'] = $tenantContract->room->building->building_code;
             $data['room_number'] = $tenantContract->room->room_number;
-            $data['deposit_date'] = $depositInterest->income_date;
-            $data['actual_deposit_date'] = $depositInterest->income_date;
+            $data['deposit_date'] = $depositInterest->income_date->format('Y-m-d');
+            $data['actual_deposit_date'] = $depositInterest->income_date->format('Y-m-d');
             $data['invoice_collection_number'] = $tenantContract->invoice_collection_number;
             $data['invoice_price'] = $depositInterest->amount;
-            $data['invoice_serial_number'] = $tenantContract->receipts->first()['invoice_serial_number'];
+            $data['invoice_serial_number'] = $depositInterest->receipts()->first()['invoice_serial_number'];
 
             array_push($this->global_data['tenant'], $data);
             $this->invoice_count ++;
@@ -226,14 +226,14 @@ class InvoiceService
             $per_amount = round($initial_amount / $landlords->count());
             foreach ($landlords as $landlord_key => $landlord) {
                 $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = '';
+                $data['invoice_date'] = $maintenance->receipts()->first()['date'];
                 $data['invoice_item_name'] = '管理服務費(維修費)';
                 $data['amount'] = $per_amount;
 
                 // Set value for maping relative payment model
                 $data['data_table'] = __('general.' . $maintenance->getTable()); 
                 $data['data_table_id'] = $maintenance->id;
-                $data['data_receipt_id'] = $maintenance->receipts->first()['id'];
+                $data['data_receipt_id'] = $maintenance->receipts()->first()['id'];
 
                 if ($landlord->is_legal_person) {
                     $data['company_number'] = $landlord->certificate_number;
@@ -246,7 +246,7 @@ class InvoiceService
                 $data['actual_deposit_date'] = $maintenance->closed_date;
                 $data['invoice_collection_number'] = $landlord->invoice_collection_number;
                 $data['invoice_price'] = $per_amount;
-                $data['invoice_serial_number'] = $maintenance->receipts->first()['invoice_serial_number'];
+                $data['invoice_serial_number'] = $maintenance->receipts()->first()['invoice_serial_number'];
 
                 if( $landlord->id == $landlords->last()->id ){
                     $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
@@ -269,7 +269,7 @@ class InvoiceService
         // Genenate deposit data
         foreach ($deposits as $deposit_key => $deposit) {
             $data = $this->makeInvoiceMockData();
-            $data['invoice_date'] = '';
+            $data['invoice_date'] = $deposit->receipts()->first()['date'];
             if( $deposit->subject == "訂金(房東)" ){
                 $data['invoice_item_name'] = '管理服務費';
             }
@@ -281,7 +281,7 @@ class InvoiceService
             // Set value for maping relative payment model
             $data['data_table'] =  __('general.' . $deposit->getTable()); 
             $data['data_table_id'] = $deposit->id;
-            $data['data_receipt_id'] = $deposit->receipts->first()['id'];
+            $data['data_receipt_id'] = $deposit->receipts()->first()['id'];
 
             // ToDo: uncomment when Deposit been finished
             // if ($deposit->loggable->payer_is_legal_person) {
@@ -297,7 +297,7 @@ class InvoiceService
             $data['actual_deposit_date'] = $deposit->paid_at->format('Y-m-d');
             $data['invoice_collection_number'] = '';
             $data['invoice_price'] = $deposit->amount;
-            $data['invoice_serial_number'] = $deposit->receipts->first()['invoice_serial_number'];
+            $data['invoice_serial_number'] = $deposit->receipts()->first()['invoice_serial_number'];
 
             array_push($this->global_data['tenant'], $data);
             $this->invoice_count ++;
@@ -321,14 +321,14 @@ class InvoiceService
             $per_amount = round($initial_amount / $landlords->count());
             foreach ($landlords as $landlord_key => $landlord) {
                 $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = '';
+                $data['invoice_date'] = $landlord_other_subject->receipts()->first()['date'];
                 $data['invoice_item_name'] = $landlord_other_subject->invoice_item_name;
                 $data['amount'] = $per_amount;
 
                 // Set value for maping relative payment model
                 $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
                 $data['data_table_id'] = $landlord_other_subject->id;
-                $data['data_receipt_id'] = $landlord_other_subject->receipts
+                $data['data_receipt_id'] = $landlord_other_subject->receipts()
                                                                   ->where('receiver', $landlord->name)
                                                                   ->first()['id'];
 
@@ -342,7 +342,7 @@ class InvoiceService
                 $data['actual_deposit_date'] = $landlord_other_subject->expense_date;
                 $data['invoice_collection_number'] = $landlord->invoice_collection_number;
                 $data['invoice_price'] = $per_amount;
-                $data['invoice_serial_number'] = $landlord_other_subject->receipts
+                $data['invoice_serial_number'] = $landlord_other_subject->receipts()
                                                                         ->where('receiver', $landlord->name)
                                                                         ->first()['invoice_serial_number'];
 

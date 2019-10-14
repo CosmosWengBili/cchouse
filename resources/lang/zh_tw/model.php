@@ -241,6 +241,7 @@ return [
         'room_number' => '房號',
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
+        'is_printed' => '是否已列印',
     ],
     'Appliance' => [
         'id' => '',

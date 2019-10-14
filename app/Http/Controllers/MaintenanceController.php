@@ -6,8 +6,10 @@ use App\CompanyIncome;
 use App\DebtCollection;
 use App\LandlordPayment;
 use App\Maintenance;
+use App\Notifications\TextNotify;
 use App\Responser\NestedRelationResponser;
 use App\TenantContract;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -171,7 +173,8 @@ class MaintenanceController extends Controller
             'cost' => 'required|integer|digits_between:1,11',
             'price' => 'required|integer|digits_between:1,11',
             'is_recorded' => 'required|boolean',
-            'comment' => 'required'
+            'comment' => 'required',
+            'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
         $maintenance = $maintenance->update($validatedData);
@@ -202,36 +205,116 @@ class MaintenanceController extends Controller
             $maintenanceIds
         );
 
-        DB::transaction(function () use ($who, $maintenancesRelation) {
+        $user = $request->user();
+        $userInAccountGroup = $user->groups()->where('name', '帳務組')->count();
+
+        DB::transaction(function () use ($who, $maintenancesRelation, $maintenanceIds, $userInAccountGroup) {
             $maintenances = $maintenancesRelation->get();
-            if ($who == 'landlord') {
+            if ($who === 'landlord') {
                 $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '房東']);
                 $this->createLandlordPaymentAndCompanyIncome($maintenances);
-            }
-            else{
+            } else {
                 $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '公司']);
             }
+
+            // 帳務組審核通過的資料，要能通知管理組，『維修清潔編號{id}已審核完畢』
+            if ($userInAccountGroup) {
+                User::group('管理組')->get()->each(function (User $user, $key) use ($maintenanceIds) {
+                    $strIds = implode(',', $maintenanceIds);
+                    $user->notify(
+                        new TextNotify("維修清潔編號 {$strIds} 已審核完畢")
+                    );
+                });
+            }
         });
+
         return response()->json(true);
     }
-    public function showRecord(Request $request)
+
+    /**
+     * 根據 $id 找出 近三個月內的維護數據
+     * @param $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showRecord($id)
     {
-        $id = $request->input('id');
         $room = Maintenance::find($id)->tenantContract->room;
-        $maintenances = [];
+        $records = [];
+        $selectColumns = Maintenance::extraInfoColumns();
+        $selectStr = DB::raw(join(', ', $selectColumns));
 
         $threeMonthsAgo = Carbon::now()->subMonth(3);
-
         foreach ($room->tenantContracts as $contractKey => $contract) {
-            $maintenances = array_merge(
-                $maintenances,
-                $contract->maintenances
+            $records = array_merge(
+                $records,
+                $contract->maintenances()
+                    ->withExtraInfo()
+                    ->select($selectStr)
                     ->where('payment_request_date', '>', $threeMonthsAgo)
+                    ->where('status', '案件完成')
+                    ->get()
+                    ->map
+                    // 物件代碼 + 承租方式 + 房號 + 簡稱
+                    ->only(['building_code', 'commission_type', 'room_number', 'building_title'])
                     ->toArray()
             );
         }
 
-        return response()->json($maintenances);
+        return response()->json($records);
+    }
+
+    /**
+     * 檢查三個月內是否有同工種
+     * true: 沒有同工種
+     * false: 有同工種
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkHasSameWorkType(Request $request)
+    {
+        $tenant_contract_id = $request->input('tenant_contract_id');
+        $work_type = $request->input('work_type');
+        $threeMonthsAgo = Carbon::now()->subMonth(3);
+
+        $maintenance = Maintenance::where('tenant_contract_id', $tenant_contract_id)
+            ->where('payment_request_date', '>', $threeMonthsAgo)
+            ->where('work_type', $work_type)
+            ->first();
+
+        return is_null($maintenance)
+            ? response()->json(true)
+            : response()->json(false);
+    }
+
+    /**
+     * 更新案件完成的確認已列印
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateIsPrinted(Request $request)
+    {
+        $maintenance_ids = $request->input('maintenance_ids');
+
+        $user = $request->user();
+        $userInGroup = $user->groups()->where('name', '管理組')->count();
+
+        $successful = false;
+        if ($userInGroup) {
+            // 更新為已列印
+            $successful = Maintenance::whereIn('id', $maintenance_ids)
+                // 一定要是案件完成的 id 才能更新
+                ->where('status', '案件完成')
+                ->update([
+                    'is_printed' => 1,
+                ]);
+        }
+
+        return $successful
+            ? response()->json(true)
+            : response()->json(false);
     }
 
     private function createLandlordPaymentAndCompanyIncome($maintenances)

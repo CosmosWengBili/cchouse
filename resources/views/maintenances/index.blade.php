@@ -2,6 +2,7 @@
     $user = Auth::user();
     $statuses = [];
     $isAccountGroup = false;
+    $isManagementGroup = false;
     if ($user->belongsToGroup('帳務組')) {
         $statuses = array_filter(\App\Maintenance::STATUSES , function ($key) {
             return $key == 'done' || $key == 'request';
@@ -9,6 +10,7 @@
         $isAccountGroup = true;
     } else if ($user->belongsToGroup('管理組')){
         $statuses = \App\Maintenance::STATUSES;
+        $isManagementGroup = true;
     }
 
     $workTypes = \App\Maintenance::WORK_TYPES;
@@ -55,6 +57,7 @@
                                 @else
                                     <div class="card-body table-responsive">
                                         <a class="btn btn-sm btn-success my-3" href="{{ route( 'maintenances.create') }}">建立</a>
+                                        @include('shared.import_export_buttons', ['layer' => 'maintenances', 'parentModel' => 'Maintenance', 'parentId' => $data['id'] ?? null])
                                         <div class="mb-3">
                                             @if($isAccountGroup && $statusKey == 'request')
                                                 <select class="form-control d-inline-block js-who-undertake" style="width: 100px;">
@@ -62,6 +65,8 @@
                                                     <option value="landlord">房東負擔</option>
                                                 </select>
                                                 <button type="button" class="btn btn-info btn-xs js-apply-undertake">套用</button>
+                                            @elseif ($isManagementGroup && $statusKey == 'done')
+                                                <button type="button" class="btn btn-info btn-xs js-is-printed">確認已列印</button>
                                             @endif
                                         </div>
                                         <form data-target="#{{ $statusKey }}-table" data-toggle="datatable-query">
@@ -77,6 +82,10 @@
                                                 <th>
                                                     <input type="checkbox" class="js-select-all">
                                                 </th>
+                                            @elseif ($isManagementGroup && $statusKey == 'done')
+                                                <th>
+                                                    <input type="checkbox" class="js-is-printed-select-all">
+                                                </th>
                                             @endif
                                             @foreach ( array_keys($maintenances[0]) as $field)
                                                 <th>@lang("model.Maintenance.{$field}")</th>
@@ -90,6 +99,12 @@
                                                     @if($isAccountGroup && $statusKey == 'request')
                                                         <td>
                                                             <input type="checkbox" class="js-checkbox" value="{{ $maintenance['id'] }}">
+                                                        </td>
+                                                    @elseif ($isManagementGroup && $statusKey == 'done')
+                                                        <td>
+                                                            @if (! $maintenance['is_printed'])
+                                                                <input type="checkbox" class="js-checkbox" value="{{ $maintenance['id'] }}">
+                                                            @endif
                                                         </td>
                                                     @endif
                                                     {{-- render all attributes --}}
@@ -137,7 +152,7 @@
 
                                                 $('.js-get-record').on('click', function(){
                                                     const id = $(this).data('id')
-                                                    $.post('/maintenances/showRecord', { id: id }, function (maintenances) {
+                                                    $.get('/maintenances/showRecord/' + id, function (maintenances) {
                                                         const $recordTableBody = $('#record-table tbody')
                                                         $recordTableBody.html("")
                                                         let tableElement = "";
@@ -151,6 +166,40 @@
                                                         })
                                                         $recordTableBody.append(tableElement)
                                                     })
+                                                });
+                                            })();
+                                            @elseif ($isManagementGroup && $statusKey == 'done')
+                                            (function () {
+                                                const $table = $("#{{ $statusKey }}-table");
+                                                $table.find('.js-is-printed-select-all').on('click', function (event) {
+                                                    // change event cannot stop propagation
+                                                    event.stopPropagation();
+                                                    const checked = $(this).prop('checked');
+                                                    $table.find('.js-checkbox').prop('checked', checked);
+                                                });
+
+                                                $('button.js-is-printed').on('click', function () {
+                                                    const $checkboxes = $table.find('.js-checkbox:checked');
+                                                    if($checkboxes.length === 0) {
+                                                        alert('請至少選擇一列');
+                                                        return;
+                                                    }
+                                                    const who = $('.js-who-undertake').val();
+                                                    if (!confirm('確認已列印？')) {
+                                                        return;
+                                                    }
+
+                                                    const data = {
+                                                        maintenance_ids: $checkboxes.map(function () { return $(this).val(); }).toArray(),
+                                                    };
+                                                    $.post('{{ route('maintenances.updateIsPrinted') }}', data)
+                                                        .then(response => {
+                                                            if (response) {
+                                                                location.reload();
+                                                            } else {
+                                                                alert('更新失敗!')
+                                                            }
+                                                        })
                                                 });
                                             })();
                                             @endif

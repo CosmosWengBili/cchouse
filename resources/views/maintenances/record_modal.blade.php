@@ -7,12 +7,13 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-x: auto">
                 <table id="record-table" class="display table" style="width:100%">
                     <thead>
-                        @foreach ( array_keys($maintenances[0]) as $field)
-                        <th>@lang("model.Maintenance.{$field}")</th>
-                        @endforeach
+                        <th>物件代碼</th>
+                        <th>承租方式</th>
+                        <th>房號</th>
+                        <th>簡稱</th>
                     </thead>
                     <tbody>
                     </tbody>
@@ -24,4 +25,3 @@
         </div>
     </div>
 </div>
-    

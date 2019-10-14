@@ -30,6 +30,10 @@ class TenantContractService
             $tenantContractId = TenantContract::insertGetId($data);
             $tenantContract = TenantContract::find($tenantContractId);
 
+            $room = $tenantContract->room;
+            $room->update(['room_status' => '已出租']);
+            $room->deposits()->update(['is_deposit_collected' => true]);
+
             // by default, each tenant contract has one rent payment per month
             $payments[] = [
                 'subject' => '租金',

@@ -18,6 +18,18 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
+                                    <td>@lang("model.Deposit.room_id")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="room_code"
+                                            data-selected="{{ $data['room_id'] ?? 0 }}"
+                                            name="room_id"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
                                     <td>@lang("model.Deposit.tenant_contract_id")</td>
                                     <td>
                                         <select
@@ -29,8 +41,9 @@
                                             class="form-control form-control-sm"
                                         >
                                         </select>
-
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_date")</td>
                                     <td>
                                         <input
@@ -40,8 +53,6 @@
                                             value="{{ $data['deposit_collection_date'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Deposit.deposit_collection_serial_number")</td>
                                     <td>
                                         <input
@@ -49,35 +60,6 @@
                                             type="text"
                                             name="deposit_collection_serial_number"
                                             value="{{ $data['deposit_collection_serial_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Deposit.deposit_confiscated_amount")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="deposit_confiscated_amount"
-                                            value="{{ $data['deposit_confiscated_amount'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Deposit.deposit_returned_amount")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="deposit_returned_amount"
-                                            value="{{ $data['deposit_returned_amount'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Deposit.confiscated_or_returned_date")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="confiscated_or_returned_date"
-                                            value="{{ $data['confiscated_or_returned_date'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -91,17 +73,70 @@
                                             value="{{ $data['invoicing_amount'] ?? '' }}"
                                         />
                                     </td>
-                                    <td>@lang("model.Deposit.invoice_date")</td>
+                                    <td>@lang("model.Deposit.payer_name")</td>
                                     <td>
                                         <input
                                             class="form-control form-control-sm"
-                                            type="date"
-                                            name="invoice_date"
-                                            value="{{ $data['invoice_date'] ?? '' }}"
+                                            type="text"
+                                            name="payer_name"
+                                            value="{{ $data['payer_name'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.Deposit.payer_certification_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="payer_certification_number"
+                                            value="{{ $data['payer_certification_number'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Deposit.payer_is_legal_person")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="payer_is_legal_person"/>
+                                        <input
+                                            type="checkbox"
+                                            name="payer_is_legal_person"
+                                            value="1"
+                                            {{ ($data["payer_is_legal_person"] ?? false) ? 'checked' : '' }}
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Deposit.payer_phone")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="payer_phone"
+                                            value="{{ $data['payer_phone'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Deposit.receiver")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ isset($data["confirm_by"]) ? $data['confirm_by'] : '0' }}"
+                                            name="receiver"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Deposit.appointment_date")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="date"
+                                            name="appointment_date"
+                                            value="{{ $data['appointment_date'] ?? '' }}"
+                                        />
+                                    </td>
                                     <td>@lang("model.Deposit.is_deposit_collected")</td>
                                     <td>
 
@@ -113,8 +148,10 @@
                                             {{ isset($data["is_deposit_collected"]) ? ($data['is_deposit_collected'] ? 'checked' : '') : '' }}
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Deposit.comment")</td>
-                                    <td>
+                                    <td colspan="3">
                                         <input
                                             class="form-control form-control-sm"
                                             type="text"
@@ -144,21 +181,9 @@
                 deposit_collection_serial_number: {
                     required: true
                 },
-                deposit_confiscated_amount: {
-                    required: true
-                },
-                deposit_returned_amount: {
-                    required: true
-                },
-                confiscated_or_returned_date: {
-                    required: true,
-                },
                 invoicing_amount: {
                     required: true,
-                },
-                invoice_date: {
-                    required: true
-                },
+                }
             };
 
             const messages = {
@@ -168,21 +193,9 @@
                 deposit_collection_serial_number: {
                     required: '必須輸入'
                 },
-                deposit_confiscated_amount: {
-                    required: '必須輸入'
-                },
-                deposit_returned_amount: {
-                    required: '必須輸入'
-                },
-                confiscated_or_returned_date: {
-                    required: '必須輸入',
-                },
                 invoicing_amount: {
                     required: '必須輸入',
-                },
-                invoice_date: {
-                    required: '必須輸入'
-                },
+                }
             };
 
             $('form').validate({
@@ -206,8 +219,5 @@
             });
 
         });
-
-
-
     </script>
 @endsection

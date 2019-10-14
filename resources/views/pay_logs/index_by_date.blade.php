@@ -1,8 +1,3 @@
-@php
-    $startDate = Request::get('start_date') ?? '';
-    $endDate = Request::get('end_date') ?? '';
-@endphp
-
 @extends('layouts.app')
 
 @section('content')

@@ -153,6 +153,11 @@ class PayLogController extends Controller
         $responseData->index('pay_logs', $this->limitRecords($payLogs));
         $total = $payLogs->sum('amount');
 
-        return view('pay_logs.index_by_date', array_merge($responseData->get(), ['total' => $total]));
+        return view('pay_logs.index_by_date', array_merge(
+            $responseData->get(), [
+                'total' => $total,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ]));
     }
 }

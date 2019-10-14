@@ -126,15 +126,15 @@ class PayLogController extends Controller
 
     private function indexByDate(Request $request) {
         $payLogs = PayLog::query();
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $startDateStr = $request->input('start_date');
+        $endDateStr = $request->input('end_date');
 
-        if($startDate) {
-            $startDate = Carbon::parse($startDate);
+        if($startDateStr) {
+            $startDate = Carbon::parse($startDateStr);
             $payLogs->where('paid_at', '>=', $startDate);
         }
-        if($endDate) {
-            $startDate = Carbon::parse($startDate);
+        if($endDateStr) {
+            $startDate = Carbon::parse($endDateStr);
             $payLogs->where('paid_at', '>=', $startDate);
         }
 
@@ -156,8 +156,8 @@ class PayLogController extends Controller
         return view('pay_logs.index_by_date', array_merge(
             $responseData->get(), [
                 'total' => $total,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'start_date' => $startDateStr,
+                'end_date' => $endDateStr,
             ]));
     }
 }

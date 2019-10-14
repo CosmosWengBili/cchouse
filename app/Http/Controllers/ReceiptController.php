@@ -87,8 +87,12 @@ class ReceiptController extends Controller
         $start_date = Input::get('start_date');
         $end_date = Input::get('end_date');
         $invoiceData = [];
+        $service = new InvoiceService();
         if(isset($start_date) && isset($end_date)){
-            $invoiceData = InvoiceService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+            $initData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+            foreach( $initData as $receiverData ){
+                $invoiceData = array_merge($invoiceData, $receiverData);
+            }
         }
         return view('receipts.edit_invoice')
             ->with('invoiceData', $invoiceData);
@@ -103,7 +107,8 @@ class ReceiptController extends Controller
     public function update_invoice(Request $request)
     {
         $receipts = Input::get('receipts');
-        InvoiceService::updateInvoiceNumber($receipts);
+        $service = new InvoiceService();
+        $service->updateInvoiceNumber($receipts);
 
         return redirect($request->_redirect);
     }

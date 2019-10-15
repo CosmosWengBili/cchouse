@@ -242,6 +242,7 @@ return [
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
         'is_printed' => '是否已列印',
+        'afford_by' => '負擔方',
     ],
     'Appliance' => [
         'id' => '',

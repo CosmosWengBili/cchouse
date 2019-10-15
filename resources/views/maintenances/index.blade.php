@@ -57,7 +57,12 @@
                                 @else
                                     <div class="card-body table-responsive">
                                         <a class="btn btn-sm btn-success my-3" href="{{ route( 'maintenances.create') }}">建立</a>
-                                        @include('shared.import_export_buttons', ['layer' => 'maintenances', 'parentModel' => 'Maintenance', 'parentId' => $data['id'] ?? null])
+                                        @include('shared.import_export_buttons', [
+                                            'layer' => 'maintenances',
+                                            'parentModel' => 'Maintenance',
+                                            'parentId' => $data['id'] ?? null,
+                                            'qs' => ['status'=>$statusName]
+                                        ])
                                         <div class="mb-3">
                                             @if($isAccountGroup && $statusKey == 'request')
                                                 <select class="form-control d-inline-block js-who-undertake" style="width: 100px;">

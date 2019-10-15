@@ -38,3 +38,23 @@ if (! function_exists('getLayer')) {
         return $layer;
     }
 }
+
+if (! function_exists('makeArrayToQueryString')) {
+    /**
+     *
+     * @param array $qs 要轉成query string 的陣列
+     *
+     * @return string
+     */
+    function makeArrayToQueryString(array $qs=[]) {
+        if (! empty($qs)) {
+            $tmp = collect($qs)->map(function ($value, $key) {
+                return "{$key}={$value}";
+            })
+                ->toArray();
+            return implode('&', $tmp);
+        }
+
+        return '';
+    }
+}

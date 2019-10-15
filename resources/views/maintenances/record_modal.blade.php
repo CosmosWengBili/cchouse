@@ -10,10 +10,9 @@
             <div class="modal-body" style="overflow-x: auto">
                 <table id="record-table" class="display table" style="width:100%">
                     <thead>
-                        <th>物件代碼</th>
-                        <th>承租方式</th>
-                        <th>房號</th>
-                        <th>簡稱</th>
+                    @foreach ( array_keys($maintenances[0]) as $field)
+                        <th>@lang("model.Maintenance.{$field}")</th>
+                    @endforeach
                     </thead>
                     <tbody>
                     </tbody>

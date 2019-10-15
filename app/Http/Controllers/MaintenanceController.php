@@ -241,7 +241,8 @@ class MaintenanceController extends Controller
     {
         $room = Maintenance::find($id)->tenantContract->room;
         $records = [];
-        $selectColumns = Maintenance::extraInfoColumns();
+        $columns = array_map(function ($column) { return "maintenances.{$column}"; }, $this->whitelist('maintenances'));
+        $selectColumns = array_merge($columns, Maintenance::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         $threeMonthsAgo = Carbon::now()->subMonth(3);
@@ -254,9 +255,6 @@ class MaintenanceController extends Controller
                     ->where('payment_request_date', '>', $threeMonthsAgo)
                     ->where('status', '案件完成')
                     ->get()
-                    ->map
-                    // 物件代碼 + 承租方式 + 房號 + 簡稱
-                    ->only(['building_code', 'commission_type', 'room_number', 'building_title'])
                     ->toArray()
             );
         }

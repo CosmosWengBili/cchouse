@@ -14,6 +14,7 @@ use App\Exports\MorphExport;
 use App\Exports\InvoiceExport;
 use App\Exports\ReceiptExport;
 use App\Imports\MorphImport;
+use App\Imports\InvoiceImport;
 
 use App\Services\ReceiptService;
 use App\Services\InvoiceService;
@@ -109,5 +110,35 @@ class ExcelController extends Controller
             default:
                 break;
         }
+    }
+
+    // Import specific file
+    public function import_by_function(Request $request, $function)
+    {
+        switch($function){
+            case 'invoice':
+                if ($request->hasFile('excel')) {
+                    try {
+                        Excel::import(
+                            new InvoiceImport(),
+                            $request->file('excel')
+                        );
+
+                    } catch (\Throwable $th) {
+                        $request->session()->flash('status', '匯入失敗:'.$th->getMessage().' 檔案:'.$th->getFile().' 行數:'.$th->getLine());
+                        return redirect()
+                                ->back();
+                    }
+                    $request->session()->flash('status', '匯入成功');
+                    return redirect()
+                        ->back();
+                }
+                $request->session()->flash('status', '無匯入 Excel');
+            default:
+                break;
+        }
+        $request->session()->flash('status', '無對應匯入功能');
+        return redirect()
+                ->back();        
     }
 }

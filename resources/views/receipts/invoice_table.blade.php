@@ -4,7 +4,13 @@
             發票報表 
             <a class="btn btn-sm btn-success" href="{{ route( 'receipts.edit_invoice') }}">更新發票</a>
             <a class="btn btn-sm btn-success" href="export/function/{{$type}}/?start_date={{$start_date}}&end_date={{$end_date}}">輸出報表</a>
+            <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#import-invoice">匯入報表</a>
         </h2>
+        @if(session('status'))
+            <div class="alert alert-warning" role="alert">
+                {{ session('status') }}
+            </div>
+        @endif
         <form action="/receipts" meth="GET">
             <input type="hidden" name="type" value="invoice">
             開始日期 <input type="date" name="start_date">
@@ -68,6 +74,28 @@
         @endif
     </div>
 </div>
+<div id="import-invoice" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">匯入發票</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="invoice-import-form" action="import/function/invoice" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <input type="file" name="excel">
+                        <input type="submit" class="btn btn-primary btn-block my-3" value="匯入">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <script>
     @foreach($objects as $invoiceKey => $object)
         renderDataTable(["#invoice-table-{{$invoiceKey}}"], 

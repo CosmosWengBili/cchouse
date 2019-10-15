@@ -453,7 +453,9 @@ class InvoiceService
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->comment = $receipt_row[$id]['comment'];
                     if( $class == "landlord_other_subjects" ){
-                        $receipt->receiver = $this->matchLandlordOtherSubjectLandlord($model, $class, $id, $receipt_row, $receipts);
+                        $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
+                        $receiped_landlord_names = $model->receipts->pluck('receiver');
+                        $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
                     }
                     else{
                         $receipt->receiver = $this->fetchInvoiceReceiver($model);
@@ -471,12 +473,6 @@ class InvoiceService
                     $receipt->date = $receipt_row[$id]['invoice_date'];
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->comment = $receipt_row[$id]['comment'];
-                    if( $class == "landlord_other_subjects" ){
-                        $receipt->receiver = $this->matchLandlordOtherSubjectLandlord($model, $class, $id, $receipt_row, $receipts);
-                    }
-                    else{
-                        $receipt->receiver = $this->fetchInvoiceReceiver($model);
-                    }
                     $receipt->save();
                 }   
             }
@@ -518,24 +514,8 @@ class InvoiceService
             }
         }
     }
-
-    public function matchLandlordOtherSubjectLandlord($model, $class, $id, $receipt_row, $receipts){
-        $landlordOtherSubjects = $receipts[$class];
-        $count = 0;
-        $receiverIndex = 0;
-        foreach($landlordOtherSubjects as $landlordOtherSubject){
-            if( array_keys($landlordOtherSubject)[0] == $id){
-                $count ++;
-            }
-            if( $landlordOtherSubject[$id]['invoice_serial_number'] == $receipt_row[$id]['invoice_serial_number']){
-                $receiverIndex = $count;
-            }
-        }
-        return $this->fetchInvoiceReceiver($model, $receiverIndex-1);        
-    }
-
     // fetch receiver info from model
-    public function fetchInvoiceReceiver($model, $receiverIndex = 0){
+    public function fetchInvoiceReceiver($model){
         switch (class_basename($model)) {
             case 'ComanyIncome':
                 return $model->incomable->tenant->name;
@@ -551,10 +531,7 @@ class InvoiceService
                 break;
             case 'TenantElectricityPayment':
                 return $model->tenantContract->tenant->name;
-                break;  
-            case 'LandlordOtherSubject':
-                return $model->room->building->activeContracts()->landlords[$receiverIndex]->name;
-                break;                        
+                break;
             default:
                 break;
         }

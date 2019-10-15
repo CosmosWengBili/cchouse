@@ -17,6 +17,7 @@ class InvoiceExport implements FromCollection, WithHeadings
     public function collection()
     {
         $header = config('enums.invoice_en');
+        $header = array_merge($header, ['data_table_class', 'data_receipt_id']);
         $array = array_map(function($v)use($header){
             return array_replace(array_flip($header), $v);
         }, $this->data);
@@ -25,6 +26,6 @@ class InvoiceExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return config('enums.invoice');
+        return array_merge(config('enums.invoice'), ['資料來源(程式用)', '發票ID(程式用)']);
     }
 }

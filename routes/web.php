@@ -89,6 +89,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('export/{model}/{id}/{relation}', 'ExcelController@exportRelation');
             Route::get('example/{model}', 'ExcelController@example');
             Route::get('export/function/{function}', 'ExcelController@export_by_function');
+            Route::post('import/function/{function}', 'ExcelController@import_by_function');
 
             // pay off
             Route::get('payOffs', 'PayOffController@index')->name('payOffs.index');

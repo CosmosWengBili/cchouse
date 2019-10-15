@@ -149,7 +149,7 @@ class TenantElectricityPaymentController extends Controller
                 $request->file('excel')
             );
         } catch (\Throwable $th) {
-            return redirect()->back()->withErrors([$th->getMessage()]);
+            return redirect()->back()->with('alert', $th->getMessage());
         }
     }
 

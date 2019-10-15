@@ -97,6 +97,7 @@ return [
             '空屋清潔',
             '空屋維修',
             '家具電進場中',
+            '已收訂',
         ],
         'room_layout' => [
             '雅房',
@@ -336,6 +337,11 @@ return [
         'rent_collection_time',
         'rent_collection_year',
         'commission_end_date'
+    ],
+    'deposits' => [
+        'returned_method' => [
+            '現金',
+            '匯款',
+        ]
     ]
-
 ];

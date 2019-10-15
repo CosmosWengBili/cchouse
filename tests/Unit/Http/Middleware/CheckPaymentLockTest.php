@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Http\Middleware;
+namespace Tests\Unit\Http\Middleware;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -38,7 +38,6 @@ class CheckPaymentLockTest extends TestCase
         foreach ($keys as $key) {
             $response = $this->followingRedirects()
                              ->post('/_test/payments', [$key => $invalidDate], $this->defaultHeaders);
-
             $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
             $this->assertEquals('previousPage', $response->getContent());
         }

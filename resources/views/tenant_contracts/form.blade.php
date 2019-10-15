@@ -23,12 +23,12 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>@lang("model.TenantContract.room_id")</td>
+                                    <td>@lang("model.TenantContract.room_code")</td>
                                     <td>
                                         <select
                                             data-toggle="selectize"
                                             data-table="rooms"
-                                            data-text="id"
+                                            data-text="room_code"
                                             data-selected="{{ $data['room_id'] ?? 0 }}"
                                             name="room_id"
                                             class="form-control form-control-sm"
@@ -367,152 +367,224 @@
         </div>
     </div>
 </div>
-    <script>
-        const qs = window.myQueryString();
-        const tenantId = qs.getQueryStrings()['tenant_id'];
-        const $tenant_id = $('[name="tenant_id"]');
-        $tenant_id.attr('data-selected', tenantId)
 
-    </script>
-    <script id="validation">
+<div class="modal" id="room-infos" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">房</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>收定日期</th>
+                            <th>收訂單號</th>
+                            <th>付訂人姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">確定</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        $(document).ready(function () {
+<script>
+    const qs = window.myQueryString();
+    const tenantId = qs.getQueryStrings()['tenant_id'];
+    const $tenant_id = $('[name="tenant_id"]');
+    $tenant_id.attr('data-selected', tenantId)
 
-            const rules = {
-                contract_serial_number: {
-                    required: true
-                },
-                other_rights: {
-                    required: true
-                },
-                car_parking_floor: {
-                    required: true
-                },
-                car_parking_space_number: {
-                    required: true
-                },
-                motorcycle_parking_space_number: {
-                    required: true,
-                },
-                motorcycle_parking_count: {
-                    required: true,
-                },
-                contract_start: {
-                    required: true
-                },
-                contract_end: {
-                    required: true
-                },
-                rent: {
-                    required: true
-                },
-                rent_pay_day: {
-                    required: true,
-                    min: 1,
-                    max: 31,
-                },
-                deposit: {
-                    required: true
-                },
-                deposit_paid: {
-                    required: true
-                },
-                electricity_price_per_degree: {
-                    required: true
-                },
-                electricity_price_per_degree_summer: {
-                    required: true
-                },
-                "110v_start_degree": {
-                    required: true
-                },
-                "110v_end_degree": {
-                    required: true
-                },
-                invoice_collection_number: {
-                    required: true
-                },
-            };
+</script>
+<script id="validation">
 
-            const messages = {
-                contract_serial_number: {
-                    required: '必須輸入'
-                },
-                other_rights: {
-                    required: '必須輸入'
-                },
-                car_parking_floor: {
-                    required: '必須輸入'
-                },
-                car_parking_space_number: {
-                    required: '必須輸入'
-                },
-                motorcycle_parking_space_number: {
-                    required: '必須輸入',
-                },
-                motorcycle_parking_count: {
-                    required: '必須輸入',
-                },
-                contract_start: {
-                    required: '必須輸入'
-                },
-                contract_end: {
-                    required: '必須輸入'
-                },
-                rent: {
-                    required: '必須輸入'
-                },
-                rent_pay_day: {
-                    required: '必須輸入',
-                    min: "日期輸入錯誤 沒有 {0} 日",
-                    max: "日期輸入錯誤 沒有 {0} 日",
-                },
-                deposit: {
-                    required: '必須輸入'
-                },
-                deposit_paid: {
-                    required: '必須輸入'
-                },
-                electricity_price_per_degree: {
-                    required: '必須輸入'
-                },
-                electricity_price_per_degree_summer: {
-                    required: '必須輸入'
-                },
-                "110v_start_degree": {
-                    required: '必須輸入'
-                },
-                "110v_end_degree": {
-                    required: '必須輸入'
-                },
-                invoice_collection_number: {
-                    required: '必須輸入'
-                },
-            };
+    $(document).ready(function () {
 
-            $('form').validate({
-                rules: rules,
-                messages: messages,
-                errorElement: "em",
-                errorPlacement: function ( error, element ) {
-                    error.addClass( "invalid-feedback" );
-                    if ( element.prop( "type" ) === "checkbox" ) {
-                        error.insertAfter( element.next( "label" ) );
-                    } else {
-                        error.insertAfter( element );
-                    }
-                },
-                highlight: function ( element, errorClass, validClass ) {
-                    $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        const rules = {
+            contract_serial_number: {
+                required: true
+            },
+            other_rights: {
+                required: true
+            },
+            car_parking_floor: {
+                required: true
+            },
+            car_parking_space_number: {
+                required: true
+            },
+            motorcycle_parking_space_number: {
+                required: true,
+            },
+            motorcycle_parking_count: {
+                required: true,
+            },
+            contract_start: {
+                required: true
+            },
+            contract_end: {
+                required: true
+            },
+            rent: {
+                required: true
+            },
+            rent_pay_day: {
+                required: true,
+                min: 1,
+                max: 31,
+            },
+            deposit: {
+                required: true
+            },
+            deposit_paid: {
+                required: true
+            },
+            electricity_price_per_degree: {
+                required: true
+            },
+            electricity_price_per_degree_summer: {
+                required: true
+            },
+            "110v_start_degree": {
+                required: true
+            },
+            "110v_end_degree": {
+                required: true
+            },
+            invoice_collection_number: {
+                required: true
+            },
+        };
+
+        const messages = {
+            contract_serial_number: {
+                required: '必須輸入'
+            },
+            other_rights: {
+                required: '必須輸入'
+            },
+            car_parking_floor: {
+                required: '必須輸入'
+            },
+            car_parking_space_number: {
+                required: '必須輸入'
+            },
+            motorcycle_parking_space_number: {
+                required: '必須輸入',
+            },
+            motorcycle_parking_count: {
+                required: '必須輸入',
+            },
+            contract_start: {
+                required: '必須輸入'
+            },
+            contract_end: {
+                required: '必須輸入'
+            },
+            rent: {
+                required: '必須輸入'
+            },
+            rent_pay_day: {
+                required: '必須輸入',
+                min: "日期輸入錯誤 沒有 {0} 日",
+                max: "日期輸入錯誤 沒有 {0} 日",
+            },
+            deposit: {
+                required: '必須輸入'
+            },
+            deposit_paid: {
+                required: '必須輸入'
+            },
+            electricity_price_per_degree: {
+                required: '必須輸入'
+            },
+            electricity_price_per_degree_summer: {
+                required: '必須輸入'
+            },
+            "110v_start_degree": {
+                required: '必須輸入'
+            },
+            "110v_end_degree": {
+                required: '必須輸入'
+            },
+            invoice_collection_number: {
+                required: '必須輸入'
+            },
+        };
+
+        $('form').validate({
+            rules: rules,
+            messages: messages,
+            errorElement: "em",
+            errorPlacement: function ( error, element ) {
+                error.addClass( "invalid-feedback" );
+                if ( element.prop( "type" ) === "checkbox" ) {
+                    error.insertAfter( element.next( "label" ) );
+                } else {
+                    error.insertAfter( element );
                 }
-            });
-
+            },
+            highlight: function ( element, errorClass, validClass ) {
+                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+            }
         });
 
+    });
+</script>
 
+<script>
+    $(document).ready(function () {
+        var firstFlag = true;
+        var $modal = $('#room-infos');
+        var $selector = $('select[name="room_id"]');
+        var $table = $modal.find('table');
 
-    </script>
+        function updateDeposits(records) {
+            $table.find('tbody').html('');
+
+            records.forEach(function (record) {
+                $modal.find('tbody').append(
+                    '<tr>' +
+                    '    <td>' + record.deposit_collection_date + '</td>' +
+                    '    <td>' + record.deposit_collection_serial_number + '</td>' +
+                    '    <td>' + record.payer_name + '</td>' +
+                    '</tr>'
+                );
+            });
+        }
+
+        $selector.on('change', function () {
+            var roomId = $(this).val();
+            if (firstFlag || !roomId) { // 第一次進入頁面時不執行
+                firstFlag = false;
+                return;
+            }
+
+            $.get('/rooms/' + roomId  + '/deposits', function (records) {
+                updateDeposits(records);
+                $modal.modal('show');
+            });
+        });
+
+        $modal.find('button.btn-primary').on('click', function () {
+            $modal.modal('hide');
+        });
+
+        $modal.find('button.btn-secondary').on('click', function () {
+            $.each($selector, function (key, elem) { elem.selectize.clear(); });
+        });
+
+    });
+</script>
 @endsection

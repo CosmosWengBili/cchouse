@@ -8,5 +8,6 @@ use Faker\Generator as Faker;
 $factory->define(\App\Deposit::class, function (Faker $faker) {
     return [
         'tenant_contract_id' => factory(\App\TenantContract::class),
+        'room_id' => factory(\App\Room::class),
     ];
 });

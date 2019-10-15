@@ -64,6 +64,14 @@ class Room extends Model implements AuditableContract
     }
 
     /**
+     * Get all the tenant contracts that is currently active of this room.
+     */
+    public function deposits()
+    {
+        return $this->hasMany('App\Deposit');
+    }
+
+    /**
      * Get all the tenants who ever lived in this room.
      */
     public function tenantsHistory()

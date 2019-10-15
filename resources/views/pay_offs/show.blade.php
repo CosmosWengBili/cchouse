@@ -219,23 +219,7 @@
         const e_220v_end = parseInt({{ $payOffData['220v_end_degree'] }});
         const input_110v = parseInt($('#e_110v').val());
         const input_220v = parseInt($('#e_220v').val());
-        const template =`
-            <tr class="cal-v">
-                <td>電費</td>
-                <td>
-                    <select class="form-control form-control-sm" name="collected_by">
-                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
-                        <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
-                        @endforeach
-            </select>
-            </td>
-        <td>
-        <input class="form-control form-control-sm electricity-amount" type="number" id="cal_v" name="cal_v" readonly>
-        </td>
-        <td>
-        <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
-        </td>
-    </tr>`;
+        const template = getElectricityTemplate();
 
         $clickedButton.find('span').removeClass('d-none');
         $.get('/tenantContracts/' + tenantContractsId + '/electricityDegree')
@@ -269,6 +253,26 @@
             })
     }
 
+    function getElectricityTemplate() {
+        return `
+            <tr class="cal-v">
+                <td>電費</td>
+                <td>
+                    <select class="form-control form-control-sm" name="collected_by">
+                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
+            <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
+                        @endforeach
+            </select>
+            </td>
+        <td>
+        <input class="form-control form-control-sm electricity-amount" type="number" id="cal_v" name="cal_v" readonly>
+        </td>
+        <td>
+        <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
+        </td>
+    </tr>`;
+    }
+
 </script>
 
 <script>
@@ -284,23 +288,7 @@
     $('#exchange_fee').change(function () {
         if ($(this).prop('checked')) {
             // add item
-            const template =`
-            <tr class="exchange-fee">
-                <td>匯費</td>
-                <td>
-                    <select class="form-control form-control-sm" name="collected_by">
-                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
-                        <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td>
-                <input class="form-control form-control-sm exchange-fee-amount" type="number" name="amount" readonly value="-30">
-                </td>
-                <td>
-                <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
-                </td>
-            </tr>`;
+            const template = getFeeTemplate();
             $(template).insertBefore($functionsRow);
 
         } else {
@@ -312,6 +300,25 @@
         countTenantPayment();
     });
 
+    function getFeeTemplate() {
+        return `
+            <tr class="exchange-fee">
+                <td>匯費</td>
+                <td>
+                    <select class="form-control form-control-sm" name="collected_by">
+                        @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
+            <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
+                        @endforeach
+            </select>
+        </td>
+        <td>
+        <input class="form-control form-control-sm exchange-fee-amount" type="number" name="amount" readonly value="-30">
+        </td>
+        <td>
+        <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
+        </td>
+    </tr>`;
+    }
 
 </script>
 
@@ -425,8 +432,12 @@
             const postData = makeSendData();
 
             $.post(apiURL, postData, function (data) {
-                console.log(data)
-                // location.reload();
+                if (data) {
+                    location.reload();
+                }
+                else {
+                    alert('儲存失敗');
+                }
             })
         });
 

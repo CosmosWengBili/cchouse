@@ -172,7 +172,7 @@
                                         value="{{ $data['distribution_method'] ?? '' }}"
                                     />
                                         @foreach(config('enums.shareholders.distribution_method') as $value)
-                                            <option value="{{$value}}" {{ $data['distribution_method']=== $value ? 'selected': '' }}>{{$value}}</option>
+                                            <option value="{{$value}}" {{ isset($data['distribution_method']) && $data['distribution_method'] === $value ? 'selected': '' }}>{{$value}}</option>
                                         @endforeach
                                     </select>
                                 </td>

@@ -9,9 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PayOffService
 {
-    /** @var float 管理費 假設10% */
-    const MANAGE_FEE = 0.1;
-
     private $lastPayDate;
     private $payOffDate;
     /** @var TenantContract $tenantContract */
@@ -99,7 +96,6 @@ class PayOffService
             '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
             '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
             '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '設備' => ['subject' => '設備', 'amount' => 0, 'comment' => '', 'is_showed' => false],
             '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
             '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
             '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
@@ -126,7 +122,6 @@ class PayOffService
                     $defaultItems['履保金']['amount'] +
                     $defaultItems['管理費']['amount'] +
                     $defaultItems['清潔費']['amount'] +
-                    $defaultItems['設備']['amount'] +
                     $defaultItems['滯納金']['amount']
                 ) * -1;
             // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
@@ -156,7 +151,6 @@ class PayOffService
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['設備']['amount'] +
                 $defaultItems['滯納金']['amount'];
             // B49−B56
             $sumItems['兆基應收'] = $defaultItems['履保金']['amount'] - $sumItems['應退金額'];
@@ -195,7 +189,6 @@ class PayOffService
                     $defaultItems['履保金']['amount'] +
                     $defaultItems['管理費']['amount'] +
                     $defaultItems['清潔費']['amount'] +
-                    $defaultItems['設備']['amount'] +
                     $defaultItems['滯納金']['amount']
                 ) * -1;
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
@@ -218,7 +211,6 @@ class PayOffService
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['設備']['amount'] +
                 $defaultItems['滯納金']['amount'];
             // −1×(E54+E52)+E51
             $sumItems['兆基應收'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
@@ -247,7 +239,6 @@ class PayOffService
                 $defaultItems['沒收押金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['設備']['amount'] +
                 $defaultItems['滯納金']['amount'];
             // E39+−1×(E36+E38)+E35
             $sumItems['兆基應收'] = $defaultItems['點交中退盈餘分配']['amount'] +
@@ -352,7 +343,14 @@ class PayOffService
                     $managementFee = 0;
                     break;
                 } else {
-                    $managementFee = $pay_log_amount - ($rent * $percentage) * self::MANAGE_FEE;
+                    $room = $this->tenantContract->room;
+                    // 不論管理費的計算模式 都需要按照天數差異做計算 假設管理費一個月一千 這個月30天只住了15天 則管理費應該是五百
+                    $managementFee = 0;
+                    if ($room->management_fee_mode === '比例') {
+                        $managementFee = $pay_log_amount - ($rent * $percentage) * ( ($room->management_fee / 100) * $percentage);
+                    } elseif ($room->management_fee_mode === '固定') {
+                        $managementFee = $pay_log_amount - ($rent * $percentage) - ($room->management_fee * $percentage);
+                    }
                 }
             }
         }
@@ -389,7 +387,7 @@ class PayOffService
             // 租金支付日之間的差異天數
             $next->diffInDays($last, true),
             // 租金支付日到今天的差異天數
-            $today->diffInDays($last, true),
+            $today->diffInDays($last, true) + 1,
         ];
     }
 

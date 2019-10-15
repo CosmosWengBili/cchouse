@@ -195,7 +195,6 @@
 
 <style>
     tr > td:first-child,
-    tr > td:nth-child(1),
     tr > td:nth-child(2),
     tr > td:nth-child(3) {
         width: 200px

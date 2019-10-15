@@ -97,6 +97,7 @@ return [
             '空屋清潔',
             '空屋維修',
             '家具電進場中',
+            '已收訂',
         ],
         'room_layout' => [
             '雅房',
@@ -250,6 +251,11 @@ return [
             '租金雜費',
             '電費',
         ],
+        'return_ways' => [
+            '中途退租',
+            '到期退租',
+            '協調退租',
+        ]
     ],
 
     'landlord_other_subjects' => [
@@ -347,6 +353,11 @@ return [
         'paid_at',
         'amount',
         'group'
+    ],
+    'deposits' => [
+        'returned_method' => [
+            '現金',
+            '匯款',
+        ]
     ]
-
 ];

@@ -34,7 +34,29 @@ class MorphExport implements FromCollection, WithHeadings
         if ($this->isExample) {
             return collect([]);
         }
-        return $this->model::all();
+
+        // 取表名
+        $tableName = (new $this->model())->getTable();
+        // 取得client 給的 querystring
+        $qsArr = request()->all();
+        if (! empty($qsArr)) {
+            foreach ($qsArr as $attribute => $value) {
+                // 進入則表示該table內有該 attribute
+                if (Schema::hasColumn($tableName, $attribute)) {
+                    if (! isset($builder)) {
+                        $builder = $this->model::where($attribute,$value);
+                    } else {
+                        $builder->where($attribute,$value);
+                    }
+                }
+            }
+
+            isset($builder) and ($data = $builder->get());
+        }
+
+        return isset($data)
+            ? $data
+            : $this->model::all();
     }
 
     public function headings(): array

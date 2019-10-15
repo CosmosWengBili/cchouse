@@ -21,7 +21,7 @@ class Deposit extends Model implements AuditableContract
      */
     protected $guarded = [];
 
-    protected $hidden = ['pivot', 'deleted_at'];
+    protected $hidden = ['pivot', 'deleted_at', 'reason_of_deletions'];
 
     /**
      * The attributes that should be cast to native types.
@@ -30,7 +30,9 @@ class Deposit extends Model implements AuditableContract
      */
     protected $casts = [
         'is_deposit_collected' => 'boolean',
-        'confiscated_or_returned_date' => 'datetime:Y-m-d'
+        'confiscated_or_returned_date' => 'datetime:Y-m-d',
+        'payer_is_legal_person' => 'boolean',
+        'appointment_date' => 'date',
     ];
 
     /**
@@ -41,4 +43,19 @@ class Deposit extends Model implements AuditableContract
         return $this->belongsTo('App\TenantContract');
     }
 
+    /**
+     * Get the room of deposit.
+     */
+    public function room()
+    {
+        return $this->belongsTo('App\Room');
+    }
+
+    /**
+     * Get the receipts of this deposit.
+     */
+    public function receipts()
+    {
+        return $this->morphToMany('App\Receipt', 'receiptable');
+    }
 }

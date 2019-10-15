@@ -483,37 +483,10 @@ class InvoiceService
     // Divided by model
     public static function compareReceipt($model, $data){
         if($model->receipts->isNotEmpty()){
-            switch (class_basename($model)) {
-                case 'ComanyIncome':
-                    if($model['subject'] == '押金設算息' && $model['amount'] != $data['amount']){
-                        NotificationService::notifyReceiptUpdated($model);
-                    }
-                    break;
-                case 'PayLog':
-                    if($model['amount'] != $data['amount'] || $model['paid_at'] != $data['paid_at']){
-                        NotificationService::notifyReceiptUpdated($model);
-                    }   
-                    break;       
-                case 'Maintenance':
-                    if(($model['price'] != $data['price'] || $model['closed_date'] != $data['closed_date'])){
-                        NotificationService::notifyReceiptUpdated($model);
-                    }   
-                    break;
-                case 'TenantPayment':
-                    if($model['amount'] != $data['amount'] || $model['due_time'] != $data['due_time'] || $model['subject'] != $data['subject']){
-                        NotificationService::notifyReceiptUpdated($model);
-                    } 
-                    break;
-                case 'TenantElectricityPayment':
-                    if($model['amount'] != $data['amount']){
-                        NotificationService::notifyReceiptUpdated($model);
-                    }   
-                    break;                          
-                default:
-                    break;
-            }
+            NotificationService::notifyReceiptUpdated($model);
         }
     }
+    
     // fetch receiver info from model
     public function fetchInvoiceReceiver($model){
         switch (class_basename($model)) {

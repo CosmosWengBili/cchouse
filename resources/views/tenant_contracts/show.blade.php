@@ -69,6 +69,8 @@
                                         @include('tenant_contracts.single_table', ['object' => $data[$layer], 'layer' => $layer])
                                     @elseif ( $layer == 'payLogs' )
                                         @include($layer . '.table', ['objects' => Arr::collapse(Arr::pluck($data['tenant_payments'], 'pay_logs')), 'layer' => $layer."s"])
+                                    @elseif ( $layer == 'pay_off' )
+                                        @include('pay_offs.table', ['objects' => [$data['pay_off']], 'layer' => 'pay_offs'])
                                     @else
                                         @include($layer . '.table', ['objects' => $data[$layer], 'layer' => $layer])
                                     @endif

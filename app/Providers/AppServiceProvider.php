@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Deposit;
 use App\EditorialReview;
+use App\Observers\DepositObserver;
 use App\Observers\EditorialReviewObserver;
 use App\Observers\ShareholderObserver;
 use App\Observers\LandlordObserver;
@@ -34,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         Shareholder::observe(ShareholderObserver::class);
         Landlord::observe(LandlordObserver::class);
         LandlordContract::observe(LandlordContractObserver::class);
+        Deposit::observe(DepositObserver::class);
         EditorialReview::observe(EditorialReviewObserver::class);
     }
 }

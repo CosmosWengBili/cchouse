@@ -24,6 +24,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 'buildings/{building}/electricityPaymentReport/{year}/{month}',
                 'BuildingController@electricityPaymentReport'
             )->name('buildings.electricityPaymentReport');
+            Route::get('rooms/{room}/deposits', 'RoomController@deposits')->name('rooms.deposits');
             Route::resource('rooms', 'RoomController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
@@ -49,13 +50,15 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
+            Route::post('deposits/{deposit}/return', 'DepositController@return')->name('deposits.return');
+            Route::post('deposits/{deposit}/confiscate', 'DepositController@confiscate')->name('deposits.confiscate');
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
             Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
             Route::resource('shareholders', 'ShareHolderController');
             Route::get('shareholders/export', 'ShareHolderController@exportReport')->name('shareholders.export');
             Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
-          
+
             // payments
             Route::get(
                 'tenantElectricityPayments/downloadImportFile',
@@ -104,7 +107,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
-            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
+            Route::get('maintenances/showRecord/{id}', 'MaintenanceController@showRecord');
+            Route::post('maintenances/checkHasSameWorkType', 'MaintenanceController@checkHasSameWorkType')->name('maintenances.check');
+            Route::post('maintenances/updateIsPrinted', 'MaintenanceController@updateIsPrinted')->name('maintenances.updateIsPrinted');
             Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');

@@ -39,6 +39,11 @@ class Maintenance extends Model implements AuditableContract
     protected $guarded = [];
 
     protected $hidden = ['pivot', 'deleted_at'];
+
+    protected $casts = [
+        'is_printed' => 'boolean',
+    ];
+
     /**
      * Get the user who took care of this maintenance.
      */

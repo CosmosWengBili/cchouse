@@ -230,6 +230,9 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.status")</td>
                                     <td>
+                                        <input type="hidden" id="old_status" value="{{ $data['status'] ?? '' }}">
+                                        <input type="hidden" id="afford_by" value="{{ $data['afford_by'] ?? '' }}">
+                                        <input type="hidden" id="group" value="{{ $isManageGroup ? '':  'account'}}">
                                         <select
                                             name="status"
                                             class="form-control form-control-sm"
@@ -377,6 +380,16 @@
                                             value="{{ $data['comment'] ?? '' }}"
                                         />
                                     </td>
+                                    <td>@lang("model.Maintenance.is_printed")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="is_printed"/>
+                                        <input
+                                            type="checkbox"
+                                            name="is_printed"
+                                            value="1"
+                                            {{ isset($data["is_printed"]) ? ($data['is_printed'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
                                 </tr>
 
                                 </tbody>
@@ -384,7 +397,7 @@
                         @endif
                         <h3 class="mt-3">照片</h3>
                         @include('documents.inputs', ['documentType' => 'picture', 'documents' => $data['pictures']])
-                        <button class="mt-5 btn btn-success" type="submit">送出</button>
+                        <button class="mt-5 btn btn-success submit" type="button">送出</button>
                     </form>
                 </div>
             </div>
@@ -403,11 +416,50 @@
             const checked = $checkbox.prop('checked');
             $options.prop('disabled', checked);
         });
+
+        const $submitButton = $('button.submit');
+        $submitButton.click(function () {
+            const data = {
+                tenant_contract_id: $('input[name=tenant_contract_id]').val(),
+                work_type: $('select[name=work_type]').val(),
+            };
+            $submitButton.prop('disabled', 'disabled');
+
+            if ("{{ !$isCreate ? 'true' : 'false' }}" === 'true') {
+                // 是編輯則直接送出
+                $('form').submit();
+            } else {
+                $.post('{{ route('maintenances.check') }}', data)
+                    .then(response => {
+                        if (response) {
+                            // 表示沒有同工種 直接送出
+                            $('form').submit();
+                        } else {
+                            // 表示有同工種 會詢問使用者要建或不要建，要建才會真的送出
+                            if (confirm('三個月內已有同工種維護清潔的表單，是否再次建立？')) {
+                                $('form').submit();
+                            }
+                        }
+                        $submitButton.prop('disabled', '');
+                    })
+            }
+
+        });
     })();
 </script>
     <script id="validation">
 
         $(document).ready(function () {
+            $.validator.addMethod("checkAffordBy", function(value, element) {
+                const isStatusChangedFromCompleteToCancel = $('#old_status').val() === '案件完成' && value === '已取消';
+                const isAffordByLandlord = $('#afford_by').val() === '房東';
+                const isAccountGroup = $('#group').val() === 'account';
+
+                if (isStatusChangedFromCompleteToCancel && isAffordByLandlord && !isAccountGroup) {
+                    return false;
+                }
+                return true;
+            }, "負擔方為『房東』的資料，只有帳務組，可以將狀態從『案件完成』變成『已取消』");
 
             const rules = {
                 tenant_contract_id: {
@@ -431,6 +483,9 @@
                 work_type: {
                     required: true
                 },
+                status: {
+                    "checkAffordBy": true,
+                }
             };
 
             const messages = {

@@ -106,7 +106,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
 
             // resources API
             Route::post('maintenances/markDone', 'MaintenanceController@markDone');
-            Route::post('maintenances/showRecord', 'MaintenanceController@showRecord');
+            Route::get('maintenances/showRecord/{id}', 'MaintenanceController@showRecord');
+            Route::post('maintenances/checkHasSameWorkType', 'MaintenanceController@checkHasSameWorkType')->name('maintenances.check');
+            Route::post('maintenances/updateIsPrinted', 'MaintenanceController@updateIsPrinted')->name('maintenances.updateIsPrinted');
             Route::get('tenantContracts/{tenantContract}/extend', 'TenantContractController@extend')->name('tenantContracts.extend');
             Route::get('systemVariables', 'SystemVariableController@index')->name('system_variables.index');
             Route::get('systemVariables/{group}', 'SystemVariableController@edit')->name('system_variables.edit');

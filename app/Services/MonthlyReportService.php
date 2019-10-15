@@ -433,11 +433,7 @@ class MonthlyReportService
 
         return $total_revenue;
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 239ed885a83ad3881c3bc97be5b237f92f217e15
     public function getEletricityReport(LandlordContract $landlordContract, $month, $year) {
 
         $data = [

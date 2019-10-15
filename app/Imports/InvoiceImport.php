@@ -18,10 +18,10 @@ use App\Services\InvoiceService;
 
 class InvoiceImport implements ToModel, WithHeadingRow
 {
-    private $row;
+    private $result;
     public function __construct()
     {
-      $this->row = 1;
+      $this->result = ['status'=>'success', 'msg' => ''];
     }
 
     /**
@@ -33,41 +33,52 @@ class InvoiceImport implements ToModel, WithHeadingRow
     {
         $service = new InvoiceService();
         $model = app("App\\".studly_case(Str::singular($row['資料來源(程式用)'])))->find($row['來源資料編號']);
-        if ($row['發票ID(程式用)'] == null) {
-          // Check whether invoice_serial_number exist to avoid generating redundant receipt
-          if( $row['發票號碼'] == '' ){
-              return ;
-          }
-          $receipt = new Receipt();
-          $receipt->invoice_serial_number = $row['發票號碼'];
-          $receipt->date = $row['發票日期'];
-          $receipt->invoice_price = $row['發票金額'];
-          $receipt->comment = $row['備註'];
-          if( $row['資料來源(程式用)'] == "landlord_other_subjects" ){
-              $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
-              $receiped_landlord_names = $model->receipts->pluck('receiver');
-              $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
-          }
-          else{
-              $receipt->receiver = $service->fetchInvoiceReceiver($model);
-          }
-          $model->receipts()->save($receipt);
-      }
-      else{
-          $receipt = Receipt::find($row['發票ID(程式用)']);
+        if(isset($model)){
+            if ($row['發票ID(程式用)'] == null) {
+                // Check whether invoice_serial_number exist to avoid generating redundant receipt
+                if( $row['發票號碼'] == '' ){
+                    return ;
+                }
+                $receipt = new Receipt();
+                $receipt->invoice_serial_number = $row['發票號碼'];
+                $receipt->date = $row['發票日期'];
+                $receipt->invoice_price = $row['發票金額'];
+                $receipt->comment = $row['備註'];
+                if( $row['資料來源(程式用)'] == "landlord_other_subjects" ){
+                    $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
+                    $receiped_landlord_names = $model->receipts->pluck('receiver');
+                    $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
+                }
+                else{
+                    $receipt->receiver = $service->fetchInvoiceReceiver($model);
+                }
+                $model->receipts()->save($receipt);
+            }
+            else{
+                $receipt = Receipt::find($row['發票ID(程式用)']);
+      
+                // If the invoice_serial_number from user is different with receipt, notify invoice group users
+                if( $receipt->invoice_serial_number != $row['發票號碼']){
+                    NotificationService::notifyReceiptUpdated($model);
+                }
+                $receipt->invoice_serial_number = $row['發票號碼'];
+                $receipt->date = $row['發票日期'];
+                $receipt->invoice_price = $row['發票金額'];
+                $receipt->comment = $row['備註'];
+                if(isset($row['收取者'])){
+                  $receipt->receiver = $row['收取者'];
+                }
+                $receipt->save();
+            }    
+        }
+        else{
+            $this->result['status'] = 'error';
+            $this->result['msg'] .= $row['費用來源'].'編號為 '.$row['來源資料編號'].' ，且存入日期為'.$row['存入日期'].'的發票資料來源有誤' ;
+        } 
+    }
 
-          // If the invoice_serial_number from user is different with receipt, notify invoice group users
-          if( $receipt->invoice_serial_number != $row['發票號碼']){
-              NotificationService::notifyReceiptUpdated($model);
-          }
-          $receipt->invoice_serial_number = $row['發票號碼'];
-          $receipt->date = $row['發票日期'];
-          $receipt->invoice_price = $row['發票金額'];
-          $receipt->comment = $row['備註'];
-          if(isset($row['收取者'])){
-            $receipt->receiver = $row['收取者'];
-          }
-          $receipt->save();
-      }          
+    public function getResult(): array
+    {
+        return $this->result;
     }
 }

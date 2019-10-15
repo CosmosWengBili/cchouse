@@ -119,26 +119,25 @@ class ExcelController extends Controller
             case 'invoice':
                 if ($request->hasFile('excel')) {
                     try {
-                        Excel::import(
-                            new InvoiceImport(),
-                            $request->file('excel')
-                        );
+                        $import = new InvoiceImport();
+                        Excel::import($import, $request->file('excel'));
+                        if($import->getResult()['status'] == 'error'){
+                            $request->session()->flash('status', '匯入資料有問題，'.$import->getResult()['msg']);
+                            return redirect()->back();
+                        }
 
                     } catch (\Throwable $th) {
                         $request->session()->flash('status', '匯入失敗:'.$th->getMessage().' 檔案:'.$th->getFile().' 行數:'.$th->getLine());
-                        return redirect()
-                                ->back();
+                        return redirect()->back();
                     }
                     $request->session()->flash('status', '匯入成功');
-                    return redirect()
-                        ->back();
+                    return redirect()->back();
                 }
                 $request->session()->flash('status', '無匯入 Excel');
             default:
                 break;
         }
         $request->session()->flash('status', '無對應匯入功能');
-        return redirect()
-                ->back();        
+        return redirect()->back();        
     }
 }

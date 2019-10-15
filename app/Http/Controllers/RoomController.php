@@ -129,6 +129,11 @@ class RoomController extends Controller
         return view('rooms.show', $responseData->get());
     }
 
+    public function deposits(Room $room) {
+
+        return response()->json($room->deposits()->get());
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

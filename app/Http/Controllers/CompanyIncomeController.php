@@ -67,8 +67,11 @@ class CompanyIncomeController extends Controller
     public function update(Request $request, CompanyIncome $companyIncome)
     {
         $validatedData = $this->fetchValidateData($request);
-        $companyIncome->update($validatedData);
-        InvoiceService::compareReceipt($companyIncome, $validatedData);
+        $result = InvoiceService::compareReceipt($companyIncome, $validatedData);
+        if(!$result){
+            $companyIncome->update($validatedData);
+        }
+        
 
         return redirect($request->_redirect);
     }

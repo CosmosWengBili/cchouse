@@ -84,8 +84,10 @@ class PayLogController extends Controller
             'paid_at' => 'required',
         ]);
 
-        InvoiceService::compareReceipt($payLog, $validatedData);
-        $payLog->update($validatedData);
+        $result = InvoiceService::compareReceipt($payLog, $validatedData);
+        if(!$result){
+            $payLog->update($validatedData);
+        }
 
         return redirect()->route('tenantPayments.index');
     }

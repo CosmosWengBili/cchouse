@@ -93,8 +93,11 @@ class TenantPaymentController extends Controller
             'is_visible_at_report' => 'required',
             'comment' => '',
         ]);
-        InvoiceService::compareReceipt($tenantPayment, $validatedData);
-        $tenantPayment->update($validatedData);
+
+        $result = InvoiceService::compareReceipt($tenantPayment, $validatedData);
+        if(!$result){
+            $tenantPayment->update($validatedData);
+        }
 
         return redirect($request->_redirect);
     }

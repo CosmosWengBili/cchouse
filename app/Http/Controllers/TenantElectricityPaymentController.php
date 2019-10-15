@@ -101,8 +101,11 @@ class TenantElectricityPaymentController extends Controller
             'charge_off_date' => '',
             'comment' => '',
         ]);
-        InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
-        $tenantElectricityPayment->update($validatedData);
+
+        $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
+        if(!$result){
+            $tenantElectricityPayment->update($validatedData);
+        }
 
         return redirect($request->_redirect);
     }

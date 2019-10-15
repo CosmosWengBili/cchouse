@@ -14,6 +14,8 @@ use App\LandlordOtherSubject;
 use App\Deposit;
 use App\SystemVariable;
 use App\Receipt;
+use App\EditorialReview;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceService
 {   
@@ -483,8 +485,26 @@ class InvoiceService
     // Divided by model
     public static function compareReceipt($model, $data){
         if($model->receipts->isNotEmpty()){
+            $originalAttribute = [];
+            $updateAttribute = [];
+            foreach($data as $key => $value){
+                if( $model[$key] != $data[$key]){
+                    $originalAttribute[$key] = $model[$key];
+                    $updateAttribute[$key] = $value;
+                }
+            }
+            EditorialReview::create([
+                'editable_id' => $model->id,
+                'editable_type' => get_class($model),
+                'original_value' => $originalAttribute,
+                'edit_value' => $updateAttribute,
+                'edit_user' => Auth::id(),
+                'comment' => '',
+            ]);
             NotificationService::notifyReceiptUpdated($model);
+            return true;
         }
+        return false;
     }
     
     // fetch receiver info from model

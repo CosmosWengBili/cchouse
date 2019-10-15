@@ -178,9 +178,11 @@ class MaintenanceController extends Controller
             'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
-        $maintenance = $maintenance->update($validatedData);
-
-        InvoiceService::compareReceipt($maintenance, $validatedData);
+        
+        $result = InvoiceService::compareReceipt($maintenance, $validatedData);
+        if(!$result){
+            $maintenance->update($validatedData);
+        }
 
         return redirect($request->_redirect);
     }

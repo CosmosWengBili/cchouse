@@ -86,15 +86,16 @@
                 <i class="menu-arrow"></i></a>
                 <div class="submenu">
                     <ul class="submenu-item">
-                    <li class="nav-item"><a class="nav-link" href="/deposits">訂金管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/companyIncomes">公司收入管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/payLogs">現金流管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/tenantElectricityPayments">電費管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/tenantPayments">租客應繳費用管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/receipts">發票單據管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/payOffs">點交管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/deposits">訂金管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/companyIncomes">公司收入管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/payLogs">現金流管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/tenantElectricityPayments">電費管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/tenantPayments">租客應繳費用管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/landlordPayments">房東應繳費用管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/receipts">發票單據管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/payOffs">點交管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/landlordOtherSubjects">雜支管理</a></li>
                     </ul>
                 </div>
             </li>

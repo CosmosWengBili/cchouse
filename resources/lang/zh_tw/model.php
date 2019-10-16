@@ -100,6 +100,7 @@ return [
         'is_collected_by_third_party' => '是否代收',
         'is_notarized' => '是否公證',
         'commissioner_id' => '專員',
+        'withdrawal_revenue_distribution' => '盈餘分配',
         'landlords' => '房東',
         'building_id' => '物件編號',
         'building' => '建物',

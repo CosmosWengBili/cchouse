@@ -14,7 +14,7 @@
                         @foreach ( $data as $attribute => $value)
                             @if ($attribute === 'building')
                                 <div class="col-3 border py-2 font-weight-bold">@lang("model.{$model_name}.{$attribute}")</div>
-                                <div class="col-3 border py-2">{{ $value['address'] }}</div>
+                                <div class="col-3 border py-2">{{ $value['city'].$value['district'].$value['address'] }}</div>
                             @endif
                             @if ($attribute === 'landlords')
                                 @php

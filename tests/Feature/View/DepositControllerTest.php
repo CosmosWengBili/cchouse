@@ -67,17 +67,5 @@ class DepositControllerTest extends TestCase
         $res->assertOk();
     }
 
-    /**
-     * test delete
-     */
-    public function testDestroy()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-
-        $deposit = factory(Deposit::class)->create();
-        $res = $this->call('DELETE', route($this->routeName . '.destroy', [$deposit->id]), ["reason"=>"test"]);
-        $res->assertOk();
-    }
 
 }

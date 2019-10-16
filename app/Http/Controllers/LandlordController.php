@@ -76,10 +76,9 @@ class LandlordController extends Controller
             'certificate_number' => 'required',
             'is_legal_person' => 'required|boolean',
             'is_collected_by_third_party' => 'required|boolean',
-
             'birth' => 'present',
             'note' => 'present',
-            'bank_code' => 'present|digits:3',
+            'bank_code' => 'present',
             'branch_code' => 'present',
             'account_name' => 'present|max:255',
             'account_number' => 'present|max:255',
@@ -236,19 +235,18 @@ class LandlordController extends Controller
             'commission_type.*' => 'required|max:255',
             'commission_start_date.*' => 'required|date',
             'commission_end_date.*' => 'required|date',
-            'warranty_start_date.*' => 'required|date',
-            'warranty_end_date.*' => 'required|date',
+            'warranty_start_date.*' => 'nullable',
+            'warranty_end_date.*' => 'nullable',
             'rental_decoration_free_start_date.*' => 'required|date',
             'rental_decoration_free_end_date.*' => 'required|date',
-            'annual_service_fee_month_count.*' =>
-                'required|integer|digits_between:1,11',
+            'annual_service_fee_month_count.*' => 'nullable',
             'charter_fee.*' => 'required|min:0',
             'taxable_charter_fee.*' => 'required|integer|digits_between:1,11',
-            'agency_service_fee.*' => 'required',
+            'agency_service_fee.*' => 'nullable',
             'rent_collection_frequency.*' => 'required|max:255',
             'rent_collection_time.*' => 'required|integer|digits_between:1,11',
-            'rent_adjusted_date.*' => 'required|date',
-            'adjust_ratio.*' => 'required|numeric|min:0',
+            'rent_adjusted_date.*' => 'nullable',
+            'adjust_ratio.*' => 'nullable',
             'deposit_month_count.*' => 'required|integer|digits_between:1,11',
             'is_collected_by_third_party.*' => 'required|boolean',
             'is_notarized.*' => [
@@ -260,6 +258,7 @@ class LandlordController extends Controller
                 'required',
                 Rule::in(config('enums.landlord_contracts.gender_limit'))
             ],
+            'withdrawal_revenue_distribution' => 'nullable'
         ]);
         $validatedLandlords = $request->validate([
             'name.*' => 'required|max:255',
@@ -269,7 +268,7 @@ class LandlordController extends Controller
 
             'birth.*' => 'present',
             'note.*' => 'present',
-            'bank_code.*' => 'present|digits:3',
+            'bank_code.*' => 'present',
             'branch_code.*' => 'present',
             'account_name.*' => 'present|max:255',
             'account_number.*' => 'present|max:255',

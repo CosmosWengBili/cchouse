@@ -273,8 +273,16 @@
                                     @endforeach
                                     </select>
                                 </td>
-                                <td></td>
-                                <td></td>
+                                <td>@lang("model.LandlordContract.withdrawal_revenue_distribution")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="number"
+                                        name="withdrawal_revenue_distribution"
+                                        placeholder="請輸入 0.5, 0.6..."
+                                        value="{{ isset($data["withdrawal_revenue_distribution"]) ? $data['withdrawal_revenue_distribution'] : '' }}"
+                                    />
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -311,20 +319,17 @@
         $(document).ready(function () {
 
             const rules = {
-                warranty_start_date: {
-                    required: true
+                commission_start_date: {
+                    required: true,
                 },
-                warranty_end_date: {
-                    required: true
+                commission_end_date: {
+                    required: true,
                 },
                 rental_decoration_free_start_date: {
                     required: true,
                 },
                 rental_decoration_free_end_date: {
                     required: true,
-                },
-                agency_service_fee: {
-                    required: true
                 },
                 charter_fee: {
                     required: true
@@ -333,12 +338,6 @@
                     required: true
                 },
                 rent_collection_time: {
-                    required: true
-                },
-                rent_adjusted_date: {
-                    required: true
-                },
-                adjust_ratio: {
                     required: true
                 },
                 deposit_month_count: {
@@ -347,11 +346,11 @@
             };
 
             const messages = {
-                warranty_start_date: {
-                    required: '必須輸入'
+                commission_start_date: {
+                    required: '必須輸入',
                 },
-                warranty_end_date: {
-                    required: '必須輸入'
+                commission_end_date: {
+                    required: '必須輸入',
                 },
                 rental_decoration_free_start_date: {
                     required: '必須輸入',
@@ -368,16 +367,7 @@
                 rent_collection_time: {
                     required: '必須輸入'
                 },
-                rent_adjusted_date: {
-                    required: '必須輸入'
-                },
-                adjust_ratio: {
-                    required: '必須輸入'
-                },
                 deposit_month_count: {
-                    required: '必須輸入'
-                },
-                agency_service_fee: {
                     required: '必須輸入'
                 },
             };

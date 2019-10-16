@@ -56,8 +56,13 @@ class LandlordContractDue extends Notification
      */
     public function toArray($notifiable)
     {
+        $building = $this->landlordContract->building;
+        $landlords = $this->landlordContract->landlords;
         return [
-            'landlordContract' => $this->landlordContract
+            'content' => '合約即將到期! 物件編號:'.$building->building_code.
+                        ' 地址:'.$building->location.
+                        ' 房東姓名:'.implode(',', $landlords->pluck('name')->toArray()).
+                        ' 到期日為:'.$this->landlordContract->commission_end_date
         ];
     }
 }

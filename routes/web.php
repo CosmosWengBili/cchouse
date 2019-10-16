@@ -57,7 +57,9 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');
             Route::resource('shareholders', 'ShareHolderController');
             Route::get('shareholders/export', 'ShareHolderController@exportReport')->name('shareholders.export');
-            Route::put('shareholders/{id}/pass', 'EditorialReviewController@pass');
+            Route::put('editorialReviews/{id}/pass', 'EditorialReviewController@pass')->name('editorialReviews.pass');
+            Route::put('editorialReviews/{id}/notPass', 'EditorialReviewController@notPass')->name('editorialReviews.notPass');
+            Route::resource('editorialReviews', 'EditorialReviewController')->except(['create', 'update', 'delete']);
 
             // payments
             Route::get(

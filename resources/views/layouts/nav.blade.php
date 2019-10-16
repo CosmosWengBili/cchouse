@@ -54,9 +54,10 @@
             </a>
             <div class="submenu">
                 <ul class="submenu-item">
-                <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="/systemVariables">系統變數管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/users">使用者管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/systemVariables">系統變數管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/editorialReviews">編輯審核管理</a></li>
                 </ul>
             </div>
             </li>

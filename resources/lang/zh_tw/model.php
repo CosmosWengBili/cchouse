@@ -548,5 +548,18 @@ return [
         'updated_at' => '更新時間',
         'receipt_type' => '收據類型',
         "due_time" => "應繳時間",
-    ]
+    ],
+    'EditorialReview' => [
+        'id' => '編號',
+        'editable_id' => '審核編號',
+        'editable_type' => '審核類型',
+        'status' => '狀態',
+        'original_value' => '原始資料',
+        'edit_value' => '修改資料',
+        'edit_user' => '修改人員',
+        'comment' => '備註',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'diffs' => '修改後',
+    ],
 ];

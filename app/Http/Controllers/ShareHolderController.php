@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Building;
+use App\EditorialReview;
 use App\Exports\ShareholderExport;
 use App\Shareholder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ShareholderController extends Controller
@@ -138,7 +139,7 @@ class ShareholderController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Shareholder  $Shareholder
+     * @param  \App\Shareholder  $shareholder
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Shareholder $shareholder)
@@ -164,16 +165,26 @@ class ShareholderController extends Controller
             'exchange_fee' => 'nullable',
         ]);
 
-        $shareholder->update($validatedData);
+        $oldRow = $shareholder->getAttributes();
+        $newRow = $validatedData;
 
-        $building_code = array_wrap($request->input('building_code'));
-        // get building ids by building_code
-        $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
-        if (! empty($building_ids)) {
-            $shareholder->buildings()->sync($building_ids);
-        } else {
-            $shareholder->buildings()->sync(array());
+        // 判斷如果 array key 數量不同 要補滿 這樣使用者查看差異性 會比較直觀
+        if (collect($oldRow)->keys()->count() !== collect($newRow)->keys()->count()) {
+            $newRow = array_merge($oldRow, $newRow); // 用舊的欄位填補新的欄位
         }
+
+        // 需要審核 所以不做 Shareholder 的 update Observer要發通知
+        EditorialReview::create([
+            'editable_id' => $shareholder->id,
+            'editable_type' => Shareholder::class,
+            'original_value' => $oldRow,
+            'edit_value' => $newRow,
+            'edit_user' => Auth::id(),
+            'extra_data' => [
+                'building_code' =>$request->input('building_code'),
+            ],
+            'comment' => '',
+        ]);
 
         return redirect($request->_redirect);
     }

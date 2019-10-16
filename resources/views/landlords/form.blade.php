@@ -256,9 +256,6 @@
             account_number: {
                 digits: true
             },
-            invoice_mailing_address: {
-                email: true
-            },
             invoice_collection_number: {
                 digits: true
             },

@@ -87,13 +87,4 @@ class DebtCollection extends Model implements AuditableContract
             'tenant_contract_id'
         );
     }
-
-    /**
-     * Get the receipts of this debt collection.
-     */
-    public function receipts()
-    {
-        return $this->morphToMany('App\Receipt', 'receiptable');
-    }
-
 }

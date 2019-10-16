@@ -24,4 +24,11 @@ return [
     'keys' => [],
     'share_holders' => [],
     'deposits' => [],
+    'maintenances' => [
+        'id', 'tenant_contract_id', 'reported_at', 'expected_service_date', 'expected_service_time', 'dispatch_date',
+        'commissioner_id', 'maintenance_staff_id', 'closed_date', 'closed_comment', 'service_comment', 'status',
+        'incident_details', 'incident_type', 'work_type', 'number_of_times', 'payment_request_date',
+        'closing_serial_number', 'billing_details', 'payment_request_serial_number', 'cost', 'price', 'afford_by',
+        'is_recorded', 'comment', 'created_at', 'updated_at', 'is_printed'
+    ]
 ];

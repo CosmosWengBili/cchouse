@@ -25,7 +25,7 @@
                             </div>
 
                             <div class="d-flex justify-content-center">
-                                <button class="mt-5 btn btn-success" type="submit">送出</button>
+                                <button class="mt-5 btn btn-block btn-warning" type="submit">送出</button>
                             </div>
                         </form>
                     </div>
@@ -39,7 +39,7 @@
     <template id="basic_template">
         <div class="duplicate" data-form-index="0">
             <div class="d-flex justify-content-between">
-                <h3 class="mt-3">基本資料</h3>
+                <h3 class="mt-3">房東資料</h3>
                 <button type="button" class="btn btn-xs btn-danger align-self-center delete-basic">刪除</button>
             </div>
             <table class="table table-bordered">
@@ -190,15 +190,15 @@
                 </tbody>
             </table>
             <div class="row">
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-6">
                     <h3 class="mt-3 text-center">第三方代理文件</h3>
                     @include('documents.multiinputs', ['documentType' => 'third_party_file', 'documents' => $data['third_party_files']])
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-6">
                     <h3 class="mt-3 text-center">聯絡資料</h3>
                     @include('landlord_fast.contact_info_form', ['prefix' => 'contact_infos', 'contact_infos' => $data['contact_infos']])
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12">
                     <h3 class="mt-3 text-center">代理人</h3>
                     @include('landlord_fast.agent_form', ['prefix' => 'agents', 'agents' => $data['agents']])
                 </div>
@@ -209,7 +209,7 @@
     <template id="contract_template">
         <div class="duplicate" data-form-index="0">
             <div class="d-flex justify-content-between">
-                <h3 class="mt-3">基本資料</h3>
+                <h3 class="mt-3">合約資料</h3>
                 <button type="button" class="btn btn-xs btn-outline-danger align-self-center delete-basic">刪除</button>
             </div>
             <table class="table table-bordered">
@@ -459,6 +459,20 @@
                             </select>
                     </td>
                 </tr>
+                <tr>
+                    <td>@lang("model.LandlordContract.withdrawal_revenue_distribution")</td>
+                    <td>
+                        <input
+                            class="form-control form-control-sm"
+                            type="number"
+                            name="withdrawal_revenue_distribution"
+                            placeholder="請輸入 0.5, 0.6..."
+                            value="{{ isset($data["withdrawal_revenue_distribution"]) ? $data['withdrawal_revenue_distribution'] : '' }}"
+                        />
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
                 </tbody>
             </table>
 
@@ -478,7 +492,7 @@
                     return;
                 }
 
-                $(this).parents('div.duplicate').slideUp(400, () => { $(this).remove() })
+                $(this).parents('div.duplicate').slideUp(400, () => { $(this).parents('div.duplicate').remove() })
             })
 
             $(document).on('change', 'select.invoice_collection_method', function () {
@@ -593,6 +607,7 @@
 
 
         const rules = {
+            // landlords
             name: {
                 required: true,
             },
@@ -610,26 +625,74 @@
             account_number: {
                 digits: true
             },
-            invoice_mailing_address: {
-                email: true
-            },
             invoice_collection_number: {
                 digits: true
+            },
+            //landlord_contracts
+            commission_start_date: {
+                required: true,
+            },
+            commission_end_date: {
+                required: true,
+            },
+            rental_decoration_free_start_date: {
+                required: true,
+            },
+            rental_decoration_free_end_date: {
+                required: true,
+            },
+            charter_fee: {
+                required: true
+            },
+            taxable_charter_fee: {
+                required: true
+            },
+            rent_collection_time: {
+                required: true
+            },
+            deposit_month_count: {
+                required: true
             },
         };
 
         const messages = {
-                name: {
-                    required: '必須輸入'
-                },
-                certificate_number: {
-                    required: '必須輸入'
-                },
-                bank_code: {
-                    minlength: "只能輸入 {0} 個數字",
-                    maxlength: "只能輸入 {0} 個數字",
-                },
-            };
+            //landlords
+            name: {
+                required: '必須輸入'
+            },
+            certificate_number: {
+                required: '必須輸入'
+            },
+            bank_code: {
+                minlength: "只能輸入 {0} 個數字",
+                maxlength: "只能輸入 {0} 個數字",
+            },
+            //landlord_contracts
+            commission_start_date: {
+                required: '必須輸入',
+            },
+            commission_end_date: {
+                required: '必須輸入',
+            },
+            rental_decoration_free_start_date: {
+                required: '必須輸入',
+            },
+            rental_decoration_free_end_date: {
+                required: '必須輸入',
+            },
+            charter_fee: {
+                required: '必須輸入'
+            },
+            taxable_charter_fee: {
+                required: '必須輸入'
+            },
+            rent_collection_time: {
+                required: '必須輸入'
+            },
+            deposit_month_count: {
+                required: '必須輸入'
+            },
+        };
 
         // basic form validation below
         $.validator.addClassRules('name', {
@@ -639,41 +702,31 @@
             required: true
         });
         $.validator.addClassRules('birth', {
-            required: true,
+            dateISO: true,
         });
         $.validator.addClassRules('bank_code', {
-            required: true,
             digits: true,
             minlength: 3,
             maxlength: 3,
         });
         $.validator.addClassRules('account_number', {
-            required: true,
             digits: true
         });
-        $.validator.addClassRules('invoice_mailing_address', {
-            required: true,
-            email: true
-        });
         $.validator.addClassRules('invoice_collection_number', {
-            required: true,
             digits: true
         });
 
         // contract form validation below
-        $.validator.addClassRules('warranty_start_date', {
+        $.validator.addClassRules('commission_start_date', {
             required: true,
         });
-        $.validator.addClassRules('warranty_end_date', {
+        $.validator.addClassRules('commission_end_date', {
             required: true,
         });
         $.validator.addClassRules('rental_decoration_free_start_date', {
             required: true,
         });
         $.validator.addClassRules('rental_decoration_free_end_date', {
-            required: true,
-        });
-        $.validator.addClassRules('agency_service_fee', {
             required: true,
         });
         $.validator.addClassRules('charter_fee', {
@@ -683,12 +736,6 @@
             required: true,
         });
         $.validator.addClassRules('rent_collection_time', {
-            required: true,
-        });
-        $.validator.addClassRules('rent_adjusted_date', {
-            required: true,
-        });
-        $.validator.addClassRules('adjust_ratio', {
             required: true,
         });
         $.validator.addClassRules('deposit_month_count', {

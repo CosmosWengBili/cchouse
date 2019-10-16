@@ -125,6 +125,7 @@ class ReverseTenantPayments
                 'virtual_account'    => $virtualAccount,
                 'paid_at'            => $paidAt,
                 'tenant_contract_id' => $tenantContract->id,
+                'receipt_type'       => '發票'
             ];
 
             // previously paid total amount for this tenant payment(which is not enough)
@@ -146,12 +147,24 @@ class ReverseTenantPayments
                     'charge_off_date'    => $paidAt,
                 ]);
 
-                // generate a pay log
+                // Set payLogData
                 $payLogData['amount'] = $shouldPayAmount;
+                if( $payment->collected_by == '房東'){
+                    $payLogData['receipt_type'] = '收據';
+                }
                 $payLog = $payment->payLogs()->create($payLogData);
-                if ($payment->due_time->gt($paidAt)) {
+                // Error if reversal next period payment( set magic number temporarily )
+                if ( $payment->due_time->diff($paidAt)->days > 28) {
                     $this->createReversalErrorCase('溢繳入帳', $payLog);
                 }
+
+                // previously paid total amount for this tenant payment(which is not enough)
+                // it will be 0 if the payment wasn't paid before
+                $alreadyPaid = $payment->payLogs->sum('amount');
+
+                // by default(the tenant payment wasn't paid before),
+                // the amount missing(or should be paid) is the amount of this tenant payment
+                $shouldPayAmount = $payment->amount - $alreadyPaid;
 
                 // determine who gets the income
                 $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
@@ -182,7 +195,8 @@ class ReverseTenantPayments
                 // we will still generate a pay log for it
                 $payLogData['amount'] = $amount;
                 $payLog = $payment->payLogs()->create($payLogData);
-                if ($payment->due_time->gt($paidAt)) {
+                // Error if reversal next period payment( set magic number temporarily )
+                if ($payment->due_time->diff($paidAt)->days > 28) {
                     $this->createReversalErrorCase('溢繳入帳', $payLog);
                 }
                 if ($payment->subject == '租金'){
@@ -211,7 +225,6 @@ class ReverseTenantPayments
     function createReversalErrorCase(string $name, PayLog $payLog) {
         ReversalErrorCase::create(['name' => $name,  'date' => Carbon::now(), 'pay_log_id' => $payLog->id,]);
     }
-
 
     private function recordSumPaid(TenantContract $tenantContract, int $amount) {
         $tenantContract->sum_paid += $amount;

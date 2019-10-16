@@ -58,10 +58,9 @@ trait WithExtraInfo {
                         ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
-                        ->leftJoin('receiptables', function (JoinClause $query) {
-                            $query->on('company_incomes.id', '=', 'receiptables.receiptable_id');
-                            $query->join('receipts', 'receipts.id', '=', 'receiptables.receiptable_id')
-                                ->where('receiptables.receiptable_type', '=', 'App\CompanyIncome');
+                        ->leftJoin('receipts', function (JoinClause $query) {
+                            $query->on('company_incomes.id', '=', 'receipts.receiptable_id')
+                                  ->where('receipts.receiptable_type', '=', 'App\CompanyIncome');
                         })
                         ->where('incomable_type', 'App\TenantContract');
                 break;

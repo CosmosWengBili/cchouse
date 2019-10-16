@@ -7,12 +7,12 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-x: auto">
                 <table id="record-table" class="display table" style="width:100%">
                     <thead>
-                        @foreach ( array_keys($maintenances[0]) as $field)
+                    @foreach ( array_keys($maintenances[0]) as $field)
                         <th>@lang("model.Maintenance.{$field}")</th>
-                        @endforeach
+                    @endforeach
                     </thead>
                     <tbody>
                     </tbody>
@@ -24,4 +24,3 @@
         </div>
     </div>
 </div>
-    

@@ -89,6 +89,11 @@ class Kernel extends ConsoleKernel
                 ->name('Set Monthly Report CarryFoward')
                 ->dailyAt('05:00')
                 ->runInBackground();
+
+        $schedule->call(ScheduleService::make('genarateDepositInterest'))
+                ->name('Generate Deposit interest every month')
+                ->monthlyOn(Carbon::now()->endOfMonth()->day, '05:30')
+                ->runInBackground();
     }
 
     /**

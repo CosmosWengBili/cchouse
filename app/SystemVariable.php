@@ -13,10 +13,13 @@ class SystemVariable extends Model
     public static function variables() {
         return collect([
             [ // Maintenance Group
-                ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10, 'group' => 'Maintenance', 'order' => 0],
+                ['name' => '維修清潔狀態通知天數', 'code' => 'MaintenanceNotifyRequiredDays', 'type' => 'integer', 'defaultValue' => 10, 'group' => 'Maintenances', 'order' => 0],
             ],
             [ // Payment Group
                 ['name' => '結帳鎖', 'code' => 'PaymentLock', 'type' => 'boolean', 'defaultValue' => true, 'group' => 'Payment', 'order' => 0],
+            ],
+            [ // Payment Group
+                ['name' => '押金設算息', 'code' => 'depositRate', 'type' => 'float', 'defaultValue' => 0.00087, 'group' => 'Tenant', 'order' => 1],
             ],
             // Reversal Group
             collect(config('finance.reversal'))->map(function($v, $i) {

@@ -98,7 +98,7 @@
             $notificationModal.modal('show');
 
             if (!isRead) {
-                $.post('notifications/' + id, {} , function () {
+                $.post('/notifications/' + id, {} , function () {
                     const count = Number($countSpan.text());
                     const newCount = count - 1;
                     if (newCount > 0) {

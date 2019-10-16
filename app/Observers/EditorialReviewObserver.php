@@ -3,8 +3,9 @@
 namespace App\Observers;
 
 use App\Building;
+use App\Classes\NotifyUsers;
+use App\Classes\TextContent;
 use App\EditorialReview;
-use App\Notifications\TextNotify;
 use App\Shareholder;
 use App\User;
 use Carbon\Carbon;
@@ -82,70 +83,6 @@ class EditorialReviewObserver
     }
 
     /**
-     * @param User $user
-     * @param EditorialReview $editorialReview
-     * @param string $department
-     */
-    private function notifyByDepartment(User $user, EditorialReview $editorialReview, string $department)
-    {
-        $now = Carbon::now();
-        $name = collect($editorialReview)->get('original_value')['name'];
-        $content = "{$department}通知： 股東( {$name} )資料已於 {$now} 審核通過。";
-        $user->notify(
-            new TextNotify($content)
-        );
-    }
-
-    /**
-     * 通知當前審核人員
-     * @param EditorialReview $editorialReview
-     * @param string          $status
-     * @param string          $url
-     */
-    private function notifySelf(EditorialReview $editorialReview, string $status, string $url='')
-    {
-        $now = Carbon::now();
-        $authId = auth()->id();
-
-        /** @var User $user */
-        $user = User::find($authId);
-        if ($user) {
-            if ($url === '') {
-                $content = "您發起的修改「{$status}」({$now})";
-            } else {
-                $content = "您發起的修改「{$status}」，請查看此<a href='{$url}'>連結</a>({$now})";
-            }
-            $user->notify(
-                new TextNotify($content)
-            );
-        }
-    }
-
-    /**
-     * 通知編輯人員
-     * @param EditorialReview $editorialReview
-     * @param string          $status
-     * @param string          $url
-     */
-    private function notifyEditor(EditorialReview $editorialReview, string $status, string $url='')
-    {
-        $now = Carbon::now();
-
-        /** @var User $user */
-        $user = User::find($editorialReview->edit_user);
-        if ($user) {
-            if ($url === '') {
-                $content = "您發起的修改「{$status}」({$now})";
-            } else {
-                $content = "您發起的修改「{$status}」，請查看此<a href='{$url}'>連結</a>({$now})";
-            }
-            $user->notify(
-                new TextNotify($content)
-            );
-        }
-    }
-
-    /**
      * 當編輯 shareholder 資料時 不直接更新該筆資料 而是將該筆更新內容儲存至 EditorialReview
      * 然後通知相關人員
      * @param EditorialReview $editorialReview
@@ -153,7 +90,7 @@ class EditorialReviewObserver
     private function notifyAfterCreatedEditableTypeIsShareHolder(EditorialReview $editorialReview)
     {
         $now = now();
-        $editor = auth()->user();
+        $editor = User::find(auth()->user()->id);
 
         if ($editor) {
             if ($editor->belongsToDepartment('管理處')) {
@@ -164,9 +101,8 @@ class EditorialReviewObserver
                 $content = "{$editor->name} 已於 {$now} 編輯一筆房東相關的資料 已進入待審核";
             }
 
-            User::first()->notify(
-                new TextNotify($content)
-            );
+            $content = new TextContent($content);
+            (new NotifyUsers($editor))->notifyOneUser(User::first(), $content);
         }
     }
 
@@ -178,23 +114,24 @@ class EditorialReviewObserver
     {
         $nowStatus = $editorialReview->status;
         $oldStatus = $editorialReview->getOriginal('status');
+        $editor = User::find(auth()->user()->id);
 
         $url = route('editorialReviews.show', $editorialReview->id);
-        $this->notifyEditor($editorialReview, $nowStatus, $url);
+        $notify = new NotifyUsers($editor);
+        $content = new TextContent("您發起的修改「{$nowStatus}」");
+        $content->makeUrl('連結', $url);
+        $notify->notifySelf($content);
 
         // 只有在更新 status 時
         if ($nowStatus !== $oldStatus && $nowStatus === '不通過') {
 
         } elseif ($nowStatus !== $oldStatus && $nowStatus === '已通過') {
-
             // 通知管理單位及帳務單位
-            User::get()->each(function (User $user) use ($editorialReview) {
-                if ($user->belongsToDepartment('管理處')) {
-                    $this->notifyByDepartment($user, $editorialReview, '管理處');
-                } elseif ($user->belongsToDepartment('帳務處')) {
-                    $this->notifyByDepartment($user, $editorialReview, '帳務處');
-                }
-            });
+            $notify = new NotifyUsers($editor);
+            $now = Carbon::now();
+            $name = collect($editorialReview)->get('original_value')['name'];
+            $content = (new TextContent())->setContent("股東( {$name} )資料已於 {$now} 審核通過。");
+            $notify->notifyByDepartment($content);
         }
     }
 

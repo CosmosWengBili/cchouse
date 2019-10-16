@@ -79,9 +79,11 @@ Route::group(['middleware' => 'internal.protect'], function () {
             });
 
             // receipts
-            Route::get('receipts', 'ReceiptController@index')->name('receipts.index');;
+            Route::get('receipts', 'ReceiptController@index')->name('receipts.index');
+            ;
             Route::get('receipts/edit_invoice', 'ReceiptController@edit_invoice')->name('receipts.edit_invoice');
-            Route::post('receipts/update_invoice', 'ReceiptController@update_invoice')->name('receipts.update_invoice');;
+            Route::post('receipts/update_invoice', 'ReceiptController@update_invoice')->name('receipts.update_invoice');
+            ;
 
             // notifications
             Route::get('notifications', 'NotificationController@index')->name('notifications.index');
@@ -125,6 +127,3 @@ Route::group(['middleware' => 'internal.protect'], function () {
     Route::get('electricityPaymentReport/{data}', 'TenantContractController@electricityPaymentReport')
            ->name('tenantContracts.electricityPaymentReport');
 });
-
-
-

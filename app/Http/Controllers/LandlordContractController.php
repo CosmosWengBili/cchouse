@@ -103,6 +103,7 @@ class LandlordContractController extends Controller
                 'required',
                 Rule::in(config('enums.landlord_contracts.gender_limit'))
             ],
+            'withdrawal_revenue_distribution' => 'nullable'
         ]);
 
         $landlordContract = LandlordContract::create($validatedData);
@@ -188,6 +189,7 @@ class LandlordContractController extends Controller
                 'required',
                 Rule::in(config('enums.landlord_contracts.gender_limit'))
             ],
+            'withdrawal_revenue_distribution' => 'nullable'
         ]);
 
         $landlordContract->update($validatedData);

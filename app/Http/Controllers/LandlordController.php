@@ -258,6 +258,7 @@ class LandlordController extends Controller
                 'required',
                 Rule::in(config('enums.landlord_contracts.gender_limit'))
             ],
+            'withdrawal_revenue_distribution' => 'nullable'
         ]);
         $validatedLandlords = $request->validate([
             'name.*' => 'required|max:255',

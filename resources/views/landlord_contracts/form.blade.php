@@ -273,8 +273,16 @@
                                     @endforeach
                                     </select>
                                 </td>
-                                <td></td>
-                                <td></td>
+                                <td>@lang("model.LandlordContract.withdrawal_revenue_distribution")</td>
+                                <td>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        type="number"
+                                        name="withdrawal_revenue_distribution"
+                                        placeholder="請輸入 0.5, 0.6..."
+                                        value="{{ isset($data["withdrawal_revenue_distribution"]) ? $data['withdrawal_revenue_distribution'] : '' }}"
+                                    />
+                                </td>
                             </tr>
                             </tbody>
                         </table>

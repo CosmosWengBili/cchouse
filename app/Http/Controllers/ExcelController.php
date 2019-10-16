@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Input;
 
 use App\Exports\MorphExport;
+use App\Exports\InvoiceExport;
 use App\Exports\ReceiptExport;
 use App\Imports\MorphImport;
+use App\Imports\InvoiceImport;
 
 use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 
 class ExcelController extends Controller
 {
@@ -81,28 +84,60 @@ class ExcelController extends Controller
     {
         switch($function){
             case 'invoice':
+                $service = new InvoiceService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $invoiceData = ReceiptService::makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
-
+                $invoiceData = [];
+                $initData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                foreach( $initData as $receiverData ){
+                    $invoiceData = array_merge($invoiceData, $receiverData);
+                }
                 return Excel::download(
-                    new ReceiptExport($invoiceData, 'invoice'),
+                    new InvoiceExport($invoiceData),
                     '發票報表.xlsx'
                 );
             case 'receipt':
-                $start_date = Input::get('start_date');
-                $end_date = Input::get('end_date');
-                $receiptData = ReceiptService::makeReceiptData(Carbon::parse($start_date), Carbon::parse($end_date));
+                $service = new ReceiptService();
+                $receipt_year = Input::get('receipt_year');
+                $receipt_month = Input::get('receipt_month');
+                $receiptData = $service->makeReceiptData($receipt_year, $receipt_month);
 
                 return Excel::download(
-                    new ReceiptExport($receiptData, 'receipt'),
+                    new ReceiptExport($receiptData['receipt'], $receiptData['receipt_building']),
                     '收據報表.xlsx'
                 );
-
-
                 break;
             default:
                 break;
         }
+    }
+
+    // Import specific file
+    public function import_by_function(Request $request, $function)
+    {
+        switch($function){
+            case 'invoice':
+                if ($request->hasFile('excel')) {
+                    try {
+                        $import = new InvoiceImport();
+                        Excel::import($import, $request->file('excel'));
+                        if($import->getResult()['status'] == 'error'){
+                            $request->session()->flash('status', '匯入資料有問題，'.$import->getResult()['msg']);
+                            return redirect()->back();
+                        }
+
+                    } catch (\Throwable $th) {
+                        $request->session()->flash('status', '匯入失敗:'.$th->getMessage().' 檔案:'.$th->getFile().' 行數:'.$th->getLine());
+                        return redirect()->back();
+                    }
+                    $request->session()->flash('status', '匯入成功');
+                    return redirect()->back();
+                }
+                $request->session()->flash('status', '無匯入 Excel');
+            default:
+                break;
+        }
+        $request->session()->flash('status', '無對應匯入功能');
+        return redirect()->back();        
     }
 }

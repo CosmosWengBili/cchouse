@@ -8,7 +8,6 @@ use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 use App\Deposit;
 use App\Services\DepositService;
-use App\Services\ReceiptService;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
 
@@ -103,7 +102,6 @@ class DepositController extends Controller
     {
         $validatedData = $this->validatedData($request);
 
-        ReceiptService::compareReceipt($deposit, $validatedData);
         DepositService::update($deposit, $validatedData);
 
         return redirect($request->_redirect);

@@ -123,9 +123,6 @@
                 amount: {
                     required: true,
                 },
-                comment: {
-                    required: true,
-                },
                 room_id: {
                     required: true
                 },
@@ -145,9 +142,6 @@
                     required: '必須輸入'
                 },
                 amount: {
-                    required: '必須輸入',
-                },
-                comment: {
                     required: '必須輸入',
                 },
                 room_id: {

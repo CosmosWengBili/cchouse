@@ -6,18 +6,19 @@ use App\CompanyIncome;
 use App\DebtCollection;
 use App\LandlordPayment;
 use App\Maintenance;
+use App\Room;
 use App\Notifications\TextNotify;
-use App\Responser\NestedRelationResponser;
 use App\TenantContract;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Room;
-
-use App\Responser\FormDataResponser;
 use Illuminate\Support\Facades\DB;
+
+use App\Responser\NestedRelationResponser;
+use App\Responser\FormDataResponser;
+use App\Services\InvoiceService;
 
 use App\Traits\Controllers\HandleDocumentsUpload;
 
@@ -177,7 +178,11 @@ class MaintenanceController extends Controller
             'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
-        $maintenance = $maintenance->update($validatedData);
+        
+        $result = InvoiceService::compareReceipt($maintenance, $validatedData);
+        if(!$result){
+            $maintenance->update($validatedData);
+        }
 
         return redirect($request->_redirect);
     }

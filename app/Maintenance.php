@@ -126,6 +126,14 @@ class Maintenance extends Model implements AuditableContract
         return $price - $cost;
     }
 
+    /**
+     * Get the receipts of this maintenance.
+     */
+    public function receipts()
+    {
+        return $this->morphMany('App\Receipt', 'receiptable');
+    }
+    
     public function companyIncomes()
     {
         return $this->morphMany('App\CompanyIncome', 'incomable');

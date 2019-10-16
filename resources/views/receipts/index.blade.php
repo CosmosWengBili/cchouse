@@ -12,11 +12,11 @@
                         role="tab"
                         >發票報表</a>
                 </li>
-                <li class="nav-item {{ $type == "receipt" ? 'active' : ''  }}">
+                <li class="nav-item {{ $type == "receipt-all" ? 'active' : ''  }}">
                         <a
-                        class="nav-link {{ $type == "receipt"  ? 'active' : ''  }}"
+                        class="nav-link {{ $type == "receipt-all"  ? 'active' : ''  }}"
                         data-toggle="tab"
-                        href="#receipt-pane"
+                        href="#receipt-all-pane"
                         role="tab"
                         >收據報表</a>
                 </li>
@@ -25,7 +25,7 @@
                 <div class="tab-pane fade {{ $type == "invoice" ? 'show active' : ''  }}" id="invoice-pane" role="tabpanel">
                     @include('receipts.invoice_table', ['objects' => $invoiceData])
                 </div>
-                <div class="tab-pane fade {{ $type == "receipt" ? 'show active' : ''  }}" id="receipt-pane" role="tabpanel">
+                <div class="tab-pane fade {{ $type == "receipt" ? 'show active' : ''  }}" id="receipt-all-pane" role="tabpanel">
                     @include('receipts.receipt_table', ['objects' => $receiptData])
                 </div>
             </div>

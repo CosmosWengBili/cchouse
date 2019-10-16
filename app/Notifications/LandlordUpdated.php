@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 use App\Landlord;
 
-class LandlordIdentityUpdated extends Notification
+class LandlordUpdated extends Notification
 {
     use Queueable;
 
@@ -18,9 +18,10 @@ class LandlordIdentityUpdated extends Notification
      *
      * @return void
      */
-    public function __construct(Landlord $landlord)
+    public function __construct($model, $key)
     {
-        $this->landlord = $landlord;
+        $this->model = $model;
+        $this->key = $key;
     }
 
     /**
@@ -56,8 +57,10 @@ class LandlordIdentityUpdated extends Notification
      */
     public function toArray($notifiable)
     {
+        $url = env('APP_URL').'/'.Str::camel($this->model->getTable()).'/'.$this->model->id.'';
         return [
-            'content' => '房東編號' . $this->landlord->id . '資料更新，請查看。'
+            'content' => __('model.'.class_basename($this->model).'.model_name').'編號 ' . $this->model->id . ' 資料的欄位 '.__('model.'.class_basename($this->model).'.'.$this->key).' 已被更新，請查看。 '
+            .'<a target="_blank" href="'.$url.'">資料連結</a>'
         ];
     }
 }

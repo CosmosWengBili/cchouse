@@ -14,7 +14,6 @@ use App\DebtCollection;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
-use App\Services\ReceiptService;
 
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -150,7 +149,6 @@ class DebtCollectionController extends Controller
             'comment' => 'nullable',
             'collector_id' => 'sometimes|exists:users,id'
         ]);
-        ReceiptService::compareReceipt($debtCollection, $validatedData);
         $debtCollection->update($validatedData);
 
         return redirect($request->_redirect);

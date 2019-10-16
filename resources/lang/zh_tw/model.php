@@ -51,6 +51,7 @@ return [
         'fax_number' => '傳真',
     ],
     'Landlord' => [
+        'model_name' => '房東',
         'id' => '編號',
         'name' => '姓名',
         'certificate_number' => '身份字號/統編',
@@ -78,6 +79,7 @@ return [
         'updated_at' => '更新時間',
     ],
     'LandlordContract' => [
+        'model_name' => '房東合約',
         'id' => '編號',
         'commission_type' => '承租方式',
         'commission_start_date' => '委託起',
@@ -259,6 +261,8 @@ return [
     'Building' => [
         'id' => '編號',
         'title' => '簡稱',
+        'buidling_code' => '物件代碼',
+        'group' => '組別',
         'city' => '縣市',
         'district' => '區域',
         'address' => '地址',

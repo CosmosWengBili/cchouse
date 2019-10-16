@@ -37,13 +37,13 @@ class SystemVariableSeeder extends Seeder
             'value' => config('finance.view.default_records_in_index_blade', 200),
         ]);
         DB::table('system_variables')->insert([
-            'group' => 'Maintenance',
+            'group' => 'Maintenances',
             'code'  => 'MaintenanceNotifyRequiredDays',
             'value' => 10,
         ]);
         DB::table('system_variables')->insert([
             'group' => 'Management',
-            'code'  => 'deposit_rate',
+            'code'  => 'depositRate',
             'value' => 0.00087,
         ]);
     }

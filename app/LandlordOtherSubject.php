@@ -18,19 +18,22 @@ class LandlordOtherSubject extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-
+    
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
-     * Get the building of this landlord other subject.
-     */
-    public function building()
+     * Get the room of this landlord other subject.
+    */
+    public function room()
     {
         return $this->belongsTo('App\Room');
     }
 
-    public function room()
+    /**
+     * Get the receipts of this landlord other subject.
+     */
+    public function receipts()
     {
-        return $this->belongsTo('App\Room');
+        return $this->morphMany('App\Receipt', 'receiptable');
     }
 }

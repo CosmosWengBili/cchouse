@@ -5,7 +5,7 @@ namespace App\Services;
 use App\KeyRequest;
 use App\User;
 use App\Notifications\KeyRequestFinished;
-use App\Notifications\LandlordIdentityUpdated;
+use App\Notifications\LandlordUpdated;
 use App\Notifications\ReceiptUpdated;
 
 class NotificationService
@@ -20,10 +20,13 @@ class NotificationService
             ->first();
         $keyRequest->requestUser->notify(new KeyRequestFinished($keyRequest));
     }
-
-    public static function notifyLandlordIdentityUpdated($landlord)
+    
+    public static function notifyLandlordUpdated($model, $key)
     {
-        User::first()->notify(new LandlordIdentityUpdated($landlord));
+        $users = User::group('帳務組')->get();
+        foreach( $users as $user ){
+            $user->notify(new LandlordUpdated($model, $key));
+        }
     }
 
     public static function notifyReceiptUpdated($model)

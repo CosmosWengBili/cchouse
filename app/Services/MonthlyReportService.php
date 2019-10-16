@@ -355,10 +355,10 @@ class MonthlyReportService
                 if ($shareholder->distribution_method == '浮動') {
                     $total_revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
                     if ($total_revenue > 0) {
-                        $distribution_fee = $total_revenue * $shareholder->investment_amount;
+                        $distribution_fee = round($total_revenue * $shareholder->distribution_rate/100);
                     }
                 } elseif ($shareholder->distribution_method == '固定') {
-                    $distribution_fee = $shareholder->investment_amount;
+                    $distribution_fee = $shareholder->distribution_amount;
                     $data['meta']['total_expense'] += $distribution_fee;
                 }
 
@@ -402,10 +402,10 @@ class MonthlyReportService
         if ($shareholder->distribution_method === '浮動') {
             $total_revenue = $this->getTotalRevenue($landlordContract, $month, $year);
             if ($total_revenue > 0) {
-                $distribution_fee = $total_revenue * $shareholder->investment_amount;
+                $distribution_fee = round($total_revenue * $shareholder->distribution_rate/100);
             }
         } elseif ($shareholder->distribution_method === '固定') {
-            $distribution_fee = $shareholder->investment_amount;
+            $distribution_fee = $shareholder->distribution_amount;
         }
 
         return $distribution_fee;
@@ -433,7 +433,7 @@ class MonthlyReportService
 
         return $total_revenue;
     }
-
+    
     public function getEletricityReport(LandlordContract $landlordContract, $month, $year) {
 
         $data = [

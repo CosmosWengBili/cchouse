@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\LandlordOtherSubject;
+use App\Services\InvoiceService;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use Illuminate\Http\Request;
@@ -75,8 +76,10 @@ class LandlordOtherSubjectController extends Controller
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $landlordOtherSubject->update($validatedData);
-
+        $result = InvoiceService::compareReceipt($landlordOtherSubject, $validatedData);
+        if(!$result){
+            $landlordOtherSubject->update($validatedData);
+        }
         return redirect($request->_redirect);
     }
 

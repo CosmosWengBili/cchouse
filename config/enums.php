@@ -300,7 +300,7 @@ return [
         'data_table_id',
         'company_number',
         'company_name',
-        'room_code',
+        'building_code',
         'room_number',
         'deposit_date',
         'actual_deposit_date',
@@ -310,7 +310,7 @@ return [
         'comment',
         'subtotal'
     ],
-    'receipt'=>[
+    'receipt_building'=>[
         '物件代碼',
         '組別',
         '縣市',
@@ -324,8 +324,8 @@ return [
         '支出年',
         '租金票到期日'
     ],
-    'receipt_en' =>[
-        'room_code',
+    'receipt_building_en' =>[
+        'building_code',
         'group',
         'city',
         'district',
@@ -337,6 +337,22 @@ return [
         'rent_collection_time',
         'rent_collection_year',
         'commission_end_date'
+    ],
+    'receipt'=>[
+        '物件代碼',
+        '房號',
+        '房客姓名',
+        '匯款日',
+        '金額',
+        '組別',
+    ],
+    'receipt_en' =>[
+        'building_code',
+        'room_number',
+        'tenant_name',
+        'paid_at',
+        'amount',
+        'group'
     ],
     'deposits' => [
         'returned_method' => [

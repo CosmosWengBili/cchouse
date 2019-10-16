@@ -1,44 +1,25 @@
 <?php
-
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use App\Exports\Sheets\ReceiptExportSheet;
 
-class ReceiptExport implements FromCollection, WithHeadings
+class ReceiptExport implements WithMultipleSheets 
 {
-    private $data;
-    private $type;
+    private $receiptData;
+    private $buildingData;
 
-    public function __construct($data, $type)
+    public function __construct($receiptData, $buildingData)
     {
-        $this->data = $data;
-        $this->type = $type;
+        $this->receiptData = $receiptData;
+        $this->buildingData = $buildingData;
     }
-
-    public function collection()
+ 
+    public function sheets(): array
     {
-        if( $this->type == 'invoice' ){
-            $header = config('enums.invoice_en');
-        }
-        else{
-            $header = config('enums.receipt_en');
-        }
-        
-
-        $array = array_map(function($v)use($header){
-            return array_replace(array_flip($header), $v);
-        }, $this->data);
-        return collect($array);
-    }
-
-    public function headings(): array
-    {
-        if( $this->type == 'invoice' ){
-            return config('enums.invoice');
-        }
-        else{
-            return config('enums.receipt');
-        }
+        return [
+            new ReceiptExportSheet($this->receiptData, '收據'),
+            new ReceiptExportSheet($this->buildingData, '物件'),
+        ];
     }
 }

@@ -9,8 +9,6 @@ use App\LandlordContract;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 
-use App\Services\LandlordService;
-
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
 
@@ -178,7 +176,7 @@ class LandlordController extends Controller
             'invoice_mailing_address' => 'present|max:255',
         ]);
 
-        LandlordService::update($landlord, $validatedData);
+        $landlord->update($validatedData);
 
         $this->handleDocumentsUpload($landlord, ['third_party_file']);
 

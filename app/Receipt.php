@@ -22,53 +22,32 @@ class Receipt extends Model implements AuditableContract
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
-     * Get the tenant contracts.
+     * Get the pay logs.
      */
-    public function tenantContracts()
+    public function payLogs()
     {
-        return $this->morphedByMany('App\TenantContract', 'receiptable');
+        return $this->morphedByMany('App\PayLog', 'receiptable');
     }
 
     /**
-     * Get the tenant payments.
+     * Get the maintenances.
      */
-    public function tenantPayments()
+    public function maintenances()
     {
-        return $this->morphedByMany('App\TenantPayment', 'receiptable');
+        return $this->morphedByMany('App\Maintenance', 'receiptable');
     }
 
     /**
-     * Get the tenant electricity payments.
+     * Get the landlordOtherSubjects.
      */
-    public function tenantElectricityPayments()
+    public function landlordOtherSubjects()
     {
-        return $this->morphedByMany('App\TenantElectricityPayment', 'receiptable');
+        return $this->morphedByMany('App\LandlordOtherSubject', 'receiptable');
     }
 
     /**
-     * Get the tenant landlord payments.
+     * Get the companyIncomes.
      */
-    public function landlordPayments()
-    {
-        return $this->morphedByMany('App\LandlordPayment', 'receiptable');
-    }
-
-    /**
-     * Get the tenant deposits.
-     */
-    public function deposits()
-    {
-        return $this->morphedByMany('App\Deposit', 'receiptable');
-    }
-
-    /**
-     * Get the tenant debt collections.
-     */
-    public function debtCollections()
-    {
-        return $this->morphedByMany('App\DebtCollection', 'receiptable');
-    }
-
     public function companyIncomes()
     {
         return $this->morphedByMany('App\CompanyIncome', 'receiptable');

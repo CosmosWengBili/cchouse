@@ -7,7 +7,7 @@ use App\Imports\TenantElectricityPaymentImport;
 use App\PayLog;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
-use App\Services\ReceiptService;
+use App\Services\InvoiceService;
 use App\TenantContract;
 use App\TenantElectricityPayment;
 use Carbon\Carbon;
@@ -101,8 +101,11 @@ class TenantElectricityPaymentController extends Controller
             'charge_off_date' => '',
             'comment' => '',
         ]);
-        ReceiptService::compareReceipt($tenantElectricityPayment, $validatedData);
-        $tenantElectricityPayment->update($validatedData);
+
+        $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
+        if(!$result){
+            $tenantElectricityPayment->update($validatedData);
+        }
 
         return redirect($request->_redirect);
     }

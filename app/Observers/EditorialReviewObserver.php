@@ -9,6 +9,7 @@ use App\EditorialReview;
 use App\Shareholder;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class EditorialReviewObserver
 {
@@ -43,7 +44,8 @@ class EditorialReviewObserver
             case 'App\Shareholder':
                 $this->notifyAfterUpdatedEditableTypeIsShareHolder($editorialReview);
                 if ($editorialReview->status === '已通過') {
-                    $this->doShareholderUpdate($editorialReview);
+                    $model = $this->doModelUpdate($editorialReview);
+                    $this->doShareholderUpdate($editorialReview, $model);
                 }
                 break;
         }
@@ -94,11 +96,11 @@ class EditorialReviewObserver
 
         if ($editor) {
             if ($editor->belongsToDepartment('管理處')) {
-                $content = "管理處 {$editor->name} 已於 {$now} 編輯一筆房東相關的資料 已進入待審核";
+                $content = "管理處 {$editor->name} 已於 {$now} 編輯一筆股東相關的資料 已進入待審核";
             } elseif ($editor->belongsToDepartment('帳務處')) {
-                $content = "帳務處 {$editor->name} 已於 {$now} 編輯一筆房東相關的資料 已進入待審核";
+                $content = "帳務處 {$editor->name} 已於 {$now} 編輯一筆股東相關的資料 已進入待審核";
             } else {
-                $content = "{$editor->name} 已於 {$now} 編輯一筆房東相關的資料 已進入待審核";
+                $content = "{$editor->name} 已於 {$now} 編輯一筆股東相關的資料 已進入待審核";
             }
 
             $content = new TextContent($content);
@@ -124,7 +126,6 @@ class EditorialReviewObserver
 
         // 只有在更新 status 時
         if ($nowStatus !== $oldStatus && $nowStatus === '不通過') {
-
         } elseif ($nowStatus !== $oldStatus && $nowStatus === '已通過') {
             // 通知管理單位及帳務單位
             $notify = new NotifyUsers($editor);
@@ -135,23 +136,35 @@ class EditorialReviewObserver
         }
     }
 
-    private function doShareholderUpdate(EditorialReview $editorialReview)
+    /**
+     * 審核通過做更新
+     * @param EditorialReview $editorialReview
+     *
+     * @return mixed
+     */
+    private function doModelUpdate(EditorialReview $editorialReview)
     {
         // 執行原本應該做的更新
-        $extra = $editorialReview->extra_data;
         $shareholder = Shareholder::find($editorialReview->editable_id);
-
         $shareholder->update($editorialReview->edit_value);
 
+        return $shareholder;
+    }
+
+    /**
+     * @param EditorialReview $editorialReview
+     * @param Model           $model
+     */
+    private function doShareholderUpdate(EditorialReview $editorialReview, Model $model)
+    {
+        $extra = $editorialReview->extra_data;
         $building_code = array_wrap($extra['building_code']);
         // get building ids by building_code
         $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
         if (! empty($building_ids)) {
-            $shareholder->buildings()->sync($building_ids);
+            $model->buildings()->sync($building_ids);
         } else {
-            $shareholder->buildings()->sync([]);
+            $model->buildings()->sync([]);
         }
     }
-
-
 }

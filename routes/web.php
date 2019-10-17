@@ -16,7 +16,6 @@ Route::group(['middleware' => 'internal.protect'], function () {
         Route::get('/', function () {
             return view('index');
         });
-        Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
         Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
         // should be in auth
         Route::group(['middleware' => ['with.nested', 'redirect.nested']], function () {

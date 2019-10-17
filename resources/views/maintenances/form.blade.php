@@ -262,29 +262,17 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.incident_type")</td>
                                     <td>
-                                        <select
-                                            name="incident_type"
-                                            readonly
-                                            class="form-control form-control-sm"
-                                            value="{{ $data['incident_type'] ?? ''}}"
-                                        >
-                                            @foreach(config('enums.maintenance.incident_type') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
+                                        <input class="form-control form-control-sm"
+                                               readonly
+                                               value="{{ $data['incident_type'] ?? ''}}"
+                                        />
                                     </td>
                                     <td>@lang("model.Maintenance.work_type")</td>
                                     <td>
-                                        <select
-                                            name="work_type"
+                                        <input class="form-control form-control-sm"
                                             readonly
-                                            class="form-control form-control-sm"
                                             value="{{ $data['work_type'] ?? ''}}"
-                                        >
-                                            @foreach(config('enums.maintenance.work_type') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
+                                        />
                                     </td>
                                 </tr>
                                 <tr>

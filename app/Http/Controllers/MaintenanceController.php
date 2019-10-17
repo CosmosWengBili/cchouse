@@ -159,12 +159,12 @@ class MaintenanceController extends Controller
             'work_type' => 'required|max:255',
             'incident_details' => 'required',
 
-            'closed_comment' => 'required',
+            'closed_comment' => 'nullable',
             'status' => 'required|max:255',
             'number_of_times' => 'required|integer|digits_between:1,11',
-            'closing_serial_number' => 'required|max:255',
-            'billing_details' => 'required',
-            'payment_request_serial_number' => 'required|max:255',
+            'closing_serial_number' => 'nullable',
+            'billing_details' => 'nullable',
+            'payment_request_serial_number' => 'nullable',
             'payment_request_date' => 'nullable',
             'expected_service_date' => 'nullable',
             'expected_service_time' => 'nullable',
@@ -174,7 +174,7 @@ class MaintenanceController extends Controller
             'cost' => 'required|integer|digits_between:1,11',
             'price' => 'required|integer|digits_between:1,11',
             'is_recorded' => 'required|boolean',
-            'comment' => 'required',
+            'comment' => 'nullable',
             'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);

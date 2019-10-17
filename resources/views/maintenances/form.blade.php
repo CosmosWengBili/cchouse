@@ -44,7 +44,6 @@
                                             class="form-control form-control-sm set-date"
                                             type="date"
                                             name="reported_at"
-                                            data-setdate="2019-09-01"
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
                                     </td>

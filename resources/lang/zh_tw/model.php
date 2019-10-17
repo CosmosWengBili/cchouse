@@ -402,6 +402,7 @@ return [
         'room_status' => '房狀態',
         'commission_type' => '承租方式',
         'sum_paid' => '已繳總額',
+        'overdue_fine' => '約定滯納金',
         "comment" => "備註",
         'tenant_name' => "租客姓名",
         'buildings' => " 物件",

@@ -173,7 +173,7 @@
                                             class="form-control form-control-sm"
                                             type="date"
                                             name="contract_start"
-                                            value="{{ $data['contract_start'] ?? '' }}"
+                                            value="{{ \Carbon\Carbon::parse($data['contract_start'])->format('Y-m-d') }}"
                                         />
                                     </td>
                                 </tr>
@@ -184,7 +184,7 @@
                                             class="form-control form-control-sm"
                                             type="date"
                                             name="contract_end"
-                                            value="{{ $data['contract_end'] ?? '' }}"
+                                            value="{{ \Carbon\Carbon::parse($data['contract_end'])->format('Y-m-d') }}"
                                         />
                                     </td>
                                     <td>@lang("model.TenantContract.rent")</td>
@@ -223,7 +223,7 @@
                                 </tr>
                                 <tr>
                                     <td>@lang("model.TenantContract.deposit_paid")</td>
-                                    <td colspan="3">
+                                    <td>
                                         <input
                                             class="form-control form-control-sm"
                                             type="number"
@@ -231,8 +231,6 @@
                                             value="{{ $data['deposit_paid'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_calculate_method")</td>
                                     <td>
                                         <select
@@ -245,6 +243,8 @@
                                             @endforeach
                                         </select>
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.TenantContract.electricity_price_per_degree")</td>
                                     <td>
                                         <input
@@ -255,8 +255,6 @@
                                             value="{{ $data['electricity_price_per_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.electricity_price_per_degree_summer")</td>
                                     <td>
                                         <input
@@ -267,6 +265,8 @@
                                             value="{{ $data['electricity_price_per_degree_summer'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.TenantContract.110v_start_degree")</td>
                                     <td>
                                         <input
@@ -276,8 +276,6 @@
                                             value="{{ $data['110v_start_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.220v_start_degree")</td>
                                     <td>
                                         <input
@@ -287,6 +285,8 @@
                                             value="{{ $data['220v_start_degree'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.TenantContract.110v_end_degree")</td>
                                     <td>
                                         <input
@@ -296,8 +296,6 @@
                                             value="{{ $data['110v_end_degree'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.220v_end_degree")</td>
                                     <td>
                                         <input
@@ -307,6 +305,8 @@
                                             value="{{ $data['220v_end_degree'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.TenantContract.invoice_collection_method")</td>
                                     <td>
                                         <select
@@ -319,8 +319,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.TenantContract.invoice_collection_number")</td>
                                     <td>
                                         <input
@@ -330,6 +328,8 @@
                                             value="{{ $data['invoice_collection_number'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.TenantContract.commissioner_id")</td>
                                     <td>
                                         <select
@@ -351,8 +351,9 @@
                                 </tr>
                             </tbody>
                         </table>
-
-                        @include('tenant_contracts.payment')
+                        @if(Route::current()->getName() != 'tenantContracts.edit')
+                            @include('tenant_contracts.payment')
+                        @endif
 
                         <h3 class="mt-3">發票載具檔案</h3>
                         @include('documents.inputs', ['documentType' => 'carrier_file', 'documents' => $data['carrier_files']])
@@ -458,10 +459,7 @@
             },
             "110v_end_degree": {
                 required: true
-            },
-            invoice_collection_number: {
-                required: true
-            },
+            }
         };
 
         const messages = {
@@ -514,10 +512,7 @@
             },
             "110v_end_degree": {
                 required: '必須輸入'
-            },
-            invoice_collection_number: {
-                required: '必須輸入'
-            },
+            }
         };
 
         $('form').validate({

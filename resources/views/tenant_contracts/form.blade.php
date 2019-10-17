@@ -173,7 +173,7 @@
                                             class="form-control form-control-sm"
                                             type="date"
                                             name="contract_start"
-                                            value="{{ \Carbon\Carbon::parse($data['contract_start'])->format('Y-m-d') }}"
+                                            value="{{ isset($data['contract_start']) ? \Carbon\Carbon::parse($data['contract_start'])->format('Y-m-d') : '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -184,7 +184,7 @@
                                             class="form-control form-control-sm"
                                             type="date"
                                             name="contract_end"
-                                            value="{{ \Carbon\Carbon::parse($data['contract_end'])->format('Y-m-d') }}"
+                                            value="{{ isset($data['contract_end']) ? \Carbon\Carbon::parse($data['contract_end'])->format('Y-m-d') : '' }}"
                                         />
                                     </td>
                                     <td>@lang("model.TenantContract.rent")</td>
@@ -401,9 +401,12 @@
 <script>
     const qs = window.myQueryString();
     const tenantId = qs.getQueryStrings()['tenant_id'];
-    const $tenant_id = $('[name="tenant_id"]');
-    $tenant_id.attr('data-selected', tenantId)
+    const $tenantId = $('[name="tenant_id"]');
+    $tenantId.attr('data-selected', tenantId)
 
+    const roomId = qs.getQueryStrings()['room_id'];
+    const $roomId = $('[name="room_id"]');
+    roomId && $roomId.attr('data-selected', roomId)
 </script>
 <script id="validation">
 

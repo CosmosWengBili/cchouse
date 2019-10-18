@@ -1,5 +1,13 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $appendRoomIdQueryString = (function ($key, $value) {
+        $routeName = request()->route()->getName();
+        $appendRouteName = ['rooms.show'];
+        $canAppend = ! is_null($value) && in_array($routeName, $appendRouteName);
+        return $canAppend
+            ? [ $key => $value ]
+            : [];
+    }) ('room_id', $data['id'] ?? null);
 @endphp
 
 <div class="card">
@@ -12,7 +20,7 @@
             @endif
         </h2>
 
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordOtherSubjects.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'landlordOtherSubjects.create', $appendRoomIdQueryString) }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
@@ -57,7 +65,12 @@
         @endif
     </div>
 </div>
-
+<script id="set_room_id">
+    const qs = window.myQueryString();
+    const roomId = qs.getQueryStrings()['room_id'];
+    const $roomId = $('[name="room_id"]');
+    roomId && $roomId.attr('data-selected', roomId)
+</script>
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

@@ -13,6 +13,7 @@
             </tr>
         </thead>
         <tbody>
+            @if(Route::current()->getName() != 'tenantContracts.extend')
             <tr>
                 <td>
                     <select
@@ -58,6 +59,7 @@
                     <button class="btn btn-danger btn-xs js-remove-row" type="button">X</button>
                 </td>
             </tr>
+            @endif
             <tr>
                 <td colspan="5" class="text-center">
                     <button class="btn btn-success js-add-row" type="button">新增</button>
@@ -112,17 +114,18 @@
         });
 
 
+        // For `tenantContracts.extend` route to generate default payments
         const appendOldPayments = () => {
             const tenantPayments = JSON.parse('{!! json_encode( isset($data["tenant_payment"]) ? $data["tenant_payment"] : null)!!}')
             tenantPayments.map(function (item, index) {
                 const idx = $table.find('tbody > tr').length;
                 const $template = $(buildTemplate(idx));
 
-                $template.find("select.subject option[value=" + item.subject + "]").attr('selected', 'selected')
-                $template.find("select.period option[value=" + item.period + "]").attr('selected', 'selected')
-                $template.find("select.collected_by option[value=" + item.collected_by + "]").attr('selected', 'selected')
+                $template.find(`select.subject option[value*="${item.subject}"]`).attr('selected', 'selected')
+                $template.find(`select.period option[value*="${item.period}"]`).attr('selected', 'selected')
+                $template.find(`select.collected_by option[value*="${item.collected_by}"]`).attr('selected', 'selected')
                 $template.find("input.amount").val(item.amount)
-                $template.insertBefore($table.find("tbody > tr:nth-child("+ (idx-1) +")"));
+                $template.insertBefore($table.find("tbody > tr:nth-child("+ (idx) +")"));
             });
         }
         appendOldPayments();

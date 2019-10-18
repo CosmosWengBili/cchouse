@@ -5,6 +5,8 @@
         switch ($routeName) {
             case 'tenants.show':
                 return ['tenant_id' => $data['id'] ?? null];
+            case 'rooms.show':
+                return ['room_id' => $data['id'] ?? null];
             default:
                 return [];
         }

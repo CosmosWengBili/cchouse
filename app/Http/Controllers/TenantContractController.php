@@ -123,7 +123,7 @@ class TenantContractController extends Controller
                     config('enums.tenant_contract.invoice_collection_method')
                 )
             ],
-            'invoice_collection_number' => 'required|max:255',
+            'invoice_collection_number' => 'nullable',
             'commissioner_id' => 'exists:users,id',
             'comment' => 'present',
         ]);
@@ -215,8 +215,11 @@ class TenantContractController extends Controller
         $data['data']['carrier_files'] =  null;
 
         // 租客帳單
-        $data['data']['tenant_payment'] = $tenantContract->tenantPayments->toArray() or [];
-//dd($data['data']['tenant_payment']);
+        $firstPaymentDate = $tenantContract->tenantPayments->first()->due_time;
+        $data['data']['tenant_payment'] = $tenantContract->tenantPayments
+                                                        ->where('due_time', $firstPaymentDate)
+                                                        ->where('subject', '<>', '租金')
+                                                        ->toArray() or [];
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
         return view('tenant_contracts.form', $data);
@@ -275,7 +278,7 @@ class TenantContractController extends Controller
                     config('enums.tenant_contract.invoice_collection_method')
                 )
             ],
-            'invoice_collection_number' => 'required|max:255',
+            'invoice_collection_number' => 'nullable',
             'commissioner_id' => 'exists:users,id',
             'comment' => 'present',
         ]);

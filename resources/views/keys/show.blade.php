@@ -48,10 +48,10 @@
                         <div class="tab-pane container active" id="content-0">
                             @include('keys.single_table', ['object' => $data['room'], 'layer' => "rooms"])
                         </div>
-                        <div class="tab-pane container active" id="content-1">
+                        <div class="tab-pane container" id="content-1">
                             @include('keys.single_table', ['object' => $data['keeper'], 'layer' => "users"])
                         </div>
-                        <div class="tab-pane container active" id="content-2">
+                        <div class="tab-pane container" id="content-2">
                             @include('key_requests.table', ['objects' => $data['key_requests'], 'layer' => "key_requests", 'key_id' => $data['id']])
                         </div>
                     @endslot

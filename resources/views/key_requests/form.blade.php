@@ -55,9 +55,9 @@
                                         class="form-control form-control-sm"
                                         value="{{ isset($data["status"]) ? $data['status'] : 'reserved' }}"
                                     >
-                                        <option value="預約中">預約中</option>
-                                        <option value="使用中">使用中</option>
-                                        <option value="已完成">已完成</option>
+                                    @foreach(config('enums.key_requests.status') as $value)
+                                        <option value="{{$value}}">{{$value}}</option>
+                                    @endforeach
                                     </select>
                                 </td>
                             </tr>

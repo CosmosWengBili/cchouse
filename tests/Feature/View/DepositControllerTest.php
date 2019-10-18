@@ -72,22 +72,4 @@ class DepositControllerTest extends TestCase
         $res->assertOk();
     }
 
-    /**
-     * test delete
-     * @group ignore
-     */
-    public function testDestroy()
-    {
-        factory(TenantContract::class)->create();
-        $tenant_contract = TenantContract::latest()->first();
-        $deposit = factory(Deposit::class)->create([
-            'tenant_contract_id' => $tenant_contract->id,
-        ]);
-
-        factory(User::class)->create();
-        $user = User::latest()->first();
-
-        $res = $this->actingAs($user)->call('DELETE', route($this->routeName . '.destroy', [$deposit->id]), ["reason" => "test"]);
-        $res->assertOk();
-    }
 }

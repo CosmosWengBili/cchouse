@@ -96,7 +96,7 @@ class RoomService
                     $builder = User::find($maintenance->commissioner_id)->first();
                     $builder->notify(
                         new TextNotify(
-                            "房狀態已從" . $room->room_status . "改變成" . $data['room_status']
+                            "房代碼".$room->room_code."狀態已從" . $room->room_status . "改變成" . $data['room_status']
                         )
                     );
                 });

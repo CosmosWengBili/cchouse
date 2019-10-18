@@ -48,6 +48,11 @@ class EditorialReviewObserver
                     $this->doShareholderUpdate($editorialReview, $model);
                 }
                 break;
+            default:
+                if ($editorialReview->status === '已通過') {
+                    $model = $this->doModelUpdate($editorialReview);
+                }
+            break;                
         }
     }
 
@@ -145,10 +150,10 @@ class EditorialReviewObserver
     private function doModelUpdate(EditorialReview $editorialReview)
     {
         // 執行原本應該做的更新
-        $shareholder = Shareholder::find($editorialReview->editable_id);
-        $shareholder->update($editorialReview->edit_value);
+        $model = $editorialReview->editable->find($editorialReview->editable_id);
+        $model->update($editorialReview->edit_value);
 
-        return $shareholder;
+        return $model;
     }
 
     /**

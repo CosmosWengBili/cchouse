@@ -12,6 +12,7 @@ class DepositControllerTest extends TestCase
     use RefreshDatabase;
 
     private $roomId;
+    private $roomCode;
 
     protected function setUp(): void
     {
@@ -22,6 +23,7 @@ class DepositControllerTest extends TestCase
         $buildingId = DB::table('buildings')->insertGetId(['title' => 'test building']);
 
         $this->roomId = DB::table('rooms')->insertGetId(['building_id' => $buildingId, 'room_code' => 'test room']);
+        $this->roomCode = 'test room';
     }
 
     /** @test */
@@ -45,7 +47,7 @@ class DepositControllerTest extends TestCase
         $errors = session('errors')->get('is_deposit_collected');
         $msg = $errors[0];
 
-        $this->assertEquals($msg, "房編號 {$this->roomId} 已簽約");
+        $this->assertEquals($msg, "房代碼 {$this->roomCode} 已簽約");
     }
 
     /** @test */

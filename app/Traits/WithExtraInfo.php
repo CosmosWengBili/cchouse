@@ -48,6 +48,13 @@ trait WithExtraInfo {
             case 'deposits':
                 return $builder
                     ->Leftjoin('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
+                    ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                break;
+            case 'deposits':
+                return $builder
+                    ->Leftjoin('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
                     ->join('rooms', 'rooms.id', '=', "{$tableName}.room_id")
                     ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                     ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');

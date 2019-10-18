@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\TenantContract;
+use App\TenantPayment;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -88,7 +89,9 @@ class TenantContractControllerTest extends TestCase
     public function testExtend()
     {
         factory(TenantContract::class)->create();
+        $tenantPayment = factory(TenantPayment::class)->make();
         $tenantContract = TenantContract::latest()->first();
+        $tenantContract->tenantPayments()->save($tenantPayment);
         $res = $this->call('GET', route($this->routeName . '.extend', [$tenantContract->id]));
         $res->assertOk();
 

@@ -262,14 +262,14 @@ class ScheduleTest extends TestCase
         $this->assertTrue(
             User::find($userId)
                 ->notifications
-                ->contains(function ($value, $key) use ($userId, $landlordContractId){
+                ->contains(function ($value, $key) use ($userId){
                     return ($value->notifiable_type === 'App\User')
                         && ($value->notifiable_id === $userId)
                         && ($value->type === 'App\Notifications\LandlordContractDue')
-                        && ($value->data['landlordContract']['id'] === $landlordContractId);
+                        && (strpos($value->data['content'], '合約即將到期! 物件編號') == 0);
                 })
         );
-
+        
         // assert that rent were adjusted correctly
         $this->assertDatabaseHas('rooms', [
             'id' => $roomId,

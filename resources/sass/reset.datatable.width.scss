@@ -1,0 +1,8 @@
+$width: 85px;
+td {
+    &::before {
+        content: '';
+        display: block;
+        min-width: $width;
+    }
+}

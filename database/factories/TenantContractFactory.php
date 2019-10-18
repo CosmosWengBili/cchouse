@@ -13,11 +13,7 @@ $factory->define(TenantContract::class, function (Faker $faker) {
         'contract_end' => $faker->dateTimeBetween('+1 years', '+3 years'),
         'rent' => $faker->numberBetween(5000, 20000),
 
-        'room_id' => factory(\App\Room::class)->create(),
-        'tenant_id' => factory(\App\Tenant::class)->create()
+        'room_id' => factory(\App\Room::class),
+        'tenant_id' => factory(\App\Tenant::class)
     ];
-});
-
-$factory->afterCreating(TenantContract::class, function ($tenantContract, $faker) {
-    $tenantContract['id'] = TenantContract::max('id');
 });

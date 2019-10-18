@@ -62,7 +62,9 @@ class CompanyIncomeControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $companyIncome = factory(CompanyIncome::class)->create();
+        $companyIncome = factory(CompanyIncome::class)->create([
+            'incomable_type' => 'App\Maintenance'
+        ]);
         $res = $this->call('GET', route($this->routeName . '.edit', [$companyIncome->id]));
         $res->assertOk();
     }
@@ -74,5 +76,4 @@ class CompanyIncomeControllerTest extends TestCase
     {
         $this->markTestSkipped('Skip');
     }
-
 }

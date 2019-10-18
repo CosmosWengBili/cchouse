@@ -9,7 +9,7 @@ use Faker\Generator as Faker;
 // this is just a demo of attributes, all relations should be assigned by yourself
 $factory->define(TenantElectricityPayment::class, function (Faker $faker) {
     return [
-        'tenant_contract_id' => factory(TenantContract::class)->create(),
+        'tenant_contract_id' => factory(TenantContract::class),
         'ammeter_read_date' => '2019-08-18',
         '110v_start_degree' => 0,
         '110v_end_degree' => 100,

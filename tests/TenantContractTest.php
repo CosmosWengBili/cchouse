@@ -55,7 +55,8 @@ class TenantContractTest extends TestCase
         $this->assertEquals(\Mockery::getContainer()->mockery_getExpectationCount(), 1);
     }
 
-    public function tearDown(): void {
+    public function tearDown(): void
+    {
         Mockery::close();
 
         // re-enable foreign key constraints

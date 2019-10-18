@@ -63,7 +63,9 @@ class TenantContractControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $tenantContract = factory(TenantContract::class)->create();
+        factory(TenantContract::class)->create();
+        $tenantContract = TenantContract::latest()->first();
+
         $res = $this->call('GET', route($this->routeName . '.edit', [$tenantContract->id]));
         $res->assertOk();
     }
@@ -73,7 +75,8 @@ class TenantContractControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $tenantContract = factory(TenantContract::class)->create();
+        factory(TenantContract::class)->create();
+        $tenantContract = TenantContract::latest()->first();
         $res = $this->call('DELETE', route($this->routeName . '.destroy', [$tenantContract->id]));
         $res->assertOk();
     }
@@ -84,7 +87,8 @@ class TenantContractControllerTest extends TestCase
 
     public function testExtend()
     {
-        $tenantContract = factory(TenantContract::class)->create();
+        factory(TenantContract::class)->create();
+        $tenantContract = TenantContract::latest()->first();
         $res = $this->call('GET', route($this->routeName . '.extend', [$tenantContract->id]));
         $res->assertOk();
 
@@ -92,7 +96,9 @@ class TenantContractControllerTest extends TestCase
 
     public function testElectricityPaymentReport()
     {
-        $tenantContract = factory(TenantContract::class)->create();
+        factory(TenantContract::class)->create();
+        $tenantContract = TenantContract::latest()->first();
+
         $now = Carbon::now()->getTimestamp();
         $data = base64_encode(join([
             $tenantContract->id,
@@ -106,7 +112,8 @@ class TenantContractControllerTest extends TestCase
 
     public function testPaymentRecheck()
     {
-        $tenantContract = factory(TenantContract::class)->create();
+        factory(TenantContract::class)->create();
+        $tenantContract = TenantContract::latest()->first();
 
         $data = [
             'electricityPaymentReport?' => $tenantContract->id,

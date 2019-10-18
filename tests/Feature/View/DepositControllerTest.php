@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\Deposit;
+use App\TenantContract;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,7 +63,11 @@ class DepositControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $deposit = factory(Deposit::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $deposit = factory(Deposit::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('GET', route($this->routeName . '.edit', [$deposit->id]));
         $res->assertOk();
     }
@@ -72,12 +77,16 @@ class DepositControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $user = factory(User::class)->create();
-        $this->be($user);
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $deposit = factory(Deposit::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
 
-        $deposit = factory(Deposit::class)->create();
-        $res = $this->call('DELETE', route($this->routeName . '.destroy', [$deposit->id]), ["reason"=>"test"]);
+        factory(User::class)->create();
+        $user = User::latest()->first();
+
+        $res = $this->actingAs($user)->call('DELETE', route($this->routeName . '.destroy', [$deposit->id]), ["reason" => "test"]);
         $res->assertOk();
     }
-
 }

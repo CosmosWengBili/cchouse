@@ -9,7 +9,7 @@ $factory->define(Room::class, function (Faker $faker) {
     $management_fee_mode = $faker->randomElement(['比例', '固定']);
 
     return [
-        'building_id' => factory(\App\Building::class)->create(),
+        'building_id' => factory(\App\Building::class),
         'room_code' => $faker->sentence(),
         'rent_actual' => $faker->numberBetween(5000, 10000),
         'management_fee_mode' => $management_fee_mode,

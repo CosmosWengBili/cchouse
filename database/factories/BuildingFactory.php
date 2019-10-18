@@ -10,6 +10,7 @@ $factory->define(Building::class, function (Faker $faker) {
     $city = $faker->randomElement(array_keys(config('enums.cities')));
     return [
         'title' => $faker->sentence(),
+        'building_code' => $faker->randomNumber(),
     ];
 });
 

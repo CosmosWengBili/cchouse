@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\DebtCollection;
+use App\TenantContract;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,7 +63,12 @@ class DebtCollectionControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $debtCollection = factory(DebtCollection::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $debtCollection = factory(DebtCollection::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
+
         $res = $this->call('GET', route($this->routeName . '.edit', [$debtCollection->id]));
         $res->assertOk();
     }
@@ -72,7 +78,11 @@ class DebtCollectionControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $debtCollection = factory(DebtCollection::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $debtCollection = factory(DebtCollection::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('DELETE', route($this->routeName . '.destroy', [$debtCollection->id]));
         $res->assertOk();
     }

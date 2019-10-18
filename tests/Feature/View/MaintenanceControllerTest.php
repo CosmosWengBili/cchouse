@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\Maintenance;
+use App\TenantContract;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,7 +63,11 @@ class MaintenanceControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $maintenance = factory(Maintenance::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $maintenance = factory(Maintenance::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('GET', route($this->routeName . '.edit', [$maintenance->id]));
         $res->assertOk();
     }
@@ -72,7 +77,11 @@ class MaintenanceControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $maintenance = factory(Maintenance::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $maintenance = factory(Maintenance::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('DELETE', route($this->routeName . '.destroy', [$maintenance->id]));
         $res->assertOk();
     }

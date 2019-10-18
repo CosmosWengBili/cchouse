@@ -58,13 +58,6 @@
     </div>
 </div>
 
-<style>
-    td:before {
-        content: '';
-        display: block;
-        min-width: 85px;
-    }
-</style>
 <script>
     renderDataTable(["#{{$tableId}}"], {
         columnDefs: [

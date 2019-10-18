@@ -3,6 +3,7 @@
 namespace Tests\Feature\View;
 
 use App\Deposit;
+use App\TenantContract;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,10 +63,13 @@ class DepositControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $deposit = factory(Deposit::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $deposit = factory(Deposit::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('GET', route($this->routeName . '.edit', [$deposit->id]));
         $res->assertOk();
     }
-
 
 }

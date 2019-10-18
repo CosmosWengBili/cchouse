@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\View;
 
+use App\TenantContract;
 use App\TenantElectricityPayment;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -62,7 +63,11 @@ class TenantElectricityPaymentControllerTest extends TestCase
      */
     public function testEdit()
     {
-        $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('GET', route($this->routeName . '.edit', [$tenantElectricityPayment->id]));
         $res->assertOk();
     }
@@ -72,7 +77,11 @@ class TenantElectricityPaymentControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create();
+        factory(TenantContract::class)->create();
+        $tenant_contract = TenantContract::latest()->first();
+        $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+        ]);
         $res = $this->call('DELETE', route($this->routeName . '.destroy', [$tenantElectricityPayment->id]));
         $res->assertOk();
     }

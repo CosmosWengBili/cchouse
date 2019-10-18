@@ -74,6 +74,7 @@ class DepositControllerTest extends TestCase
 
     /**
      * test delete
+     * @group ignore
      */
     public function testDestroy()
     {

@@ -120,13 +120,14 @@
                                                     <td>
                                                         <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room">查看</a>
                                                         <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
-                                                        <a class="btn btn-success btn-xs js-get-record" href="#" data-id="{{$maintenance['id']}}" data-toggle="modal" data-target="#maintenance-record-model">查看記錄</a>
+                                                        @if($isAccountGroup && $statusKey == 'request')
+                                                            <a class="btn btn-success btn-xs js-get-record" href="#" data-id="{{$maintenance['id']}}" data-toggle="modal" data-target="#maintenance-record-model">查看記錄</a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             </tbody>
                                         </table>
-                                        @include('maintenances.record_modal', ['maintenances' => $maintenances])
                                         <script>
                                             renderDataTable(["#{{ $statusKey }}-table"]);
                                             @if($isAccountGroup && $statusKey == 'request')
@@ -213,6 +214,7 @@
                                 @endif
                             </div>
                         </div>
+                        @include('maintenances.record_modal', ['maintenances' => array_first($groupedMaintenances)])
                         @endforeach
                 @endslot
             @endcomponent

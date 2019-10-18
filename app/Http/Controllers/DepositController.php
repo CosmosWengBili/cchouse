@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Room;
+use App\Deposit;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
-use App\Deposit;
-use App\Services\DepositService;
-use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
+use App\Classes\NotifyUsers;
+use App\Classes\TextContent;
 
 class DepositController extends Controller
 {
@@ -32,7 +35,6 @@ class DepositController extends Controller
                 )
             )
             ->relations($request->withNested);
-
         return view('deposits.index', $responseData->get());
     }
 
@@ -101,8 +103,13 @@ class DepositController extends Controller
     public function update(Request $request, Deposit $deposit)
     {
         $validatedData = $this->validatedData($request);
+        $this->generateEditorialReview($deposit, $validatedData);
 
-        DepositService::update($deposit, $validatedData);
+        //Notify specific manager
+        $user = User::find(1);
+        $notify = new NotifyUsers($user);
+        $content = new TextContent($this->makeDepositUpdatedContent('updated', $deposit));
+        $notify->notifySelf($content);
 
         return redirect($request->_redirect);
     }
@@ -148,6 +155,16 @@ class DepositController extends Controller
         ]);
 
         DB::transaction(function () use ($deposit, $validatedData) {
+            if (isset($validatedData['confiscated_or_returned_date']) && isset($validatedData['deposit_confiscated_amount']) && $validatedData['deposit_confiscated_amount'] != 0 ) {
+                // make new company income
+                CompanyIncome::create([
+                    'incomable_type' => Deposit::class,
+                    'incomable_id' => $deposit->id,
+                    'subject' => '訂金',
+                    'income_date' => Carbon::today(),
+                    'amount' => $newValues['deposit_confiscated_amount'],
+                ]);
+            }
             $deposit->update($validatedData);
             $deposit->room->update(['room_status' => '未出租']);
         });
@@ -172,10 +189,10 @@ class DepositController extends Controller
 
                     $room = Room::find($room_id);
                     $invalid = $room->deposits()->where('is_deposit_collected', true)->first();
-                    if ($invalid) { $fail("房編號 {$room_id} 已簽約"); }
+                    if ($invalid) { $fail("房代碼 {$room->room_code} 已簽約"); }
                 },
             ],
-            'comment' => 'required',
+            'comment' => 'nullable',
             'payer_name' => 'nullable',
             'payer_certification_number' => 'nullable',
             'payer_is_legal_person' => 'boolean',
@@ -183,5 +200,23 @@ class DepositController extends Controller
             'receiver' => 'nullable|exists:users,id',
             'appointment_date' => 'nullable|date',
         ]);
+    }
+
+    private function makeDepositUpdatedContent(string $type, Deposit $deposit)
+    {
+        $now = Carbon::now();
+        $id = $deposit->id;
+
+        switch ($type) {
+            case 'deleted':
+                $reason = $deposit->reason_of_deletions;
+                $content = "訂金編號: {$id} 資料已被刪除，原因：{$reason}。";
+                break;
+            default:
+                $comment = $deposit->comment;
+                $content = "訂金編號: {$id} 資料已被更新，請立即前往確認，備註: {$comment}。";
+        }
+
+        return $content;
     }
 }

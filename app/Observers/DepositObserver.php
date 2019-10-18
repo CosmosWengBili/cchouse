@@ -35,18 +35,6 @@ class DepositObserver
 
     public function updating(Deposit $deposit)
     {
-        EditorialReview::create([
-            'editable_id' => $deposit->id,
-            'editable_type' => Deposit::class,
-            'original_value' => collect($deposit->getOriginal())->toArray(),
-            'edit_value' => $deposit->getAttributes(),
-            'edit_user' => Auth::id(),
-            'comment' => '',
-        ]);
-
-        // 通知特定使用者做調整
-        $user = User::find(1);
-        $this->notifySpecialUser('updating', $user, $deposit);
     }
 
 
@@ -92,27 +80,5 @@ class DepositObserver
     public function forceDeleted(Deposit $deposit)
     {
         //
-    }
-
-    /**
-     * @param string $type
-     * @param User $user
-     * @param Deposit $deposit
-     */
-    private function notifySpecialUser(string  $type, User $user, Deposit $deposit)
-    {
-        $now = Carbon::now();
-        $id = $deposit->id;
-
-        switch ($type) {
-            case 'deleted':
-                $reason = $deposit->reason_of_deletions;
-                $content = "訂金({編號: {$id}) 資料已於 {$now} 被刪除，原因：{$reason}。";
-                break;
-            default:
-                $comment = $deposit->comment;
-                $content = "訂金({編號: {$id}) 資料已於 {$now} 被更新，請立即前往確認，備註: {$comment}。";
-        }
-        $user->notify(new TextNotify($content));
     }
 }

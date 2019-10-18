@@ -173,7 +173,7 @@ class DebtCollectionController extends Controller
 
         return Excel::download(
             new DebtCollectionExport($date),
-            "Debt-{$date->format('Y-m-d')}.xlsx"
+            "催收報表-{$date->format('Y-m-d')}.xlsx"
         );
     }
 }

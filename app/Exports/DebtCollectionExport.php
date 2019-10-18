@@ -100,8 +100,8 @@ class DebtCollectionExport implements FromCollection, WithHeadings
             $tenantContract->{"220v_start_degree"},                                         // 220v
             $tenant->name,                                                                  // 承租人
             join(', ', $phones),                                                            // 電話
-            $contractRange[0],                                                              // 合約起
-            $contractRange[1],                                                              // 合約迄
+            $contractRange[0]->format('Y-m-d'),                                                              // 合約起
+            $contractRange[1]->format('Y-m-d'),                                                              // 合約迄
             '',                                                                             // 續約
             $tenantContract->rent_pay_day,                                                  // 繳款,
             $oldestPaymentDate->diffInDays($this->date),                                    // 遲繳

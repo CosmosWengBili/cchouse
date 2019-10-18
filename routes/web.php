@@ -74,6 +74,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             )->name('tenantElectricityPayments.sendReportSMSToAll');
             Route::group(['middleware' => 'payment.lock'], function () {
                 Route::resource('payLogs', 'PayLogController');
+                Route::post('payLogs/{payLog}/changeLoggable', 'PayLogController@changeLoggable')->name('payLogs.changeLoggable');
                 Route::resource('tenantPayments', 'TenantPaymentController');
                 Route::resource('tenantElectricityPayments', 'TenantElectricityPaymentController');
             });

@@ -7,6 +7,7 @@
                 <div class="card-body">
                     <div class="card-title">
                         詳細資料
+                        <a href="#" id="js-to-deposit" class="btn btn-primary">設為訂金</a>
                     </div>
                     {{-- for showing the target returned --}}
                     <table class="table table-bordered">
@@ -62,4 +63,39 @@
         </div>
     </div>
 </div>
+<script>
+    $('#js-to-deposit').click(function(){
+        let data = {'model': 'Deposit'}
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success mr-2',
+                cancelButton: 'btn btn-success'
+            },
+            buttonsStyling: false
+        })
+
+            swalWithBootstrapButtons.fire({
+                text: "請確認要轉為何種訂金",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '訂金',
+                cancelButtonText: '訂金(房東)',
+            }).then((result) => {
+                if (result.value) {
+                    data.subject = '訂金'
+                }
+                else{
+                    data.subject = '訂金(房東)'
+                }
+                $.post("{{ route('payLogs.changeLoggable', $data['id']) }}", data)
+                    .then(response => {
+                        if (response) {
+                            location.reload();
+                        } else {
+                            alert('更新失敗')
+                        }
+                    })
+            })
+    })
+</script>
 @endsection

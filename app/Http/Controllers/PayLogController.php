@@ -165,4 +165,16 @@ class PayLogController extends Controller
                 'end_date' => $endDateStr,
             ]));
     }
+
+    public function changeLoggable(Request $request, PayLog $payLog) {
+        $model = $request->input('model');
+        $subject = $request->input('subject');
+        $payLog->update([
+            'loggable_type'=> get_class(app("App\\". $model)),
+            'loggable_id' => 0,
+            'subject' => $subject
+        ]);
+
+        return response()->json(true);
+    }
 }

@@ -19,6 +19,14 @@ class EditorialReview extends Model
 
     protected $hidden = ['deleted_at'];
 
+    /**
+     * Get the owning loggable model.
+     */
+    public function editable()
+    {
+        return $this->morphTo();
+    }
+
     public function getDiffsAttribute()
     {
         return array_diff(

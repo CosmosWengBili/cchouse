@@ -126,7 +126,15 @@ class DepositController extends Controller
     {
         $reason = $request->input('reason');
         $deposit->update(['reason_of_deletions' => $reason]);
-        $deposit->delete();
+
+        $this->generateEditorialReviewWithCommand($deposit, '刪除');
+
+        //Notify specific manager
+        $user = User::find(1);
+        $notify = new NotifyUsers($user);
+        $content = new TextContent($this->makeDepositUpdatedContent('deleted', $deposit));
+        $notify->notifySelf($content);
+
         return response()->json(true);
     }
 
@@ -210,11 +218,11 @@ class DepositController extends Controller
         switch ($type) {
             case 'deleted':
                 $reason = $deposit->reason_of_deletions;
-                $content = "訂金編號: {$id} 資料已被刪除，原因：{$reason}。";
+                $content = "訂金編號: {$id} 資料被申請刪除，原因：{$reason}。";
                 break;
             default:
                 $comment = $deposit->comment;
-                $content = "訂金編號: {$id} 資料已被更新，請立即前往確認，備註: {$comment}。";
+                $content = "訂金編號: {$id} 資料被申請更新，請立即前往確認，備註: {$comment}。";
         }
 
         return $content;

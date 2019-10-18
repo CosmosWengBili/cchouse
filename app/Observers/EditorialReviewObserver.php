@@ -40,19 +40,27 @@ class EditorialReviewObserver
     {
         /** @var string $type */
         $type = $editorialReview->editable_type;
-        switch ($type) {
-            case 'App\Shareholder':
-                $this->notifyAfterUpdatedEditableTypeIsShareHolder($editorialReview);
-                if ($editorialReview->status === '已通過') {
-                    $model = $this->doModelUpdate($editorialReview);
-                    $this->doShareholderUpdate($editorialReview, $model);
-                }
-                break;
-            default:
-                if ($editorialReview->status === '已通過') {
-                    $model = $this->doModelUpdate($editorialReview);
-                }
-            break;                
+        if( isset($editorialReview->edit_value['command']) && !isset($editorialReview->edit_value['id'])){
+            $command = $editorialReview->edit_value['command'];
+            if( $command == '刪除' ){
+                $this->doModelDelete($editorialReview);
+            }
+        }
+        else{
+            switch ($type) {
+                case 'App\Shareholder':
+                    $this->notifyAfterUpdatedEditableTypeIsShareHolder($editorialReview);
+                    if ($editorialReview->status === '已通過') {
+                        $model = $this->doModelUpdate($editorialReview);
+                        $this->doShareholderUpdate($editorialReview, $model);
+                    }
+                    break;
+                default:
+                    if ($editorialReview->status === '已通過') {
+                        $model = $this->doModelUpdate($editorialReview);
+                    }
+                break;                
+            }
         }
     }
 
@@ -154,6 +162,18 @@ class EditorialReviewObserver
         $model->update($editorialReview->edit_value);
 
         return $model;
+    }
+    /**
+     * 審核通過做刪除
+     * @param EditorialReview $editorialReview
+     *
+     * 
+     */
+    private function doModelDelete(EditorialReview $editorialReview)
+    {
+        // 執行原本應該做的刪除
+        $model = $editorialReview->editable->find($editorialReview->editable_id);
+        $model->delete();
     }
 
     /**

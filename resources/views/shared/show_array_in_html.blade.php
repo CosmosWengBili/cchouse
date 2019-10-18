@@ -4,6 +4,10 @@
 
             @if (is_bool($value))
                 @include('shared.helpers.value_helper', ['value' => $value])
+            @elseif ( $key == "command" )
+                <div class="m-1">
+                    <span>指令 : {{ $value }}</span>
+                </div>                
             @else
                 @php
                     $langFromTable = isset($model) ? ucfirst(strtolower(Arr::last(explode('\\', $model)))) : $model_name;

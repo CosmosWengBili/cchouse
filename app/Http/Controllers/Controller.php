@@ -86,4 +86,22 @@ class Controller extends BaseController
             'comment' => '',
         ]);        
     }
+
+     /**
+     * must be called by method named index
+     * @param Model $model
+     * @param string $command
+     *
+     */
+    protected function generateEditorialReviewWithCommand($model, $command){
+
+        EditorialReview::create([
+            'editable_id' => $model->id,
+            'editable_type' => get_class($model),
+            'original_value' =>  [],
+            'edit_value' => ['command' => $command],
+            'edit_user' => Auth::id(),
+            'comment' => ''
+        ]);        
+    }    
 }

@@ -472,6 +472,8 @@ return [
         'buildings' => '物件',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
+        'deleted_at' => '刪除時間',
+        'reason_of_deletions' => '刪除理由',
         'building_code' => '物件代碼',
         'building_title' => '簡稱',
         'building_location' => '地址',

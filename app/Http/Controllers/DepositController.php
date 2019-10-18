@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Room;
 use App\Deposit;
 use App\User;
+use App\CompanyIncome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Responser\NestedRelationResponser;
@@ -170,7 +171,7 @@ class DepositController extends Controller
                     'incomable_id' => $deposit->id,
                     'subject' => '訂金',
                     'income_date' => Carbon::today(),
-                    'amount' => $newValues['deposit_confiscated_amount'],
+                    'amount' => $validatedData['company_allocation_amount'] ?? $validatedData['deposit_confiscated_amount'],
                 ]);
             }
             $deposit->update($validatedData);

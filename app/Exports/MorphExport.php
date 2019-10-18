@@ -19,11 +19,17 @@ class MorphExport implements FromCollection, WithHeadings
         'password',
         'remember_token'
     ];
+    private $selectedColumns;
 
     public function __construct(string $model, bool $isExample = false)
     {
         $this->model = $model;
         $this->isExample = $isExample;
+
+        $this->selectedColumns = array_diff(
+            Schema::getColumnListing((new $this->model())->getTable()),
+            $this->makeHidden
+        );
     }
 
     /**
@@ -54,6 +60,7 @@ class MorphExport implements FromCollection, WithHeadings
             isset($builder) and ($data = $builder->get());
         }
 
+        $data = $data->map->only($this->selectedColumns);
         return isset($data)
             ? $data
             : $this->model::all();
@@ -61,11 +68,11 @@ class MorphExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return array_values(
-            array_diff(
-                Schema::getColumnListing((new $this->model())->getTable()),
-                $this->makeHidden
-            )
-        );
+        // From App\Model to Model
+        $model = substr($this->model, 4);
+        $displayColumns = array_map(function($column)use($model){
+            return __('model.'.$model.'.'.$column);
+        }, $this->selectedColumns);
+        return $displayColumns;
     }
 }

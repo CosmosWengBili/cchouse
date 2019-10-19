@@ -185,6 +185,10 @@ class ReverseTenantPayments
                         } else {
                             $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($shouldPayAmount / $payment->amount)));
                         }
+
+                        if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                            return $amount;
+                        }
                     }
 
                     $tenantContract->companyIncomes()->create($incomeData);
@@ -211,7 +215,10 @@ class ReverseTenantPayments
                     } else {
                         $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
                     }
-
+                    
+                    if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                        return 0;
+                    }
                     $tenantContract->companyIncomes()->create($incomeData);
                 }
 

@@ -587,5 +587,15 @@ return [
         'updated_at' => '更新時間',
         'room_id' => '房編號',
         'rooms' => '房',
+    ],
+    'ReversalErrorCase' => [
+        'id' => '編號',
+        'name' => '事件名稱',
+        'date' => '發生日期',
+        'status' => '狀態',
+        'comment' => '備註',
+        'pay_log_id' => '繳費記錄編號',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間'
     ]
 ];

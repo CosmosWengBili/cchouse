@@ -60,6 +60,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::put('editorialReviews/{id}/pass', 'EditorialReviewController@pass')->name('editorialReviews.pass');
             Route::put('editorialReviews/{id}/notPass', 'EditorialReviewController@notPass')->name('editorialReviews.notPass');
             Route::resource('editorialReviews', 'EditorialReviewController')->except(['create', 'update', 'delete']);
+            Route::resource('reversalErrorCases', 'ReversalErrorCaseController');
+            Route::put('reversalErrorCases/{id}/pass', 'ReversalErrorCaseController@pass')->name('reversalErrorCases.pass');
 
             // payments
             Route::get(

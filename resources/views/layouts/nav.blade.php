@@ -58,6 +58,7 @@
                     <li class="nav-item"><a class="nav-link" href="/systemVariables">系統變數管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/audits">資料稽核管理</a></li>
                     <li class="nav-item"><a class="nav-link" href="/editorialReviews">編輯審核管理</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/reversalErrorCases">沖銷異常管理</a></li>
                 </ul>
             </div>
             </li>
@@ -76,7 +77,6 @@
                 <li class="nav-item"><a class="nav-link" href="/keys">鑰匙管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/debtCollections">催收管理</a></li>
                 <li class="nav-item"><a class="nav-link" href="/maintenances">清潔維修管理</a></li>
-                <li class="nav-item"><a class="nav-link" href="/shareholders">股東管理</a></li>
                 </ul>
             </div>
             </li>
@@ -97,6 +97,7 @@
                         <li class="nav-item"><a class="nav-link" href="/monthlyReports">月結單管理</a></li>
                         <li class="nav-item"><a class="nav-link" href="/payOffs">點交管理</a></li>
                         <li class="nav-item"><a class="nav-link" href="/landlordOtherSubjects">雜支管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shareholders">股東管理</a></li>
                     </ul>
                 </div>
             </li>

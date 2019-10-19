@@ -20,7 +20,7 @@
                             <tr>
                                 <td>@lang("model.Shareholder.building_code")</td>
                                 <td colspan="3">
-                                    <div class="input-group mb-3">
+                                    <div class="input-group w-50">
                                         <input
                                             class="form-control form-control-sm"
                                             type="text"
@@ -39,11 +39,10 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <div>
-                                        <select id="share_holders"
-                                                class="{{ isset($data["building_code"]) ? 'd-none' : '' }}"
-                                        ></select>
-                                    </div>
+                                    <span class="{{ isset($data["building_code"]) ? 'd-none' : '' }}">請選擇: </span>
+                                    <select id="share_holders"
+                                            class="{{ isset($data["building_code"]) ? 'd-none' : '' }}"
+                                    ></select>
                                 </td>
                             </tr>
                             <tr>

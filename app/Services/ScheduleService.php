@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\User;
 use App\LandlordContract;
 use App\Landlord;
+use App\Room;
 use App\CompanyIncome;
 use App\TenantContract;
 use App\TenantPayment;
@@ -318,27 +319,29 @@ class ScheduleService
             );
         }
     }
-    public function genarateDepositInterest()
+    public function genarateCharterManagementFee()
     {  
-        $tenantContracts = TenantContract::active()
-            ->with(['tenant', 'room'])
-            ->get();
-        $depositInterest = SystemVariable::where(
-                'code',
-                '=',
-                'depositRate'
-            )->first()->value;
-        foreach ($tenantContracts as $tenantContract) {
-            if( $tenantContract->room->building->activeContracts()->commission_type == '代管' ){          
-                continue;
+        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+                                            ->where('commission_end_date', '>', Carbon::today())
+                                            ->where('commission_type', '包租')
+                                            ->get();
+        foreach ($landlordContracts as $landlordContract) {
+            foreach( $landlordContract->building->normalRooms() as $room ){
+                $income = 0;
+                if ($room->management_fee_mode == '比例') {
+                    $income = intval(round($room->rent_landlord * $room->management_fee / 100));
+                } else {
+                    $income  = intval($room->management_fee);
+                }
+                CompanyIncome::create([
+                    'subject' => '租金',
+                    'income_date' => Carbon::today(),
+                    'amount' => $income,
+                    'incomable_id' => $room->id,
+                    'incomable_type' => Room::class
+                ]);
             }
-            CompanyIncome::create([
-                'subject' => '押金設算息',
-                'income_date' => Carbon::today(),
-                'amount' => round( $tenantContract->deposit_paid * $depositInterest),
-                'incomable_id' => $tenantContract->id,
-                'incomable_type' => TenantContract::class
-            ]);
+
         }
     }
 }

@@ -94,6 +94,10 @@ class Kernel extends ConsoleKernel
                 ->name('Generate Deposit interest every month')
                 ->monthlyOn(Carbon::now()->endOfMonth()->day, '05:30')
                 ->runInBackground();
+        $schedule->call(ScheduleService::make('genarateCharterManagementFee'))
+                ->name('Generate Mangement Fee for charter building every month')
+                ->monthlyOn(Carbon::now()->endOfMonth()->day, '05:45')
+                ->runInBackground();
         $schedule->call(ScheduleService::make('notifyKeyRequestBorrowAllowed'))
                 ->name("Notify User Key Request expired")
                 ->dailyAt('06:00')

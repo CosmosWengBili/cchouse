@@ -186,7 +186,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-2 col-form-label">年份：</label>
+                        <label class="col-2 col-form-label">月份：</label>
                         <div class="col-10">
                             <select name="month" class="form-control">
                                 @for ($i = 1; $i <= 12; $i++)
@@ -199,7 +199,7 @@
                         <label class="col-2 col-form-label">預覽</label>
                         <div class="col-10">
                             <div style="word-break: break-word;" class="mt-2">
-                                <a href="" id="preview-report-link"></a>
+                                <a target="_blank" href="" id="preview-report-link"></a>
                             </div>
                         </div>
                     </div>

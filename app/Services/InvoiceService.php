@@ -280,6 +280,7 @@ class InvoiceService
         $deposits = PayLog::whereBetween('paid_at', [$start_date, $end_date])
                             ->where('receipt_type', '=', '發票')
                             ->where('loggable_type', '=', 'App\Deposit')
+                            ->where('loggable_id', '!=', 0)
                             ->orderBy('virtual_account', 'DESC')
                             ->orderBy('paid_at', 'ASC')
                             ->get();
@@ -302,15 +303,13 @@ class InvoiceService
             $data['data_table_id'] = $deposit->id;
             $data['data_receipt_id'] = $receipt['id'];
 
-            // ToDo: uncomment when Deposit been finished
-            // if ($deposit->loggable->payer_is_legal_person) {
-            //     $data['company_number'] = $deposit->loggable->payer_certification_number;
-            //     $data['company_name'] = $deposit->loggable->payer_name;
-            // }
-            // $data['room_code'] = $deposit->loggable->room->room_code;
-            // $data['room_number'] = $deposit->loggable->room->room_number;
-            $data['building_code'] = '';
-            $data['room_number'] = '';
+            if ($deposit->loggable->payer_is_legal_person) {
+                $data['company_number'] = $deposit->loggable->payer_certification_number;
+                $data['company_name'] = $deposit->loggable->payer_name;
+            }
+            
+            $data['building_code'] = $deposit->loggable->room->building->building_code;
+            $data['room_number'] = $deposit->loggable->room->room_number;
             $data['comment'] = $receipt['comment'];
 
             $data['deposit_date'] = $deposit->paid_at->format('Y-m-d');

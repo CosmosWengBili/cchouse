@@ -15,7 +15,10 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        $rooms = Room::with('building')->orderBy('rooms.building_id')->get();
+        $rooms = Room::where('room_code', '<>', '公用')
+                    ->with('building')
+                    ->orderBy('rooms.building_id')
+                    ->get();
 
         return $rooms->map(function ($room) {
             $contract = $room->activeContracts()->first();

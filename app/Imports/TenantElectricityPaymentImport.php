@@ -32,7 +32,7 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
     {
         $now = Carbon::now();
         $buildingCode = $row['物件代碼'];
-        $roomCode = $row['房號'];
+        $roomNumber = $row['房號'];
         if (is_null($buildingCode) && is_null($roomCode)) { // empty row
             return null;
         }
@@ -41,6 +41,8 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         $prev220 = $row['前期 220v'];
         $this110 = $row['本期 110v'];
         $this220 = $row['本期 220v'];
+        if( $this110 < $prev110 || $this220 < $prev220 ) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 電費資料有誤");
+
         try {
             $ammeterReadDate = Date::excelToDateTimeObject($row['抄表日']);
         } catch (\Throwable $th) {
@@ -51,13 +53,13 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         // 從 $buildingCode 和 $roomCode 取得 room
         $room = Room::join('buildings', 'buildings.id', '=', 'rooms.building_id')
                     ->where('buildings.building_code', $buildingCode)
-                    ->where('rooms.room_code', $roomCode)
+                    ->where('rooms.room_number', $roomNumber)
                     ->first();
-        if(is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomCode} 找不到對應的房間");
+        if(is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的房間");
 
         // 從 room 取得 contract
         $contract =  $room->activeContracts()->first();
-        if (is_null($contract)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomCode} 找不到對應的租客合約");
+        if (is_null($contract)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的租客合約");
 
         // 計算電費
         $pricePerDegree = $contract->electricity_price_per_degree;

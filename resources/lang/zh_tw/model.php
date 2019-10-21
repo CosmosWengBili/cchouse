@@ -583,10 +583,14 @@ return [
         'expense_date' => '費用日期',
         'amount' => '費用',
         'comment' => '備註',
+        'is_invoiced' => '是否開發票',
+        'invoice_item_name' => '發票科目名稱',
         'created_at' => '建立時間',
         'updated_at' => '更新時間',
         'room_id' => '房編號',
         'rooms' => '房',
+        'room' => '房'
+
     ],
     'ReversalErrorCase' => [
         'id' => '編號',

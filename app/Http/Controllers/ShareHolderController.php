@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Building;
+use App\LandlordContract;
 use App\EditorialReview;
 use App\Exports\ShareholderExport;
 use App\Shareholder;
@@ -209,7 +210,7 @@ class ShareholderController extends Controller
 
         return Excel::download(
             new ShareholderExport($date),
-            "Shareholder-{$date->format('Y-m')}.xlsx"
+            "出帳明細-{$date->format('Y-m')}.xlsx"
         );
     }
 }

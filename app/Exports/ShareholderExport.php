@@ -1,15 +1,10 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: lichengxiu
- * Date: 2019-10-05
- * Time: 13:20
- */
+<?php 
 
 namespace App\Exports;
 
 use App\Exports\Sheets\ShareholderTotalSheet;
 use App\LandlordContract;
+use App\MonthlyReport;
 use App\Services\MonthlyReportService;
 use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;
@@ -57,15 +52,16 @@ class ShareholderExport implements WithMultipleSheets
 
     private function getExcelDataRows()
     {
-        $databaseData = $this->getDataFromDataBase();
+        $databaseShareholderData = $this->getDataFromDataBase('shareholder');
+        $databaseLandlordData = $this->getDataFromDataBase('landlord');
 
-        return $this->generateExcelData($databaseData);
+        return $this->generateExcelData($databaseShareholderData, $databaseLandlordData);
     }
 
-    private function generateExcelData(array $databaseData)
+    private function generateExcelData(array $databaseShareholderData, $databaseLandlordData)
     {
         $excelData = [];
-        foreach ($databaseData as $row) {
+        foreach ($databaseShareholderData as $row) {
             // collect the transfer from for sheets
             $this->transferFroms[] = $row->transfer_from;
 
@@ -82,7 +78,7 @@ class ShareholderExport implements WithMultipleSheets
             $amount_receivable = $row->carry_forward < 0 ? ~$row->carry_forward + 1 : 0;
 
             $excelData[] = [
-                '', //$row->group,                                  // 組別
+                $row->group, //$row->group,                                  // 組別
                 $row->commission_type,                              // 物件屬性
                 $row->building_code,                                // 物件代碼
                 $location,                                          // 物件地址
@@ -103,7 +99,55 @@ class ShareholderExport implements WithMultipleSheets
                 $row->bill_delivery,                                // 郵寄/傳真
             ];
         }
+        foreach ($databaseLandlordData as $row) {
+            // collect the transfer from for sheets
+            $this->transferFroms[] = '玉山兆基';
+            $money = MonthlyReport::where('landlord_contract_id', $row->id)
+                                ->where('year', $this->year)
+                                ->where('month', $this->month)
+                                ->get()
+                                ->first()['carry_forward'] ?? 0;
+            
 
+            // 實收金額
+            $actualMoney = $money > 0 ? $money : 0;
+            // 應收金額
+            $amountReceivable = $money < 0 ? ~$money + 1 : 0;
+
+            $landlordNames = implode(',', $row->landlords->pluck('name')->toArray());
+            $landlordBankCodes = implode(',', $row->landlords->pluck('bank_code')->toArray());
+            $landlordBranchCodes = implode(',', $row->landlords->pluck('branch_code')->toArray());
+            $landlordAccountNames = implode(',', $row->landlords->pluck('account_name')->toArray());
+            $landlordAccountNumbers = implode(',', $row->landlords->pluck('account_number')->toArray());
+            $contactMethods = implode(',', $row->landlords->map(function($landlord, $key){
+                return implode(',',$landlord->phones->pluck('value')->toArray());
+            })->toArray());
+            $billDeliverys = implode(',', $row->landlords->map(function($landlord, $key){
+                return implode(',',$landlord->mailingAddresses->pluck('value')->toArray());
+            })->toArray());
+
+            $excelData[] = [
+                $row->building->group,                              // 組別
+                $row->commission_type,                              // 物件屬性
+                $row->building->building_code,                      // 物件代碼
+                $row->building->location,                           // 物件地址
+                'carry_forward' => $money,                          // 月結單金額
+                'actual_money' => $actualMoney,                     // 實收金額
+                $landlordNames,                                     // 業主
+                'money' => $money,                                  // 應付業主
+                'method' => '7系列 - 匯款',                          // 方式
+                '玉山兆基',                                          // 匯出銀行
+                'amount_receivable' => $amountReceivable,           // 應收金額 < 0 然後顯示的數字要乘於 -1
+                'exchange_fee' => 0,                                // 匯費
+                '',                                                 // 備註
+                '',                                                 // 銀行/分行
+                $landlordBankCodes . $landlordBranchCodes,          // 銀行/分行代碼
+                $landlordAccountNames,                              // 戶名（受款人）
+                $landlordAccountNumbers,                            // 帳號
+                $contactMethods,                                    // 聯絡方式
+                $billDeliverys,                                     // 郵寄/傳真
+            ];            
+        }
         return $excelData;
     }
 
@@ -119,9 +163,10 @@ class ShareholderExport implements WithMultipleSheets
      * 從資料庫內取出會用到的數據
      * @return array
      */
-    private function getDataFromDataBase()
+    private function getDataFromDataBase($model)
     {
-        return DB::table('building_shareholder')
+        if( $model == 'shareholder' ){
+            return DB::table('building_shareholder')
             ->join('shareholders', 'building_shareholder.shareholder_id', '=', 'shareholders.id')
             ->join('buildings', 'building_shareholder.building_id', '=', 'buildings.id')
             ->join('monthly_reports', function (JoinClause $query) {
@@ -131,5 +176,15 @@ class ShareholderExport implements WithMultipleSheets
             })
             ->get()
             ->toArray();
+        }
+        else if( $model == 'landlord' ){
+            return LandlordContract::where('commission_type', '代管')
+                            ->where('commission_start_date', '<', Carbon::today())
+                            ->where('commission_end_date', '>', Carbon::today())
+                            ->with(['building', 'landlords'])
+                            ->get();
+                        
+        }
+
     }
 }

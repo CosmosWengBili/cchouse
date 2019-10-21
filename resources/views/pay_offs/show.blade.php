@@ -176,11 +176,38 @@
                             </tr>
                             <tr>
                                 <th>兆基應收</th>
-                                <td colspan="3"><span id="should-received">{{ $payOffData['sums']['兆基應收'] }}</span> 元</td>
+                                <td colspan="3">
+                                    <div class="d-inline-flex">
+                                        <span id="received_amount">{{ $payOffData['sums']['兆基應收'] }}</span>
+                                        <input id="edit_received_amount"
+                                                type="number"
+                                                step="1"
+                                                value="{{ $payOffData['sums']['兆基應收'] }}"
+                                                class="d-none"
+                                        >
+                                        <span>元</span>
+                                        <button id="edit_received" class="btn btn-xs btn-primary">編輯</button>
+                                        <button id="update_received" class="btn btn-xs btn-info d-none">確認</button>
+                                        <button id="reset_received" class="btn btn-xs btn-secondary">恢復</button>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <th>業主應付</th>
-                                <td colspan="3"><span id="should-pay">{{ $payOffData['sums']['業主應付'] }}</span> 元</td>
+                                <td colspan="3">
+                                    <div class="d-inline-flex">
+                                        <span id="pay_amount">{{ $payOffData['sums']['業主應付'] }}</span>
+                                        <input id="edit_pay_amount"
+                                                type="number"
+                                                step="1"
+                                                value="{{ $payOffData['sums']['業主應付'] }}"
+                                                class="d-none">
+                                        <span>元</span>
+                                        <button id="edit_pay" class="btn btn-xs btn-primary">編輯</button>
+                                        <button id="update_pay" class="btn btn-xs btn-info d-none">確認</button>
+                                        <button id="reset_pay" class="btn btn-xs btn-secondary">恢復</button>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -214,8 +241,8 @@
     function calculatePrice($clickedButton) {
 
         const tenantContractsId = '{{ $tenantContract->id }}';
-        const e_110v_end = parseInt({{ $payOffData['110v_end_degree'] }});
-        const e_220v_end = parseInt({{ $payOffData['220v_end_degree'] }});
+        const e_110v_end = parseInt('{{ $payOffData['110v_end_degree'] }}');
+        const e_220v_end = parseInt('{{ $payOffData['220v_end_degree'] }}');
         const input_110v = parseInt($('#e_110v').val());
         const input_220v = parseInt($('#e_220v').val());
         const template = getElectricityTemplate();
@@ -223,7 +250,6 @@
         $clickedButton.find('span').removeClass('d-none');
         $.get('/tenantContracts/' + tenantContractsId + '/electricityDegree')
             .then(function (data) {
-                console.log(data)
                 const pricePerDegree = data.pricePerDegree || 0;
                 const pricePerDegreeSummer = data.pricePerDegreeSummer || 0;
                 const readMonth = (new Date).getMonth() + 1;
@@ -246,6 +272,7 @@
                     $(template).insertBefore($functionsRow);
                 }
                 $('#cal_v').val(amount * -1);
+                countTenantPayment();
             })
             .always(function () {
                 $clickedButton.find('span').addClass('d-none');
@@ -264,7 +291,7 @@
             </select>
             </td>
         <td>
-        <input class="form-control form-control-sm electricity-amount" type="number" id="cal_v" name="cal_v" readonly>
+        <input class="form-control form-control-sm electricity-amount edit-new-item-amount" type="number" id="cal_v" name="cal_v" readonly>
         </td>
         <td>
         <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
@@ -311,7 +338,7 @@
             </select>
         </td>
         <td>
-        <input class="form-control form-control-sm exchange-fee-amount" type="number" name="amount" readonly value="-30">
+        <input class="form-control form-control-sm exchange-fee-amount edit-new-item-amount" type="number" name="amount" readonly value="-30">
         </td>
         <td>
         <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
@@ -323,48 +350,74 @@
 
 <script>
 
-    // 應退金額的 Object
-    const EditRefund = {
-        unchangedRefund: $('#edit_refund_amount').val(),
-        $refund_amount: $('#refund_amount'),
-        $edit_refund_amount: $('#edit_refund_amount'),
-        $edit_refund_button: $('#edit_refund'),
-        $update_refund_button: $('#update_refund'),
-        toggleRefund: function () {
-            if (this.$edit_refund_amount.hasClass('d-none')) {
-                this.$edit_refund_amount.removeClass('d-none');
-                this.$refund_amount.addClass('d-none');
-                this.$update_refund_button.removeClass('d-none');
-                this.$edit_refund_button.addClass('d-none');
-            } else {
-                this.$edit_refund_amount.addClass('d-none');
-                this.$refund_amount.removeClass('d-none');
-                this.$update_refund_button.addClass('d-none');
-                this.$edit_refund_button.removeClass('d-none');
+    /* sum data editor */
+    var Editor = function(element){
+        return {
+            unchanged: $(`#edit_${element}_amount`).val(),
+            $amount: $(`#${element}_amount`),
+            $edit_amount: $(`#edit_${element}_amount`),
+            $edit_button: $(`#edit_${element}`),
+            $update_button: $(`#update_${element}`),
+            toggle: function () {
+                if (this.$edit_amount.hasClass('d-none')) {
+                    this.$edit_amount.removeClass('d-none');
+                    this.$amount.addClass('d-none');
+                    this.$update_button.removeClass('d-none');
+                    this.$edit_button.addClass('d-none');
+                } else {
+                    this.$edit_amount.addClass('d-none');
+                    this.$amount.removeClass('d-none');
+                    this.$update_button.addClass('d-none');
+                    this.$edit_button.removeClass('d-none');
+                }
+            },
+            update: function () {
+                this.$amount.text(this.$edit_amount.val());
+            },
+            reset: function () {
+                this.$edit_amount.val(this.unchanged);
+                this.$amount.text(this.unchanged);
+            },
+            set: function (value) {
+                this.$edit_amount.val(value);
+                this.$amount.text(value);
             }
-        },
-        updateRefund: function () {
-            this.$refund_amount.text(this.$edit_refund_amount.val());
-        },
-        resetRefund: function () {
-            this.$edit_refund_amount.val(this.unchangedRefund);
-            this.$refund_amount.text(this.unchangedRefund);
-        },
-        setRefund: function (value) {
-            this.$edit_refund_amount.val(value);
-            this.$refund_amount.text(value);
-        },
-    };
+        }
+    }
+
+    const EditReceived = new Editor('received');
+    const EditPay = new Editor('pay');
+    const EditRefund = new Editor('refund');
 
     $('#edit_refund').click(function () {
-        EditRefund.toggleRefund();
+        EditRefund.toggle();
     });
     $('#update_refund').click(function () {
-        EditRefund.updateRefund();
-        EditRefund.toggleRefund();
+        EditRefund.update();
+        EditRefund.toggle();
     });
     $('#reset_refund').click(function () {
-        EditRefund.resetRefund();
+        EditRefund.reset();
+    });
+    $('#edit_received').click(function () {
+        EditReceived.toggle();
+    });
+    $('#update_received').click(function () {
+        EditReceived.update();
+        EditReceived.toggle();
+    });
+    $('#reset_received').click(function () {
+        EditReceived.reset();
+    });
+    $('#edit_pay').click(function () {
+        EditPay.toggle();
+    });
+    $('#update_pay').click(function () {
+        EditPay.update();
+        EditPay.toggle();
+    });
+    $('#reset_pay').click(function () {
+        EditPay.reset();
     });
 
 
@@ -376,13 +429,13 @@
      * 計算 應退房客金額
      */
     function countTenantPayment() {
-        const originalRefund = EditRefund.unchangedRefund;
+        const originalRefund = EditRefund.unchanged;
         const editAmount = document.querySelectorAll('input.edit-new-item-amount');
         let sum = parseInt(originalRefund);
         editAmount.forEach(function (element, key) {
             sum = _.add(sum, parseInt(element.value) );
         });
-        EditRefund.setRefund(sum);
+        EditRefund.set(sum);
     }
 
 
@@ -459,8 +512,8 @@
             items: createItems(),
             sums: {
                 refund_amount: $('#refund_amount').text(),
-                should_received: $('#should-received').text(),
-                should_pay: $('#should-pay').text(),
+                should_received: $('#received_amount').text(),
+                should_pay: $('#pay_amount').text(),
             }
         };
 

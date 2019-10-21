@@ -190,11 +190,10 @@ class TenantElectricityPaymentController extends Controller
         $roomCode = $request->input('room_code');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $relation = PayLog::join('tenant_electricity_payments', 'pay_logs.loggable_id', '=', 'tenant_electricity_payments.id')
-                          ->join('tenant_contract', 'tenant_contract.id', '=', "tenant_electricity_payments.tenant_contract_id")
+        $relation = PayLog::join('tenant_contract', 'tenant_contract.id', '=', "pay_logs.tenant_contract_id")
                           ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
                           ->where('rooms.electricity_virtual_account', '!=', '')
-                          ->where('loggable_type', 'App\TenantElectricityPayment');
+                          ->where('loggable_type', 'App\Room');
 
         if ($roomCode) {
             $relation = $relation->where('rooms.room_code', $roomCode);

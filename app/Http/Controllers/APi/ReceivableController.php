@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Room;
+use App\PayLog;
 use Carbon\Carbon;
 
 use App\Events\ReceivableArrived;
@@ -57,7 +58,25 @@ class ReceivableController extends Controller
             // ->header('Content-Type', 'text/xml');
 
         } catch (ModelNotFoundException $e) {
-            return 'no record';
+            $room = Room::with('activeContracts')->where('electricity_virtual_account', config('finance.bank_code') . $virtualAccount)->first();
+            if(isset($room)){
+                PayLog::create([
+                    'loggable_type' => Room::class,
+                    'loggable_id' => $room->id,
+                    'subject' => '電費',
+                    'payment_type' => '電費',
+                    'amount' => trim($xml->PmtAddRq->TxAmount),
+                    'virtual_account' => $virtualAccount,
+                    'receipt_type' => '收據',
+                    'paid_at' => Carbon::createFromFormat('YmdHis', $xml->PmtAddRq->TxnDate . $xml->PmtAddRq->TxnTime),
+                    'tenant_contract_id' => $room->activeContracts->first()['id']
+                ]);
+                return response($responser->success(1)->get())
+                        ->header('Content-Type', 'text/xml');
+            }
+            else{
+                return 'no record';
+            }
         } catch (\Exception $e) {
             return $e;
         }

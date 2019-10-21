@@ -35,7 +35,7 @@
                             <input type="hidden" name="type" value="charged" />
                             <div class="form-row">
                                 <div class="col">
-                                    <input type="text" class="form-control form-control-sm" name="room_code" placeholder="物件代碼" value="{{ Request::get('room_code') ?? '' }}">
+                                    <input type="text" class="form-control form-control-sm" name="room_code" placeholder="房代碼" value="{{ Request::get('room_code') ?? '' }}">
                                 </div>
                                 <div class="col">
                                     <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}">

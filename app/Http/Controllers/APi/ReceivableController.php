@@ -66,7 +66,7 @@ class ReceivableController extends Controller
                     'subject' => '電費',
                     'payment_type' => '電費',
                     'amount' => trim($xml->PmtAddRq->TxAmount),
-                    'virtual_account' => $virtualAccount,
+                    'virtual_account' => config('finance.bank_code') . $virtualAccount,
                     'receipt_type' => '收據',
                     'paid_at' => Carbon::createFromFormat('YmdHis', $xml->PmtAddRq->TxnDate . $xml->PmtAddRq->TxnTime),
                     'tenant_contract_id' => $room->activeContracts->first()['id']

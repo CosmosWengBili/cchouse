@@ -130,40 +130,30 @@ class PayLogController extends Controller
     }
 
     private function indexByDate(Request $request) {
-        $payLogs = PayLog::query();
         $startDateStr = $request->input('start_date');
         $endDateStr = $request->input('end_date');
 
-        if($startDateStr) {
-            $startDate = Carbon::parse($startDateStr);
-            $payLogs->where('paid_at', '>=', $startDate);
-        }
-        if($endDateStr) {
-            $startDate = Carbon::parse($endDateStr);
-            $payLogs->where('paid_at', '>=', $startDate);
-        }
+        $data = ['tableRows' => [], 'total' => 0];
+        $rows = [];
+        $payLogs = PayLog::whereBetween('paid_at', [$startDateStr, $endDateStr])
+                        ->get()
+                        ->sortByDesc('paid_at');
 
-        $commonSelectStr = DB::raw(join(', ', ['pay_logs.*', 'due_time AS due_time']));
-        $normalPayLogs = (clone $payLogs)
-            ->join('tenant_payments', 'pay_logs.loggable_id', '=', "tenant_payments.id")
-            ->where('pay_logs.loggable_type', TenantPayment::class)
-            ->select($commonSelectStr);
-        $electricityPayLogs = (clone $payLogs)
-            ->join('tenant_electricity_payments', 'pay_logs.loggable_id', '=', "tenant_electricity_payments.id")
-            ->where('pay_logs.loggable_type', TenantElectricityPayment::class)
-            ->select($commonSelectStr);
-        $payLogs = $normalPayLogs->union($electricityPayLogs);
-
-        $responseData = new NestedRelationResponser();
-        $responseData->index('pay_logs', $this->limitRecords($payLogs));
+        foreach ($payLogs as $payLog) {
+            $data = [
+                '繳費科目' => $payLog->subject,
+                '繳費費用' => $payLog->amount,
+                '繳費虛擬帳號' => $payLog->virtual_account,
+                '繳費日期' => Carbon::parse($payLog->paid_at)->toDateString(),
+            ];
+            $rows[] = $data;
+        }
+  
         $total = $payLogs->sum('amount');
+        $data['tableRows'] = $rows;
+        $data['total'] = $total;
 
-        return view('pay_logs.index_by_date', array_merge(
-            $responseData->get(), [
-                'total' => $total,
-                'start_date' => $startDateStr,
-                'end_date' => $endDateStr,
-            ]));
+        return view('pay_logs.index_by_date', $data);
     }
 
     public function changeLoggable(Request $request, PayLog $payLog) {

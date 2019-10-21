@@ -106,7 +106,18 @@ class PayOffService
 
         // 整理成 excel 內的格式
         foreach ($fees as $fee) {
-            $defaultItems[$fee['subject']] = array_merge($defaultItems[$fee['subject']], $fee);
+            if( array_key_exists($fee['subject'], $defaultItems) ){
+                $defaultItems[$fee['subject']] = array_merge($defaultItems[$fee['subject']], $fee);
+            }
+            else{
+                $defaultItems[$fee['subject']] = [
+                    'subject' => $fee['subject'],
+                    'amount' => $fee['amount'],
+                    'comment' => $fee['comment'],
+                    'is_showed' => true
+                ];                
+            }
+            
         }
 
         if ($commission_type === '包租' && $return_ways === '中途退租') {

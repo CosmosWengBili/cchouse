@@ -61,17 +61,17 @@
 <script>
     renderDataTable(["#{{$tableId}}"], {
         drawCallback: function( settings ) {
-            cal()
+            cal(this)
         }
     });
 
-    function cal() {
+    function cal(table) {
         let total = 0;
-        $('td.amount').each(function (index, td) {
+        table.find('td.amount').each(function (index, td) {
             total += parseInt($(td).text()) || 0
         })
 
-        $('span.countAmount').each(function (index, span) {
+        table.closest('div.tab-pane').find('span.countAmount').each(function (index, span) {
             $(span).text(total)
         })
     }

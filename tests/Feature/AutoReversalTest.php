@@ -38,6 +38,7 @@ class AutoReversalTest extends TestCase
 
         $buildingId = DB::table('buildings')->insertGetId([
             'title' => 'test building',
+            'electricity_payment_method' => '公司代付'
         ]);
 
         $roomId = DB::table('rooms')->insertGetId([
@@ -47,6 +48,13 @@ class AutoReversalTest extends TestCase
             'management_fee_mode' => '比例',
             'management_fee' => 3.0,
             'rent_actual' => 5000,
+        ]);
+
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
+            'building_id' => $buildingId,
+            'commission_type' => '代管',
+            'commission_start_date' => Carbon::now()->subMonth(),
+            'commission_end_date' => Carbon::now()->addMonth()
         ]);
 
         $tenantId = DB::table('tenants')->insertGetId([
@@ -82,7 +90,6 @@ class AutoReversalTest extends TestCase
 
         $data = '<PaySvcRq><PmtAddRq><TDateSeqNo>20100310000029216</TDateSeqNo><TxnDate>20190810</TxnDate><TxnTime>201003</TxnTime><ValueDate>20100310</ValueDate><TxAmount>5401</TxAmount><BankID>0081000</BankID><ActNo>00708804344</ActNo><MAC></MAC><PR_Key1>9216813322423450</PR_Key1></PmtAddRq></PaySvcRq>';
         $response = $this->call('POST', '/api/bank/webhook', [], [], [], [], $data);
-
         $response->assertStatus(200);
 
         $firstOfEachPayments = DB::table('tenant_payments')->where('tenant_contract_id', $newContract->id)->groupBy('subject')->get();
@@ -177,6 +184,13 @@ class AutoReversalTest extends TestCase
             'management_fee_mode' => '比例',
             'management_fee' => 3,
             'rent_actual' => 100,
+        ]);
+
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
+            'building_id' => $buildingId,
+            'commission_type' => '代管',
+            'commission_start_date' => Carbon::now()->subMonth(),
+            'commission_end_date' => Carbon::now()->addMonth()
         ]);
 
         $tenantId = DB::table('tenants')->insertGetId([
@@ -359,6 +373,12 @@ class AutoReversalTest extends TestCase
             'management_fee' => 3,
             'rent_actual' => 10000,
         ]);
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
+            'building_id' => $buildingId,
+            'commission_type' => '代管',
+            'commission_start_date' => Carbon::now()->subMonth(),
+            'commission_end_date' => Carbon::now()->addMonth()
+        ]);
         $tenantId = DB::table('tenants')->insertGetId([ 'name' => 'test tenant']);
         $tenantContractData = [
             'room_id' => $roomId,
@@ -419,6 +439,12 @@ class AutoReversalTest extends TestCase
             'management_fee_mode' => '固定',
             'management_fee' => 100,
             'rent_actual' => 10000,
+        ]);
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
+            'building_id' => $buildingId,
+            'commission_type' => '代管',
+            'commission_start_date' => Carbon::now()->subMonth(),
+            'commission_end_date' => Carbon::now()->addMonth()
         ]);
         $tenantId = DB::table('tenants')->insertGetId([ 'name' => 'test tenant']);
         $tenantContractData = [
@@ -481,6 +507,12 @@ class AutoReversalTest extends TestCase
             'management_fee_mode' => '比例',
             'management_fee' => 3,
             'rent_actual' => 100,
+        ]);
+        $landlordContractId = DB::table('landlord_contracts')->insertGetId([
+            'building_id' => $buildingId,
+            'commission_type' => '代管',
+            'commission_start_date' => Carbon::now()->subMonth(),
+            'commission_end_date' => Carbon::now()->addMonth()
         ]);
         $tenantId = DB::table('tenants')->insertGetId([ 'name' => 'test tenant']);
         $tenantContractData = [

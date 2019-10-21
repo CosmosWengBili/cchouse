@@ -329,7 +329,7 @@ class ScheduleService
             foreach( $landlordContract->building->normalRooms() as $room ){
                 $income = 0;
                 if ($room->management_fee_mode == '比例') {
-                    $income = intval(round($room->rent_landlord * $room->management_fee / 100));
+                    $income = intval(round($room->rent_actual * $room->management_fee / 100));
                 } else {
                     $income  = intval($room->management_fee);
                 }

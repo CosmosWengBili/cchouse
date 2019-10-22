@@ -465,7 +465,7 @@
                         <input
                             class="form-control form-control-sm"
                             type="number"
-                            name="withdrawal_revenue_distribution"
+                            name="withdrawal_revenue_distribution[0]"
                             placeholder="請輸入 0.5, 0.6..."
                             value="{{ isset($data["withdrawal_revenue_distribution"]) ? $data['withdrawal_revenue_distribution'] : '' }}"
                         />

@@ -14,13 +14,15 @@ class PayOffService
     /** @var TenantContract $tenantContract */
     private $tenantContract;
     private $comment;
+    private $returnWay;
 
-    function __construct(Carbon $payOffDate, TenantContract $tenantContract)
+    function __construct(Carbon $payOffDate, TenantContract $tenantContract, $returnWay)
     {
         $this->payOffDate = $payOffDate->endOfDay();
         $this->tenantContract = $tenantContract;
         $this->lastPayDate = $this->buildLastPayDate();
         $this->comment = $this->buildComment();
+        $this->returnWay = $returnWay;
     }
 
     public function buildPayOffData()
@@ -271,7 +273,6 @@ class PayOffService
             return round($item);
         })->toArray();
 
-
         return [
             $defaultItems,
             $sumItems,
@@ -308,11 +309,9 @@ class PayOffService
                 $copy = $fee;
                 $copy['subject'] = '折抵清潔費';
                 $copy['amount'] = $fee['amount'] * -1;
-                if ($fee['amount'] > 0) { // 正數不顯示
-                    $fee['is_showed'] = false;
-                } elseif ($fee['amount'] === 0) {
+                if ($fee['amount'] === 0) {
                     $fee['is_showed'] = $copy['is_showed'] = false;
-                } else {
+                } else if($this->returnWay != '中途退租'){
                     $copy['is_showed'] = false;
                 }
             } elseif ($fee['subject'] === '滯納金') {

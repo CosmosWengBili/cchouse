@@ -39,10 +39,11 @@ class PayOffController extends Controller
 
     public function show(Request $request, TenantContract $tenantContract) {
         $payOffDate = $request->input('payOffDate');
+        $returnWay = $request->input('return_ways');
 
         if ($payOffDate) {
             $payOffDate = new Carbon($payOffDate);
-            $payOffService = new PayOffService($payOffDate, $tenantContract);
+            $payOffService = new PayOffService($payOffDate, $tenantContract, $returnWay);
             $payOffData = $payOffService->buildPayOffData();
 
             $headerInfo = $this->getHeaderInfo($tenantContract);

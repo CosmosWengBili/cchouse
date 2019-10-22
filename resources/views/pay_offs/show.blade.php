@@ -18,7 +18,6 @@
                     <hr class="mt-1">
 
 
-
                     @if(isset($payOffData))
                         @php
                             $refundAmount = 0;
@@ -119,7 +118,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                    </from>
+                                    </form>
                                 </td>
                             </tr>
                             <tr>
@@ -286,17 +285,17 @@
                 <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
-            <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
+                            <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
-            </select>
-            </td>
-        <td>
-        <input class="form-control form-control-sm electricity-amount edit-new-item-amount" type="number" id="cal_v" name="cal_v" readonly>
-        </td>
-        <td>
-        <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
-        </td>
-    </tr>`;
+                    </select>
+                    </td>
+                <td>
+                    <input class="form-control form-control-sm electricity-amount edit-new-item-amount" type="number" id="cal_v" name="cal_v" readonly>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
+                </td>
+            </tr>`;
     }
 
 </script>
@@ -333,17 +332,17 @@
                 <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
-            <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
+                            <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
-            </select>
-        </td>
-        <td>
-        <input class="form-control form-control-sm exchange-fee-amount edit-new-item-amount" type="number" name="amount" readonly value="-30">
-        </td>
-        <td>
-        <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
-        </td>
-    </tr>`;
+                    </select>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm exchange-fee-amount edit-new-item-amount" type="number" name="amount" readonly value="-30">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
+                </td>
+            </tr>`;
     }
 
 </script>
@@ -449,22 +448,28 @@
         const apiURL = '{{ route('payOffs.storePayOffPayments', $tenantContract->id) }}';
         const payOffDate = '{{ optional($payOffDate)->format('Y-m-d')}}';
         const template = `
-           <tr class="new-payment">
+            <tr class="new-payment">
                <td>
                   <select class="form-control form-control-sm select-subjects" name="subject">
                       @foreach(config('enums.tenant_payments.subject') as $subject)
-            <option value="{{ $subject }}" {{$loop->first ? 'selected' : ''}}>{{ $subject }}</option>
+                        <option value="{{ $subject }}" {{$loop->first ? 'selected' : ''}}>{{ $subject }}</option>
                       @endforeach
-            </select>
-         </td>
-         <td></td>
-         <td>
-            <input class="form-control form-control-sm edit-new-item-amount" type="number" name="amount" value="0">
-         </td>
-         <td>
-            <input class="form-control form-control-sm" type="text" name="comment">
-         </td>
-     </tr>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control form-control-sm" name="collected_by">
+                    @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
+                        <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
+                    @endforeach
+                    </select>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm edit-new-item-amount" type="number" name="amount" value="0">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm" type="text" name="comment">
+                </td>
+            </tr>
 `;
 
         $('.js-new-item').on('click', function () {
@@ -601,10 +606,10 @@
 <script id="validation">
 
     $.validator.addMethod('gtEnd110v', function(value, element) {
-        return value >= parseInt({{ $payOffData['110v_end_degree'] }});
+        return value >= parseInt('{{ $payOffData['110v_end_degree'] }}');
     }, '輸入的110v度數須大於等於上期期末度數');
     $.validator.addMethod('gtEnd220v', function(value, element) {
-        return value >= parseInt({{ $payOffData['220v_end_degree'] }});
+        return value >= parseInt('{{ $payOffData['220v_end_degree'] }}');
     }, '輸入的220v度數須大於等於上期期末度數');
 
 

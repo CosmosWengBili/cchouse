@@ -37,6 +37,8 @@
                                             value="{{ $data['building_code'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Building.group")</td>
                                     <td>
                                         <input

@@ -137,9 +137,9 @@
                                             $refundAmount += $fee['amount'];
                                         @endphp
                                         @if ($fee['subject'] === '履保金')
-                                            <span id="deposit_paid" class="amount">{{ $fee['amount'] }}</span> 元
+                                            <input id="deposit_paid" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
                                         @else
-                                            <span class="amount">{{ $fee['amount'] }}</span>  元
+                                            <input type="number" class="form-control form-control-sm edit-new-item-amount" value={{ $fee['amount'] }}>
                                         @endif
                                     </td>
                                     <td><span class="comment">{{ $fee['comment'] }}</span></td>

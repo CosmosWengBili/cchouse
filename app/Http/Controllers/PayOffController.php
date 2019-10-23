@@ -207,20 +207,20 @@ class PayOffController extends Controller
 
                     if ($payment instanceof TenantElectricityPayment) {
                         $tenantContract->payLogs()->create([
-                            'loggable_type' => 'tenant_electricity_payment',
+                            'loggable_type' => TenantElectricityPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
-                            'payment_type' => TenantElectricityPayment::class,
+                            'payment_type' => '電費',
                             'amount' => $amount,
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
                         ]);
                     } else {
                         $tenantContract->payLogs()->create([
-                            'loggable_type' => 'tenant_payment',
+                            'loggable_type' => TenantPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
-                            'payment_type' => TenantPayment::class,
+                            'payment_type' => '租金雜費',
                             'amount' => $amount,
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),

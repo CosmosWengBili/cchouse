@@ -63,9 +63,11 @@ class PayOffService
         $fees = array_merge($fees, $others, $fines);
 
         // 7. 最後根據不同的承租方式與退租方式 追加屬性
-        list($defaultItems, $sumItems) = $this->regenerateItems($fees, $diffDays);
+        $withdrawal_revenue_distribution = $this->tenantContract->building->landlordContracts()->active()->withdrawal_revenue_distribution;
+        list($defaultItems, $sumItems) = $this->regenerateItems($fees, $diffDays, $withdrawal_revenue_distribution);
 
         return [
+            'withdrawal_revenue_distribution' => $withdrawal_revenue_distribution,
             '110v_end_degree' => $endDegreeOf110v,
             '220v_end_degree' => $endDegreeOf220v,
             'fees' => $defaultItems,
@@ -80,9 +82,8 @@ class PayOffService
      *
      * @return array
      */
-    private function regenerateItems(array $fees, $diffDays)
+    private function regenerateItems(array $fees, $diffDays, $withdrawal_revenue_distribution)
     {
-        $withdrawal_revenue_distribution = $this->tenantContract->building->landlordContracts()->active()->withdrawal_revenue_distribution;
         $commission_type = $this->tenantContract->building->landlordContracts()->active()->commission_type;
         $return_ways = request()->input('return_ways', '中途退租');
 
@@ -140,7 +141,7 @@ class PayOffService
             // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
 
-            $sumItems['兆基應收'] = $defaultItems['履保金'];
+            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'];
 
             // −1×(IF(B16>0,0,B16)+IF(B19>0,0,B19))+B22
             $sumItems['業主應付'] = -1 * ($defaultItems['清潔費']['amount'] > 0 ? 0 : $defaultItems['清潔費']['amount'])

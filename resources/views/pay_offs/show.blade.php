@@ -136,11 +136,7 @@
                                         @php
                                             $refundAmount += $fee['amount'];
                                         @endphp
-                                        @if ($fee['subject'] === '履保金')
-                                            <input id="deposit_paid" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
-                                        @else
-                                            <input type="number" class="form-control form-control-sm edit-new-item-amount" value={{ $fee['amount'] }}>
-                                        @endif
+                                        <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
                                     </td>
                                     <td><span class="comment">{{ $fee['comment'] }}</span></td>
                                 </tr>
@@ -160,6 +156,7 @@
                                         <div class="align-content-center">
                                             <span id="refund_amount">{{ $payOffData['sums']['應退金額'] }}</span>
                                             <input id="edit_refund_amount"
+                                                   data-subject="refund"
                                                    type="number"
                                                    step="1"
                                                    value="{{ $payOffData['sums']['應退金額'] }}"
@@ -179,6 +176,7 @@
                                     <div class="d-inline-flex">
                                         <span id="received_amount">{{ $payOffData['sums']['兆基應收'] }}</span>
                                         <input id="edit_received_amount"
+                                                data-subject="received"
                                                 type="number"
                                                 step="1"
                                                 value="{{ $payOffData['sums']['兆基應收'] }}"
@@ -197,6 +195,7 @@
                                     <div class="d-inline-flex">
                                         <span id="pay_amount">{{ $payOffData['sums']['業主應付'] }}</span>
                                         <input id="edit_pay_amount"
+                                                data-subject="pay"
                                                 type="number"
                                                 step="1"
                                                 value="{{ $payOffData['sums']['業主應付'] }}"
@@ -226,6 +225,11 @@
         width: 200px
     }
 </style>
+
+<!-- init payOffData -->
+<script>
+    var payOffData = @json($payOffData);
+</script>
 
 <script>
 
@@ -290,7 +294,7 @@
                     </select>
                     </td>
                 <td>
-                    <input class="form-control form-control-sm electricity-amount edit-new-item-amount" type="number" id="cal_v" name="cal_v" readonly>
+                    <input class="form-control form-control-sm electricity-amount edit-added-item-amount" type="number" id="cal_v" name="cal_v" readonly>
                 </td>
                 <td>
                     <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
@@ -337,7 +341,7 @@
                     </select>
                 </td>
                 <td>
-                    <input class="form-control form-control-sm exchange-fee-amount edit-new-item-amount" type="number" name="amount" readonly value="-30">
+                    <input class="form-control form-control-sm exchange-fee-amount edit-added-item-amount" type="number" name="amount" readonly value="-30">
                 </td>
                 <td>
                     <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
@@ -419,22 +423,172 @@
         EditPay.reset();
     });
 
-
     $(document).on('change', 'input.edit-new-item-amount', function () {
-        countTenantPayment();
+        // update payOffData
+        if( payOffData['fees'][$(this).data('subject')] == undefined ){
+            payOffData['fees'][$(this).data('subject')] = {
+                'sbject': $(this).data('subject'),
+                'amount': parseInt($(this).val()),
+                'comment': "",
+                'is_showed': true
+            }
+        }
+        else{
+            payOffData['fees'][$(this).data('subject')]['amount'] = parseInt($(this).val())
+        }
+        reCountSum();
     });
 
     /**
      * 計算 應退房客金額
      */
     function countTenantPayment() {
-        const originalRefund = EditRefund.unchanged;
-        const editAmount = document.querySelectorAll('input.edit-new-item-amount');
+        const returnWay = $('#return_ways').val()
+        const originalRefund = payOffData['sums']['應退金額'];
+        const addedAmount = document.querySelectorAll('input.edit-added-item-amount');
         let sum = parseInt(originalRefund);
-        editAmount.forEach(function (element, key) {
+        if( returnWay != "中途退租" ){
+            addedAmount.forEach(function (element, key) {
             sum = _.add(sum, parseInt(element.value) );
-        });
+            });
+        }
         EditRefund.set(sum);
+    }
+    /**
+     * 重新顯示所有總額
+     */
+     function renderSum(){
+        $('[data-subject="refund"]').val(payOffData['sums']['應退金額'] )
+        $('#refund_amount').text(payOffData['sums']['應退金額']) 
+        $('[data-subject="received"]').val(payOffData['sums']['兆基應收'] )
+        $('#received_amount').text(payOffData['sums']['兆基應收']) 
+        $('[data-subject="pay"]').val(payOffData['sums']['業主應付'] )
+        $('#pay_amount').text(payOffData['sums']['業主應付'])   
+     }
+    /**
+     * 重新計算所有總額
+     */
+    function reCountSum(){
+        var commissionType = $('#commission_type').text()
+        var returnWay = $('#return_ways').val()
+        if( commissionType == '包租' ){
+            if( returnWay == '中途退租' ){
+                // -(履保金+管理費+清潔費+設備+滯納金)
+                payOffData['fees']['沒收押金']['amount'] = (
+                    payOffData['fees']['履保金']['amount'] +
+                    payOffData['fees']['管理費']['amount'] +
+                    payOffData['fees']['清潔費']['amount'] +
+                    payOffData['fees']['滯納金']['amount']
+                    ) * -1;
+                
+
+                // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
+                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'];
+
+                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] > 0 ? 0 : payOffData['fees']['清潔費']['amount'])
+                                        + (payOffData['fees']['滯納金']['amount'] > 0 ? 0 : payOffData['fees']['滯納金']['amount'])
+                                        + payOffData['fees']['點交中退盈餘分配']['amount'];   
+                                         
+                $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
+                renderSum()    
+            }
+            else if( returnWay == '到期退租' ){
+                
+                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
+                payOffData['fees']['管理費']['amount'] + payOffData['sums']['應退金額'];
+
+                payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
+                payOffData['fees']['租金']['amount'] +
+                payOffData['fees']['清潔費']['amount'] +
+                payOffData['fees']['滯納金']['amount'];
+
+                // B49−B56
+                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額'];
+                renderSum()
+            }
+            else if( returnWay == '協調退租' ){
+
+                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                
+                
+                payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
+                                                payOffData['fees']['沒收押金']['amount'] +
+                                                payOffData['fees']['租金']['amount'];
+                
+                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額']['amount'];
+                
+                payOffData['sums']['業主應付'] = payOffData['sums']['應退金額'] +
+                payOffData['fees']['管理費']['amount'] +
+                (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
+                payOffData['fees']['點交中退盈餘分配']['amount'];
+
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
+                renderSum() 
+            }
+        }
+        else if( commissionType == '代管' ){
+            if( returnWay == '中途退租' ){
+                payOffData['fees']['沒收押金']['amount'] = (
+                    payOffData['fees']['履保金']['amount'] +
+                    payOffData['fees']['管理費']['amount'] +
+                    payOffData['fees']['清潔費']['amount'] +
+                    payOffData['fees']['滯納金']['amount']
+                ) * -1;
+                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['sums']['兆基應收'] = payOffData['sums']['業主應付'] = -1 *
+                ( payOffData['fees']['清潔費']['amount'] > 0 ? 0 :  payOffData['fees']['清潔費']['amount']) +
+                ( payOffData['fees']['滯納金']['amount'] > 0 ? 0 :  payOffData['fees']['滯納金']['amount']) +
+                  payOffData['fees']['點交中退盈餘分配']['amount'];    
+
+                $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )                  
+                renderSum()             
+            }
+            else if( returnWay == '到期退租' ){
+            payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
+                payOffData['fees']['租金']['amount'] +
+                payOffData['fees']['清潔費']['amount'] +
+                payOffData['fees']['滯納金']['amount'];
+            // −1×(E54+E52)+E51
+            payOffData['sums']['兆基應收'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
+                payOffData['fees']['管理費']['amount'];
+            // −1×(B52+B54)+B56+B51
+            payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
+                payOffData['fees']['管理費']['amount'] +
+                payOffData['sums']['應退金額'];
+
+                renderSum() 
+            }
+            else if( returnWay == '協調退租' ){
+
+                // −E32÷2
+                payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
+                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+
+                // SUM(E32:E34)+SUM(E36:E38)
+                payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
+                    payOffData['fees']['沒收押金']['amount'] +
+                    payOffData['fees']['租金']['amount'] +
+                    payOffData['fees']['清潔費']['amount'] +
+                    payOffData['fees']['滯納金']['amount'];
+                // E39+−1×(E36+E38)+E35
+                payOffData['sums']['兆基應收'] = payOffData['fees']['點交中退盈餘分配']['amount'] +
+                    -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
+                    payOffData['fees']['管理費']['amount'];
+                // E41+E35+(E36+E38)×−1+E39
+                payOffData['sums']['業主應付'] = payOffData['sums']['應退金額'] +
+                    payOffData['fees']['管理費']['amount'] +
+                    (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
+                    payOffData['fees']['點交中退盈餘分配']['amount'];
+
+                $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )  
+                renderSum() 
+            }
+        }
+
     }
 
 
@@ -464,7 +618,7 @@
                     </select>
                 </td>
                 <td>
-                    <input class="form-control form-control-sm edit-new-item-amount" type="number" name="amount" value="0">
+                    <input class="form-control form-control-sm edit-added-item-amount" type="number" name="amount" value="0">
                 </td>
                 <td>
                     <input class="form-control form-control-sm" type="text" name="comment">
@@ -570,7 +724,7 @@
                 const temp = {
                     subject: $(item).find('select').val(),
                     collected_by: '',
-                    amount: $(item).find('input.edit-new-item-amount').val(),
+                    amount: $(item).find('input.edit-added-item-amount').val(),
                     comment: $(item).find('input[name=comment]').val(),
                     is_old: false,
                 };

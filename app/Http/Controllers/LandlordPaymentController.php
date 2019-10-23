@@ -35,12 +35,7 @@ class LandlordPaymentController extends Controller
                 ->select($selectStr)
                 ->where('commission_end_date', '>', Carbon::today())
                 ->groupBy('id')
-        )
-            ->filter(function ($item, $key) {
-                if (Str::contains($item->subject, '維修')) {
-                    return $item;
-                }
-            });
+        );
 
         $data = $responseData
             ->index('landlord_payments', $landlordPayment)

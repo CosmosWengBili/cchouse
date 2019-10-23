@@ -185,7 +185,7 @@ class PayOffService
                 $defaultItems['沒收押金']['amount'] +
                 $defaultItems['租金']['amount'];
             // B32−B41
-            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'] - $defaultItems['應退金額']['amount'];
+            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'] - $sumItems['應退金額']['amount'];
             // B41+B35+(B36+B38)×−1+B39
             $sumItems['業主應付'] = $sumItems['應退金額'] +
                 $defaultItems['管理費']['amount'] +

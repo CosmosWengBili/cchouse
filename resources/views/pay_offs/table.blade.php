@@ -51,6 +51,7 @@
                             <td>
                                 @if($layer == 'tenant_contracts')
                                     <a class="btn btn-info" href="{{ route('payOffs.show', $object['id']) }}">點交報表</a>
+                                    <a class="btn btn-secondary" href="{{ route('payOffs.history', $object['id']) }}">點交呆帳</a>
                                 @endif
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
                             </td>

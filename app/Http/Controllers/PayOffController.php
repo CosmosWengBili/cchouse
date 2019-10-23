@@ -57,6 +57,20 @@ class PayOffController extends Controller
         ]);
     }
 
+    public function history(Request $request, TenantContract $tenantContract) {
+
+        $payOff = PayOff::where('tenant_contract_id', $tenantContract->id)
+                ->get()
+                ->last();
+        $responseData = new NestedRelationResponser();
+        $responseData
+            ->show($payOff->load($request->withNested))
+            ->relations($request->withNested);
+
+
+       return view('pay_offs.history', $responseData->get());
+    }
+
     public function storePayOffPayments(Request $request, TenantContract $tenantContract)
     {
         // 電費相關
@@ -74,10 +88,10 @@ class PayOffController extends Controller
         ])['header'];
         // 科目相關
         $validatedItemsData = $request->validate([
+            'items.*.subject' => 'required',
             'items.*.amount' => 'required|integer',
             'items.*.collected_by' => 'nullable',
             'items.*.comment' => 'nullable',
-            'items.*.subject' => 'required',
         ])['items'];
         // 總和相關
         $validatedSumsData = $request->validate([
@@ -120,7 +134,7 @@ class PayOffController extends Controller
                 'pay_off_type' => $validatedHeaderData['return_ways'],
                 '110v_degree' => $validatedElectricityData['final_110v'],
                 '220v_degree' => $validatedElectricityData['final_220v'],
-                'payment_detail' => json_encode($validatedItemsData),
+                'payment_detail' => $validatedItemsData,
                 'tenant_amount' => $validatedSumsData['refund_amount'],
                 'company_income' => $validatedSumsData['should_received'],
                 'landlord_paid' => $validatedSumsData['should_pay'],

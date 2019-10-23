@@ -601,5 +601,22 @@ return [
         'pay_log_id' => '繳費記錄編號',
         'created_at' => '建立時間',
         'updated_at' => '更新時間'
+    ],
+    'PayOff' => [
+        'id' => '編號',
+        'pay_off_type' => '退租方式',
+        '110v_degree' => '110v 結度',
+        '220v_degree' => '220v 結度',
+        'payment_detail' => '明細',
+        'tenant_amount' => '租客應收',
+        'company_income' => '兆基應收',
+        'landlord_paid' => '房東應付',
+        'tenant_contract_id' => '租客合約編號'
+    ],
+    'General' => [
+        'amount' => '費用',
+        'comment' => '備註',
+        'subject' => '科目',
+        'collected_by' => '收取者'
     ]
 ];

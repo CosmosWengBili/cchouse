@@ -12,6 +12,10 @@ class PayOff extends Model implements AuditableContract
     use SoftDeletes;
     use AuditableTrait;
 
+    protected $casts = [
+        'payment_detail' => 'array',
+    ];
+
     protected $guarded = [];
     
     protected $hidden = ['pivot', 'deleted_at'];

@@ -684,7 +684,7 @@
                 const temp = {
                     subject: $(item).find('span.subject').text(),
                     collected_by: '',
-                    amount: $(item).find('span.amount').text(),
+                    amount: $(item).find('input.edit-new-item-amount').val(),
                     comment: '',
                     is_old: true,
                 };

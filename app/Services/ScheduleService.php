@@ -344,4 +344,29 @@ class ScheduleService
 
         }
     }
+
+    
+    public function genarateDepositInterest()
+    {  
+        $tenantContracts = TenantContract::active()
+            ->with(['tenant', 'room'])
+            ->get();
+        $depositInterest = SystemVariable::where(
+                'code',
+                '=',
+                'depositRate'
+            )->first()->value;
+        foreach ($tenantContracts as $tenantContract) {
+            if( $tenantContract->room->building->activeContracts()->commission_type == '代管' ){          
+                continue;
+            }
+            CompanyIncome::create([
+                'subject' => '押金設算息',
+                'income_date' => Carbon::today(),
+                'amount' => round( $tenantContract->deposit_paid * $depositInterest),
+                'incomable_id' => $tenantContract->id,
+                'incomable_type' => TenantContract::class
+            ]);
+        }
+    }
 }

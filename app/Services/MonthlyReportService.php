@@ -334,9 +334,16 @@ class MonthlyReportService
                             $roomData['meta']['room_total_expense'] += $payoffPayment->amount;
                         }
                     }
-                    $landlord_paid = $tenantContract->payOff()->get()->first()->landlord_paid;
-                    if ($landlord_paid > 0) {
-                        $roomData['meta']['room_total_expense'] = $tenantContract->payOff()->get()->first()->landlord_paid;
+                    $payOffSum = $tenantContract->payOff()->get()->first();
+                    $landlordPaid = $payOffSum->landlordPaid;
+                    if ($landlordPaid > 0) {
+                        $roomData['expenses'][] = [
+                            'subject' => '房東應付',
+                            'month' => $month . '月',
+                            'paid_at' => $payOffSum->created_at,
+                            'amount' => $payOffSum->amount,
+                        ];
+                        $roomData['meta']['room_total_expense'] = $payOffSum->landlordPaid;
                     }
                     $data['payoffs'][] = $roomData;
                     $data['meta']['total_income'] += $roomData['meta']['room_total_income'];

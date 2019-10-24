@@ -41,7 +41,7 @@ class ReceiptService
                                                                 ->where('subject', '租金')
                                                                 ->whereBetween('due_time', [$selectedStartDate, $selectedEndDate])
                                                                 ;
-                    if($tenantContract->tenant->is_legal_person && $payments->sum('amount') != 0){
+                    if( !$tenantContract->tenant->is_legal_person && $payments->sum('amount') != 0){
                         foreach( $payments as $payment){
                             $data = array();
                             $data['building_code'] = $room->building->building_code;

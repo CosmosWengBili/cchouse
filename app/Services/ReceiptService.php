@@ -111,18 +111,17 @@ class ReceiptService
     public function countActualCharterFee($landlordContract, $this_month_taxable_charter_fee, $start_date, $end_date){
 
         $rooms = $landlordContract->building->normalRooms();
-
         $should_paid_amount = 0;
         $paid_amount = 0;
         $should_ignored_amount = 0;
 
         foreach( $rooms as $room ){
-            $tenantContracts = $room->activeContracts();
-            foreach( $tenantContracts as $tenantContract){
+            $tenantContracts = $room->activeContracts()->get();
+	    foreach( $tenantContracts as $tenantContract){
                 if(is_null($tenantContract)){}
                 else{
                     $should_paid_amount += $tenantContract->rent;
-                    $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+		    $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
                                                             ->where('subject', '租金')
                                                             ->whereBetween('due_time', [$start_date, $end_date])
                                                             ->sum('amount');

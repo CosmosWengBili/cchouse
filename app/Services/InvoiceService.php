@@ -45,6 +45,7 @@ class InvoiceService
         $subtotal = 0;
         $comment = '';
         $current_tenant_contract_id = 0;
+        $current_paid_at = Carbon::create(2000,1,1);
 
         // Init the variables which would be used to detect whether over landlord rent price
         $building_price_map = array();
@@ -64,43 +65,22 @@ class InvoiceService
             $invoice_item_count++;
             $pay_log_tenant_contract_id =
                 $pay_log['loggable']['tenantContract']->id;
+            $pay_log_paid_at =
+                $pay_log->paid_at;
 
             // Update subtotal-use index
-            if ($pay_log_tenant_contract_id != $current_tenant_contract_id) {
+            if ($pay_log_tenant_contract_id != $current_tenant_contract_id || 
+                $current_paid_at != $pay_log_paid_at) {
                 $this->invoice_count++;
                 $invoice_item_count = 1;
                 $current_tenant_contract_id = $pay_log_tenant_contract_id;
-                $payment_count = 0;
-
-                $tenantContract = $pay_log->loggable->tenantContract;
-
-                // Set payment count to know when to make subtotal row
-                $payment_models = [
-                    'App\TenantPayment',
-                    'App\TenantElectricityPayment'
-                ];
-                foreach ($payment_models as $model_key => $model) {
-                    $tmp_payments = $model
-                        ::whereHas('payLogs', function ($q) use (
-                            $pay_log_tenant_contract_id
-                        ) {
-                            $q->where(
-                                'tenant_contract_id',
-                                '=',
-                                $pay_log_tenant_contract_id
-                            );
-                        })
-                        ->when( $model_key == 'App\TenantPayment' , function ($query) {
-                            return $query->where('collected_by', '公司');
-                        });
-                    
-                    foreach ($tmp_payments->get() as $payment_key => $payment) {
-                        $payment_count += $payment->payLogs
-                            ->whereBetween('paid_at', [$start_date, $end_date])
-                            ->where('receipt_type', '=', '發票')
-                            ->count();
-                    }
-                }
+                $current_paid_at = $pay_log_paid_at;
+                $payment_count = PayLog::where('tenant_contract_id', $current_tenant_contract_id)
+                                        ->where('paid_at', $current_paid_at )
+                                        ->where('receipt_type', '發票')
+                                        ->where('subject', '<>', '租金')
+                                        ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment'])
+                                        ->count();
             }
 
             // Set comment
@@ -109,10 +89,8 @@ class InvoiceService
             }
             else{
                 $comment =
-                $comment .
-                ($pay_log->loggable->comment .
-                    ';' .
-                    $pay_log->loggable->tenantContract->room->comment);
+                $pay_log->loggable->comment . ';' .
+                $pay_log->loggable->tenantContract->room->comment;
             }
 
             // Set normal value
@@ -142,7 +120,7 @@ class InvoiceService
 
             // Make subtotal row
 
-            if ($payment_count == $invoice_item_count) {
+            if ($payment_count == $invoice_item_count || $pay_log->loggable->subject == "租金") {
                 $data['invoice_item_idx'] = $data['invoice_item_idx'];
                 if (
                     $pay_log->loggable->tenantContract->tenant->is_legal_person
@@ -162,9 +140,18 @@ class InvoiceService
                 );
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
-                $data['invoice_price'] = $subtotal;
-                $data['subtotal'] = $subtotal;
-                $subtotal = 0;
+
+                if($pay_log->loggable->subject == '租金'){
+                    $data['invoice_count'] = $this->invoice_count;
+                    $data['invoice_item_idx'] = 1;
+                    $data['invoice_price'] = $pay_log->amount;
+                    $data['subtotal'] = $pay_log->amount;
+                }
+                else{
+                    $data['invoice_price'] = $subtotal;
+                    $data['subtotal'] = $subtotal;
+                    $subtotal = 0;
+                }
             }
             if( $pay_log->loggable->subject == "租金" ){
                 array_push($this->global_data['company'], $data);

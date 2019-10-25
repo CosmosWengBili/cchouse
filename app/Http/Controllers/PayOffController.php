@@ -145,6 +145,7 @@ class PayOffController extends Controller
             // 產生 payments
             $tenantPayments = collect($validatedItemsData)
                 ->where('subject', '<>', '電費')
+                ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate) {
                     $subject = $payment['subject'];
                     $amount = -($payment['amount']);
@@ -152,23 +153,25 @@ class PayOffController extends Controller
                     $collected_by = is_null($payment['collected_by'])
                         ? '公司'
                         : $payment['collected_by'];
-
-                    return new TenantPayment([
-                        'tenant_contract_id' => $tenantContract->id,
-                        'due_time' => $payOffDate,
-                        'subject' => $subject,
-                        'amount' => $amount,
-                        'is_charge_off_done' => true,
-                        'charge_off_date' => $payOffDate,
-                        'collected_by' => $collected_by,
-                        'is_visible_at_report' =>false,
-                        'is_pay_off' => true,
-                        'comment' => $comment,
-                    ]);
+                    if( strpos($subject, '折抵') == false ){
+                        return new TenantPayment([
+                            'tenant_contract_id' => $tenantContract->id,
+                            'due_time' => $payOffDate,
+                            'subject' => $subject,
+                            'amount' => $amount,
+                            'is_charge_off_done' => true,
+                            'charge_off_date' => $payOffDate,
+                            'collected_by' => $collected_by,
+                            'is_visible_at_report' =>false,
+                            'is_pay_off' => true,
+                            'comment' => $comment,
+                        ]);
+                    }
             });
             // 產生 electricity payments
             $tenantElectricityPayments = collect($validatedItemsData)
                 ->where('subject', '電費')
+                ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate, $validatedElectricityData) {
                     $subject = $payment['subject'];
                     $amount = abs($payment['amount']);
@@ -201,8 +204,8 @@ class PayOffController extends Controller
             // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 paylog，費用等同此科目費用，但轉化為正數 ;
             $allPayments = $tenantPayments->merge($tenantElectricityPayments);
             foreach ($allPayments as $payment) {
-                if ( $amount = (int) $payment->amount < 0) {
-                    $amount = abs($amount);
+                if ( (int) $payment->amount != 0) {
+                    $amount = (int) $payment->amount;
                     $subject = $payment->subject;
 
                     if ($payment instanceof TenantElectricityPayment) {

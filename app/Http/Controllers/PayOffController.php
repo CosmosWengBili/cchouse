@@ -141,10 +141,31 @@ class PayOffController extends Controller
                 'tenant_contract_id' => $tenantContract->id,
             ]);
 
+            $room_id = $tenantContract->room->id;
+            // 產生點交盈餘相關科目
+            $landlordOtherSubjects = collect($validatedItemsData)
+                                    ->where('subject', '點交中退盈餘分配');
+            if($landlordOtherSubjects->count() != 0){
+                $landlordOtherSubject = $landlordOtherSubjects->first();
+                LandlordOtherSubject::create([
+                    'subject' => $landlordOtherSubject['subject'],
+                    'subject_type' => '點交',
+                    'income_or_expense' => '支出',
+                    'expense_date' => now(),
+                    'amount' => $landlordOtherSubject['amount'],
+                    'comment' => $landlordOtherSubject['comment'],
+                    'room_id' => $room_id,
+                    'is_invoiced' => true,
+                    'invoice_item_name' => '管理服務費'
+                ]);
+            }
+            
+
             $payOffDate = $validatedHeaderData['pay_off_date'];
             // 產生 payments
             $tenantPayments = collect($validatedItemsData)
                 ->where('subject', '<>', '電費')
+                ->where('subject', '<>', '點交中退盈餘分配')
                 ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate) {
                     $subject = $payment['subject'];
@@ -199,7 +220,6 @@ class PayOffController extends Controller
             $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
 
             $virtual_account = $tenantContract->room->virtual_account;
-            $room_id = $tenantContract->room->id;
 
             // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 paylog，費用等同此科目費用，但轉化為正數 ;
             $allPayments = $tenantPayments->merge($tenantElectricityPayments);
@@ -227,19 +247,6 @@ class PayOffController extends Controller
                             'amount' => $amount,
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
-                        ]);
-                    }
-
-                    // “協調退租”類細項存在 landlord_other_subject
-                    if ($validatedHeaderData['return_ways'] === '協調退租') {
-                        LandlordOtherSubject::create([
-                            'subject' => $payment->subject,
-                            'subject_type' => '點交',
-                            'income_or_expense' => '支出',
-                            'expense_date' => now(),
-                            'amount' => $payment->amount,
-                            'comment' => $payment->comment,
-                            'room_id' => $room_id,
                         ]);
                     }
                 }

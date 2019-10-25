@@ -466,6 +466,7 @@ class MonthlyReportService
             // Find payments data
             $electricity_payments = TenantElectricityPayment::whereIn('tenant_contract_id', $tenantContractIds)->get();
             $current_payment = $electricity_payments->whereBetween('due_time', [$start_date, $end_date])
+                                                    ->where(['is_charge_off_done', true])
                                                     ->last();
             $last_unpaid_payments = $electricity_payments->where('due_time', '<', $selected_month->startOfMonth())
                                                         ->where('is_charge_off_done', '=', false);

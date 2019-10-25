@@ -186,6 +186,7 @@ class PayOffController extends Controller
                             'is_visible_at_report' =>false,
                             'is_pay_off' => true,
                             'comment' => $comment,
+                            'period' => '次'
                         ]);
                     }
             });

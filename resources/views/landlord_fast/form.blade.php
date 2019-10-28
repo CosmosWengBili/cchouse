@@ -245,7 +245,7 @@
                     <td>@lang("model.LandlordContract.commission_start_date")</td>
                     <td>
                         <input
-                            class="form-control form-control-sm"
+                            class="form-control form-control-sm commission_start_date"
                             type="date"
                             name="commission_start_date[0]"
                             value="{{ isset($data["commission_start_date"]) ? $data['commission_start_date'] : '' }}"
@@ -254,7 +254,7 @@
                     <td>@lang("model.LandlordContract.commission_end_date")</td>
                     <td>
                         <input
-                            class="form-control form-control-sm"
+                            class="form-control form-control-sm commission_end_date"
                             type="date"
                             name="commission_end_date[0]"
                             value="{{ isset($data["commission_end_date"]) ? $data['commission_end_date'] : '' }}"

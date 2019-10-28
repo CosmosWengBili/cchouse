@@ -103,6 +103,7 @@ return [
         'withdrawal_revenue_distribution'   => '盈餘分配',
         'landlords'                         => '房東',
         'building_id'                       => '物件編號',
+        'building_address'                  => '物件地址',
         'building'                          => '建物',
         'buildings'                         => '建物',
         'documents'                         => '相關文件',

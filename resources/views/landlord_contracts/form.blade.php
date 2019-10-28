@@ -19,7 +19,7 @@
                         <table class="table table-bordered">
                             <tbody>
                             <tr>
-                                <td>@lang("model.LandlordContract.building_id")</td>
+                                <td>@lang("model.LandlordContract.building_address")</td>
                                 <td>
                                     <select
                                         data-toggle="selectize"
@@ -343,6 +343,9 @@
                 deposit_month_count: {
                     required: true
                 },
+                withdrawal_revenue_distribution:{
+                    required: true
+                }
             };
 
             const messages = {
@@ -370,6 +373,9 @@
                 deposit_month_count: {
                     required: '必須輸入'
                 },
+                withdrawal_revenue_distribution:{
+                    required: '必須輸入'
+                }
             };
 
             $('form').validate({

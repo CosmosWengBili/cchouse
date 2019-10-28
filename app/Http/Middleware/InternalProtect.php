@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -7,9 +8,9 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class InternalProtect
 {
-    private const USERNAME = 'admin';
-    private const PASSWORD = 'password';
-    private const BYPASS_IPS = ['127.0.0.1', '192.168.3.254'];
+    private const USERNAME   = 'admin';
+    private const PASSWORD   = 'password';
+    private const BYPASS_IPS = ['127.0.0.1', '192.168.3.254', '192.168.10.1'];
 
     /**
      * Handle an incoming request.
@@ -21,9 +22,10 @@ class InternalProtect
     public function handle(Request $request, Closure $next)
     {
         // 若需要驗證驗證未通過
-        if ($this->needValidate($request) && !$this->isValidUser($request)) {
+        if ($this->needValidate($request) && ! $this->isValidUser($request)) {
             throw new UnauthorizedHttpException('Basic');
         }
+
         return $next($request);
     }
 
@@ -33,17 +35,19 @@ class InternalProtect
         if (in_array($ip, self::BYPASS_IPS)) {
             return false;
         }
+
         return true;
     }
 
     private function isValidUser(Request $request)
     {
-        $user = $request->header('PHP_AUTH_USER');
+        $user     = $request->header('PHP_AUTH_USER');
         $password = $request->header('PHP_AUTH_PW');
 
         if ($user == self::USERNAME && $password == self::PASSWORD) {
             return true;
         }
+
         return false;
     }
 }

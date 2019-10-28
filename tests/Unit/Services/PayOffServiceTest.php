@@ -64,7 +64,7 @@ class PayOffServiceTest extends TestCase
             'commission_start_date' => $this->now->copy()->subMonth(),
             'commission_end_date' => $this->now->copy()->addWeeks(2),
         ]);
-        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract);
+        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract, "中途退租");
     }
 
     public function testBuildPayOffData()

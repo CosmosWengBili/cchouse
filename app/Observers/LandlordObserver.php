@@ -16,8 +16,10 @@ class LandlordObserver
                 continue;
             }
             if ($afterLandlord[$key] != $value) {
-                if ($landlord->activeContracts()->count() && $landlord->activeContracts()->building()->count() > 0) {
-                    $rooms = $landlord->activeContracts()->building->rooms;
+                $activeContracts = $landlord->activeContracts();
+                if ($activeContracts->count() > 0 && $activeContracts->building()->count() > 0) {
+                    // $rooms = $landlord->activeContracts()->building->rooms;
+                    $rooms = $activeContracts->building->rooms;
                     foreach ($rooms as $room) {
                         if (! empty($room->activeContracts())) {
                             NotificationService::notifyLandlordUpdated(

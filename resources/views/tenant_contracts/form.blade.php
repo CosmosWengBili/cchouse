@@ -165,6 +165,15 @@
                                             value="{{ isset($data['contract_start']) ? \Carbon\Carbon::parse($data['contract_start'])->format('Y-m-d') : '' }}"
                                         />
                                     </td>
+                                    <td>@lang("model.TenantContract.overdue_fine")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="number"
+                                            name="overdue_fine"
+                                            value="{{ $data['overdue_fine'] ?? '' }}"
+                                        />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>@lang("model.TenantContract.contract_end")</td>
@@ -324,7 +333,7 @@
                                         <select
                                             data-toggle="selectize"
                                             data-table="users"
-                                            data-text="id"
+                                            data-text="name"
                                             data-selected="{{ $data['commissioner_id'] ?? 0 }}"
                                             name="commissioner_id"
                                             class="form-control form-control-sm"
@@ -435,7 +444,9 @@
                 max: 31,
             },
             deposit: {
-                required: true
+                required:true,
+                depositIsLessThanRent:true,
+                depositIsEqualDepositPaid:true,
             },
             deposit_paid: {
                 required: true
@@ -449,7 +460,7 @@
             "110v_start_degree": {
                 required: true
             },
-            "110v_end_degree": {
+            overdue_fine:{
                 required: true
             }
         };
@@ -502,15 +513,37 @@
             "110v_start_degree": {
                 required: '必須輸入'
             },
-            "110v_end_degree": {
+            overdue_fine: {
                 required: '必須輸入'
-            }
+            },
         };
+
+        $.validator.addMethod("depositIsLessThanRent", function(deposit, element) {
+            var rent = parseInt($('[name="rent"]').val())
+            deposit  = parseInt(deposit)
+            return (deposit - 2*rent) > 0 ? false : true
+        }, "不可以超過租金 * 2");
+
+        $.validator.addMethod("depositIsEqualDepositPaid", function(deposit, element) {
+            var deposit_paid = parseInt($('[name="deposit_paid"]').val())
+            deposit  = parseInt(deposit)
+            return (deposit === deposit_paid) ? true : false
+        }, "押金 和 押金已繳納 必須一致");
 
         $('form').validate({
             rules: rules,
             messages: messages,
             errorElement: "em",
+            submitHandler:function(form){
+                var contract_start = new Date($('[name="contract_start"]').val()).getTime();
+                var contract_end = new Date($('[name="contract_end"]').val()).getTime();
+                if (contract_end - contract_start < 31536000000) {
+                    if (!confirm("請確認是否有漲租金")) {
+                        return false;
+                    }
+                }
+                form.submit();
+            },
             errorPlacement: function ( error, element ) {
                 error.addClass( "invalid-feedback" );
                 if ( element.prop( "type" ) === "checkbox" ) {

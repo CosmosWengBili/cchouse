@@ -58,7 +58,7 @@ class TenantContractController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $responseData = new FormDataResponser();
         $data         = $responseData
@@ -66,6 +66,10 @@ class TenantContractController extends Controller
             ->get();
         $data['data']['original_files'] = [];
         $data['data']['carrier_files']  = [];
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('tenant_contracts.form', $data);
     }
@@ -108,10 +112,10 @@ class TenantContractController extends Controller
             ],
             'electricity_price_per_degree'        => 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
-            '110v_start_degree'                   => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
-            '110v_end_degree'                     => 'required|integer|digits_between:1,11',
-            '220v_end_degree'                     => 'nullable|integer|digits_between:1,11',
+            '110v_start_degree'                   => 'required|integer|digits_between:1,11',
+            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11',
+            '110v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:110v_start_degree',
+            '220v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:220v_end_degree',
             'invoice_collection_method'           => [
                 'required',
                 Rule::in(
@@ -121,6 +125,7 @@ class TenantContractController extends Controller
             'invoice_collection_number' => 'nullable',
             'commissioner_id'           => 'exists:users,id',
             'comment'                   => 'present',
+            'overdue_fine'              => 'required'
         ]);
 
         $validatedPaymentData = $request->validate([
@@ -142,7 +147,7 @@ class TenantContractController extends Controller
 
         $tenantContract = $this->tenantContractService->create(
             $validatedData,
-            $validatedPaymentData['payments']
+            $validatedPaymentData['payments'] ?? []
         );
         $this->handleDocumentsUpload($tenantContract, [
             'original_file',
@@ -176,7 +181,7 @@ class TenantContractController extends Controller
      * @param  \App\TenantContract  $tenantContract
      * @return \Illuminate\Http\Response
      */
-    public function edit(TenantContract $tenantContract)
+    public function edit(Request $request, TenantContract $tenantContract)
     {
         $responseData = new FormDataResponser();
         $data         = $responseData
@@ -186,6 +191,10 @@ class TenantContractController extends Controller
             'original_files'
         ]                              = $tenantContract->originalFiles()->get();
         $data['data']['carrier_files'] = $tenantContract->carrierFiles()->get();
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('tenant_contracts.form', $data);
     }
@@ -261,10 +270,10 @@ class TenantContractController extends Controller
             ],
             'electricity_price_per_degree'        => 'required|numeric|between:0,99.99',
             'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
-            '110v_start_degree'                   => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
-            '110v_end_degree'                     => 'required|integer|digits_between:1,11',
-            '220v_end_degree'                     => 'nullable|integer|digits_between:1,11',
+            '110v_start_degree'                   => 'required|integer|digits_between:1,11',
+            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11',
+            '110v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:110v_start_degree',
+            '220v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:220v_end_degree',
             'invoice_collection_method'           => [
                 'required',
                 Rule::in(
@@ -274,6 +283,7 @@ class TenantContractController extends Controller
             'invoice_collection_number' => 'nullable',
             'commissioner_id'           => 'exists:users,id',
             'comment'                   => 'present',
+            'overdue_fine'              => 'required'
         ]);
 
         $tenantContract->update($validatedData);

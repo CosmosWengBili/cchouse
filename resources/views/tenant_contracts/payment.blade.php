@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             @if(Route::current()->getName() != 'tenantContracts.extend')
-            <tr>
+            {{-- <tr>
                 <td>
                     <select
                         class="form-control form-control-sm"
@@ -58,7 +58,7 @@
                 <td>
                     <button class="btn btn-danger btn-xs js-remove-row" type="button">X</button>
                 </td>
-            </tr>
+            </tr> --}}
             @endif
             <tr>
                 <td colspan="5" class="text-center">

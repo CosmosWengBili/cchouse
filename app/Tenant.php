@@ -17,8 +17,8 @@ class Tenant extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $guarded = [];
-    
+    protected $guarded = ['emergency_contact', 'guarantor', 'contact_infos'];
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**

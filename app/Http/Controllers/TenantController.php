@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Responser\NestedRelationResponser;
@@ -83,7 +83,7 @@ class TenantController extends Controller
      * @param  \App\User  $User
      * @return \Illuminate\Http\Response
      */
-    public function edit(Tenant $tenant)
+    public function edit(Request $request, Tenant $tenant)
     {
         $responseData                  = new FormDataResponser();
         $data                          = $responseData->edit($tenant, 'tenants.update')->get();
@@ -100,6 +100,10 @@ class TenantController extends Controller
             ->get()
             ->toArray();
 
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         return view('tenants.form', $data);
     }
 
@@ -113,7 +117,7 @@ class TenantController extends Controller
     {
         $validatedData = $request->validate([
             'name'                             => 'required|max:255',
-            'certificate_number'               => 'required|max:255',
+            'certificate_number'               => 'required|max:255|unique:tenants,certificate_number',
             'is_legal_person'                  => 'nullable',
             'line_id'                          => 'required',
             'residence_address'                => 'required',
@@ -156,7 +160,7 @@ class TenantController extends Controller
     {
         $validatedData = $request->validate([
             'name'                             => 'required|max:255',
-            'certificate_number'               => 'required|max:255',
+            'certificate_number'               => ['required', 'max:255', Rule::unique('tenants')->ignore($request->input('id'))],
             'is_legal_person'                  => 'required',
             'line_id'                          => 'required',
             'residence_address'                => 'required',
@@ -171,6 +175,7 @@ class TenantController extends Controller
             'emergency_contact.*.phone'        => 'required',
             'emergency_contact.*.relationship' => 'required',
         ]);
+        // dd($validatedData);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [
             'emergency_contact' => is_array(

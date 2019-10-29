@@ -27,7 +27,7 @@ class TenantController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $tenants = $this->limitRecords(
+        $tenants      = $this->limitRecords(
             Tenant::select($this->whitelist('tenants'))
                 ->with($request->withNested)
         );
@@ -37,6 +37,7 @@ class TenantController extends Controller
         $responseData
             ->index('Tenants', $tenants)
             ->relations($request->withNested);
+
         return view('tenants.index', $responseData->get());
     }
 
@@ -61,13 +62,17 @@ class TenantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $responser = new FormDataResponser();
-        $data = $responser->create(Tenant::class, 'tenants.store')->get();
-        $data['data']['contact_infos'] = [];
+        $responser                          = new FormDataResponser();
+        $data                               = $responser->create(Tenant::class, 'tenants.store')->get();
+        $data['data']['contact_infos']      = [];
         $data['data']['emergency_contacts'] = [];
-        $data['data']['guarantors'] = [];
+        $data['data']['guarantors']         = [];
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('tenants.form', $data);
     }
@@ -80,8 +85,8 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
-        $responseData = new FormDataResponser();
-        $data = $responseData->edit($tenant, 'tenants.update')->get();
+        $responseData                  = new FormDataResponser();
+        $data                          = $responseData->edit($tenant, 'tenants.update')->get();
         $data['data']['contact_infos'] = $tenant
             ->contactInfos()
             ->get()
@@ -107,18 +112,23 @@ class TenantController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'certificate_number' => 'required|max:255',
-            'is_legal_person' => 'nullable',
-            'line_id' => 'required',
-            'residence_address' => 'required',
-            'company' => 'required',
-            'job_position' => 'required',
-            'company_address' => 'required',
-            'birth' => 'required|date',
-            'confirm_by' => 'required|min:1',
-            'confirm_at' => 'required|date',
+            'name'                             => 'required|max:255',
+            'certificate_number'               => 'required|max:255',
+            'is_legal_person'                  => 'nullable',
+            'line_id'                          => 'required',
+            'residence_address'                => 'required',
+            'company'                          => 'required',
+            'job_position'                     => 'required',
+            'company_address'                  => 'required',
+            'birth'                            => 'required|date',
+            'confirm_by'                       => 'required|min:1',
+            'confirm_at'                       => 'required|date',
+            'emergency_contact'                => 'required|array|min:2',
+            'emergency_contact.*.name'         => 'required',
+            'emergency_contact.*.phone'        => 'required',
+            'emergency_contact.*.relationship' => 'required',
         ]);
+
         $tenant = Tenant::create($validatedData);
 
         $this->updateContactInfos($tenant, [
@@ -126,15 +136,10 @@ class TenantController extends Controller
                 ? $request->input('contact_infos')
                 : []
         ]);
+
         $this->updateRelatedPeople($tenant, [
-            'emergency_contact' => is_array(
-                $request->input('emergency_contact')
-            )
-                ? $request->input('emergency_contact')
-                : [],
-            'guarantor' => is_array($request->input('guarantor'))
-                ? $request->input('guarantor')
-                : []
+            'emergency_contact' => is_array($request->input('emergency_contact')) ? $request->input('emergency_contact') : [],
+            'guarantor'         => is_array($request->input('guarantor')) ? $request->input('guarantor') : []
         ]);
 
         return redirect()->route('tenants.index');
@@ -150,17 +155,21 @@ class TenantController extends Controller
     public function update(Request $request, Tenant $tenant)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'certificate_number' => 'required|max:255',
-            'is_legal_person' => 'required',
-            'line_id' => 'required',
-            'residence_address' => 'required',
-            'company' => 'required',
-            'job_position' => 'required',
-            'company_address' => 'required',
-            'confirm_by' => 'required|min:1',
-            'confirm_at' => 'required|date',
-            'birth' => 'required|date'
+            'name'                             => 'required|max:255',
+            'certificate_number'               => 'required|max:255',
+            'is_legal_person'                  => 'required',
+            'line_id'                          => 'required',
+            'residence_address'                => 'required',
+            'company'                          => 'required',
+            'job_position'                     => 'required',
+            'company_address'                  => 'required',
+            'confirm_by'                       => 'required|min:1',
+            'confirm_at'                       => 'required|date',
+            'birth'                            => 'required|date',
+            'emergency_contact'                => 'required|array|min:2',
+            'emergency_contact.*.name'         => 'required',
+            'emergency_contact.*.phone'        => 'required',
+            'emergency_contact.*.relationship' => 'required',
         ]);
         $tenant->update($validatedData);
         $this->updateRelatedPeople($tenant, [
@@ -192,6 +201,7 @@ class TenantController extends Controller
     public function destroy(Tenant $tenant)
     {
         $tenant->delete();
+
         return response()->json(true);
     }
 
@@ -213,15 +223,15 @@ class TenantController extends Controller
 
             foreach ($relatedPersonCollection as $relatedPerson) {
                 if (isset($relatedPerson['id'])) {
-                    $id = $relatedPerson['id'];
+                    $id     = $relatedPerson['id'];
                     $person = $tenant->relatedPeople()->find($id);
                     $person->update($relatedPerson);
                 } else {
                     RelatedPerson::create(
                         array_merge($relatedPerson, [
-                            'type' => $type,
+                            'type'                => $type,
                             'related_person_type' => Tenant::class,
-                            'related_person_id' => $tenant->id
+                            'related_person_id'   => $tenant->id
                         ])
                     );
                 }
@@ -245,14 +255,14 @@ class TenantController extends Controller
 
             foreach ($contactInfoCollection as $contactInfo) {
                 if (isset($contactInfo['id'])) {
-                    $id = $contactInfo['id'];
+                    $id   = $contactInfo['id'];
                     $data = $tenant->contactInfos()->find($id);
                     $data->update($contactInfo);
                 } else {
                     ContactInfo::create(
                         array_merge($contactInfo, [
                             'contactable_type' => Tenant::class,
-                            'contactable_id' => $tenant->id
+                            'contactable_id'   => $tenant->id
                         ])
                     );
                 }

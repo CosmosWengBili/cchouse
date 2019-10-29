@@ -28,9 +28,9 @@ return [
     'Tenant' => [
         'id'                 => '編號',
         'name'               => '姓名',
-        'certificate_number' => '證號',
+        'certificate_number' => '統一編號/ 護照號碼',
         'is_legal_person'    => '是否法人',
-        'line_id'            => 'Line編號',
+        'line_id'            => 'Line ID',
         'residence_address'  => '戶籍地址',
         'company'            => '任職公司',
         'job_position'       => '任職職位',

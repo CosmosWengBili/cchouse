@@ -156,17 +156,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.TenantContract.effective")</td>
-                                    <td>
-
-                                        <input type="hidden" value="0" name="effective"/>
-                                        <input
-                                            type="checkbox"
-                                            name="effective"
-                                            value="1"
-                                            {{ isset($data["effective"]) ? ($data['effective'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
                                     <td>@lang("model.TenantContract.contract_start")</td>
                                     <td>
                                         <input

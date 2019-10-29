@@ -369,7 +369,6 @@ return [
         'motorcycle_parking_floor'            => '機車停車層',
         'motorcycle_parking_space_number'     => '機車停車編號',
         'motorcycle_parking_count'            => '機車停車個數',
-        'effective'                           => '是否已生效',
         'contract_start'                      => '租約起',
         'contract_end'                        => '租約迄',
         'rent'                                => '租金',

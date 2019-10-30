@@ -41,13 +41,6 @@ class TenantContractService
                 'collected_by' => '房東'
             ];
 
-            $payments[] = [
-                'subject'      => '履約保證金',
-                'period'       => '次',
-                'amount'       => $tenantContract->deposit,
-                'collected_by' => '房東'
-            ];
-
             // generates all kinds of payments
             foreach ($payments as $payment) {
                 // get the dates that this payment shoud be collected
@@ -63,7 +56,8 @@ class TenantContractService
                             'amount'               => $payment['amount'],
                             'collected_by'         => $payment['collected_by'],
                             'period'               => $payment['period'],
-                            'is_visible_at_report' => true
+                            'is_visible_at_report' => true,
+                            'is_charge_off_done'   => $payment['is_charge_off_done'] ?? false
                         ]);
                     }
                 );

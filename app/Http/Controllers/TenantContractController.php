@@ -145,28 +145,51 @@ class TenantContractController extends Controller
             ]
         ]);
 
+        $deposit =  $validatedData['deposit'];
+        $payments =  $validatedPaymentData['payments'] ?? [];
+
+        // default payment option
+        $payment = [
+            'subject'      => '履約保證金',
+            'period'       => '次',
+            'amount'       => $deposit,
+            'collected_by' => '房東'
+        ];
+
+        // extend
+        if ($request->get('old_tenant_contract_id', 0) > 0) {
+            $tenantPayment = TenantPayment::where('tenant_contract_id', $request->get('old_tenant_contract_id'))
+                                ->where('subject', '履約保證金')
+                                ->orderBy('id', 'DESC')
+                                ->first();
+
+            if ($tenantPayment) {
+                $diff_deposit = $deposit - $tenantPayment->amount;
+                if ($diff_deposit !== 0) {
+                    $payment['amount']             = $diff_deposit;
+                    $payment['is_charge_off_done'] = true;
+                }
+            }
+        }
+
+        $payments[] = $payment;
+
         $tenantContract = $this->tenantContractService->create(
             $validatedData,
-            $validatedPaymentData['payments'] ?? []
+            $payments
         );
+
+        // old deposit relate new payment
+        if (isset($tenantPayment)) {
+            $tenantPayment->is_charge_off_done = true;
+            $tenantContract->tenantPayments()->save($tenantPayment);
+            $tenantPayment->save();
+        }
+
         $this->handleDocumentsUpload($tenantContract, [
             'original_file',
             'carrier_file'
         ]);
-
-        if ($request->get('old_tenant_contract_id', 0) > 0) {
-            $tenantContract->tenantPayments->map(function ($tenantPayment) {
-                if ($tenantPayment->subject === '履約保證金') {
-                    $tenantPayment->is_charge_off_done = true;
-                    $tenantPayment->save();
-                }
-
-                return $tenantPayment;
-            });
-
-            $tenantPayments = TenantPayment::where('tenant_contract_id', $request->get('old_tenant_contract_id'))->get();
-            $tenantContract->tenantPayments()->saveMany($tenantPayments);
-        }
 
         return redirect($request->_redirect);
     }
@@ -235,6 +258,10 @@ class TenantContractController extends Controller
 
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('tenant_contracts.form', $data);
     }

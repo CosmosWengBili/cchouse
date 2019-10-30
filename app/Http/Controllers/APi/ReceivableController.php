@@ -100,7 +100,7 @@ class ReceivableController extends Controller
 
         try {
             // find tenant contract via room
-            $room = Room::with('activeContracts')->where('virtual_account', config('finance.bank_code') . $virtualAccount)->firstOrFail();
+            $room = Room::with('activeContracts')->where('virtual_account', $virtualAccount)->firstOrFail();
             $targetContract = $room->activeContracts->first();
             $data = [
                 'virtual_account' => $virtualAccount,

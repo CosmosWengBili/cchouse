@@ -36,8 +36,8 @@ class TenantContract extends Pivot implements AuditableContract
     protected $casts = [
         'set_other_rights'  => 'boolean',
         'sealed_registered' => 'boolean',
-        'contract_end'      => 'date',
-        'contract_start'    => 'date',
+        'contract_end'      => 'date:Y-m-d',
+        'contract_start'    => 'date:Y-m-d',
     ];
 
     protected $appends = ['currentBalance'];

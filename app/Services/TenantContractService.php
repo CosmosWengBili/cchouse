@@ -90,9 +90,18 @@ class TenantContractService
         $newTenantContract->contract_serial_number = '';
         $newTenantContract->contract_start         = $newStart->format('Y-m-d');
         $newTenantContract->contract_end           = $newStart
-            ->copy()
-            ->addMonthsWithoutOverflow($months)
-            ->format('Y-m-d');
+                                                        ->copy()
+                                                        ->addMonthsWithoutOverflow($months)
+                                                        ->format('Y-m-d');
+
+        $newTenantContract->rent                = '';
+        $newTenantContract->deposit             = '';
+        $newTenantContract->deposit_paid        = '';
+        $newTenantContract['110v_start_degree'] = '';
+        $newTenantContract['220v_start_degree'] = '';
+        $newTenantContract['110v_end_degree']   = '';
+        $newTenantContract['220v_end_degree']   = '';
+        $newTenantContract->old_tenant_contract_id = $oldTenantContract->id;
 
         return $newTenantContract;
     }

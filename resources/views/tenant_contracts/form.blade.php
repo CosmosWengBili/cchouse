@@ -21,6 +21,7 @@
 
                         <h3 class="mt-3">基本資料</h3>
                         <table class="table table-bordered">
+                        <input type="hidden" value="{{$data['old_tenant_contract_id'] ?? 0}}" name="old_tenant_contract_id"/>
                             <tbody>
                                 <tr>
                                     <td>@lang("model.TenantContract.room_code")</td>
@@ -381,7 +382,7 @@
                     <thead>
                         <tr>
                             <th>收定日期</th>
-                            <th>收訂單號</th>
+                            <th>收定單號</th>
                             <th>付訂人姓名</th>
                         </tr>
                     </thead>

@@ -13,7 +13,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Validation\Rule;
 
 use App\TenantContract;
-use App\Building;
+use App\TenantPayment;
 use App\Traits\Controllers\HandleDocumentsUpload;
 use App\Services\TenantContractService;
 use App\Responser\NestedRelationResponser;
@@ -154,6 +154,20 @@ class TenantContractController extends Controller
             'carrier_file'
         ]);
 
+        if ($request->get('old_tenant_contract_id', 0) > 0) {
+            $tenantContract->tenantPayments->map(function ($tenantPayment) {
+                if ($tenantPayment->subject === '履約保證金') {
+                    $tenantPayment->is_charge_off_done = true;
+                    $tenantPayment->save();
+                }
+
+                return $tenantPayment;
+            });
+
+            $tenantPayments = TenantPayment::where('tenant_contract_id', $request->get('old_tenant_contract_id'))->get();
+            $tenantContract->tenantPayments()->saveMany($tenantPayments);
+        }
+
         return redirect($request->_redirect);
     }
 
@@ -214,17 +228,11 @@ class TenantContractController extends Controller
         );
         $responseData = new FormDataResponser();
         $data         = $responseData
-            ->edit($tempContract, 'tenantContracts.create')
-            ->get();
+                            ->edit($tempContract, 'tenantContracts.create')
+                            ->get();
         $data['data']['original_files'] = null;
         $data['data']['carrier_files']  =  null;
 
-        // 租客帳單
-        $firstPaymentDate               = $tenantContract->tenantPayments->first()->due_time;
-        $data['data']['tenant_payment'] = $tenantContract->tenantPayments
-                                                        ->where('due_time', $firstPaymentDate)
-                                                        ->where('subject', '<>', '租金')
-                                                        ->toArray() or [];
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
 

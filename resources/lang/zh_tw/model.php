@@ -397,6 +397,7 @@ return [
         'pay_logs'                            => '繳款紀錄',
         'deposits'                            => '訂金',
         'maintenances'                        => '清潔維修',
+        'tenants'                             => '租客',
         'tenant'                              => '租客',
         'company_incomes'                     => '公司收入',
         'building_code'                       => '物件代碼',
@@ -410,6 +411,7 @@ return [
         'comment'                             => '備註',
         'tenant_name'                         => '租客姓名',
         'buildings'                           => ' 物件',
+        'documents'                           => '相關文件',
     ],
     'DebtCollection' => [
         'id'                   => '編號',

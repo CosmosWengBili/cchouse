@@ -5,6 +5,7 @@
     $isManageGroup = Auth::User()->belongsToGroup('管理組');
 
     $isCreate = request()->routeIs('maintenances.create');
+    $tenantContractId = Request::get('tenantContractId') ?? $data['tenant_contract_id'] ?? '';
 @endphp
 
 @extends('layouts.app')
@@ -31,12 +32,15 @@
                                 <tr>
                                     <td>@lang("model.Maintenance.tenant_contract_id")</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
                                             name="tenant_contract_id"
-                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
-                                        />
+                                            data-toggle="selectize"
+                                            data-table="tenant_contract"
+                                            data-text="id"
+                                            data-selected="{{$tenantContractId}}"
+                                        >
+                                        </select>
                                     </td>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>

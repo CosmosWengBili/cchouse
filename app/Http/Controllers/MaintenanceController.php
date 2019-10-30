@@ -42,8 +42,8 @@ class MaintenanceController extends Controller
         $maintenances = $this->getMaintenancesByGroup();
         foreach ($maintenances as $maintenance) {
             $status = $maintenance->status;
-            if (!isset($groupedMaintances[$status])) {
-                $groupedMaintances[$status] = [];
+            if (! isset($groupedMaintenances[$status])) {
+                $groupedMaintenances[$status] = [];
             }
 
             $groupedMaintenances[$status][] = $maintenance->toArray();
@@ -65,7 +65,7 @@ class MaintenanceController extends Controller
             ? Room::find($request->prefill['rooms'])
             : null;
         $tenant_contract_id =
-            $room && !$room->activeContracts->isEmpty()
+            $room && ! $room->activeContracts->isEmpty()
                 ? $room->activeContracts()->first()->id
                 : null;
 
@@ -178,9 +178,9 @@ class MaintenanceController extends Controller
             'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
-        
+
         $result = InvoiceService::compareReceipt($maintenance, $validatedData);
-        if(!$result){
+        if (! $result) {
             $maintenance->update($validatedData);
         }
 
@@ -246,7 +246,9 @@ class MaintenanceController extends Controller
     {
         $room = Maintenance::find($id)->tenantContract->room;
         $records = [];
-        $columns = array_map(function ($column) { return "maintenances.{$column}"; }, $this->whitelist('maintenances'));
+        $columns = array_map(function ($column) {
+            return "maintenances.{$column}";
+        }, $this->whitelist('maintenances'));
         $selectColumns = array_merge($columns, Maintenance::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
 

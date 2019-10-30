@@ -1,5 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $appendCreateParams = (function () use ($data) {
+        $routeName = request()->route()->getName();
+        switch ($routeName) {
+            case 'tenantContracts.show':
+                return ['tenantContractId' => $data['id'] ?? null];
+            default:
+                return [];
+        }
+    })();
 @endphp
 
 <div class="card">
@@ -14,7 +23,7 @@
 
         {{-- the route to create this kind of resource --}}
         @if(Route::has(Str::camel($layer) . '.create'))
-            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create', $appendCreateParams) }}">建立</a>
         @endif
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 

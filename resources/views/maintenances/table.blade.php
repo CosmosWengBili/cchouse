@@ -1,5 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $appendCreateParams = (function () use ($data) {
+        $routeName = request()->route()->getName();
+        switch ($routeName) {
+            case 'tenantContracts.show':
+                return ['tenantContractId' => $data['id'] ?? null];
+            default:
+                return [];
+        }
+    })();
 @endphp
 
 <div class="card">
@@ -14,7 +23,7 @@
 
         {{-- the route to create this kind of resource --}}
         @if(Route::has(Str::camel($layer) . '.create'))
-            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create') }}">建立</a>
+            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create', $appendCreateParams) }}">建立</a>
         @endif
 
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
@@ -50,7 +59,12 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) . '?with=tenantContract.room;tenantPayments.payLog;tenantElectricityPayments.payLog;documents' }}">查看</a>
+                                <a
+                                class="btn btn-success"
+                                href="{{ route( Str::camel($layer) . '.show', $object['id']) .
+                                '?with=tenantContract.room;tenantPayments.payLog;tenantElectricityPayments.payLog;documents' }}">
+                                    查看
+                                </a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
                             </td>

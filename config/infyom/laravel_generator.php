@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Paths
@@ -10,7 +9,6 @@ return [
     */
 
     'path' => [
-
         'migration'         => database_path('migrations/'),
 
         'model'             => app_path('Models/'),
@@ -21,7 +19,7 @@ return [
 
         'routes'            => base_path('routes/web.php'),
 
-        'api_routes'        => base_path('routes/api.php'),
+        'api_routes'        => base_path('routes/admin.php'),
 
         'request'           => app_path('Http/Requests/'),
 
@@ -62,7 +60,6 @@ return [
     */
 
     'namespace' => [
-
         'model'             => 'App\Models',
 
         'datatables'        => 'App\DataTables',
@@ -121,12 +118,11 @@ return [
     */
 
     'options' => [
-
         'softDelete' => true,
 
         'save_schema_file' => true,
 
-        'tables_searchable_default' => false,
+        'tables_searchable_default' => true,
 
         'repository_pattern' => true,
 
@@ -141,7 +137,6 @@ return [
     */
 
     'prefixes' => [
-
         'route' => '',  // using admin will create route('admin.?.index') type routes
 
         'path' => '',
@@ -159,15 +154,13 @@ return [
     */
 
     'add_on' => [
-
         'swagger'       => false,
 
         'tests'         => true,
 
-        'datatables'    => false,
+        'datatables'    => true,
 
         'menu'          => [
-
             'enabled'       => true,
 
             'menu_file'     => 'layouts/menu.blade.php',
@@ -182,8 +175,7 @@ return [
     */
 
     'timestamps' => [
-
-        'enabled'       => true,
+        'enabled'       => false,
 
         'created_at'    => 'created_at',
 
@@ -207,8 +199,6 @@ return [
     |
     */
     'from_table' => [
-
         'doctrine_mappings' => [],
     ],
-
 ];

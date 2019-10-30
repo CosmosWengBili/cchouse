@@ -209,7 +209,17 @@ class TenantContractController extends Controller
             ->relations($request->withNested);
         $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->sum('amount');
 
-        return view('tenant_contracts.show', array_merge($responseData->get(), ['paid_diff' => $paid_diff]));
+        $responseData = $responseData->get();
+
+        if (isset($responseData['data']['contract_start'])) {
+            $responseData['data']['contract_start'] = date('Y-m-d', strtotime($responseData['data']['contract_start']));
+        }
+
+        if (isset($responseData['data']['contract_end'])) {
+            $responseData['data']['contract_end'] = date('Y-m-d', strtotime($responseData['data']['contract_start']));
+        }
+
+        return view('tenant_contracts.show', array_merge($responseData, ['paid_diff' => $paid_diff]));
     }
 
     /**

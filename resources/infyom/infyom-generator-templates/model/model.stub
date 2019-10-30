@@ -3,17 +3,22 @@
 namespace $NAMESPACE_MODEL$;
 
 use $NAMESPACE_MODEL_EXTEND$ as Model;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 $SOFT_DELETE_IMPORT$
 $DOCS$
-class $MODEL_NAME$ extends Model
+class $MODEL_NAME$ extends Model implements AuditableContract
 {
+    use AuditableTrait;
 $SOFT_DELETE$
     public $table = '$TABLE_NAME$';
     $TIMESTAMPS$
 $SOFT_DELETE_DATES$
 $CONNECTION$
 $PRIMARY$
-    public $fillable = [
+    protected $guarded = [];
+
+    protected $fillable = [
         $FIELDS$
     ];
 

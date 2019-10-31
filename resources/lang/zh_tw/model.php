@@ -323,8 +323,9 @@ return [
     'Room' => [
         'id'                          => '編號',
         'building_id'                 => '物件編號',
+        'building_code'               => '物件代碼',
         'needs_decoration'            => '是否需裝修',
-        'room_code'                   => '物件代碼',
+        'room_code'                   => '房代碼',
         'virtual_account'             => '虛擬帳號',
         'electricity_virtual_account' => '虛擬帳號',
         'room_status'                 => '狀態',

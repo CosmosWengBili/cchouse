@@ -221,12 +221,15 @@
                                 </td>
                                 <td>@lang("model.Shareholder.method")</td>
                                 <td>
-                                    <input
-                                        class="form-control form-control-sm"
-                                        type="text"
+                                    <select
+                                        data-toggle="selectize"
+                                        data-table="shareholders"
+                                        data-text="method"
+                                        data-selected="{{ isset($data["method"]) ? $data['method'] : '0' }}"
                                         name="method"
-                                        value="{{ isset($data["method"]) ? $data['method'] : '' }}"
-                                    />
+                                        class="form-control form-control-sm"
+                                    >
+                                    </select>
                                 </td>
                             </tr>
                             </tbody>

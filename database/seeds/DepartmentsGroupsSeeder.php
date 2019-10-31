@@ -2,6 +2,9 @@
 
 use Illuminate\Database\Seeder;
 use App\Traits\Database\Seeder\UpdateOrCreate;
+use App\Permission;
+use App\Group;
+use App\Department;
 
 class DepartmentsGroupsSeeder extends Seeder
 {
@@ -19,16 +22,28 @@ class DepartmentsGroupsSeeder extends Seeder
             ['id' => 3, 'name' => '帳務 accounting'],
         ];
         $groups = [
-            ['id' => 1, 'name' => '管理組', 'department_id' => 2, 'guard_name' => 'web'],
+            [
+                'id' => 1, 'name' => '管理組', 'department_id' => 2, 'guard_name' => 'web',
+                'permissions' => ['delete building']
+            ],
             ['id' => 2, 'name' => '帳務組', 'department_id' => 3, 'guard_name' => 'web'],
             ['id' => 3, 'name' => '開發組', 'department_id' => 1, 'guard_name' => 'web'],
         ];
 
         foreach ($departments as $department) {
-            $this->updateOrCreate(\App\Department::class, $department);
+            $department = Department::updateOrCreate($department);
         }
+
         foreach ($groups as $group) {
-            $this->updateOrCreate(\App\Group::class, $group);
+            $permissions = $group['permissions']?? [];
+            unset($group['permissions']);
+
+            $group = Group::updateOrCreate($group);
+
+            foreach ($permissions as $permission) {
+                $permission = Permission::updateOrCreate(['name' => $permission]);
+                $permission->assignRole($group);
+            }
         }
     }
 }

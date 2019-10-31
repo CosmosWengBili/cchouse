@@ -15,34 +15,28 @@
                         @method($method)
 
                         <h3 class="mt-3">基本資料</h3>
+                        @if( !isset($data["building_code"]) )
+                            物件代碼 <input type="text" id="building_code"/>   
+                            <button id="get_share_holders" type="button" class="btn btn-outline-info">
+                                送出
+                            </button>  
+                            <span>請選擇: </span>
+                            <select id="share_holders"></select> 
+                        @endif                                       
                         <table class="table table-bordered">
-                            <tbody>
+                            <tbody>                            
                             <tr>
                                 <td>@lang("model.Shareholder.building_code")</td>
                                 <td colspan="3">
-                                    <div class="input-group w-50">
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            id="building_code"
-                                            name="building_code"
-                                            {{ isset($data["building_code"]) ? 'readonly' : '' }}
-                                            value="{{ isset($data["building_code"]) ? $data['building_code'] : '' }}"
-                                        />
-                                        <div class="input-group-append">
-                                            <button
-                                                id="get_share_holders"
-                                                type="button"
-                                                class="btn btn-outline-info {{ isset($data["building_code"]) ? 'd-none' : '' }}"
-                                            >
-                                                送出
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <span class="{{ isset($data["building_code"]) ? 'd-none' : '' }}">請選擇: </span>
-                                    <select id="share_holders"
-                                            class="{{ isset($data["building_code"]) ? 'd-none' : '' }}"
-                                    ></select>
+                                    <input
+                                        class="form-control form-control-sm"
+                                        name="building_code"
+                                        value="{{ isset($data["building_code"]) ? $data['building_code'] : '' }}"
+                                        placeholder="同時綁定多物件，格式為 777001,777002"
+                                        @if ( isset($data["building_code"]) )
+                                            readonly
+                                        @endif
+                                    />
                                 </td>
                             </tr>
                             <tr>
@@ -225,8 +219,6 @@
                                         value="{{ isset($data["investment_amount"]) ? $data['investment_amount'] : '' }}"
                                     />
                                 </td>
-                            </tr>
-                            <tr>
                                 <td>@lang("model.Shareholder.method")</td>
                                 <td>
                                     <input

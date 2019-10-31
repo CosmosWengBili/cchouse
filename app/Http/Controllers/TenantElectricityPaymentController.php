@@ -19,9 +19,9 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TenantElectricityPaymentController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $type = $request->input('type');
-
         if ($type == 'charged') { // 儲值電
             return $this->renderChargedIndex($request);
         } else {
@@ -29,24 +29,26 @@ class TenantElectricityPaymentController extends Controller
         }
     }
 
-    public function create() {
+    public function create()
+    {
         $responser = new FormDataResponser();
         $data = $responser->create(TenantElectricityPayment::class, 'tenantElectricityPayments.store')->get();
 
         return view('tenant_electricity_payments.form', $data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
-            "tenant_contract_id" => "required",
-            "ammeter_read_date" => "required",
-            "110v_start_degree" => "required",
-            "110v_end_degree" => "required",
-            "220v_start_degree" => "required",
-            "220v_end_degree" => "required",
-            "amount" => "required",
-            "due_time" => "required",
-            "is_charge_off_done" => "required",
+            'tenant_contract_id' => 'required',
+            'ammeter_read_date' => 'required',
+            '110v_start_degree' => 'required',
+            '110v_end_degree' => 'required',
+            '220v_start_degree' => 'required',
+            '220v_end_degree' => 'required',
+            'amount' => 'required',
+            'due_time' => 'required',
+            'is_charge_off_done' => 'required',
             'charge_off_date' => '',
             'comment' => '',
         ]);
@@ -89,21 +91,21 @@ class TenantElectricityPaymentController extends Controller
     public function update(Request $request, TenantElectricityPayment $tenantElectricityPayment)
     {
         $validatedData = $request->validate([
-            "tenant_contract_id" => "required",
-            "ammeter_read_date" => "required",
-            "110v_start_degree" => "required",
-            "110v_end_degree" => "required",
-            "220v_start_degree" => "required",
-            "220v_end_degree" => "required",
-            "amount" => "required",
-            "due_time" => "required",
-            "is_charge_off_done" => "required",
+            'tenant_contract_id' => 'required',
+            'ammeter_read_date' => 'required',
+            '110v_start_degree' => 'required',
+            '110v_end_degree' => 'required',
+            '220v_start_degree' => 'required',
+            '220v_end_degree' => 'required',
+            'amount' => 'required',
+            'due_time' => 'required',
+            'is_charge_off_done' => 'required',
             'charge_off_date' => '',
             'comment' => '',
         ]);
 
         $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
-        if(!$result){
+        if (! $result) {
             $tenantElectricityPayment->update($validatedData);
         }
 
@@ -123,17 +125,18 @@ class TenantElectricityPaymentController extends Controller
             return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
         }
         $tenantElectricityPayment->delete();
+
         return response()->json(true);
     }
 
-    public function sendReportSMSToAll(Request $request) {
+    public function sendReportSMSToAll(Request $request)
+    {
         $year = intval($request->input('year'));
         $month = intval($request->input('month'));
 
         $this->findRelatedTenantContracts()
-             ->chunk(100, function($tenantContracts) use ($year, $month) {
-                 foreach($tenantContracts as $tenantContract)
-                 {
+             ->chunk(100, function ($tenantContracts) use ($year, $month) {
+                 foreach ($tenantContracts as $tenantContract) {
                      $tenantContract->sendElectricityPaymentReportSMS($year, $month);
                  }
              });
@@ -141,16 +144,19 @@ class TenantElectricityPaymentController extends Controller
         return response()->json(true);
     }
 
-    public function downloadImportFile() {
+    public function downloadImportFile()
+    {
         return Excel::download(new TenantElectricityPaymentExport(), '電費批次匯入表.xlsx');
     }
 
-    public function importFile(Request $request) {
+    public function importFile(Request $request)
+    {
         try {
             Excel::import(
                 new TenantElectricityPaymentImport(),
                 $request->file('excel')
             );
+
             return redirect()->back();
         } catch (\Throwable $th) {
             return redirect()->back()->with('alert', $th->getMessage());
@@ -164,9 +170,23 @@ class TenantElectricityPaymentController extends Controller
         if ($type == 'charged') {
             $relation = $relation->where('rooms.electricity_virtual_account', '!=', '');
         }
+        /*
+            select * from `tenant_contract`
+            inner join `rooms` on `rooms`.`id` = `tenant_contract`.`room_id`
+            inner join `tenants` on `tenants`.`id` = `tenant_contract`.`tenant_id`
+            inner join `buildings` on `buildings`.`id` = `rooms`.`building_id`
+            inner join `landlord_contracts` on `landlord_contracts`.`building_id` = `rooms`.`building_id`
+            where `contract_end` > ?
+            and (`buildings`.`electricity_payment_method` = ? or `buildings`.`electricity_payment_method` = ?)
+            and `tenant_contract`.`deleted_at` is null
+            group by `tenant_contract`.`id`
+        */
 
         return $relation->where('contract_end', '>', Carbon::now())
-                        ->where('buildings.electricity_payment_method', '公司代付');
+                        ->where(function ($query) {
+                            $query->where('buildings.electricity_payment_method', '公司代付')
+                                ->orWhere('buildings.electricity_payment_method', '房東自行繳納');
+                        });
     }
 
     private function renderIndex(Request $request)
@@ -187,12 +207,13 @@ class TenantElectricityPaymentController extends Controller
         return view('tenant_electricity_payments.index', $data);
     }
 
-    private function renderChargedIndex(Request $request) {
+    private function renderChargedIndex(Request $request)
+    {
         $roomCode = $request->input('room_code');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $relation = PayLog::join('tenant_contract', 'tenant_contract.id', '=', "pay_logs.tenant_contract_id")
-                          ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+        $relation = PayLog::join('tenant_contract', 'tenant_contract.id', '=', 'pay_logs.tenant_contract_id')
+                          ->join('rooms', 'rooms.id', '=', 'tenant_contract.room_id')
                           ->where('rooms.electricity_virtual_account', '!=', '')
                           ->where('loggable_type', 'App\Room');
 

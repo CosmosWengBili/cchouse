@@ -69,7 +69,7 @@
                                             name="district"
                                             value="{{ $data['district'] ?? '' }}"
                                         />
-                                            @if(isset($data['city']))
+                                            @if(isset($data['city']) && $data['city'])
                                                 @foreach(config('enums.cities')[$data['city']] as $value)
                                                     <option value="{{$value}}">{{$value}}</option>
                                                 @endforeach
@@ -87,6 +87,27 @@
                                             type="text"
                                             name="address"
                                             value="{{ $data['address'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Building.is_squatter")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="is_squatter"/>
+                                        <input
+                                            type="checkbox"
+                                            name="is_squatter"
+                                            value="1"
+                                            {{ isset($data["is_squatter"]) ? ($data['is_squatter'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
+                                    <td>@lang("model.Building.squatter_status")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="squatter_status"
+                                            value="{{ $data['squatter_status'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -123,6 +144,17 @@
                                             value="{{ $data['floor'] ?? '' }}"
                                         />
                                     </td>
+                                    <td>@lang("model.Building.administrative_number")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="administrative_number"
+                                            value="{{ $data['administrative_number'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Building.legal_usage")</td>
                                     <td>
                                         <select
@@ -134,6 +166,15 @@
                                                 <option value="{{$value}}">{{$value}}</option>
                                             @endforeach
                                         </select>
+                                    </td>
+                                    <td>@lang("model.Building.land_use")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="land_use"
+                                            value="{{ $data['land_use'] ?? '' }}"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
@@ -368,33 +409,13 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Building.administrative_number")</td>
+                                    <td>@lang("model.Building.commission_group")</td>
                                     <td>
                                         <input
                                             class="form-control form-control-sm"
                                             type="text"
-                                            name="administrative_number"
-                                            value="{{ $data['administrative_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Building.accounting_group")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="accounting_group"
-                                            value="{{ $data['accounting_group'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Building.rental_receipt")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="rental_receipt"
-                                            value="{{ $data['rental_receipt'] ?? '' }}"
+                                            name="commission_group"
+                                            value="{{ $data['commission_group'] ?? '' }}"
                                         />
                                     </td>
                                     <td>@lang("model.Building.commissioner_id")</td>
@@ -411,6 +432,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.Building.accounting_group")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="accounting_group"
+                                            value="{{ $data['accounting_group'] ?? '' }}"
+                                        />
+                                    </td>
+
                                     <td>@lang("model.Building.administrator_id")</td>
                                     <td>
                                         <select
@@ -423,15 +454,7 @@
                                         >
                                         </select>
                                     </td>
-                                    <td>@lang("model.Building.comment")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="comment"
-                                            value="{{ $data['comment'] ?? '' }}"
-                                        />
-                                    </td>
+
                                 </tr>
                                 <tr>
                                     <td>@lang("model.Building.electricity_payment_method")</td>
@@ -445,6 +468,26 @@
                                                 <option value="{{$value}}">{{$value}}</option>
                                             @endforeach
                                         </select>
+                                    </td>
+                                    <td>@lang("model.Building.rental_receipt")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="rental_receipt"
+                                            value="{{ $data['rental_receipt'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.Building.comment")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="comment"
+                                            value="{{ $data['comment'] ?? '' }}"
+                                        />
                                     </td>
                                 </tr>
                             </tbody>
@@ -485,6 +528,15 @@
             title: {
                 required: true
             },
+            building_code:{
+                required: true
+            },
+            city:{
+                required: true
+            },
+            district:{
+                required: true
+            },
             address: {
                 required: true
             },
@@ -494,33 +546,33 @@
             floor: {
                 required: true
             },
-            security_guard: {
-                required: true,
-            },
+            // security_guard: {
+            //     required: true,
+            // },
             management_count: {
                 required: true,
             },
-            first_floor_door_opening: {
-                required: true
-            },
-            public_area_door_opening: {
-                required: true
-            },
-            room_door_opening: {
-                required: true
-            },
+            // first_floor_door_opening: {
+            //     required: true
+            // },
+            // public_area_door_opening: {
+            //     required: true
+            // },
+            // room_door_opening: {
+            //     required: true
+            // },
             main_ammeter_location: {
                 required: true
             },
             ammeter_serial_number_1: {
                 required: true
             },
-            shared_electricity: {
-                required: true
-            },
-            private_ammeter_location: {
-                required: true
-            },
+            // shared_electricity: {
+            //     required: true
+            // },
+            // private_ammeter_location: {
+            //     required: true
+            // },
             water_meter_location: {
                 required: true
             },
@@ -533,30 +585,30 @@
             gas_meter_location: {
                 required: true
             },
-            garbage_collection_location: {
-                required: true
-            },
-            garbage_collection_time: {
-                required: true
-            },
+            // garbage_collection_location: {
+            //     required: true
+            // },
+            // garbage_collection_time: {
+            //     required: true
+            // },
             management_fee_contact: {
                 required: true
             },
             management_fee_contact_phone: {
                 required: true
             },
-            distribution_method: {
-                required: true
-            },
+            // distribution_method: {
+            //     required: true
+            // },
             administrative_number: {
                 required: true
             },
-            accounting_group: {
-                required: true
-            },
-            rental_receipt: {
-                required: true
-            },
+            // accounting_group: {
+            //     required: true
+            // },
+            // rental_receipt: {
+            //     required: true
+            // },
         };
 
         const messages = {

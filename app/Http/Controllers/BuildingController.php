@@ -6,6 +6,7 @@ use App\Building;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 use App\Responser\NestedRelationResponser;
 use App\Responser\FormDataResponser;
@@ -30,12 +31,15 @@ class BuildingController extends Controller
     {
         // in case of might need to display nested resources while listing
         // ex:  $responseData->relations(['rooms'])
-
         $responseData = new NestedRelationResponser();
         $responseData
             ->index(
                 'buildings',
-                $this->limitRecords(Building::with($request->withNested))
+                $this->limitRecords(
+                    Building::withExtraInfo()
+                        ->select(DB::raw('buildings.*,GROUP_CONCAT(landlord_contracts.commission_type) AS commission_type'))
+                        ->with($request->withNested)
+                )
             )
             ->relations($request->withNested);
 

@@ -57,7 +57,8 @@ class TenantContractService
                             'collected_by'         => $payment['collected_by'],
                             'period'               => $payment['period'],
                             'is_visible_at_report' => true,
-                            'is_charge_off_done'   => $payment['is_charge_off_done'] ?? false
+                            'is_charge_off_done'   => $payment['is_charge_off_done'] ?? false,
+                            'charge_off_date'      => $payment['charge_off_date'] ?? null
                         ]);
                     }
                 );

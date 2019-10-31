@@ -168,6 +168,7 @@ class TenantContractController extends Controller
                 if ($diff_deposit !== 0) {
                     $payment['amount']             = $diff_deposit;
                     $payment['is_charge_off_done'] = true;
+                    $payment['charge_off_date'] = Carbon::now();
                 }
             }
         }
@@ -211,13 +212,7 @@ class TenantContractController extends Controller
 
         $responseData = $responseData->get();
 
-        if (isset($responseData['data']['contract_start'])) {
-            $responseData['data']['contract_start'] = date('Y-m-d', strtotime($responseData['data']['contract_start']));
-        }
-
-        if (isset($responseData['data']['contract_end'])) {
-            $responseData['data']['contract_end'] = date('Y-m-d', strtotime($responseData['data']['contract_start']));
-        }
+        $responseData['data'] = makeDateFormatByKeys($responseData['data'], ['contract_start', 'contract_end'], 'Y-m-d');
 
         return view('tenant_contracts.show', array_merge($responseData, ['paid_diff' => $paid_diff]));
     }

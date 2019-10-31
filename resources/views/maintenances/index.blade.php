@@ -71,7 +71,7 @@
                                                 </select>
                                                 <button type="button" class="btn btn-info btn-xs js-apply-undertake">套用</button>
                                             @elseif ($isManagementGroup && $statusKey == 'done')
-                                                <button type="button" class="btn btn-info btn-xs js-is-printed">確認已列印</button>
+                                                <button type="button" class="btn btn-info btn-xs js-is-printed">確認已儲存</button>
                                             @endif
                                         </div>
                                         <form data-target="#{{ $statusKey }}-table" data-toggle="datatable-query">
@@ -191,7 +191,7 @@
                                                         return;
                                                     }
                                                     const who = $('.js-who-undertake').val();
-                                                    if (!confirm('確認已列印？')) {
+                                                    if (!confirm('確認已儲存？')) {
                                                         return;
                                                     }
 

@@ -68,7 +68,7 @@ class ShareholderController extends Controller
             'contact_method' => 'required',
             'bank_name' => 'required',
             'bank_code' => 'required',
-            'account_number' => 'required',
+            'account_number' => 'required|integer',
             'account_name' => 'required',
             'is_remittance_fee_collected' => 'required|boolean',
             'transfer_from' => 'required',

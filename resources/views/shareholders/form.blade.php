@@ -355,6 +355,7 @@
                     minlength: 7,
                 },
                 account_number: {
+                    digits: true,
                     required: true,
                 },
                 account_name: {
@@ -394,6 +395,7 @@
                     required: '必須輸入'
                 },
                 account_number: {
+                    digits: '必須為數字',
                     required: '必須輸入',
                 },
                 account_name: {

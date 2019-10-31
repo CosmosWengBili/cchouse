@@ -87,6 +87,11 @@ class ReceivableController extends Controller
         $service = new UbotPaymentService($requestData);
         $txSeq = $service->txSeq();
 
+        // check txseq on Redis for redundant payment from ubot api server
+        if( !$service->checkTxseq()){
+            return response()->json(['txseq' => $txSeq, 'ubnotify' => 'record', 'resmsg' => 'failed']);
+        };
+
         // mac 或 signature 驗證失敗
         if (!$service->validate()) {
             return response()->json(['txseq' => $txSeq, 'ubnotify' => 'record', 'resmsg' => 'failed']);

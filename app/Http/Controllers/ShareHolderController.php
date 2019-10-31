@@ -90,7 +90,7 @@ class ShareholderController extends Controller
 
         $shareholder = Shareholder::create($validatedData);
 
-        $building_code = array_wrap($request->input('building_code'));
+        $building_code = explode(',', str_replace(' ', '', $request->input('building_code')));
         // get building ids by building_code
         $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
         if (! empty($building_ids)) {

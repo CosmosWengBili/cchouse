@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 
 class UbotPaymentService {
@@ -51,6 +52,16 @@ class UbotPaymentService {
     // 轉出帳號
     public function wdAcc() {
         return $this->data['wdacc'];
+    }
+    // For ubot testing usage
+    public function checkTxseq(){
+        if( Redis::get('ubotPayment:Id:'.$this->data['txseq'])){
+            return false;
+        }
+        else{
+            Redis::set('ubotPayment:Id:' . $this->data['txseq'], true);
+            return true;
+        }
     }
 
     private function getSecretKeyContent() {

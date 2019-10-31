@@ -44,6 +44,17 @@ class FakeDataSeeder extends Seeder
                 'tenant_id' => factory(\App\Tenant::class)->create()->id,
                 'room_id' => $room->id,
             ]));
+
+            $room->keys()->save(factory(\App\Key::class)->make([
+                'room_id' => $room->id,
+            ]));
+        });
+
+        \App\Key::all()->each(function (\App\Key $key) {
+            $key->keyRequests()->saveMany(factory(\App\KeyRequest::class, 3)->make([
+                'key_id' => $key->id,
+                'request_user_id' => $key->keeper_id
+            ]));
         });
 
         \App\TenantContract::all()->each(function (\App\TenantContract $tenant_contract) {

@@ -42,7 +42,6 @@ class KeyRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function create()
     {
         $key_id = Input::get('key_id');
@@ -76,6 +75,7 @@ class KeyRequestController extends Controller
             'comment' => 'nullable',
         ]);
         $key_requests = KeyRequest::create($validatedData);
+
         return redirect($request->_redirect);
     }
 
@@ -88,13 +88,17 @@ class KeyRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $key_request = KeyRequest::find($id);
+        $key_request = KeyRequest::with('requestUser')->find($id);
+
         $responseData = new NestedRelationResponser();
         $responseData
             ->show($key_request->load($request->withNested))
             ->relations($request->withNested);
 
-        return view('key_requests.show', $responseData->get());
+        $responseData = $responseData->get();
+        $responseData['data']['request_user_id'] = $responseData['data']['request_user']['name'];
+
+        return view('key_requests.show', $responseData);
     }
 
     /**
@@ -108,6 +112,7 @@ class KeyRequestController extends Controller
         $key_request = KeyRequest::find($id);
         @$keeper_id = Key::find($key_request->key_id)->keeper_id;
         $responseData = new FormDataResponser();
+
         return view(
             'key_requests.form',
             $responseData->edit($key_request, 'keyRequests.update')->get()
@@ -139,7 +144,7 @@ class KeyRequestController extends Controller
         ]);
 
         $key_request->update($validatedData);
-        if ($using && $validatedData['status'] == "已完成") {
+        if ($using && $validatedData['status'] == '已完成') {
             NotificationService::notifyKeyRequestFinished(
                 $validatedData['key_id']
             );
@@ -158,6 +163,7 @@ class KeyRequestController extends Controller
     {
         $key_request = KeyRequest::find($id);
         $key_request->delete();
+
         return response()->json(true);
     }
 }

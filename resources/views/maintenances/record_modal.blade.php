@@ -8,6 +8,7 @@
                 </button>
             </div>
             <div class="modal-body" style="overflow-x: auto">
+                @if ($maintenances[0])
                 <table id="record-table" class="display table" style="width:100%">
                     <thead>
                     @foreach ( array_keys($maintenances[0]) as $field)
@@ -17,6 +18,7 @@
                     <tbody>
                     </tbody>
                 </table>
+                @endif
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>

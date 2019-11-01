@@ -206,11 +206,11 @@ class ShareholderController extends Controller
     {
         $year = $request->input('year', now()->format('Y'));
         $month = $request->input('month', now()->format('m'));
-        $date = Carbon::create($year, $month);
+        $date = Carbon::create($year, $month)->subMonth();
 
         return Excel::download(
             new ShareholderExport($date),
-            "出帳明細-{$date->format('Y-m')}.xlsx"
+            "出帳明細-{$year}-{$month}.xlsx"
         );
     }
 }

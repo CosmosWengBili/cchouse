@@ -139,7 +139,7 @@ class ShareholderTotalSheet implements WithHeadings, WithTitle, FromArray
             // 根據method計算總和
             foreach ($groupCountByKeys as $groupCountByKey) {
                 ! isset($countByMethod[$row[$groupCountByKey]]) and ($countByMethod[$row[$groupCountByKey]] = 0);
-                $countByMethod[$row[$groupCountByKey]] +=  $row['carry_forward'];
+                $countByMethod[$row[$groupCountByKey]] +=  $row['money'];
             }
         }
 

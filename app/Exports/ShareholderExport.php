@@ -40,13 +40,12 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
     {
         /** @var array $excelData */
         $excelData = $this->getExcelDataRows();
-
         // count row total amount
-        $sheets[] = new ShareholderTotalSheet($this->year, $this->month, $excelData);
+        $sheets[] = new ShareholderTotalSheet($this->year, $this->month, $excelData['global']);
 
         $transferFroms = collect($this->transferFroms)->unique();
         foreach ($transferFroms as $transferFrom) {
-            $sheets[] = new ShareholderTotalSheet($this->year, $this->month, $excelData, $transferFrom);
+            $sheets[] = new ShareholderTotalSheet($this->year, $this->month, $excelData[$transferFrom], $transferFrom);
         }
 
         return $sheets;
@@ -68,25 +67,21 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
             $this->transferFroms[] = $row->transfer_from;
 
             $location = $row->city . $row->district . $row->address;
-            $money = $this->getDataFromMonthlyReport(
-                LandlordContract::find($row->landlord_contract_id)->first(),
-                $this->month,
-                $this->year
-            );
+            $money = $this->getShareholderMoney($row);
 
             // 實收金額
             $actual_money = $row->carry_forward > 0 ? $row->carry_forward : 0;
             // 應收金額
             $amount_receivable = $row->carry_forward < 0 ? ~$row->carry_forward + 1 : 0;
 
-            $excelData[] = [
+            $data = [
                 $row->commission_type,                              // 物件屬性
                 $row->building_code,                                // 物件代碼
                 $location,                                          // 物件地址
                 'carry_forward' => $row->carry_forward,             // 月結單金額
                 'actual_money' => $actual_money,                    // 實收金額
                 $row->name,                                         // 業主
-                'money' => $money,                                  // 應付業主
+                'money' => $money,                                    // 應付業主
                 'method' => $row->method,                           // 方式
                 $row->transfer_from,                                // 匯出銀行
                 'amount_receivable' => $amount_receivable,          // 應收金額 < 0 然後顯示的數字要乘於 -1
@@ -99,6 +94,9 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                 $row->contact_method,                               // 聯絡方式
                 $row->bill_delivery,                                // 郵寄/傳真
             ];
+
+            $excelData['global'][] = $data; 
+            $excelData[$row->transfer_from][] = $data; 
         }
         foreach ($databaseLandlordData as $row) {
             // collect the transfer from for sheets
@@ -127,7 +125,7 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                 return implode(',',$landlord->mailingAddresses->pluck('value')->toArray());
             })->toArray());
 
-            $excelData[] = [
+            $data = [
                 $row->commission_type,                              // 物件屬性
                 $row->building->building_code,                      // 物件代碼
                 $row->building->location,                           // 物件地址
@@ -146,7 +144,10 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                 $landlordAccountNumbers,                            // 帳號
                 $contactMethods,                                    // 聯絡方式
                 $billDeliverys,                                     // 郵寄/傳真
-            ];            
+            ];   
+            
+            $excelData['global'][] = $data; 
+            $excelData['玉山兆基'][] = $data;
         }
         return $excelData;
     }
@@ -173,7 +174,14 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                 $query->leftJoin('landlord_contracts', 'landlord_contracts.id', '=', 'monthly_reports.landlord_contract_id');
                 $query->on('monthly_reports.landlord_contract_id', '=', 'landlord_contracts.id');
                 $query->on('buildings.id', '=', 'landlord_contracts.building_id');
+                $query->where('landlord_contracts.commission_start_date', '<', Carbon::today());
+                $query->where('landlord_contracts.commission_end_date', '>', Carbon::today());
             })
+            ->select(DB::raw('*, shareholders.distribution_method AS shareholder_distribution_method'))
+            ->where('shareholders.distribution_end_date', '>', Carbon::today())
+            ->where('shareholders.deleted_at', null)
+            ->where('buildings.deleted_at', null)
+            ->where('monthly_reports.deleted_at', null)
             ->get()
             ->toArray();
         }
@@ -186,6 +194,21 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                         
         }
 
+    }
+
+    private function getShareholderMoney($shareholder){
+        if( $shareholder->shareholder_distribution_method == '固定' ){
+            return $shareholder->distribution_amount;
+        }
+        else if( $shareholder->shareholder_distribution_method == '浮動' ){
+            $revenue = MonthlyReport::where('landlord_contract_id', $shareholder->landlord_contract_id)
+                                    ->where('year', $this->year)
+                                    ->where('month', $this->month)
+                                    ->get()
+                                    ->first()['carry_forward'] ?? 0;
+            if($revenue < 0){ $revenue = 0; }
+            return round($shareholder->distribution_rate * $revenue / 100);
+        }
     }
 
      /**

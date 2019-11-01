@@ -18,13 +18,13 @@ use App\EditorialReview;
 use Illuminate\Support\Facades\Auth;
 
 class InvoiceService
-{   
+{
     public $invoice_count;
     public $global_data;
     public function makeInvoiceData($start_date, $end_date)
     {
         $this->global_data = [
-            'tenant' => [], 'landlord' => [],  'company' => []  
+            'tenant' => [], 'landlord' => [],  'company' => []
         ];
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
@@ -45,10 +45,10 @@ class InvoiceService
         $subtotal = 0;
         $comment = '';
         $current_tenant_contract_id = 0;
-        $current_paid_at = Carbon::create(2000,1,1);
+        $current_paid_at = Carbon::create(2000, 1, 1);
 
         // Init the variables which would be used to detect whether over landlord rent price
-        $building_price_map = array();
+        $building_price_map = [];
 
         // Generate invoice data
         foreach ($pay_logs as $pay_log_key => $pay_log) {
@@ -69,14 +69,14 @@ class InvoiceService
                 $pay_log->paid_at;
 
             // Update subtotal-use index
-            if ($pay_log_tenant_contract_id != $current_tenant_contract_id || 
+            if ($pay_log_tenant_contract_id != $current_tenant_contract_id ||
                 $current_paid_at != $pay_log_paid_at) {
                 $this->invoice_count++;
                 $invoice_item_count = 1;
                 $current_tenant_contract_id = $pay_log_tenant_contract_id;
                 $current_paid_at = $pay_log_paid_at;
                 $payment_count = PayLog::where('tenant_contract_id', $current_tenant_contract_id)
-                                        ->where('paid_at', $current_paid_at )
+                                        ->where('paid_at', $current_paid_at)
                                         ->where('receipt_type', '發票')
                                         ->where('subject', '<>', '租金')
                                         ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment'])
@@ -84,12 +84,11 @@ class InvoiceService
             }
 
             // Set comment
-            if( !is_null($pay_log->loggable->receipts()->first()) ){
+            if (! is_null($pay_log->loggable->receipts()->first())) {
                 $comment = $receipt['comment'];
-            }
-            else{
+            } else {
                 $comment =
-                $pay_log->loggable->comment . ';' .
+                $pay_log->loggable->comment.';'.
                 $pay_log->loggable->tenantContract->room->comment;
             }
 
@@ -111,8 +110,8 @@ class InvoiceService
             $data['comment'] = $comment;
 
             // Set value for maping relative payment model
-            $data['data_table'] = __('general.' . $pay_log->loggable->getTable()) .' , '. $pay_log->loggable->subject; 
-            $data['data_table_class'] = $pay_log->loggable->getTable(); 
+            $data['data_table'] = __('general.'.$pay_log->loggable->getTable()).' , '.$pay_log->loggable->subject;
+            $data['data_table_class'] = $pay_log->loggable->getTable();
             $data['data_table_id'] = $pay_log->loggable->id;
             $data['data_receipt_id'] = $receipt['id'];
 
@@ -120,7 +119,7 @@ class InvoiceService
 
             // Make subtotal row
 
-            if ($payment_count == $invoice_item_count || $pay_log->loggable->subject == "租金") {
+            if ($payment_count == $invoice_item_count || $pay_log->loggable->subject == '租金') {
                 $data['invoice_item_idx'] = $data['invoice_item_idx'];
                 if (
                     $pay_log->loggable->tenantContract->tenant->is_legal_person
@@ -141,25 +140,22 @@ class InvoiceService
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
 
-                if($pay_log->loggable->subject == '租金'){
+                if ($pay_log->loggable->subject == '租金') {
                     $data['invoice_count'] = $this->invoice_count;
                     $data['invoice_item_idx'] = 1;
                     $data['invoice_price'] = $pay_log->amount;
                     $data['subtotal'] = $pay_log->amount;
-                }
-                else{
+                } else {
                     $data['invoice_price'] = $subtotal;
                     $data['subtotal'] = $subtotal;
                     $subtotal = 0;
                 }
             }
-            if( $pay_log->loggable->subject == "租金" ){
+            if ($pay_log->loggable->subject == '租金') {
                 array_push($this->global_data['company'], $data);
-            }
-            else{
+            } else {
                 array_push($this->global_data['tenant'], $data);
             }
-            
         }
 
         // Generate deposit interest, maintenance data and collection data
@@ -168,13 +164,12 @@ class InvoiceService
         $maintenance_data = $this->makeMaintenance($start_date, $end_date);
         $deposit_data = $this->makeDeposits($start_date, $end_date);
         $landlord_other_subject_data = $this->makeLandlordOtherSubjects($start_date, $end_date);
-        
+
         return $this->global_data;
     }
 
     public function makeDepositInterest($startDate, $endDate)
     {
-
         $depositInterests = CompanyIncome::whereBetween('income_date', [$startDate, $endDate])
                                          ->where('subject', '押金設算息')
                                          ->get();
@@ -186,8 +181,8 @@ class InvoiceService
             $data['invoice_date'] = $receipt['date'];
             $data['invoice_item_name'] = $depositInterest->subject;
             $data['amount'] = $depositInterest->amount;
-            $data['data_table'] = __('general.' . $depositInterest->getTable()); 
-            $data['data_table_class'] = $depositInterest->getTable(); 
+            $data['data_table'] = __('general.'.$depositInterest->getTable());
+            $data['data_table_class'] = $depositInterest->getTable();
             $data['data_table_id'] = $depositInterest->id;
             $data['data_receipt_id'] = $receipt['id'];
 
@@ -214,15 +209,15 @@ class InvoiceService
 
     public function makeMaintenance($start_date, $end_date)
     {
-        // Retrieve data from LandlordPayment not Maintenance 
-        $maintenances = Maintenance::where('afford_by','房東')
+        // Retrieve data from LandlordPayment not Maintenance
+        $maintenances = Maintenance::where('afford_by', '房東')
                                     ->whereBetween('closed_date', [$start_date, $end_date])
-                                    ->with(['tenantContract.room.building.landlordContracts'])
+                                    ->with(['room.building.landlordContracts'])
                                     ->get();
 
         // Genenate maintenance data
         foreach ($maintenances as $maintenance) {
-            $landlords = $maintenance->tenantContract->room->building->landlordContracts->last()
+            $landlords = $maintenance->room->building->landlordContracts->last()
                 ->landlords;
             $initial_amount = $maintenance->price;
             $per_amount = round($initial_amount / $landlords->count());
@@ -234,8 +229,8 @@ class InvoiceService
                 $data['amount'] = $per_amount;
 
                 // Set value for maping relative payment model
-                $data['data_table'] = __('general.' . $maintenance->getTable());
-                $data['data_table_class'] = $maintenance->getTable();  
+                $data['data_table'] = __('general.'.$maintenance->getTable());
+                $data['data_table_class'] = $maintenance->getTable();
                 $data['data_table_id'] = $maintenance->id;
                 $data['data_receipt_id'] = $receipt['id'];
 
@@ -244,15 +239,15 @@ class InvoiceService
                     $data['company_name'] = $landlord->name;
                 }
                 $data['comment'] = $receipt['comment'];
-                $data['building_code'] = $maintenance->tenantContract->room->building->building_code;
-                $data['room_number'] = $maintenance->tenantContract->room->room_number;
+                $data['building_code'] = $maintenance->room->building->building_code;
+                $data['room_number'] = $maintenance->room->room_number;
                 $data['deposit_date'] = $maintenance->closed_date;
                 $data['actual_deposit_date'] = $maintenance->closed_date;
                 $data['invoice_collection_number'] = $landlord->invoice_collection_number;
                 $data['invoice_price'] = $per_amount;
                 $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
 
-                if( $landlord->id == $landlords->last()->id ){
+                if ($landlord->id == $landlords->last()->id) {
                     $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
                     $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
                 }
@@ -276,17 +271,16 @@ class InvoiceService
             $receipt = $deposit->receipts()->first();
             $data = $this->makeInvoiceMockData();
             $data['invoice_date'] = $receipt['date'];
-            if( $deposit->subject == "訂金(房東)" ){
+            if ($deposit->subject == '訂金(房東)') {
                 $data['invoice_item_name'] = '管理服務費';
-            }
-            else if( $deposit->subject == "訂金" ){
+            } elseif ($deposit->subject == '訂金') {
                 $data['invoice_item_name'] = '違約金';
             }
             $data['amount'] = $deposit->amount;
 
             // Set value for maping relative payment model
-            $data['data_table'] =  __('general.' . $deposit->getTable()); 
-            $data['data_table_class'] = $deposit->getTable(); 
+            $data['data_table'] =  __('general.'.$deposit->getTable());
+            $data['data_table_class'] = $deposit->getTable();
             $data['data_table_id'] = $deposit->id;
             $data['data_receipt_id'] = $receipt['id'];
 
@@ -294,7 +288,7 @@ class InvoiceService
                 $data['company_number'] = $deposit->loggable->payer_certification_number;
                 $data['company_name'] = $deposit->loggable->payer_name;
             }
-            
+
             $data['building_code'] = $deposit->loggable->room->building->building_code;
             $data['room_number'] = $deposit->loggable->room->room_number;
             $data['comment'] = $receipt['comment'];
@@ -335,8 +329,8 @@ class InvoiceService
                 $data['amount'] = $per_amount;
 
                 // Set value for maping relative payment model
-                $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
-                $data['data_table_class'] = $landlord_other_subject->getTable(); 
+                $data['data_table'] =  __('general.'.$landlord_other_subject->getTable());
+                $data['data_table_class'] = $landlord_other_subject->getTable();
                 $data['data_table_id'] = $landlord_other_subject->id;
                 $data['data_receipt_id'] = $receipt['id'];
 
@@ -353,7 +347,7 @@ class InvoiceService
                 $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
                 $data['comment'] = $receipt['comment'];
 
-                if( $landlord->id == $landlords->last()->id ){
+                if ($landlord->id == $landlords->last()->id) {
                     $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
                     $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
                 }
@@ -361,7 +355,6 @@ class InvoiceService
                 $this->invoice_count ++;
             }
         }
-        
     }
     // Turn resources title to invoice item name
     public function makeInvoiceItemName($object, $type)
@@ -379,7 +372,7 @@ class InvoiceService
                 return '租金收入';
             } elseif ($object['subject'] == '設備扣款') {
                 return '違約金';
-            }elseif (
+            } elseif (
                 in_array($object['subject'], ['轉房費', '換約費', '滯納金'])
             ) {
                 return '行政手續費';
@@ -428,11 +421,11 @@ class InvoiceService
             $model_name = studly_case(str_singular($class));
             foreach ($receipt as $receipt_key => $receipt_row) {
                 $id = array_keys($receipt_row)[0];
-                $model = app("App\\".$model_name)::find($id);
-                // Check whether this model has generate receipt 
+                $model = app('App\\'.$model_name)::find($id);
+                // Check whether this model has generate receipt
                 if ($receipt_row[$id]['receipt_id'] == null) {
                     // Check whether invoice_serial_number exist to avoid generating redundant receipt
-                    if( $receipt_row[$id]['invoice_serial_number'] == '' ){
+                    if ($receipt_row[$id]['invoice_serial_number'] == '') {
                         continue;
                     }
                     $receipt = new Receipt();
@@ -440,21 +433,19 @@ class InvoiceService
                     $receipt->date = $receipt_row[$id]['invoice_date'];
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->comment = $receipt_row[$id]['comment'];
-                    if( $class == "landlord_other_subjects" ){
+                    if ($class == 'landlord_other_subjects') {
                         $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
                         $receiped_landlord_names = $model->receipts->pluck('receiver');
                         $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
-                    }
-                    else{
+                    } else {
                         $receipt->receiver = $this->fetchInvoiceReceiver($model);
                     }
                     $model->receipts()->save($receipt);
-                }
-                else{
+                } else {
                     $receipt = Receipt::find($receipt_row[$id]['receipt_id']);
 
                     // If the invoice_serial_number from user is different with receipt, notify invoice group users
-                    if( $receipt->invoice_serial_number != $receipt_row[$id]['invoice_serial_number']){
+                    if ($receipt->invoice_serial_number != $receipt_row[$id]['invoice_serial_number']) {
                         NotificationService::notifyReceiptUpdated($model);
                     }
                     $receipt->invoice_serial_number = $receipt_row[$id]['invoice_serial_number'];
@@ -462,19 +453,20 @@ class InvoiceService
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->comment = $receipt_row[$id]['comment'];
                     $receipt->save();
-                }   
+                }
             }
         }
     }
 
     // If specific columns from user is different with receipt, notify invoice group users
     // Divided by model
-    public static function compareReceipt($model, $data){
-        if($model->receipts->isNotEmpty()){
+    public static function compareReceipt($model, $data)
+    {
+        if ($model->receipts->isNotEmpty()) {
             $originalAttribute = [];
             $updateAttribute = [];
-            foreach($data as $key => $value){
-                if( $model[$key] != $data[$key]){
+            foreach ($data as $key => $value) {
+                if ($model[$key] != $data[$key]) {
                     $originalAttribute[$key] = $model[$key];
                     $updateAttribute[$key] = $value;
                 }
@@ -488,20 +480,23 @@ class InvoiceService
                 'comment' => '',
             ]);
             NotificationService::notifyReceiptUpdated($model);
+
             return true;
         }
+
         return false;
     }
-    
+
     // fetch receiver info from model
-    public function fetchInvoiceReceiver($model){
+    public function fetchInvoiceReceiver($model)
+    {
         switch (class_basename($model)) {
             case 'ComanyIncome':
                 return $model->incomable->tenant->name;
                 break;
             case 'PayLog':
                 return $model->tenantContract->tenant->name;
-                break;       
+                break;
             case 'Maintenance':
                 return $model->tenant->name;
                 break;

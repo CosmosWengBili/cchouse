@@ -25,17 +25,19 @@ class FakeDataSeeder extends Seeder
      */
     public function run()
     {
-//        $this->truncate();
+        $this->truncate();
 
-        factory(\App\LandlordContract::class, 3)->create();
-
-        \App\Building::all()->each(function (\App\Building $building) {
-            $building->rooms()->save(factory(\App\Room::class)->create());
-            $building->shareholders()->save(factory(\App\Shareholder::class)->create());
-        });
+        factory(\App\LandlordContract::class, 2)->create();
 
         \App\LandlordContract::all()->each(function (\App\LandlordContract $landlord_contract) {
             $landlord_contract->landlords()->save(factory(\App\Landlord::class)->create());
+        });
+
+        \App\Building::all()->each(function (\App\Building $building) {
+            $building->shareholders()->save(factory(\App\Shareholder::class)->create());
+            $building->rooms()->saveMany(factory(\App\Room::class, 3)->make([
+                'building_id' => $building->id,
+            ]));
         });
 
         \App\Room::all()->each(function (\App\Room $room) {
@@ -44,7 +46,6 @@ class FakeDataSeeder extends Seeder
                 'tenant_id' => factory(\App\Tenant::class)->create()->id,
                 'room_id' => $room->id,
             ]));
-
             $room->keys()->save(factory(\App\Key::class)->make([
                 'room_id' => $room->id,
             ]));
@@ -82,7 +83,10 @@ class FakeDataSeeder extends Seeder
             $tenant_contract->payOff()->create([
                 'pay_off_type' => '中途退租'
             ]);
-            $tenant_contract->maintenances()->create();
+            $tenant_contract->maintenances()->saveMany(factory(\App\Maintenance::class, 5)->make([
+                'tenant_contract_id' => $tenant_contract->id,
+                'room_id' => $tenant_contract->room_id,
+            ]));
         });
 
         \App\TenantPayment::all()->each(function (\App\TenantPayment $tenant_payment) {

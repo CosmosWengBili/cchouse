@@ -35,8 +35,9 @@ class FakeDataSeeder extends Seeder
 
         \App\Building::all()->each(function (\App\Building $building) {
             $building->shareholders()->save(factory(\App\Shareholder::class)->create());
-            $building->rooms()->saveMany(factory(\App\Room::class, 3)->make([
+            $building->rooms()->saveMany(factory(\App\Room::class, 1)->make([
                 'building_id' => $building->id,
+                'room_layout' => '公區'
             ]));
         });
 

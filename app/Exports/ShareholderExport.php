@@ -10,8 +10,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
-class ShareholderExport implements WithMultipleSheets
+class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
 {
     /** @var Carbon $date */
     private $date;
@@ -27,7 +30,6 @@ class ShareholderExport implements WithMultipleSheets
         $this->date = $date;
         $this->year = $date->year;
         $this->month = $date->month;
-
         $this->transferFroms = [];
     }
 
@@ -78,7 +80,6 @@ class ShareholderExport implements WithMultipleSheets
             $amount_receivable = $row->carry_forward < 0 ? ~$row->carry_forward + 1 : 0;
 
             $excelData[] = [
-                $row->group, //$row->group,                                  // 組別
                 $row->commission_type,                              // 物件屬性
                 $row->building_code,                                // 物件代碼
                 $location,                                          // 物件地址
@@ -127,7 +128,6 @@ class ShareholderExport implements WithMultipleSheets
             })->toArray());
 
             $excelData[] = [
-                $row->building->group,                              // 組別
                 $row->commission_type,                              // 物件屬性
                 $row->building->building_code,                      // 物件代碼
                 $row->building->location,                           // 物件地址
@@ -186,5 +186,19 @@ class ShareholderExport implements WithMultipleSheets
                         
         }
 
+    }
+
+     /**
+     * Bind value to a cell.
+     *
+     * @param Cell $cell Cell to bind value to
+     * @param mixed $value Value to bind in cell
+     *
+     * @return bool
+     */
+    public function bindValue(Cell $cell, $value)
+    {
+        $cell->setValueExplicit($value, DataType::TYPE_STRING);
+        return true;
     }
 }

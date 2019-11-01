@@ -84,18 +84,11 @@ class Maintenance extends Model implements AuditableContract
     }
 
     /**
-     * Get the tenant of this maintenance.
+     * Get the room of this maintenance.
      */
     public function room()
     {
-        return $this->hasOneThrough(
-            'App\Room',
-            'App\TenantContract',
-            'id',
-            'id',
-            'tenant_contract_id',
-            'room_id'
-        );
+        return $this->belongsTo('App\Room');
     }
 
     /**

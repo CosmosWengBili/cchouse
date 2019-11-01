@@ -42,6 +42,20 @@
                                         >
                                         </select>
                                     </td>
+                                    <td>@lang("model.Maintenance.room_id")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="room_code"
+                                            data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
+                                            name="room_id"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
@@ -51,8 +65,6 @@
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
                                         <select
@@ -65,15 +77,7 @@
                                         >
                                         </select>
                                     </td>
-                                    <td>@lang("model.Maintenance.service_comment")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="service_comment"
-                                            value="{{ $data['service_comment'] ?? '' }}"
-                                        />
-                                    </td>
+
                                 </tr>
                                 <tr>
                                     <td>@lang("model.Maintenance.incident_details")</td>
@@ -111,8 +115,15 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>@lang("model.Maintenance.service_comment")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="service_comment"
+                                            value="{{ $data['service_comment'] ?? '' }}"
+                                        />
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -131,6 +142,21 @@
                                             value="{{ $data['tenant_contract_id'] ?? '' }}"
                                         />
                                     </td>
+                                    <td>@lang("model.Maintenance.room_id")</td>
+                                    <td>
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="room_code"
+                                            data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
+                                            name="room_id"
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
+                                    </td>
+
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
@@ -140,6 +166,19 @@
                                             readonly
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
+                                    </td>
+                                    <td>@lang("model.Maintenance.commissioner_id")</td>
+                                    <td>
+                                        <select
+                                            name="commissioner_id"
+                                            readonly
+                                            class="form-control form-control-sm"
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
+                                        >
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -163,30 +202,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Maintenance.dispatch_date")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="dispatch_date"
-                                            value="{{ $data['dispatch_date'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Maintenance.commissioner_id")</td>
-                                    <td>
-                                        <select
-                                            name="commissioner_id"
-                                            readonly
-                                            class="form-control form-control-sm"
-                                            data-toggle="selectize"
-                                            data-table="users"
-                                            data-text="name"
-                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
-                                        >
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.maintenance_staff_id")</td>
                                     <td>
                                         <select
@@ -199,6 +214,17 @@
                                         >
                                         </select>
                                     </td>
+                                    <td>@lang("model.Maintenance.dispatch_date")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="date"
+                                            name="dispatch_date"
+                                            value="{{ $data['dispatch_date'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Maintenance.closed_date")</td>
                                     <td>
                                         <input

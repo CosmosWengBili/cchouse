@@ -214,6 +214,7 @@ return [
     'Maintenance' => [
         'id'                            => '編號',
         'tenant_contract_id'            => '租客合約編號',
+        'room_id'                       => '房編號',
         'reported_at'                   => '反映日期',
         'expected_service_date'         => '預計處理日期',
         'expected_service_time'         => '預計處理時間',
@@ -357,7 +358,8 @@ return [
         'landlord_payments'           => '房東應付帳單',
         'landlord_other_subjects'     => '房東其他科目',
         'created_at'                  => '建立時間',
-        'updated_at'                  => '更新時間'
+        'updated_at'                  => '更新時間',
+        'maintenances'                => '清潔維修',
     ],
     'TenantContract' => [
         'id'                                  => '編號',

@@ -90,6 +90,7 @@ class MaintenanceController extends Controller
     {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
@@ -138,6 +139,10 @@ class MaintenanceController extends Controller
         $data = $responseData->edit($maintenance, 'maintenances.update')->get();
         $data['data']['pictures'] = $maintenance->pictures()->get();
 
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         return view('maintenances.form', $data);
     }
 
@@ -152,11 +157,12 @@ class MaintenanceController extends Controller
     {
         $validatedData = $request->validate([
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
-            'incident_type' => 'required|max:255',
-            'work_type' => 'required|max:255',
+            // 'incident_type' => 'required|max:255',
+            // 'work_type' => 'required|max:255',
             'incident_details' => 'required',
 
             'closed_comment' => 'nullable',
@@ -244,8 +250,8 @@ class MaintenanceController extends Controller
      */
     public function showRecord($id)
     {
-        $room = Maintenance::find($id)->tenantContract->room;
-        $records = [];
+        $room = Maintenance::find($id)->room;
+
         $columns = array_map(function ($column) {
             return "maintenances.{$column}";
         }, $this->whitelist('maintenances'));
@@ -253,18 +259,13 @@ class MaintenanceController extends Controller
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         $threeMonthsAgo = Carbon::now()->subMonth(3);
-        foreach ($room->tenantContracts as $contractKey => $contract) {
-            $records = array_merge(
-                $records,
-                $contract->maintenances()
-                    ->withExtraInfo()
-                    ->select($selectStr)
-                    ->where('payment_request_date', '>', $threeMonthsAgo)
-                    ->where('status', '案件完成')
-                    ->get()
-                    ->toArray()
-            );
-        }
+        $records = $room->maintenances()
+                            ->withExtraInfo()
+                            ->select($selectStr)
+                            ->where('payment_request_date', '>', $threeMonthsAgo)
+                            ->where('status', '案件完成')
+                            ->get()
+                            ->toArray();
 
         return response()->json($records);
     }
@@ -381,9 +382,7 @@ class MaintenanceController extends Controller
     private function createLandlordPayment($maintenance): void
     {
         $landlordPayment = new LandlordPayment();
-        $landlordPayment->room_id = $maintenance
-            ->tenantContract()
-            ->first()->room_id;
+        $landlordPayment->room_id = $maintenance->room_id;
         $landlordPayment->collection_date = Carbon::now();
         $landlordPayment->billing_vendor = 'CCHOUSE';
         $landlordPayment->bill_serial_number =

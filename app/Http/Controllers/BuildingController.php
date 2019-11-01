@@ -31,13 +31,15 @@ class BuildingController extends Controller
     {
         // in case of might need to display nested resources while listing
         // ex:  $responseData->relations(['rooms'])
+
+        $selectStr    = DB::raw(join(', ', array_merge(['buildings.*'], Building::extraInfoColumns())));
         $responseData = new NestedRelationResponser();
         $responseData
             ->index(
                 'buildings',
                 $this->limitRecords(
                     Building::withExtraInfo()
-                        ->select(DB::raw('buildings.*,GROUP_CONCAT(landlord_contracts.commission_type) AS commission_type'))
+                        ->select(DB::raw($selectStr))
                         ->with($request->withNested)
                 )
             )
@@ -74,10 +76,10 @@ class BuildingController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'title' => 'required|max:255',
+            'title'         => 'required|max:255',
             'building_code' => 'required|max:255',
-            'group' => 'max:255',
-            'city' => [
+            'group'         => 'max:255',
+            'city'          => [
                 'required',
                 Rule::in(array_keys(config('enums.cities')))
             ],
@@ -88,45 +90,45 @@ class BuildingController extends Controller
             ],
             'address' => 'required|max:255',
 
-            'is_squatter' => 'boolean',
+            'is_squatter'     => 'boolean',
             'squatter_status' => 'max:255',
 
-            'tax_number' => 'required|max:255',
-            'building_type' => 'max:255',
-            'floor' => 'required|integer|digits_between:1,11',
-            'legal_usage' => 'max:255',
-            'land_use' => 'max:255',
-            'has_elevator' => 'boolean',
-            'security_guard' => 'max:255',
-            'management_count' => 'required|max:255',
-            'first_floor_door_opening' => 'max:255',
-            'public_area_door_opening' => 'max:255',
-            'room_door_opening' => 'max:255',
-            'main_ammeter_location' => 'required|max:255',
-            'ammeter_serial_number_1' => 'required|max:255',
-            'shared_electricity' => 'max:255',
+            'tax_number'                        => 'required|max:255',
+            'building_type'                     => 'max:255',
+            'floor'                             => 'required|integer|digits_between:1,11',
+            'legal_usage'                       => 'max:255',
+            'land_use'                          => 'max:255',
+            'has_elevator'                      => 'boolean',
+            'security_guard'                    => 'max:255',
+            'management_count'                  => 'required|max:255',
+            'first_floor_door_opening'          => 'max:255',
+            'public_area_door_opening'          => 'max:255',
+            'room_door_opening'                 => 'max:255',
+            'main_ammeter_location'             => 'required|max:255',
+            'ammeter_serial_number_1'           => 'required|max:255',
+            'shared_electricity'                => 'max:255',
             'taiwan_electricity_payment_method' => 'max:255',
-            'electricity_payment_method' => [
+            'electricity_payment_method'        => [
                 Rule::in(config('enums.buildings.electricity_payment_method'))
             ],
-            'private_ammeter_location' => 'max:255',
-            'water_meter_location' => 'required|max:255',
-            'water_meter_serial_number' => 'required|max:255',
-            'water_payment_method' => 'required|max:255',
-            'water_meter_reading_date' => 'required|date',
-            'gas_meter_location' => 'required|max:255',
-            'garbage_collection_location' => 'max:255',
-            'garbage_collection_time' => 'max:255',
+            'private_ammeter_location'      => 'max:255',
+            'water_meter_location'          => 'required|max:255',
+            'water_meter_serial_number'     => 'required|max:255',
+            'water_payment_method'          => 'required|max:255',
+            'water_meter_reading_date'      => 'required|date',
+            'gas_meter_location'            => 'required|max:255',
+            'garbage_collection_location'   => 'max:255',
+            'garbage_collection_time'       => 'max:255',
             'management_fee_payment_method' => 'max:255',
-            'management_fee_contact' => 'required|max:255',
-            'management_fee_contact_phone' => 'required|max:255',
-            'distribution_method' => 'max:255',
-            'administrative_number' => 'required|max:255',
-            'accounting_group' => 'max:255',
-            'rental_receipt' => 'max:255',
-            'commissioner_id' => 'exists:users,id',
-            'administrator_id' => 'exists:users,id',
-            'comment' => 'max:255'
+            'management_fee_contact'        => 'required|max:255',
+            'management_fee_contact_phone'  => 'required|max:255',
+            'distribution_method'           => 'max:255',
+            'administrative_number'         => 'required|max:255',
+            'accounting_group'              => 'max:255',
+            'rental_receipt'                => 'max:255',
+            'commissioner_id'               => 'exists:users,id',
+            'administrator_id'              => 'exists:users,id',
+            'comment'                       => 'max:255'
         ]);
 
         $newBuilding = BuildingService::create($validatedData);
@@ -179,10 +181,10 @@ class BuildingController extends Controller
     public function update(Request $request, Building $building)
     {
         $validatedData = $request->validate([
-            'title' => 'required|max:255',
+            'title'         => 'required|max:255',
             'building_code' => 'required|max:255',
-            'group' => 'max:255',
-            'city' => [
+            'group'         => 'max:255',
+            'city'          => [
                 'required',
                 Rule::in(array_keys(config('enums.cities')))
             ],
@@ -193,45 +195,45 @@ class BuildingController extends Controller
             ],
             'address' => 'required|max:255',
 
-            'is_squatter' => 'boolean',
+            'is_squatter'     => 'boolean',
             'squatter_status' => 'max:255',
 
-            'tax_number' => 'required|max:255',
-            'building_type' => 'max:255',
-            'floor' => 'required|integer|digits_between:1,11',
-            'legal_usage' => 'max:255',
-            'land_use' => 'max:255',
-            'has_elevator' => 'boolean',
-            'security_guard' => 'max:255',
-            'management_count' => 'required|max:255',
-            'first_floor_door_opening' => 'max:255',
-            'public_area_door_opening' => 'max:255',
-            'room_door_opening' => 'max:255',
-            'main_ammeter_location' => 'required|max:255',
-            'ammeter_serial_number_1' => 'required|max:255',
-            'shared_electricity' => 'max:255',
+            'tax_number'                        => 'required|max:255',
+            'building_type'                     => 'max:255',
+            'floor'                             => 'required|integer|digits_between:1,11',
+            'legal_usage'                       => 'max:255',
+            'land_use'                          => 'max:255',
+            'has_elevator'                      => 'boolean',
+            'security_guard'                    => 'max:255',
+            'management_count'                  => 'required|max:255',
+            'first_floor_door_opening'          => 'max:255',
+            'public_area_door_opening'          => 'max:255',
+            'room_door_opening'                 => 'max:255',
+            'main_ammeter_location'             => 'required|max:255',
+            'ammeter_serial_number_1'           => 'required|max:255',
+            'shared_electricity'                => 'max:255',
             'taiwan_electricity_payment_method' => 'max:255',
-            'electricity_payment_method' => [
+            'electricity_payment_method'        => [
                 Rule::in(config('enums.buildings.electricity_payment_method'))
             ],
-            'private_ammeter_location' => 'max:255',
-            'water_meter_location' => 'required|max:255',
-            'water_meter_serial_number' => 'required|max:255',
-            'water_payment_method' => 'required|max:255',
-            'water_meter_reading_date' => 'required|date',
-            'gas_meter_location' => 'required|max:255',
-            'garbage_collection_location' => 'max:255',
-            'garbage_collection_time' => 'max:255',
+            'private_ammeter_location'      => 'max:255',
+            'water_meter_location'          => 'required|max:255',
+            'water_meter_serial_number'     => 'required|max:255',
+            'water_payment_method'          => 'required|max:255',
+            'water_meter_reading_date'      => 'required|date',
+            'gas_meter_location'            => 'required|max:255',
+            'garbage_collection_location'   => 'max:255',
+            'garbage_collection_time'       => 'max:255',
             'management_fee_payment_method' => 'max:255',
-            'management_fee_contact' => 'required|max:255',
-            'management_fee_contact_phone' => 'required|max:255',
-            'distribution_method' => 'max:255',
-            'administrative_number' => 'required|max:255',
-            'accounting_group' => 'max:255',
-            'rental_receipt' => 'max:255',
-            'commissioner_id' => 'exists:users,id',
-            'administrator_id' => 'exists:users,id',
-            'comment' => 'max:255'
+            'management_fee_contact'        => 'required|max:255',
+            'management_fee_contact_phone'  => 'required|max:255',
+            'distribution_method'           => 'max:255',
+            'administrative_number'         => 'required|max:255',
+            'accounting_group'              => 'max:255',
+            'rental_receipt'                => 'max:255',
+            'commissioner_id'               => 'exists:users,id',
+            'administrator_id'              => 'exists:users,id',
+            'comment'                       => 'max:255'
         ]);
 
         $building->update($validatedData);
@@ -270,8 +272,8 @@ class BuildingController extends Controller
 
         return view('buildings.electricity_payment_report', [
             'reportRows' => $reportRows,
-            'year' => $year,
-            'month' => $month,
+            'year'       => $year,
+            'month'      => $month,
         ]);
     }
 

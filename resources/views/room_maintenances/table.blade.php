@@ -1,8 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
-    if($layer == "active_contracts"){
-        $layer = "tenant_contracts";
-    }
+    $appendCreateParams = (function () use ($data) {
+        $routeName = request()->route()->getName();
+        switch ($routeName) {
+            case 'rooms.show':
+                return ['roomId' => $data['id'] ?? null];
+            default:
+                return [];
+        }
+    })();
 @endphp
 
 <div class="card">
@@ -16,12 +22,15 @@
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'rooms.create') }}">建立</a>
+        @if(Route::has(Str::camel($layer) . '.create'))
+            <a class="btn btn-sm btn-success my-3" href="{{ route( Str::camel($layer) . '.create', $appendCreateParams) }}">建立</a>
+        @endif
+
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}
         @if (empty($objects))
-            <h3>目前沒有資料</h3>
+            <h3>尚無紀錄</h3>
         @else
             <form data-target="#{{$tableId}}" data-toggle="datatable-query">
                 <div class="query-box">
@@ -33,7 +42,7 @@
             <table id="{{ $tableId}}" class="display table" style="width:100%">
                 <thead>
                     @php
-                        $model_name = ucfirst(Str::camel(Str::Singular($layer)));
+                        $model_name = ucfirst(Str::camel(substr($layer, 0, -1)));
                     @endphp
                     @foreach ( array_keys($objects[0]) as $field)
                         <th>@lang("model.{$model_name}.{$field}")</th>
@@ -50,9 +59,13 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=tenantContracts;keys;appliances;maintenances;roomMaintenances;landlordPayments;landlordOtherSubjects;documents">查看</a>
-                                <a class="btn btn-primary" href="{{ route( Str::camel(Str::plural($layer)) . '.edit', $object['id']) }}">編輯</a>
-                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}">刪除</a>
+                                <a
+                                class="btn btn-success"
+                                href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">
+                                    查看
+                                </a>
+                                <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
+                                <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
                             </td>
                         </tr>
                     @endforeach
@@ -61,7 +74,6 @@
         @endif
     </div>
 </div>
-
 <script>
     renderDataTable(["#{{$tableId}}"]);
 </script>

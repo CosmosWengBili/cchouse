@@ -109,6 +109,11 @@ class Room extends Model implements AuditableContract
         return $this->hasMany('App\Maintenance');
     }
 
+    public function roomMaintenances()
+    {
+        return $this->hasMany('App\RoomMaintenance');
+    }
+
     /**
      * Get all appliances of this room.
      */

@@ -2,17 +2,18 @@
 
 namespace App;
 
-use Eloquent as Model;
+use App\Traits\WithExtraInfo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class RoomMaintenance
  * @package App\Models
  * @version November 1, 2019, 4:42 pm CST
  *
- * @property \App\Models\Room room
+ * @property \App\Room room
  * @property integer room_id
  * @property string maintainer
  * @property string maintained_location
@@ -22,12 +23,13 @@ class RoomMaintenance extends Model implements AuditableContract
 {
     use AuditableTrait;
     use SoftDeletes;
+    use WithExtraInfo;
 
-    public $table = 'room_maintenances';
+    // public $table = 'room_maintenances';
 
     // public $timestamps = false;
 
-    protected $dates = ['deleted_at'];
+    protected $hidden = ['deleted_at'];
 
     protected $guarded = [];
 
@@ -69,5 +71,15 @@ class RoomMaintenance extends Model implements AuditableContract
     public function room()
     {
         return $this->belongsTo(\App\Room::class, 'room_id');
+    }
+
+    public function documents()
+    {
+        return $this->morphMany('App\Document', 'attachable');
+    }
+
+    public function pictures()
+    {
+        return $this->documents()->where('document_type', 'picture');
     }
 }

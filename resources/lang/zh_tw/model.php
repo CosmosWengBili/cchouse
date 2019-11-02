@@ -363,6 +363,17 @@ return [
         'created_at'                  => '建立時間',
         'updated_at'                  => '更新時間',
         'maintenances'                => '清潔維修',
+        'room_maintenances'           => '清潔維護',
+    ],
+    'RoomMaintenance' =>[
+        'id'                          => '編號',
+        'room_id' =>'房編號',
+        'maintainer' =>'清潔人員/廠商',
+        'maintained_location' =>'清潔位置',
+        'maintained_date' =>'清潔時間',
+        'created_at' => '建立時間',
+        'updated_at' => '更新時間',
+        'deleted_at' => '刪除時間',
     ],
     'TenantContract' => [
         'id'                                  => '編號',

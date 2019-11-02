@@ -63,8 +63,7 @@ class RoomController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'building_id' => 'required|exists:buildings,id',
-            'needs_decoration' => 'required|boolean',
-            // 'room_code' => 'required|max:255',
+            'room_code' => 'required',
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
@@ -169,10 +168,10 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'building_id' => 'required|exists:buildings,id',
-            'needs_decoration' => 'required|boolean',
-            // 'room_code' => 'required|max:255',
+            'room_code' => 'required',
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
@@ -198,7 +197,7 @@ class RoomController extends Controller
             'wifi_account' => 'required|max:255',
             'wifi_password' => 'required|max:255',
             'has_digital_tv' => 'required|boolean',
-            'comment' => 'max:255'
+            'comment' => 'max:255',
         ]);
 
         $validator->sometimes('management_fee', 'between:0,99.99', function ($input) {
@@ -213,10 +212,12 @@ class RoomController extends Controller
             'appliances.*.spec_code' => 'required',
             'appliances.*.maintenance_phone' => 'required',
             'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
-            'appliances.*.vendor' => 'required'
+            'appliances.*.vendor' => 'required',
         ]);
 
-        // dd($room, $validatedData, $validatedApplianceData['appliances']);
+        $validatedPictureData = $request->validate([
+            'documents.picture' => 'required|array|min:5',
+        ]);
 
         RoomService::update(
             $room,

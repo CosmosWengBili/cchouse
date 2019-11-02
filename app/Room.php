@@ -39,6 +39,20 @@ class Room extends Model implements AuditableContract
         'has_digital_tv' => 'boolean',
     ];
 
+    public function setRoomCodeAttribute($value)
+    {
+        $building = $this->building;
+        $room_code = 'B'.$building->building_code;
+
+        if ($this->room_layout == '公用') {
+            $room_code .= 'P'.$this->room_number;
+        } else {
+            $room_code .= 'G'.$this->room_number;
+        }
+
+        $this->attributes['room_code'] = $room_code;
+    }
+
     /**
      * Get the building that this room is in.
      */

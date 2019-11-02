@@ -32,19 +32,6 @@
                                         >
                                         </select>
                                     </td>
-                                    <td>@lang("model.Room.needs_decoration")</td>
-                                    <td>
-
-                                        <input type="hidden" value="0" name="needs_decoration"/>
-                                        <input
-                                            type="checkbox"
-                                            name="needs_decoration"
-                                            value="1"
-                                            {{ isset($data["needs_decoration"]) ? ($data['needs_decoration'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_code")</td>
                                     <td>
                                         <input
@@ -52,9 +39,11 @@
                                             type="text"
                                             name="room_code"
                                             value="{{ $data['room_code'] ?? '' }}"
-                                            disabled
+                                            readonly
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Room.virtual_account")</td>
                                     <td>
                                         <input
@@ -62,6 +51,15 @@
                                             type="text"
                                             name="virtual_account"
                                             value="{{ $data['virtual_account'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Room.room_layout")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="room_layout"
+                                            value="{{ $data['room_layout'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -85,17 +83,6 @@
                                             type="text"
                                             name="room_number"
                                             value="{{ $data['room_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Room.room_layout")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="room_layout"
-                                            value="{{ $data['room_layout'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>

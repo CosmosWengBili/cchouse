@@ -112,6 +112,27 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.Building.decoration_needed")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="decoration_needed"/>
+                                        <input
+                                            type="checkbox"
+                                            name="decoration_needed"
+                                            value="1"
+                                            {{ isset($data["decoration_needed"]) ? ($data['decoration_needed'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
+                                    <td>@lang("model.Building.decoration_price")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="number"
+                                            name="decoration_price"
+                                            value="{{ $data['decoration_price']}}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Building.tax_number")</td>
                                     <td>
                                         <input

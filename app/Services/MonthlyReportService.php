@@ -186,7 +186,7 @@ class MonthlyReportService
                 ->where('contract_end', '>', $start_date);
 
             // end section : details
-            if ($room->room_code === '公用') {
+            if ($room->room_layout === '公用') {
                 continue;
             }
 

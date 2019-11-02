@@ -14,16 +14,17 @@ $factory->define(Room::class, function (Faker $faker) {
         },
         'room_layout' => '',
         'room_number' => $faker->numberBetween(1, 100),
-        'room_code' => function (array $room) {
-            $room_code = 'B'.App\Building::find($room['building_id'])->building_code;//$room['room_number'];
-            if ($room['room_layout'] == '公區') {
-                $room_code .= 'P'.$room['room_number'];
-            } else {
-                $room_code .= 'G'.$room['room_number'];
-            }
+        // 'room_code' => function (array $room) {
+        //     $room_code = 'B'.App\Building::find($room['building_id'])->building_code;//$room['room_number'];
+        //     if ($room['room_layout'] == '公區') {
+        //         $room_code .= 'P'.$room['room_number'];
+        //     } else {
+        //         $room_code .= 'G'.$room['room_number'];
+        //     }
 
-            return $room_code;
-        },
+        //     return $room_code;
+        // },
+        'room_code' => '',
         'rent_actual' => $faker->numberBetween(5000, 10000),
         'management_fee_mode' => $management_fee_mode,
         'management_fee' => $management_fee_mode === '比例' ? $faker->randomFloat(1, 10) : $faker->numberBetween(100, 500),

@@ -12,7 +12,7 @@ integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw
                 <div>
                     <span class="d-inline-block mr-3">年度：{{ $year }}</span>
                     <span class="d-inline-block mr-3" >月度：{{ $month }} </span>
-                    <span class="d-inline-block mr-3">製表日：{{ $createdAt->format('Y/m/d') }}</span>
+                    <span class="d-inline-block mr-3">抄表日：{{ $ammeterReadDate ? $ammeterReadDate->format('Y/m/d') : '' }}</span>
                 </div>
                 @forelse($reportRows as $reportRow)
                     <div class="table-responsive my-3">

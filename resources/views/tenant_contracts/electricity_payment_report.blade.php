@@ -8,7 +8,7 @@ integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <h3>兆基物業管理 - 租客電費報表</h3>
+                <h3>兆基物業管理 - 房客電費報表</h3>
                 <div>
                     <span class="d-inline-block mr-3">年度：{{ $year }}</span>
                     <span class="d-inline-block mr-3" >月度：{{ $month }} </span>

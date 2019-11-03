@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\PayLog;
 use Carbon\Carbon;
 use App\Room;
 use App\Deposit;
@@ -160,6 +161,28 @@ class DepositController extends Controller
                     'income_date' => Carbon::today(),
                     'amount' => $validatedData['company_allocation_amount'] ?? $validatedData['deposit_confiscated_amount'],
                 ]);
+
+                $isManagedByCompany = $deposit->isManagedByCompany();
+                $companyAllocationAmount = $validatedData['company_allocation_amount'] ?? 0;
+                $confiscatedAmount = $validatedData['deposit_confiscated_amount'] ?? 0;
+                PayLog::create([
+                    'loggable_type' => Deposit::class,
+                    'loggable_id' =>  $deposit->id,
+                    'subject' => '訂金',
+                    'receipt_type' => '發票',
+                    'payment_type' => '租金雜費',
+                    'amount' => $companyAllocationAmount,
+                ]);
+                if ($isManagedByCompany && $confiscatedAmount - $companyAllocationAmount > 0) {
+                    PayLog::create([
+                        'loggable_type' => Deposit::class,
+                        'loggable_id' =>  $deposit->id,
+                        'subject' => '訂金(房東)',
+                        'receipt_type' => '收據',
+                        'payment_type' => '租金雜費',
+                        'amount' => $confiscatedAmount - $companyAllocationAmount,
+                    ]);
+                }
             }
             $deposit->update($validatedData);
             $deposit->room->update(['room_status' => '未出租']);

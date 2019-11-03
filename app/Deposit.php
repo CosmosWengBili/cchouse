@@ -58,4 +58,18 @@ class Deposit extends Model implements AuditableContract
     {
         return $this->morphToMany('App\Receipt', 'receiptable');
     }
+
+    // 是否為代管
+    public function isManagedByCompany() {
+        $contract = $this->tenantContract;
+        if (!$contract) return false;
+
+        $building = $contract->building;
+        if (!$building) return false;
+
+        $landlordContract = $building->activeContracts()->first();
+        if (!$landlordContract) return false;
+
+        return $landlordContract->commission_type == '代管';
+    }
 }

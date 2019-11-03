@@ -139,27 +139,14 @@ class DepositController extends Controller
         return response()->json(true);
     }
 
-    public function return(Request $request, Deposit $deposit){
+    public function close(Request $request, Deposit $deposit){
         $validatedData = $request->validate([
             "deposit_returned_amount" => 'required',
             "confiscated_or_returned_date" => 'required',
             "returned_method" => 'required',
             "returned_bank" => 'nullable',
             "returned_serial_number" => 'nullable',
-        ]);
-
-        DB::transaction(function () use ($deposit, $validatedData) {
-            $deposit->update($validatedData);
-            $deposit->room->update(['room_status' => '未出租']);
-        });
-
-        return redirect(route('deposits.index'));
-    }
-
-    public function confiscate(Request $request, Deposit $deposit){
-        $validatedData = $request->validate([
             "deposit_confiscated_amount" => 'required',
-            "confiscated_or_returned_date" => 'required',
             "company_allocation_amount" => 'nullable',
         ]);
 

@@ -50,8 +50,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::resource('audits', 'AuditController', ['only' => ['index', 'show']]);
             Route::resource('appliances', 'ApplianceController');
             Route::resource('maintenances', 'MaintenanceController');
-            Route::post('deposits/{deposit}/return', 'DepositController@return')->name('deposits.return');
-            Route::post('deposits/{deposit}/confiscate', 'DepositController@confiscate')->name('deposits.confiscate');
+            Route::post('deposits/{deposit}/close', 'DepositController@close')->name('deposits.close');
             Route::resource('deposits', 'DepositController');
             Route::resource('debtCollections', 'DebtCollectionController');
             Route::post('debtCollections/export_report', 'DebtCollectionController@exportReport')->name('debtCollections.export_report');

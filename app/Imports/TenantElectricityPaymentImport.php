@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Imports;
+
 use App\Room;
 use App\TenantElectricityPayment;
 use Carbon\Carbon;
@@ -26,7 +27,8 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
      * @return Model|null
      */
     public function __construct()
-    {$this->row = 1;
+    {
+        $this->row = 1;
     }
 
     public function model(array $row)
@@ -40,17 +42,17 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
 
         // 從 $buildingCode 和 $roomCode 取得 room
         $room = Room::join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                ->where('buildings.building_code', $buildingCode)
-                ->where('rooms.room_number', $roomNumber)
-                ->first();
-        if(is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的房間");
+            ->where('buildings.building_code', $buildingCode)
+            ->where('rooms.room_number', $roomNumber)
+            ->first();
+        if (is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的房間");
 
 
         $prev110 = $room->current_110v;
         $prev220 = $room->current_220v;
         $this110 = $row['本期 110v'];
         $this220 = $row['本期 220v'];
-        if( $this110 < $prev110 || $this220 < $prev220 ) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 電費資料有誤");
+        if ($this110 < $prev110 || $this220 < $prev220) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 電費資料有誤");
 
         try {
             $ammeterReadDate = Date::excelToDateTimeObject($row['抄表日']);
@@ -60,7 +62,7 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         $ammeterReadMonth = intval($ammeterReadDate->format('m'), 10);
 
         // 從 room 取得 contract
-        $contract =  $room->activeContracts()->first();
+        $contract = $room->activeContracts()->first();
         if (is_null($contract)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的租客合約");
 
         // 計算電費
@@ -97,7 +99,12 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         ];
 
         $this->row += 1;
-        return TenantElectricityPayment::create($data);
+        DB::transaction(function () use ($room, $this110, $this220, $data) {
+            $room->update(['current_110v' => $this110, 'current_220v' => $this220]);
+            TenantElectricityPayment::create($data);
+        });
+
+        return null;
     }
 
     /**

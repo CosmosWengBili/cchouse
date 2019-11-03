@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\PayLog;
+use App\TenantContract;
 use Carbon\Carbon;
 use App\Room;
 use App\Deposit;
@@ -189,6 +190,21 @@ class DepositController extends Controller
         });
 
         return redirect(route('deposits.index'));
+    }
+
+    // 轉履保
+    public function transform(Deposit $deposit) {
+        $contract = $deposit->tenantContract()->active()->first();
+        PayLog::create([
+            'loggable_type' => TenantContract::class,
+            'loggable_id' =>  $contract->id,
+            'subject' => '履約保證金',
+            'paid_at' => $deposit->deposit_collection_date,
+            'receipt_type' => '收據',
+            'payment_type' => '租金雜費',
+            'amount' => $deposit->invoicing_amount,
+        ]);
+        return response()->json(true);
     }
 
     private function validatedData(Request $request, bool $checkCollected = false) {

@@ -49,6 +49,7 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
+                                <button class="btn btn-info" data-type="轉履保" data-deposit-id="{{ $object['id'] }}">轉履保</button>
                                 <button class="btn btn-info" data-type="結案" data-invoicing-amount="{{ $object['invoicing_amount'] }}" data-deposit-id="{{ $object['id'] }}">結案</button>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContract;tenantContract.room;tenantContract.room.building">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
@@ -177,6 +178,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var $closeBtns = $('button[data-type="結案"]');
+        var $transformBtns = $('button[data-type="轉履保"]');
         var $modal = $('#deposit-modal');
         var $modalBody = $modal.find('.modal-body');
         var $returnContent = $modalBody.find('#return');
@@ -253,5 +255,18 @@
 
             submit.click();
         });
+
+        // 轉履保
+        $transformBtns.on('click', function () {
+            if(!confirm('確定轉履保')) { return; }
+            var depositId = $(this).data('deposit-id');
+            var path = '/deposits/' + depositId + '/transform';
+
+            $.post(path, {}, function (resp) {
+                alert('轉換成功');
+            })
+            .error(function() { alert('轉換失敗'); })
+
+        })
     });
 </script>

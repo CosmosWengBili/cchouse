@@ -5,6 +5,7 @@ use App\Room;
 use App\TenantElectricityPayment;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
@@ -33,12 +34,20 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         $now = Carbon::now();
         $buildingCode = $row['物件代碼'];
         $roomNumber = $row['房號'];
-        if (is_null($buildingCode) && is_null($roomCode)) { // empty row
+        if (is_null($buildingCode) && is_null($roomNumber)) { // empty row
             return null;
         }
 
-        $prev110 = $row['前期 110v'];
-        $prev220 = $row['前期 220v'];
+        // 從 $buildingCode 和 $roomCode 取得 room
+        $room = Room::join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                ->where('buildings.building_code', $buildingCode)
+                ->where('rooms.room_number', $roomNumber)
+                ->first();
+        if(is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的房間");
+
+
+        $prev110 = $room->current_110v;
+        $prev220 = $room->current_220v;
         $this110 = $row['本期 110v'];
         $this220 = $row['本期 220v'];
         if( $this110 < $prev110 || $this220 < $prev220 ) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 電費資料有誤");
@@ -49,13 +58,6 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
             throw new Exception("Row: {$this->row}, 無效的抄表日格式");
         }
         $ammeterReadMonth = intval($ammeterReadDate->format('m'), 10);
-
-        // 從 $buildingCode 和 $roomCode 取得 room
-        $room = Room::join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                    ->where('buildings.building_code', $buildingCode)
-                    ->where('rooms.room_number', $roomNumber)
-                    ->first();
-        if(is_null($room)) throw new Exception("物件代碼: {$buildingCode}, 房號: {$roomNumber} 找不到對應的房間");
 
         // 從 room 取得 contract
         $contract =  $room->activeContracts()->first();

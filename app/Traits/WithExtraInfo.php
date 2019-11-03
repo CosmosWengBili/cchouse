@@ -4,6 +4,7 @@ namespace App\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
+use function foo\func;
 
 trait WithExtraInfo {
     public function scopeWithExtraInfo(Builder $builder) {
@@ -54,15 +55,17 @@ trait WithExtraInfo {
                 break;
             case 'company_incomes':
                 return $builder
-                        ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.incomable_id")
-                        ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
-                        ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                        ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
+                        ->leftJoin('tenant_contract', function ($join) use ($tableName) {
+                            $join->on('tenant_contract.id', '=', "{$tableName}.incomable_id")
+                                 ->on("{$tableName}.incomable_type", '=', DB::raw("'App\TenantContract'"));
+                        })
+                        ->leftJoin('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                        ->leftJoin('buildings', 'buildings.id', '=', 'rooms.building_id')
+                        ->leftJoin('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
                         ->leftJoin('receipts', function (JoinClause $query) {
                             $query->on('company_incomes.id', '=', 'receipts.receiptable_id')
                                   ->where('receipts.receiptable_type', '=', 'App\CompanyIncome');
-                        })
-                        ->where('incomable_type', 'App\TenantContract');
+                        });
                 break;
             default:
                 return $builder;

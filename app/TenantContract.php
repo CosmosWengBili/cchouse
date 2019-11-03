@@ -231,7 +231,7 @@ class TenantContract extends Pivot implements AuditableContract
         ]);
 
         $shouldPay = $this->electricityPaymentAmount($year, $month);
-        $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+        $smsService->send($mobile, "兆基物業管理提醒您，本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
     }
 
     /**

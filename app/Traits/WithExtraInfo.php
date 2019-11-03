@@ -52,13 +52,6 @@ trait WithExtraInfo {
                     ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                     ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
                 break;
-            case 'deposits':
-                return $builder
-                    ->Leftjoin('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
-                    ->join('rooms', 'rooms.id', '=', "{$tableName}.room_id")
-                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
-                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
-                break;
             case 'company_incomes':
                 return $builder
                         ->join('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.incomable_id")
@@ -132,6 +125,16 @@ trait WithExtraInfo {
                     'GROUP_CONCAT(DISTINCT(receipts.invoice_serial_number)) AS invoice_serial_number',
                 ];
                 break;
+            case 'deposits':
+                $extraSelects = [
+                    'buildings.building_code AS building_code',
+                    'landlord_contracts.commission_type AS commission_type',
+                    'rooms.room_number AS room_number',
+                    'buildings.title AS building_title',
+                ];
+
+                break;
+
             default:
                 $extraSelects = [];
         }

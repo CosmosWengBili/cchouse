@@ -197,6 +197,8 @@ class DepositController extends Controller
                     if (!$checkCollected) return;
 
                     $room = Room::find($room_id);
+                    if (!$room) return;
+
                     $invalid = $room->deposits()->where('is_deposit_collected', true)->first();
                     if ($invalid) { $fail("房代碼 {$room->room_code} 已簽約"); }
                 },

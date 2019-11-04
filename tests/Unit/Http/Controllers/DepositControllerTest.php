@@ -49,36 +49,4 @@ class DepositControllerTest extends TestCase
 
         $this->assertEquals($msg, "房代碼 {$this->roomCode} 已簽約");
     }
-
-    /** @test */
-    public function it_change_room_status_after_returned() {
-        $depositId = DB::table('deposits')->insertGetId(['room_id' => $this->roomId, 'is_deposit_collected' => true]);
-        $deposit = Deposit::find($depositId);
-        $room = $deposit->room;
-        $room->update(['room_status' => '已出租']);
-
-        $this->post(route('deposits.return', ['deposit' => $depositId]), [
-            "deposit_returned_amount" => 100,
-            "confiscated_or_returned_date" => '2019-10-10',
-            "returned_method" => '匯款',
-            "returned_bank" => '台新銀行',
-        ]);
-
-        $this->assertEquals('未出租', $room->fresh()->room_status);
-    }
-
-    /** @test */
-    public function it_change_room_status_after_confiscated() {
-        $depositId = DB::table('deposits')->insertGetId(['room_id' => $this->roomId, 'is_deposit_collected' => true]);
-        $deposit = Deposit::find($depositId);
-        $room = $deposit->room;
-        $room->update(['room_status' => '已出租']);
-
-        $this->post(route('deposits.confiscate', ['deposit' => $depositId]), [
-            "deposit_confiscated_amount" => 1000,
-            "confiscated_or_returned_date" => '2019-10-10',
-        ]);
-
-        $this->assertEquals('未出租', $room->fresh()->room_status);
-    }
 }

@@ -13,12 +13,13 @@ class TenantElectricityPayment extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     protected $casts = [
         'is_charge_off_done' => 'boolean',
         'due_time' => 'date',
+        'ammeter_read_date' => 'date',
     ];
 
     /**

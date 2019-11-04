@@ -170,17 +170,6 @@ class TenantElectricityPaymentController extends Controller
         if ($type == 'charged') {
             $relation = $relation->where('rooms.electricity_virtual_account', '!=', '');
         }
-        /*
-            select * from `tenant_contract`
-            inner join `rooms` on `rooms`.`id` = `tenant_contract`.`room_id`
-            inner join `tenants` on `tenants`.`id` = `tenant_contract`.`tenant_id`
-            inner join `buildings` on `buildings`.`id` = `rooms`.`building_id`
-            inner join `landlord_contracts` on `landlord_contracts`.`building_id` = `rooms`.`building_id`
-            where `contract_end` > ?
-            and (`buildings`.`electricity_payment_method` = ? or `buildings`.`electricity_payment_method` = ?)
-            and `tenant_contract`.`deleted_at` is null
-            group by `tenant_contract`.`id`
-        */
 
         return $relation->where('contract_end', '>', Carbon::now())
                         ->where(function ($query) {

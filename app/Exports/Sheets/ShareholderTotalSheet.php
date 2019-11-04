@@ -56,7 +56,11 @@ class ShareholderTotalSheet implements WithHeadings, WithTitle, FromArray
             $rows = $this->excelData;
         }
 
+        usort($rows, function($a, $b) {
+            return $a[1] <=> $b[1];
+        });
         $rows = $this->appendCountTotal($rows);
+        
 
         return $rows;
     }

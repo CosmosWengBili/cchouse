@@ -233,6 +233,11 @@
                         <h3 class="mt-3">附屬設備</h3>
                         @include('rooms.appliance', ['appliances' => $data['appliances']])
 
+                        @if ($data['room_layout'] =='公區')
+                            <h3 class="mt-3">清潔紀錄</h3>
+                            @include('rooms.maintenance', ['maintenances' => $data['maintenances']])
+                        @endif
+
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
                 </div>

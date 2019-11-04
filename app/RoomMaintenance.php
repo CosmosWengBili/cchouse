@@ -34,6 +34,7 @@ class RoomMaintenance extends Model implements AuditableContract
     protected $guarded = [];
 
     protected $fillable = [
+        'id',
         'room_id',
         'maintainer',
         'maintained_location',
@@ -50,7 +51,7 @@ class RoomMaintenance extends Model implements AuditableContract
         'room_id' => 'integer',
         'maintainer' => 'string',
         'maintained_location' => 'string',
-        'maintained_date' => 'date'
+        'maintained_date' => 'date:Y-m-d'
     ];
 
     /**

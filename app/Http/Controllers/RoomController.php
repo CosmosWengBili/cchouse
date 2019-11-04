@@ -151,6 +151,7 @@ class RoomController extends Controller
         $data = $responseData->edit($room, 'rooms.update')->get();
         $data['data']['pictures'] = $room->pictures()->get();
         $data['data']['appliances'] = $room->appliances()->get();
+        $data['data']['maintenances'] = $room->roomMaintenances()->get()->toArray();
 
         if ($request->old()) {
             $data['data'] = array_merge($data['data'], $request->old());
@@ -215,14 +216,24 @@ class RoomController extends Controller
             'appliances.*.vendor' => 'required',
         ]);
 
-        $validatedPictureData = $request->validate([
-            'documents.picture' => 'required|array|min:5',
+        // dd($request->all());
+
+        $validatedMaintenanceData = $request->validate([
+            'maintenances' => 'nullable|array',
+            'maintenances.*.maintainer' => 'required',
+            'maintenances.*.maintained_location' => 'required',
+            'maintenances.*.maintained_date' => 'required',
         ]);
+
+        // $validatedPictureData = $request->validate([
+        //     'documents.picture' => 'required|array|min:5',
+        // ]);
 
         RoomService::update(
             $room,
             $validatedData,
-            $validatedApplianceData['appliances'] ?? []
+            $validatedApplianceData['appliances'] ?? [],
+            $validatedMaintenanceData['maintenances'] ?? []
         );
         $this->handleDocumentsUpload($room, ['picture']);
 

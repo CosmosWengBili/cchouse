@@ -46,7 +46,7 @@ class RoomService
      *
      * @return mixed
      */
-    public static function update($room, $data, $appliances)
+    public static function update($room, $data, $appliances, $maintenances = [])
     {
         $keepIds = array_map(function ($appliance) {
             return isset($appliance['id']) ? $appliance['id'] : null;
@@ -71,6 +71,31 @@ class RoomService
                 );
             }
         }
+
+        //
+        $keepIds = array_map(function ($maintenance) {
+            return isset($maintenance['id']) ? $maintenance['id'] : null;
+        }, $maintenances);
+        $keepIds = array_values(array_filter($keepIds));
+
+        $room
+            ->roomMaintenances()
+            ->whereNotIn('id', $keepIds)
+            ->delete();
+
+        $maintenances = array_map(function ($maintenance) {
+            if (isset($maintenance['id'])) {
+                $fill_data = $maintenance;
+                $maintenance = \App\RoomMaintenance::find($maintenance['id']);
+                $maintenance->fill($fill_data);
+            } else {
+                $maintenance =new \App\RoomMaintenance($maintenance);
+            }
+
+            return $maintenance;
+        }, $maintenances);
+
+        $room->roomMaintenances()->saveMany($maintenances);
 
         self::notifyMaintenanceBuilder($room, $data);
 

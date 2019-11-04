@@ -49,8 +49,8 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
-                                <button class="btn btn-info" data-type="退訂" data-deposit-id="{{ $object['id'] }}">退訂</button>
-                                <button class="btn btn-info" data-type="沒訂" data-invoicing-amount="{{ $object['invoicing_amount'] }}" data-deposit-id="{{ $object['id'] }}">沒訂</button>
+                                <button class="btn btn-info" data-type="轉履保" data-deposit-id="{{ $object['id'] }}">轉履保</button>
+                                <button class="btn btn-info" data-type="結案" data-invoicing-amount="{{ $object['invoicing_amount'] }}" data-deposit-id="{{ $object['id'] }}">結案</button>
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=tenantContract;tenantContract.room;tenantContract.room.building">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" data-fill-delete-reason="true" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
@@ -64,28 +64,41 @@
 </div>
 
 <div class="modal" tabindex="-1" id="deposit-modal" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">訂金操作</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary js-submit">送出</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            </div>
+            <form action="" method="post">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">結案</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="return-tab" data-toggle="tab" href="#return" role="tab" aria-controls="return" aria-selected="true">退訂</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="confiscate-tab" data-toggle="tab" href="#confiscate" role="tab" aria-controls="confiscate" aria-selected="false">沒訂</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="return" role="tabpanel" aria-labelledby="return-tab"></div>
+                        <div class="tab-pane fade" id="confiscate" role="tabpanel" aria-labelledby="confiscate-tab"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary js-submit">送出</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <template id="return-template">
-    <form class="js-return-form" action="" method="post">
-        @csrf
+    <div>
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">退訂金額</label>
             <div class="col">
@@ -121,11 +134,11 @@
             </div>
         </div>
         <input type="submit" class="d-none">
-    </form>
+    </div>
 </template>
 
 <template id="confiscate-template">
-    <form class="js-return-form" action="" method="post">
+    <div>
         @csrf
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">沒訂類型</label>
@@ -155,7 +168,7 @@
             </div>
         </div>
         <input type="submit" class="d-none">
-    </form>
+    </div>
 </template>
 
 <script>
@@ -164,24 +177,36 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var $returnBtns = $('button[data-type="退訂"]');
-        var $confiscatedBtns = $('button[data-type="沒訂"]');
+        var $closeBtns = $('button[data-type="結案"]');
+        var $transformBtns = $('button[data-type="轉履保"]');
         var $modal = $('#deposit-modal');
         var $modalBody = $modal.find('.modal-body');
+        var $returnContent = $modalBody.find('#return');
+        var $confiscateContent = $modalBody.find('#confiscate');
         var $returnTemplate = $('template#return-template').html();
         var $confiscateTemplate = $('template#confiscate-template').html();
+        var tmpAmount = '';
 
-        // 退訂
-        $returnBtns.on('click', function () {
+        $closeBtns.on('click', function () {
             var $target = $(this);
             var depositId = $target.data('deposit-id');
+            var invoicingAmount = $target.data('invoicing-amount');
+            tmpAmount = invoicingAmount;
 
-            $modalBody.html($returnTemplate);
-            var $form = $modalBody.find('form');
+            // initialize return form
+            $returnContent.html($returnTemplate);
 
-            $form.attr('action', '/deposits/' + depositId + '/return');
+            // Initialize confiscated form
+            $confiscateContent.html($confiscateTemplate);
+            var $form = $modal.find('form');
+            $form.find('input[name="deposit_confiscated_amount"]').val(invoicingAmount);
+
+            // set action
+            $form.attr('action', '/deposits/' + depositId + '/close');
+
             $modal.modal('show');
         });
+
         $modalBody.on('change', 'select[name="returned_method"]', function () {
             var method = $(this).val();
             var $serialNumRow = $modalBody.find('.js-returned-serial-number-row');
@@ -200,21 +225,6 @@
             }
         });
 
-        var tmpAmount = '';
-        // 沒定
-        $confiscatedBtns.on('click', function () {
-            var $target = $(this);
-            var depositId = $target.data('deposit-id');
-            var invoicingAmount = $target.data('invoicing-amount');
-            tmpAmount = invoicingAmount;
-
-            $modalBody.html($confiscateTemplate);
-            var $form = $modalBody.find('form');
-            $form.find('input[name="deposit_confiscated_amount"]').val(invoicingAmount);
-            $form.attr('action', '/deposits/' + depositId + '/confiscate');
-
-            $modal.modal('show');
-        });
         $modalBody.on('change', 'select[name="confiscate_type"]', function () {
             var method = $(this).val();
             var $companyAllocationAmountRow = $modalBody.find('.js-company-allocation-amount-row');
@@ -235,7 +245,28 @@
 
         $modal.find('.js-submit').on('click', function () {
             var submit = $modalBody.find('input[type="submit"]');
+            var returnedAmount = Number($modalBody.find('input[name="deposit_returned_amount"]').val());
+            var confiscatedAmount = Number($modalBody.find('input[name="deposit_confiscated_amount"]').val());
+            var invoicingAmount = Number(tmpAmount);
+            if (returnedAmount + confiscatedAmount !== invoicingAmount) {
+                alert('沒訂 + 退訂金額不等於收定金額(' + invoicingAmount +') ，請檢查後再送出。');
+                return;
+            }
+
             submit.click();
         });
+
+        // 轉履保
+        $transformBtns.on('click', function () {
+            if(!confirm('確定轉履保')) { return; }
+            var depositId = $(this).data('deposit-id');
+            var path = '/deposits/' + depositId + '/transform';
+
+            $.post(path, {}, function (resp) {
+                alert('轉換成功');
+            })
+            .error(function() { alert('轉換失敗'); })
+
+        })
     });
 </script>

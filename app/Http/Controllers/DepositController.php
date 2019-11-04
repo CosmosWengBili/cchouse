@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\PayLog;
 use App\TenantContract;
+use App\TenantPayment;
 use Carbon\Carbon;
 use App\Room;
 use App\Deposit;
@@ -195,9 +196,10 @@ class DepositController extends Controller
     // 轉履保
     public function transform(Deposit $deposit) {
         $contract = $deposit->tenantContract()->active()->first();
+        $payment =  $contract->tenantPayments()->where('subject', '履約保證金')->first();
         PayLog::create([
-            'loggable_type' => TenantContract::class,
-            'loggable_id' =>  $contract->id,
+            'loggable_type' => TenantPayment::class,
+            'loggable_id' =>  $payment->id,
             'subject' => '履約保證金',
             'paid_at' => $deposit->deposit_collection_date,
             'receipt_type' => '收據',

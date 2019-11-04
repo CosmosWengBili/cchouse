@@ -2,21 +2,22 @@
 
 namespace App\Notifications\Formatters;
 
-class TextNotifyFormatter extends BaseFormatter {
-
-    static function canFormat($notification): bool
+class TextNotifyFormatter extends BaseFormatter
+{
+    public static function canFormat($notification): bool
     {
         return $notification->type == 'App\Notifications\TextNotify' ||
-               $notification->type == 'App\Notifications\LandlordUpdated' ||
-               $notification->type == 'App\Notifications\LandlordContractDue' ;
+                $notification->type == 'App\Notifications\LandlordUpdated' ||
+                $notification->type == 'App\Notifications\LandlordContractDue' ||
+                $notification->type == 'App\Notifications\RoomHasChanged';
     }
 
-    function header(): string
+    public function header(): string
     {
         return '一般通知';
     }
 
-    function content(): string
+    public function content(): string
     {
         return $this->notification->data['content'];
     }

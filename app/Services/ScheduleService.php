@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\ReversalErrorCase;
 use App\KeyRequest;
 use Illuminate\Support\Collection;
@@ -62,16 +63,17 @@ class ScheduleService
                 'commission_end_date' => Carbon::today()->addMonth(6),
                 'commission_type' => '包租',
             ])
-            ->with(['commissioner','building:id,city,district,address','landlords:name'])
+            ->with(['commissioner', 'building:id,city,district,address', 'landlords:name'])
             ->get()
             ->each(function ($landlordContract) {
                 $landlordContract->commissioner->notify(
                     new LandlordContractDue($landlordContract)
                 );
-                $account_users =  User::whereHas("groups", function($q){
-                        $q->where("name", "帳務組"); })
+                $account_users =  User::whereHas('groups', function ($q) {
+                    $q->where('name', '帳務組');
+                })
                         ->get();
-                foreach( $account_users as $account_user ){
+                foreach ($account_users as $account_user) {
                     $account_user->notify(
                         new LandlordContractDue($landlordContract)
                     );
@@ -89,33 +91,12 @@ class ScheduleService
                 $landlordContract->building->rooms->each(function ($room) use (
                     $landlordContract
                 ) {
-                    $ratio = intval($landlordContract->adjust_ratio);
-                    $isRatioLTE100 = $ratio <= 100;
-
-                    if ($isRatioLTE100) {
-                        // 用 % 數調漲
-                        $room->rent_list_price = intval(
-                            round(
-                                ($room->rent_list_price * (100 + $landlordContract->adjust_ratio) ) / 100
-                            )
-                        );
-                    } else {
-                        // 直接將租金加上此值
-                        $room->rent_list_price = intval(
-                            round(
-                                $room->rent_list_price + $landlordContract->adjust_ratio
-                            )
-                        );
+                    if ($room->rent_reserve_price > $room->rent_actual) {
+                        $users = \App\User::group('管理組')->get();
+                        foreach ($users as $user) {
+                            $user->notify(new \App\Notifications\RoomHasChanged('PriceOverActual', $room));
+                        }
                     }
-
-                    $room->rent_landlord = intval(
-                        round(
-                            ($room->rent_landlord *
-                                (100 + $landlordContract->adjust_ratio)) /
-                                100
-                        )
-                    );
-                    $room->save();
                 });
             });
     }
@@ -125,10 +106,10 @@ class ScheduleService
         $landlord_names = Landlord::where(
             'birth',
             'like',
-            '%' . Carbon::today()->addWeek(2)->format('m-d') . '%'
+            '%'.Carbon::today()->addWeek(2)->format('m-d').'%'
         )->pluck('name')->toArray();
         foreach (User::all() as $key => $user) {
-            $user->notify(new TextNotify(implode(" ", $landlord_names)));
+            $user->notify(new TextNotify(implode(' ', $landlord_names)));
         }
     }
 
@@ -161,7 +142,7 @@ class ScheduleService
             $url = route('maintenances.show', [$maintenance->id]);
             $commissioner->notify(
                 new TextNotify(
-                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。" . '<a href="' . $url . '">點我</a>'
+                    "維修清潔單號：{$maintenance->id} 狀態超過 {$notifyRequiredDays} 天未更新，煩請抽空查看。".'<a href="'.$url.'">點我</a>'
                 )
             );
         }
@@ -169,7 +150,6 @@ class ScheduleService
 
     public function genarateDebtCollections()
     {
-
         $delay = SystemVariable::where('code', 'debt_collection_delay_days')->first('value');
         $delay = $delay ? intval($delay->value) : config('finance.debt_collection_delay_days');
         $notifyAt = Carbon::today()->subDays($delay);
@@ -194,7 +174,6 @@ class ScheduleService
 
     public static function setReceiptType()
     {
-
         // set receipt type for payment '租金'
         $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                                 ->where('commission_end_date', '>', Carbon::today())
@@ -205,28 +184,26 @@ class ScheduleService
         $endDate = Carbon::today()->endOfMonth();
 
         foreach ($landlordContracts as $landlordContract) {
-            
             $taxableCharterFee = $service->countTaxableCharterFee($landlordContract, Carbon::today()->year, Carbon::today()->month);
             $rooms = $landlordContract->building->normalRooms();
             $paidAmount = 0;
-            foreach( $rooms as $room ){
+            foreach ($rooms as $room) {
                 $tenantContracts = $room->activeContracts()->get();
-                foreach( $tenantContracts as $tenantContract){
-                    if(is_null($tenantContract)){}
-                    else{
-                        $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', True)
+                foreach ($tenantContracts as $tenantContract) {
+                    if (is_null($tenantContract)) {
+                    } else {
+                        $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', true)
                                                                 ->where('subject', '租金')
-                                                                ->whereBetween('due_time', [$startDate, $endDate]); 
-                        $is_legal_person = $tenantContract->tenant->is_legal_person;         
-                        if(!$is_legal_person){
+                                                                ->whereBetween('due_time', [$startDate, $endDate]);
+                        $is_legal_person = $tenantContract->tenant->is_legal_person;
+                        if (! $is_legal_person) {
                             $paidAmount += $rentPayments->sum('amount');
                         }
-                        foreach($rentPayments as $rentPayment){
-                            $rentPayment->payLogs->each(function($payLog) use($taxableCharterFee, $paidAmount, $is_legal_person){
-                                if( $taxableCharterFee < $paidAmount || $is_legal_person){
+                        foreach ($rentPayments as $rentPayment) {
+                            $rentPayment->payLogs->each(function ($payLog) use ($taxableCharterFee, $paidAmount, $is_legal_person) {
+                                if ($taxableCharterFee < $paidAmount || $is_legal_person) {
                                     $payLog->update(['receipt_type' => '發票']);
-                                }
-                                else{
+                                } else {
                                     $payLog->update(['receipt_type' => '收據']);
                                 }
                             });
@@ -237,10 +214,10 @@ class ScheduleService
         }
         // set receipt type for patment '電費' with commission type is '代管'
         $landlordContracts = $landlordContracts->where('commission_type', '代管');
-        foreach( $landlordContracts as $landlordContract ){
+        foreach ($landlordContracts as $landlordContract) {
             $rooms = $landlordContract->building->rooms;
-            foreach( $rooms as $room ){
-                foreach( $room->activeContracts as $tenantContract){
+            foreach ($rooms as $room) {
+                foreach ($room->activeContracts as $tenantContract) {
                     $paylogs = $tenantContract->payLogs()->where('payment_type', '電費')
                                                           ->where('receipt_type', '發票');
                     $paylogs->update(['receipt_type'=>'收據']);
@@ -273,7 +250,7 @@ class ScheduleService
             }
 
             // store to Redis each time
-            Redis::set('monthlyRepost:carry:' . $landlordContract->id, $revenue);
+            Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
         }
     }
     // public function anotherNotification($data) {
@@ -307,26 +284,26 @@ class ScheduleService
             // send to request user 借用人
             $keyRequest->requestUser->notify(
                 new TextNotify(
-                    "請更新鑰匙出借紀錄。"
+                    '請更新鑰匙出借紀錄。'
                 )
             );
 
             // send to holder 保管人
             User::find($keyRequest->key->keeper_id)->notify(
                 new TextNotify(
-                    "請更新鑰匙出借紀錄。"
+                    '請更新鑰匙出借紀錄。'
                 )
             );
         }
     }
     public function genarateCharterManagementFee()
-    {  
+    {
         $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
                                             ->where('commission_end_date', '>', Carbon::today())
                                             ->where('commission_type', '包租')
                                             ->get();
         foreach ($landlordContracts as $landlordContract) {
-            foreach( $landlordContract->building->normalRooms() as $room ){
+            foreach ($landlordContract->building->normalRooms() as $room) {
                 $income = 0;
                 if ($room->management_fee_mode == '比例') {
                     $income = intval(round($room->rent_actual * $room->management_fee / 100));
@@ -341,29 +318,27 @@ class ScheduleService
                     'incomable_type' => Room::class
                 ]);
             }
-
         }
     }
 
-    
     public function genarateDepositInterest()
-    {  
+    {
         $tenantContracts = TenantContract::active()
             ->with(['tenant', 'room'])
             ->get();
         $depositInterest = SystemVariable::where(
-                'code',
-                '=',
-                'depositRate'
+            'code',
+            '=',
+            'depositRate'
             )->first()->value;
         foreach ($tenantContracts as $tenantContract) {
-            if( $tenantContract->room->building->activeContracts()->commission_type == '代管' ){          
+            if ($tenantContract->room->building->activeContracts()->commission_type == '代管') {
                 continue;
             }
             CompanyIncome::create([
                 'subject' => '押金設算息',
                 'income_date' => Carbon::today(),
-                'amount' => round( $tenantContract->deposit_paid * $depositInterest),
+                'amount' => round($tenantContract->deposit_paid * $depositInterest),
                 'incomable_id' => $tenantContract->id,
                 'incomable_type' => TenantContract::class
             ]);

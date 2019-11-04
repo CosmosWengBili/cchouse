@@ -139,7 +139,16 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->hasMany(
             'App\TenantElectricityPayment',
             'tenant_contract_id'
-        );
+        )->select([
+            'tenant_electricity_payments.id', # 編號
+            'tenant_electricity_payments.tenant_contract_id', # 關聯資料編號
+            'tenant_electricity_payments.subject', # 科目
+            'tenant_electricity_payments.due_time', # 應繳時間
+            'tenant_electricity_payments.is_charge_off_done', # 是否沖銷
+            'tenant_electricity_payments.charge_off_date', # 沖銷日期
+            'tenant_electricity_payments.amount', # 費用,
+            'tenant_electricity_payments.*'
+        ]);
     }
 
     /**
@@ -222,7 +231,7 @@ class TenantContract extends Pivot implements AuditableContract
         ]);
 
         $shouldPay = $this->electricityPaymentAmount($year, $month);
-        $smsService->send($mobile, "本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
+        $smsService->send($mobile, "兆基物業管理提醒您，本期總應繳電費為: $shouldPay, 電費明細請參考: {$url}");
     }
 
     /**

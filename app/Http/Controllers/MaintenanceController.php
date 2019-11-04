@@ -89,7 +89,6 @@ class MaintenanceController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',
@@ -156,7 +155,6 @@ class MaintenanceController extends Controller
     public function update(Request $request, Maintenance $maintenance)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',

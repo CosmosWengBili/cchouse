@@ -40,7 +40,7 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
             return null;
         }
 
-        // 從 $buildingCode 和 $roomCode 取得 room
+        // 從 $buildingCode 和 $roomNumber 取得 room
         $room = Room::join('buildings', 'buildings.id', '=', 'rooms.building_id')
             ->where('buildings.building_code', $buildingCode)
             ->where('rooms.room_number', $roomNumber)

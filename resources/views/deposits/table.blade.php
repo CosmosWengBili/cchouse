@@ -102,19 +102,19 @@
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">退訂金額</label>
             <div class="col">
-                <input type="number" class="form-control" name="deposit_returned_amount" required>
+                <input type="number" class="form-control" name="deposit_returned_amount">
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">退訂日期</label>
             <div class="col">
-                <input type="date" class="form-control" name="confiscated_or_returned_date" required>
+                <input type="date" class="form-control" name="confiscated_or_returned_date">
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">退訂方式</label>
             <div class="col">
-                <select class="form-control" name="returned_method" required>
+                <select class="form-control" name="returned_method">
                     @foreach(config('enums.deposits.returned_method') as $value)
                         <option value="{{$value}}">{{$value}}</option>
                     @endforeach
@@ -124,13 +124,13 @@
         <div class="form-group row js-returned-serial-number-row">
             <label class="col-sm-3 col-form-label js-cash">退訂單號</label>
             <div class="col">
-                <input type="text" class="form-control" name="returned_serial_number" required>
+                <input type="text" class="form-control" name="returned_serial_number">
             </div>
         </div>
         <div class="form-group row js-returned-bank-row" style="display: none;">
             <label class="col-sm-3 col-form-label">退訂銀行</label>
             <div class="col">
-                <input type="text" class="form-control" name="returned_bank" disabled required>
+                <input type="text" class="form-control" name="returned_bank" disabled>
             </div>
         </div>
         <input type="submit" class="d-none">
@@ -152,19 +152,19 @@
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">沒定金額</label>
             <div class="col">
-                <input type="number" class="form-control" name="deposit_confiscated_amount" readonly required>
+                <input type="number" class="form-control" name="deposit_confiscated_amount">
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">沒定日期</label>
             <div class="col">
-                <input type="date" class="form-control" name="confiscated_or_returned_date" required>
+                <input type="date" class="form-control" name="confiscated_or_returned_date">
             </div>
         </div>
         <div class="form-group row js-company-allocation-amount-row" style="display: none;">
             <label class="col-sm-3 col-form-label">公司分配金額</label>
             <div class="col">
-                <input type="number" class="form-control" name="company_allocation_amount" required disabled>
+                <input type="number" class="form-control" name="company_allocation_amount" disabled>
             </div>
         </div>
         <input type="submit" class="d-none">
@@ -233,12 +233,10 @@
 
             if (method === '部分沒定') {
                 $companyAllocationAmountRow.show();
-                $amountInput.attr('readonly', false);
                 $allocationInput.attr('disabled', false);
             } else {
                 $companyAllocationAmountRow.hide();
                 $modalBody.find('input[name="deposit_confiscated_amount"]').val(tmpAmount);
-                $amountInput.attr('readonly', true);
                 $allocationInput.attr('disabled', true);
             }
         });

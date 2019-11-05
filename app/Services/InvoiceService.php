@@ -373,13 +373,13 @@ class InvoiceService
                 return '管理服務費(代收電費)';
             } elseif ($object['subject'] == '水雜費') {
                 return '管理服務費(代收水費)';
-            } elseif ($object['subject'] == '清潔費') {
-                return '管理服務費(預收清潔費)';
             } elseif ($object['subject'] == '租金') {
                 return '租金收入';
             } elseif ($object['subject'] == '設備扣款') {
                 return '違約金';
-            }elseif (
+            } elseif ($object['subject'] == '清潔費(公司)') {
+                return '管理服務費(預收清潔費)';
+            } elseif (
                 in_array($object['subject'], ['轉房費', '換約費', '滯納金'])
             ) {
                 return '行政手續費';

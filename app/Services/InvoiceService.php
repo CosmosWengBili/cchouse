@@ -230,44 +230,35 @@ class InvoiceService
 
         // Genenate maintenance data
         foreach ($maintenances as $maintenance) {
-            $landlords = $maintenance->tenantContract->room->building->landlordContracts->last()
-                ->landlords;
-            $initial_amount = $maintenance->price;
-            $per_amount = round($initial_amount / $landlords->count());
-            foreach ($landlords as $landlord_key => $landlord) {
-                $receipt = $maintenance->receipts()->first();
-                $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = $receipt['date'];
-                $data['invoice_item_name'] = '管理服務費(維修費)';
-                $data['amount'] = $per_amount;
+            $landlord = $maintenance->tenantContract->room->building->landlordContracts->last()
+                ->landlords->first();
+            $receipt = $maintenance->receipts()->first();
+            $data = $this->makeInvoiceMockData();
+            $data['invoice_date'] = $receipt['date'];
+            $data['invoice_item_name'] = '管理服務費(維修費)';
+            $data['amount'] = $maintenance->price;
 
-                // Set value for maping relative payment model
-                $data['data_table'] = __('general.' . $maintenance->getTable());
-                $data['data_table_class'] = $maintenance->getTable();  
-                $data['data_table_id'] = $maintenance->id;
-                $data['data_receipt_id'] = $receipt['id'];
+            // Set value for maping relative payment model
+            $data['data_table'] = __('general.' . $maintenance->getTable());
+            $data['data_table_class'] = $maintenance->getTable();  
+            $data['data_table_id'] = $maintenance->id;
+            $data['data_receipt_id'] = $receipt['id'];
 
-                if ($landlord->is_legal_person) {
-                    $data['company_number'] = $landlord->certificate_number;
-                    $data['company_name'] = $landlord->name;
-                }
-                $data['comment'] = $receipt['comment'];
-                $data['building_code'] = $maintenance->tenantContract->room->building->building_code;
-                $data['room_number'] = $maintenance->tenantContract->room->room_number;
-                $data['deposit_date'] = $maintenance->closed_date;
-                $data['actual_deposit_date'] = $maintenance->closed_date;
-                $data['invoice_collection_number'] = $landlord->invoice_collection_number;
-                $data['invoice_price'] = $per_amount;
-                $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
-
-                if( $landlord->id == $landlords->last()->id ){
-                    $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
-                    $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
-                }
-
-                array_push($this->global_data['landlord'], $data);
-                $this->invoice_count ++;
+            if ($landlord->is_legal_person) {
+                $data['company_number'] = $landlord->certificate_number;
+                $data['company_name'] = $landlord->name;
             }
+            $data['comment'] = $receipt['comment'];
+            $data['building_code'] = $maintenance->tenantContract->room->building->building_code;
+            $data['room_number'] = $maintenance->tenantContract->room->room_number;
+            $data['deposit_date'] = $maintenance->closed_date;
+            $data['actual_deposit_date'] = $maintenance->closed_date;
+            $data['invoice_collection_number'] = $landlord->invoice_collection_number;
+            $data['invoice_price'] = $maintenance->price;
+            $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
+
+            array_push($this->global_data['landlord'], $data);
+            $this->invoice_count ++;
         }
     }
     public function makeDeposits($start_date, $end_date)
@@ -330,44 +321,34 @@ class InvoiceService
 
         // Genenate landlord_other_subject data
         foreach ($landlord_other_subjects as $landlord_other_subject) {
-            $landlords = $landlord_other_subject->room->building->landlordContracts->last()->landlords;
-            $initial_amount = $landlord_other_subject->amount;
-            $per_amount = round($initial_amount / $landlords->count());
-            foreach ($landlords as $landlord_key => $landlord) {
-                $receipt = $landlord_other_subject->receipts()
-                                                ->where('receiver', $landlord->name)
-                                                ->first();
-                $data = $this->makeInvoiceMockData();
-                $data['invoice_date'] = $landlord_other_subject->receipts()->first()['date'];
-                $data['invoice_item_name'] = $landlord_other_subject->invoice_item_name;
-                $data['amount'] = $per_amount;
+            $landlord = $landlord_other_subject->room->building->landlordContracts->last()->landlords->first();
+            $receipt = $landlord_other_subject->receipts()->first();
+            $data = $this->makeInvoiceMockData();
+            $data['invoice_date'] = $landlord_other_subject->receipts()->first()['date'];
+            $data['invoice_item_name'] = $landlord_other_subject->invoice_item_name;
+            $data['amount'] = $landlord_other_subject->amount;
 
-                // Set value for maping relative payment model
-                $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
-                $data['data_table_class'] = $landlord_other_subject->getTable(); 
-                $data['data_table_id'] = $landlord_other_subject->id;
-                $data['data_receipt_id'] = $receipt['id'];
+            // Set value for maping relative payment model
+            $data['data_table'] =  __('general.' . $landlord_other_subject->getTable()); 
+            $data['data_table_class'] = $landlord_other_subject->getTable(); 
+            $data['data_table_id'] = $landlord_other_subject->id;
+            $data['data_receipt_id'] = $receipt['id'];
 
-                if ($landlord->is_legal_person) {
-                    $data['company_number'] = $landlord->certificate_number;
-                    $data['company_name'] = $landlord->name;
-                }
-                $data['building_code'] = $landlord_other_subject->room->building->building_code;
-                $data['room_number'] = $landlord_other_subject->room->room_number;
-                $data['deposit_date'] = $landlord_other_subject->expense_date;
-                $data['actual_deposit_date'] = $landlord_other_subject->expense_date;
-                $data['invoice_collection_number'] = $landlord->invoice_collection_number;
-                $data['invoice_price'] = $per_amount;
-                $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
-                $data['comment'] = $receipt['comment'];
-
-                if( $landlord->id == $landlords->last()->id ){
-                    $data['amount'] = $initial_amount - $per_amount*($landlords->count()-1);
-                    $data['invoice_price'] = $initial_amount - $per_amount*($landlords->count()-1);
-                }
-                array_push($this->global_data['landlord'], $data);
-                $this->invoice_count ++;
+            if ($landlord->is_legal_person) {
+                $data['company_number'] = $landlord->certificate_number;
+                $data['company_name'] = $landlord->name;
             }
+            $data['building_code'] = $landlord_other_subject->room->building->building_code;
+            $data['room_number'] = $landlord_other_subject->room->room_number;
+            $data['deposit_date'] = $landlord_other_subject->expense_date;
+            $data['actual_deposit_date'] = $landlord_other_subject->expense_date;
+            $data['invoice_collection_number'] = $landlord->invoice_collection_number;
+            $data['invoice_price'] = $landlord_other_subject->amount;
+            $data['invoice_serial_number'] = $receipt['invoice_serial_number'];
+            $data['comment'] = $receipt['comment'];
+
+            array_push($this->global_data['landlord'], $data);
+            $this->invoice_count ++;
         }
         
     }
@@ -471,14 +452,6 @@ class InvoiceService
                     $receipt->date = $receipt_row[$id]['invoice_date'];
                     $receipt->invoice_price = $receipt_row[$id]['invoice_price'];
                     $receipt->comment = $receipt_row[$id]['comment'];
-                    if( $class == "landlord_other_subjects" ){
-                        $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
-                        $receiped_landlord_names = $model->receipts->pluck('receiver');
-                        $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
-                    }
-                    else{
-                        $receipt->receiver = $this->fetchInvoiceReceiver($model);
-                    }
                     $model->receipts()->save($receipt);
                 }
                 else{
@@ -522,28 +495,5 @@ class InvoiceService
             return true;
         }
         return false;
-    }
-    
-    // fetch receiver info from model
-    public function fetchInvoiceReceiver($model){
-        switch (class_basename($model)) {
-            case 'ComanyIncome':
-                return $model->incomable->tenant->name;
-                break;
-            case 'PayLog':
-                return $model->tenantContract->tenant->name;
-                break;       
-            case 'Maintenance':
-                return $model->tenant->name;
-                break;
-            case 'TenantPayment':
-                return $model->tenantContract->tenant->name;
-                break;
-            case 'TenantElectricityPayment':
-                return $model->tenantContract->tenant->name;
-                break;
-            default:
-                break;
-        }
     }
 }

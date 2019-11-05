@@ -44,14 +44,6 @@ class InvoiceImport implements ToModel, WithHeadingRow
                 $receipt->date = $row['發票日期'];
                 $receipt->invoice_price = $row['發票金額'];
                 $receipt->comment = $row['備註'];
-                if( $row['資料來源(程式用)'] == "landlord_other_subjects" ){
-                    $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
-                    $receiped_landlord_names = $model->receipts->pluck('receiver');
-                    $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
-                }
-                else{
-                    $receipt->receiver = $service->fetchInvoiceReceiver($model);
-                }
                 $model->receipts()->save($receipt);
             }
             else{
@@ -65,9 +57,6 @@ class InvoiceImport implements ToModel, WithHeadingRow
                 $receipt->date = $row['發票日期'];
                 $receipt->invoice_price = $row['發票金額'];
                 $receipt->comment = $row['備註'];
-                if(isset($row['收取者'])){
-                  $receipt->receiver = $row['收取者'];
-                }
                 $receipt->save();
             }    
         }

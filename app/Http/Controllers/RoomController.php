@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
 use App\Room;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -38,12 +39,16 @@ class RoomController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $responseData = new FormDataResponser();
         $data = $responseData->create(Room::class, 'rooms.store')->get();
         $data['data']['pictures'] = [];
         $data['data']['appliances'] = [];
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('rooms.form', $data);
     }
@@ -56,10 +61,9 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'building_id' => 'required|exists:buildings,id',
-            'needs_decoration' => 'required|boolean',
-            'room_code' => 'required|max:255',
+            'room_code' => 'required',
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
@@ -68,37 +72,38 @@ class RoomController extends Controller
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout'))
+                // Rule::in(config('enums.rooms.room_layout'))
             ],
-            'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
             'room_count' => 'required|integer|digits_between:1,11',
             'bathroom_count' => 'required|integer|digits_between:1,11',
             'parking_count' => 'required|integer|digits_between:1,11',
-            'ammeter_reading_date' => 'required|date',
-            'rent_list_price' => 'required|integer|digits_between:1,11',
             'rent_reserve_price' => 'required|integer|digits_between:1,11',
-            'rent_landlord' => 'required|integer|digits_between:1,11',
             'rent_actual' => 'required|integer|digits_between:1,11',
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
                 Rule::in(config('enums.rooms.management_fee_mode'))
             ],
-            'management_fee' => 'required|numeric|between:0,99.99',
+            'management_fee' => 'required|numeric',
             'wifi_account' => 'required|max:255',
             'wifi_password' => 'required|max:255',
             'has_digital_tv' => 'required|boolean',
-            'comment' => 'required'
+            'comment' => 'max:255'
         ]);
+
+        $validator->sometimes('management_fee', 'between:0,99.99', function ($input) {
+            return $input->management_fee_mode == '比例';
+        });
+
+        $validatedData = $validator->validate();
 
         $validatedApplianceData = $request->validate([
             'appliances' => 'nullable|array',
             'appliances.*.subject' => 'required',
             'appliances.*.spec_code' => 'required',
             'appliances.*.maintenance_phone' => 'required',
-            'appliances.*.count' =>
-                'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
             'appliances.*.vendor' => 'required',
             'appliances.*.comment' => 'nullable',
         ]);
@@ -129,8 +134,8 @@ class RoomController extends Controller
         return view('rooms.show', $responseData->get());
     }
 
-    public function deposits(Room $room) {
-
+    public function deposits(Room $room)
+    {
         return response()->json($room->deposits()->get());
     }
 
@@ -140,12 +145,16 @@ class RoomController extends Controller
      * @param  \App\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function edit(Room $room)
+    public function edit(Request $request, Room $room)
     {
         $responseData = new FormDataResponser();
         $data = $responseData->edit($room, 'rooms.update')->get();
         $data['data']['pictures'] = $room->pictures()->get();
         $data['data']['appliances'] = $room->appliances()->get();
+        $data['data']['maintenances'] = $room->roomMaintenances()
+                                        ->with('pictures')
+                                        ->get()
+                                        ->toArray();
 
         return view('rooms.form', $data);
     }
@@ -159,10 +168,10 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
-        $validatedData = $request->validate([
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
             'building_id' => 'required|exists:buildings,id',
-            'needs_decoration' => 'required|boolean',
-            'room_code' => 'required|max:255',
+            'room_code' => 'required',
             'virtual_account' => 'required|max:255',
             'room_status' => [
                 'required',
@@ -171,44 +180,58 @@ class RoomController extends Controller
             'room_number' => 'required|max:255',
             'room_layout' => [
                 'required',
-                Rule::in(config('enums.rooms.room_layout'))
+                // Rule::in(config('enums.rooms.room_layout'))
             ],
-            'room_attribute' => 'required|max:255',
             'living_room_count' => 'required|integer|digits_between:1,11',
             'room_count' => 'required|integer|digits_between:1,11',
             'bathroom_count' => 'required|integer|digits_between:1,11',
             'parking_count' => 'required|integer|digits_between:1,11',
-            'ammeter_reading_date' => 'required|date',
-            'rent_list_price' => 'required|integer|digits_between:1,11',
             'rent_reserve_price' => 'required|integer|digits_between:1,11',
-            'rent_landlord' => 'required|integer|digits_between:1,11',
             'rent_actual' => 'required|integer|digits_between:1,11',
             'internet_form' => 'required|max:255',
             'management_fee_mode' => [
                 'required',
                 Rule::in(config('enums.rooms.management_fee_mode'))
             ],
-            'management_fee' => 'required|numeric|between:0,99.99',
+            'management_fee' => 'required|numeric',
             'wifi_account' => 'required|max:255',
             'wifi_password' => 'required|max:255',
             'has_digital_tv' => 'required|boolean',
-            'comment' => 'required'
+            'comment' => 'max:255',
         ]);
+
+        $validator->sometimes('management_fee', 'between:0,99.99', function ($input) {
+            return $input->management_fee_mode == '比例';
+        });
+
+        $validatedData = $validator->validate();
 
         $validatedApplianceData = $request->validate([
             'appliances' => 'nullable|array',
             'appliances.*.subject' => 'required',
             'appliances.*.spec_code' => 'required',
             'appliances.*.maintenance_phone' => 'required',
-            'appliances.*.count' =>
-                'required_with:appliances|integer|digits_between:1,11',
-            'appliances.*.vendor' => 'required'
+            'appliances.*.count' => 'required_with:appliances|integer|digits_between:1,11',
+            'appliances.*.vendor' => 'required',
+        ]);
+
+        $validatedMaintenanceData = $request->validate([
+            'maintenances' => 'nullable|array',
+            'maintenances.*.maintainer' => 'required',
+            'maintenances.*.maintained_location' => 'required',
+            'maintenances.*.maintained_date' => 'required',
+            // 'maintenances.*.picture' => 'nullable',
+        ]);
+
+        $validatedPictureData = $request->validate([
+            'documents.picture' => 'required|array|min:5',
         ]);
 
         RoomService::update(
             $room,
             $validatedData,
-            $validatedApplianceData['appliances'] ?? []
+            $validatedApplianceData['appliances'] ?? [],
+            $validatedMaintenanceData['maintenances'] ?? []
         );
         $this->handleDocumentsUpload($room, ['picture']);
 
@@ -224,6 +247,7 @@ class RoomController extends Controller
     public function destroy(Room $room)
     {
         $room->delete();
+
         return response()->json(true);
     }
 }

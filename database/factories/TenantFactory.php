@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Faker\Generator as Faker;
 
 $factory->define(Tenant::class, function (Faker $faker) {
+<<<<<<< HEAD
 
     return [
         'name' => $faker->word,
@@ -22,5 +23,12 @@ $factory->define(Tenant::class, function (Faker $faker) {
         'updated_at' => $faker->date('Y-m-d H:i:s'),
         'deleted_at' => $faker->date('Y-m-d H:i:s'),
         'birth' => $faker->word
+=======
+    $faker->addProvider(new \Faker\Provider\it_IT\Person($faker));
+
+    return [
+        'name'               => $faker->name,
+        'certificate_number' => $faker->taxId(),
+>>>>>>> r2_Management_team_requirement_by_Cosmos
     ];
 });

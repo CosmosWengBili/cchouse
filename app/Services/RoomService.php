@@ -35,6 +35,7 @@ class RoomService
 
         // link these appliances to the newly created room
         $room->appliances()->saveMany($new_appliances);
+
         return $room;
     }
 
@@ -45,7 +46,7 @@ class RoomService
      *
      * @return mixed
      */
-    public static function update($room, $data, $appliances)
+    public static function update($room, $data, $appliances, $maintenances = [])
     {
         $keepIds = array_map(function ($appliance) {
             return isset($appliance['id']) ? $appliance['id'] : null;
@@ -71,6 +72,33 @@ class RoomService
             }
         }
 
+        //
+        $keepIds = array_map(function ($maintenance) {
+            return isset($maintenance['id']) ? $maintenance['id'] : null;
+        }, $maintenances);
+        $keepIds = array_values(array_filter($keepIds));
+
+        $room
+            ->roomMaintenances()
+            ->whereNotIn('id', $keepIds)
+            ->delete();
+
+        $maintenances = array_map(function ($maintenance) use ($room) {
+            $maintenance['room_id'] = $room->id;
+            $fill_data = $maintenance;
+            if (isset($maintenance['id'])) {
+                $maintenance = \App\RoomMaintenance::find($maintenance['id']);
+                $maintenance->fill($fill_data);
+            } else {
+                $maintenance = new \App\RoomMaintenance($maintenance);
+                $maintenance->save();
+            }
+
+            return $maintenance;
+        }, $maintenances);
+
+        $maintenances = $room->roomMaintenances()->saveMany($maintenances);
+
         self::notifyMaintenanceBuilder($room, $data);
 
         return $room->update($data);
@@ -91,12 +119,12 @@ class RoomService
                 ->get();
 
             if (collect($maintenances)->count() > 0) {
-                collect($maintenances)->each(function($maintenance, $key) use ($room, $data) {
+                collect($maintenances)->each(function ($maintenance, $key) use ($room, $data) {
                     /** @var User $builder */
-                    $builder = User::find($maintenance->commissioner_id)->first();
+                    $builder = User::find($maintenance->commissioner_id);
                     $builder->notify(
                         new TextNotify(
-                            "房代碼".$room->room_code."狀態已從" . $room->room_status . "改變成" . $data['room_status']
+                            '房代碼'.$room->room_code.'狀態已從'.$room->room_status.'改變成'.$data['room_status']
                         )
                     );
                 });
@@ -108,7 +136,7 @@ class RoomService
     public static function makeEmptyRoom()
     {
         return Room::make([
-            'room_code' => '公用'
+            'room_layout' => '公用'
         ]);
     }
 

@@ -7,6 +7,7 @@ return [
     'LandlordPayment'=> [],
     'Building' => [],
     'Room' => [],
+    'RoomMaintenance' => [],
     'Appliance' => [],
     'Maintenance' => [],
     'Key' => [],

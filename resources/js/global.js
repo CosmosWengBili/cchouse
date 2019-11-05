@@ -191,7 +191,7 @@ window._ = require('lodash');
  */
 window.setDefaultDateAsToday = function () {
     document.querySelectorAll('input[type=date].set-date').forEach(function (element, index) {
-        console.log(element);
+        // console.log(element);
         const today = (new Date()).toISOString().slice(0,10).replace(/-/g,"-");
         element.value = element.dataset['setdate'] || today;
     })

@@ -50,7 +50,7 @@
                                 <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                             @endforeach
                             <td>
-                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=tenantContracts;keys;appliances;landlordPayments;landlordOtherSubjects;documents">查看</a>
+                                <a class="btn btn-success" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}?with=tenantContracts;keys;appliances;maintenances;roomMaintenances;landlordPayments;landlordOtherSubjects;documents">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel(Str::plural($layer)) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel(Str::plural($layer)) . '.show', $object['id']) }}">刪除</a>
                             </td>

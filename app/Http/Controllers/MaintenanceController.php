@@ -42,8 +42,8 @@ class MaintenanceController extends Controller
         $maintenances = $this->getMaintenancesByGroup();
         foreach ($maintenances as $maintenance) {
             $status = $maintenance->status;
-            if (!isset($groupedMaintances[$status])) {
-                $groupedMaintances[$status] = [];
+            if (! isset($groupedMaintenances[$status])) {
+                $groupedMaintenances[$status] = [];
             }
 
             $groupedMaintenances[$status][] = $maintenance->toArray();
@@ -64,10 +64,6 @@ class MaintenanceController extends Controller
         $room = isset($request->prefill['rooms'])
             ? Room::find($request->prefill['rooms'])
             : null;
-        $tenant_contract_id =
-            $room && !$room->activeContracts->isEmpty()
-                ? $room->activeContracts()->first()->id
-                : null;
 
         $responseData = new FormDataResponser();
         $data = $responseData
@@ -76,7 +72,7 @@ class MaintenanceController extends Controller
         $data['data']['pictures'] = [];
 
         return view('maintenances.form', $data)->with([
-            'tenant_contract_id' => $tenant_contract_id
+            'room' => $room
         ]);
     }
 
@@ -89,7 +85,7 @@ class MaintenanceController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
@@ -100,9 +96,9 @@ class MaintenanceController extends Controller
 
         $maintenance = Maintenance::create($validatedData);
 
-        $room = TenantContract::find($validatedData['tenant_contract_id'])->room;
+        $room = Room::find($validatedData['room_id']);
         // update room status if needed
-        $this->updateRoomStatusIfNeeded($room, $validatedData['tenant_contract_id'], $validatedData['incident_type']);
+        $this->updateRoomStatusIfNeeded($room, $validatedData['incident_type']);
 
         $this->handleDocumentsUpload($maintenance, ['picture']);
 
@@ -138,6 +134,10 @@ class MaintenanceController extends Controller
         $data = $responseData->edit($maintenance, 'maintenances.update')->get();
         $data['data']['pictures'] = $maintenance->pictures()->get();
 
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         return view('maintenances.form', $data);
     }
 
@@ -151,12 +151,12 @@ class MaintenanceController extends Controller
     public function update(Request $request, Maintenance $maintenance)
     {
         $validatedData = $request->validate([
-            'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'room_id' => 'required|exists:rooms,id',
             'reported_at' => 'required|date',
             'commissioner_id' => 'sometimes|exists:users,id',
             'service_comment' => 'required',
-            'incident_type' => 'required|max:255',
-            'work_type' => 'required|max:255',
+            // 'incident_type' => 'required|max:255',
+            // 'work_type' => 'required|max:255',
             'incident_details' => 'required',
 
             'closed_comment' => 'nullable',
@@ -178,9 +178,9 @@ class MaintenanceController extends Controller
             'is_printed' => 'required',
         ]);
         $this->handleDocumentsUpload($maintenance, ['picture']);
-        
+
         $result = InvoiceService::compareReceipt($maintenance, $validatedData);
-        if(!$result){
+        if (! $result) {
             $maintenance->update($validatedData);
         }
 
@@ -244,25 +244,22 @@ class MaintenanceController extends Controller
      */
     public function showRecord($id)
     {
-        $room = Maintenance::find($id)->tenantContract->room;
-        $records = [];
-        $columns = array_map(function ($column) { return "maintenances.{$column}"; }, $this->whitelist('maintenances'));
+        $room = Maintenance::find($id)->room;
+
+        $columns = array_map(function ($column) {
+            return "maintenances.{$column}";
+        }, $this->whitelist('maintenances'));
         $selectColumns = array_merge($columns, Maintenance::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
 
         $threeMonthsAgo = Carbon::now()->subMonth(3);
-        foreach ($room->tenantContracts as $contractKey => $contract) {
-            $records = array_merge(
-                $records,
-                $contract->maintenances()
-                    ->withExtraInfo()
-                    ->select($selectStr)
-                    ->where('payment_request_date', '>', $threeMonthsAgo)
-                    ->where('status', '案件完成')
-                    ->get()
-                    ->toArray()
-            );
-        }
+        $records = $room->maintenances()
+                            ->withExtraInfo()
+                            ->select($selectStr)
+                            ->where('payment_request_date', '>', $threeMonthsAgo)
+                            ->where('status', '案件完成')
+                            ->get()
+                            ->toArray();
 
         return response()->json($records);
     }
@@ -277,11 +274,16 @@ class MaintenanceController extends Controller
      */
     public function checkHasSameWorkType(Request $request)
     {
-        $tenant_contract_id = $request->input('tenant_contract_id');
+        $request->validate([
+            'room_id' => 'required',
+            'work_type' => 'required',
+        ]);
+
+        $room_id = $request->input('room_id');
         $work_type = $request->input('work_type');
         $threeMonthsAgo = Carbon::now()->subMonth(3);
 
-        $maintenance = Maintenance::where('tenant_contract_id', $tenant_contract_id)
+        $maintenance = Maintenance::where('room_id', $room_id)
             ->where('payment_request_date', '>', $threeMonthsAgo)
             ->where('work_type', $work_type)
             ->first();
@@ -364,7 +366,8 @@ class MaintenanceController extends Controller
     private function createCompanyIncome($maintenance): void
     {
         $companyIncome = new CompanyIncome();
-        $companyIncome->tenant_contract_id = $maintenance->tenant_contract_id;
+        $companyIncome->incomable_id = $maintenance->id;
+        $companyIncome->incomable_type = get_class($maintenance);
         $companyIncome->subject = "維修清潔編號: {$maintenance->id}";
         $companyIncome->income_date = Carbon::now();
         $companyIncome->amount = $maintenance->incomeAmount();
@@ -379,9 +382,7 @@ class MaintenanceController extends Controller
     private function createLandlordPayment($maintenance): void
     {
         $landlordPayment = new LandlordPayment();
-        $landlordPayment->room_id = $maintenance
-            ->tenantContract()
-            ->first()->room_id;
+        $landlordPayment->room_id = $maintenance->room_id;
         $landlordPayment->collection_date = Carbon::now();
         $landlordPayment->billing_vendor = 'CCHOUSE';
         $landlordPayment->bill_serial_number =
@@ -393,9 +394,9 @@ class MaintenanceController extends Controller
         $landlordPayment->save();
     }
 
-    private function updateRoomStatusIfNeeded($room, $tenant_contract_id, $incident_type)
+    private function updateRoomStatusIfNeeded($room, $incident_type)
     {
-        if (! is_null($tenant_contract_id) && ! is_null($incident_type)) {
+        if (! is_null($incident_type)) {
             if ($room->room_status === '待出租') {
                 $room->room_status = $incident_type === '清潔'
                     ? '空屋清潔'

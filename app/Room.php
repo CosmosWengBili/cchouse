@@ -39,6 +39,20 @@ class Room extends Model implements AuditableContract
         'has_digital_tv' => 'boolean',
     ];
 
+    public function setRoomCodeAttribute($value)
+    {
+        $building = $this->building;
+        $room_code = 'B'.$building->building_code;
+
+        if ($this->room_layout == '公用') {
+            $room_code .= 'P'.$this->room_number;
+        } else {
+            $room_code .= 'G'.$this->room_number;
+        }
+
+        $this->attributes['room_code'] = $room_code;
+    }
+
     /**
      * Get the building that this room is in.
      */
@@ -88,6 +102,19 @@ class Room extends Model implements AuditableContract
     }
 
     /**
+     * Get all maintenances of this room.
+     */
+    public function maintenances()
+    {
+        return $this->hasMany('App\Maintenance');
+    }
+
+    public function roomMaintenances()
+    {
+        return $this->hasMany('App\RoomMaintenance');
+    }
+
+    /**
      * Get all appliances of this room.
      */
     public function appliances()
@@ -128,7 +155,8 @@ class Room extends Model implements AuditableContract
         return $this->hasMany('App\LandlordOtherSubject');
     }
 
-    public function tenantElectricityPayments() {
+    public function tenantElectricityPayments()
+    {
         return $this->hasManyThrough(
             'App\TenantElectricityPayment',
             'App\TenantContract',
@@ -139,19 +167,20 @@ class Room extends Model implements AuditableContract
         );
     }
 
-    public function buildElectricityPaymentData(int $year, int $month) {
+    public function buildElectricityPaymentData(int $year, int $month)
+    {
         $thisMonth = new Carbon("$year-$month-1");
         $range = [$thisMonth->copy()->startOfMonth(), $thisMonth->copy()->endOfMonth()];
         $result = [
-            "上期 110v 起" => 'N/A',
-            "上期 220v 起" => 'N/A',
-            "本期 110v 結" => 'N/A',
-            "本期 220v 結" => 'N/A',
-            "元 / 度" => 'N/A',
-            "用電金額" => 'N/A',
-            "前期電費欠額" => 'N/A',
-            "本期應付金額" => 'N/A',
-            "房號" => $this->room_number,
+            '上期 110v 起' => 'N/A',
+            '上期 220v 起' => 'N/A',
+            '本期 110v 結' => 'N/A',
+            '本期 220v 結' => 'N/A',
+            '元 / 度' => 'N/A',
+            '用電金額' => 'N/A',
+            '前期電費欠額' => 'N/A',
+            '本期應付金額' => 'N/A',
+            '房號' => $this->room_number,
         ];
 
         $tenantElectricityPayment = $this->tenantElectricityPayments()
@@ -160,7 +189,8 @@ class Room extends Model implements AuditableContract
         if ($tenantElectricityPayment) {
             $result['上期 110v 起'] = $tenantElectricityPayment['110v_start_degree'];
             $result['上期 220v 起'] = $tenantElectricityPayment['220v_start_degree'];
-            $result['本期 110v 結'] = $tenantElectricityPayment['110v_end_degree'];;
+            $result['本期 110v 結'] = $tenantElectricityPayment['110v_end_degree'];
+            ;
             $result['本期 220v 結'] = $tenantElectricityPayment['220v_end_degree'];
             if (in_array($month, [7, 8, 9, 10])) {
                 $result['元 / 度'] = $tenantElectricityPayment->tenantContract()->first()['electricity_price_per_degree_summer'];

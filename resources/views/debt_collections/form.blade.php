@@ -1,3 +1,7 @@
+@php
+    $tenantContractId = Request::get('tenantContractId')?? $data['tenant_contract_id'] ?? null;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -24,7 +28,7 @@
                                             class="form-control form-control-sm"
                                             type="text"
                                             name="tenant_contract_id"
-                                            value="{{ isset($data["tenant_contract_id"]) ? $data['tenant_contract_id'] : '' }}"
+                                            value="{{ $tenantContractId }}"
                                         />
                                     </td>
                                     <td>@lang("model.DebtCollection.status")</td>

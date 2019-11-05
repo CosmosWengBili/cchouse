@@ -5,7 +5,6 @@
  * Date: 2019-09-25
  * Time: 10:21
  */
-
 if (! function_exists('getClassNameWithoutNamespace')) {
     /**
      * Support you to get a class name of an instance without namespace.
@@ -18,7 +17,8 @@ if (! function_exists('getClassNameWithoutNamespace')) {
      * @return string
      * @throws ReflectionException
      */
-    function getClassNameWithoutNamespace($instance) {
+    function getClassNameWithoutNamespace($instance)
+    {
         return (new \ReflectionClass($instance))->getShortName();
     }
 }
@@ -30,7 +30,8 @@ if (! function_exists('getLayer')) {
      *
      * @return string
      */
-    function getLayer(string $relation) {
+    function getLayer(string $relation)
+    {
         $layer = explode('.', $relation);
         $layer = \Illuminate\Support\Str::snake(last($layer));
         $layer = \Illuminate\Support\Str::plural($layer);
@@ -46,15 +47,41 @@ if (! function_exists('makeArrayToQueryString')) {
      *
      * @return string
      */
-    function makeArrayToQueryString(array $qs=[]) {
+    function makeArrayToQueryString(array $qs=[])
+    {
         if (! empty($qs)) {
             $tmp = collect($qs)->map(function ($value, $key) {
                 return "{$key}={$value}";
             })
                 ->toArray();
+
             return implode('&', $tmp);
         }
 
         return '';
+    }
+}
+
+if (! function_exists('makeDateFormatByKeys')) {
+    /**
+     *
+     * @param array $qs 要轉成query string 的陣列
+     *
+     * @return string
+     */
+    function makeDateFormatByKeys(array $array = [], array $keys = [], $format ='Y-m-d')
+    {
+        if (
+            $array && is_array($array) &&
+            $keys && is_array($keys)
+        ) {
+            foreach ($keys as $key) {
+                if (isset($array[$key])) {
+                    $array[$key] = \Carbon\Carbon::parse($array[$key])->format($format);
+                }
+            }
+        }
+
+        return $array;
     }
 }

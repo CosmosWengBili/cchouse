@@ -13,7 +13,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Validation\Rule;
 
 use App\TenantContract;
-use App\Building;
+use App\TenantPayment;
 use App\Traits\Controllers\HandleDocumentsUpload;
 use App\Services\TenantContractService;
 use App\Responser\NestedRelationResponser;
@@ -37,9 +37,9 @@ class TenantContractController extends Controller
      */
     public function index(Request $request)
     {
-        $responseData = new NestedRelationResponser();
+        $responseData  = new NestedRelationResponser();
         $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
-        $selectStr = DB::raw(join(', ', $selectColumns));
+        $selectStr     = DB::raw(join(', ', $selectColumns));
 
         $responseData
             ->index(
@@ -58,15 +58,18 @@ class TenantContractController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function create()
+    public function create(Request $request)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData
+        $data         = $responseData
             ->create(TenantContract::class, 'tenantContracts.store')
             ->get();
         $data['data']['original_files'] = [];
-        $data['data']['carrier_files'] = [];
+        $data['data']['carrier_files']  = [];
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
 
         return view('tenant_contracts.form', $data);
     }
@@ -80,56 +83,53 @@ class TenantContractController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'tenant_id' => 'required|exists:tenants,id',
+            'room_id'                => 'required|exists:rooms,id',
+            'tenant_id'              => 'required|exists:tenants,id',
             'contract_serial_number' => 'required|max:255',
-            'set_other_rights' => 'required|boolean',
-            'other_rights' => 'required|max:255',
-            'sealed_registered' => 'required|boolean',
-            'car_parking_floor' => 'required|max:255',
-            'car_parking_type' => [
+            'set_other_rights'       => 'required|boolean',
+            'other_rights'           => 'required|max:255',
+            'sealed_registered'      => 'required|boolean',
+            'car_parking_floor'      => 'required|max:255',
+            'car_parking_type'       => [
                 'required',
                 Rule::in(config('enums.tenant_contract.car_parking_type'))
             ],
-            'car_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_floor' => 'required|max:255',
+            'car_parking_space_number'        => 'required|max:255',
+            'motorcycle_parking_floor'        => 'required|max:255',
             'motorcycle_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_count' =>
-                'required|integer|digits_between:1,11',
-            'effective' => 'required|boolean',
-            'contract_start' => 'required|date',
-            'contract_end' => 'required|date',
-            'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|between:1,31',
-            'deposit' => 'required|integer|digits_between:1,11',
-            'deposit_paid' => 'required|integer|digits_between:1,11',
-            'electricity_calculate_method' => [
+            'motorcycle_parking_count'        => 'required|integer|digits_between:1,11',
+            'contract_start'                  => 'required|date',
+            'contract_end'                    => 'required|date',
+            'rent'                            => 'required|integer|digits_between:1,11',
+            'rent_pay_day'                    => 'required|integer|between:1,31',
+            'deposit'                         => 'required|integer|digits_between:1,11',
+            'deposit_paid'                    => 'required|integer|digits_between:1,11',
+            'electricity_calculate_method'    => [
                 'required',
                 Rule::in(
                     config('enums.tenant_contract.electricity_calculate_method')
                 )
             ],
-            'electricity_price_per_degree' =>
-                'required|numeric|between:0,99.99',
-            'electricity_price_per_degree_summer' =>
-                'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
-            '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
-            'invoice_collection_method' => [
+            'electricity_price_per_degree'        => 'required|numeric|between:0,99.99',
+            'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
+            '110v_start_degree'                   => 'required|integer|digits_between:1,11',
+            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11',
+            '110v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:110v_start_degree',
+            '220v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:220v_end_degree',
+            'invoice_collection_method'           => [
                 'required',
                 Rule::in(
                     config('enums.tenant_contract.invoice_collection_method')
                 )
             ],
             'invoice_collection_number' => 'nullable',
-            'commissioner_id' => 'exists:users,id',
-            'comment' => 'present',
+            'commissioner_id'           => 'exists:users,id',
+            'comment'                   => 'present',
+            'overdue_fine'              => 'required'
         ]);
 
         $validatedPaymentData = $request->validate([
-            'payments' => 'nullable|array',
+            'payments'           => 'nullable|array',
             'payments.*.subject' => [
                 'required_with:payments',
                 Rule::in(config('enums.tenant_payments.subject'))
@@ -138,22 +138,60 @@ class TenantContractController extends Controller
                 'required_with:payments',
                 Rule::in(config('enums.tenant_payments.period'))
             ],
-            'payments.*.amount' =>
-                'required_with:payments|integer|digits_between:1,11',
+            'payments.*.amount'       => 'required_with:payments|integer|digits_between:1,11',
             'payments.*.collected_by' => [
                 'required_with:payments',
                 Rule::in(config('enums.tenant_payments.collected_by'))
             ]
         ]);
 
+        $deposit =  $validatedData['deposit'];
+        $payments =  $validatedPaymentData['payments'] ?? [];
+
+        // default payment option
+        $payment = [
+            'subject'      => '履約保證金',
+            'period'       => '次',
+            'amount'       => $deposit,
+            'collected_by' => '房東'
+        ];
+
+        // extend
+        if ($request->get('old_tenant_contract_id', 0) > 0) {
+            $tenantPayment = TenantPayment::where('tenant_contract_id', $request->get('old_tenant_contract_id'))
+                                ->where('subject', '履約保證金')
+                                ->orderBy('id', 'DESC')
+                                ->first();
+
+            if ($tenantPayment) {
+                $diff_deposit = $deposit - $tenantPayment->amount;
+                if ($diff_deposit !== 0) {
+                    $payment['amount']             = $diff_deposit;
+                    $payment['is_charge_off_done'] = true;
+                    $payment['charge_off_date'] = Carbon::now();
+                }
+            }
+        }
+
+        $payments[] = $payment;
+
         $tenantContract = $this->tenantContractService->create(
             $validatedData,
-            $validatedPaymentData['payments']
+            $payments
         );
+
+        // old deposit relate new payment
+        if (isset($tenantPayment)) {
+            $tenantPayment->is_charge_off_done = true;
+            $tenantContract->tenantPayments()->save($tenantPayment);
+            $tenantPayment->save();
+        }
+
         $this->handleDocumentsUpload($tenantContract, [
             'original_file',
             'carrier_file'
         ]);
+
         return redirect($request->_redirect);
     }
 
@@ -172,7 +210,11 @@ class TenantContractController extends Controller
             ->relations($request->withNested);
         $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->sum('amount');
 
-        return view('tenant_contracts.show', array_merge($responseData->get(), ['paid_diff' => $paid_diff]));
+        $responseData = $responseData->get();
+
+        $responseData['data'] = makeDateFormatByKeys($responseData['data'], ['contract_start', 'contract_end'], 'Y-m-d');
+
+        return view('tenant_contracts.show', array_merge($responseData, ['paid_diff' => $paid_diff]));
     }
 
     /**
@@ -181,16 +223,21 @@ class TenantContractController extends Controller
      * @param  \App\TenantContract  $tenantContract
      * @return \Illuminate\Http\Response
      */
-    public function edit(TenantContract $tenantContract)
+    public function edit(Request $request, TenantContract $tenantContract)
     {
         $responseData = new FormDataResponser();
-        $data = $responseData
+        $data         = $responseData
             ->edit($tenantContract, 'tenantContracts.update')
             ->get();
         $data['data'][
             'original_files'
-        ] = $tenantContract->originalFiles()->get();
+        ]                              = $tenantContract->originalFiles()->get();
         $data['data']['carrier_files'] = $tenantContract->carrierFiles()->get();
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         return view('tenant_contracts.form', $data);
     }
 
@@ -208,20 +255,19 @@ class TenantContractController extends Controller
             $tenantContract
         );
         $responseData = new FormDataResponser();
-        $data = $responseData
-            ->edit($tempContract, 'tenantContracts.create')
-            ->get();
+        $data         = $responseData
+                            ->edit($tempContract, 'tenantContracts.create')
+                            ->get();
         $data['data']['original_files'] = null;
-        $data['data']['carrier_files'] =  null;
+        $data['data']['carrier_files']  =  null;
 
-        // 租客帳單
-        $firstPaymentDate = $tenantContract->tenantPayments->first()->due_time;
-        $data['data']['tenant_payment'] = $tenantContract->tenantPayments
-                                                        ->where('due_time', $firstPaymentDate)
-                                                        ->where('subject', '<>', '租金')
-                                                        ->toArray() or [];
         $data['method'] = 'POST';
         $data['action'] = route('tenantContracts.store');
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         return view('tenant_contracts.form', $data);
     }
 
@@ -235,52 +281,49 @@ class TenantContractController extends Controller
     public function update(Request $request, TenantContract $tenantContract)
     {
         $validatedData = $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'tenant_id' => 'required|exists:tenants,id',
+            'room_id'                => 'required|exists:rooms,id',
+            'tenant_id'              => 'required|exists:tenants,id',
             'contract_serial_number' => 'required|max:255',
-            'set_other_rights' => 'required|boolean',
-            'other_rights' => 'required|max:255',
-            'sealed_registered' => 'required|boolean',
-            'car_parking_floor' => 'required|max:255',
-            'car_parking_type' => [
+            'set_other_rights'       => 'required|boolean',
+            'other_rights'           => 'required|max:255',
+            'sealed_registered'      => 'required|boolean',
+            'car_parking_floor'      => 'required|max:255',
+            'car_parking_type'       => [
                 'required',
                 Rule::in(config('enums.tenant_contract.car_parking_type'))
             ],
-            'car_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_floor' => 'required|max:255',
+            'car_parking_space_number'        => 'required|max:255',
+            'motorcycle_parking_floor'        => 'required|max:255',
             'motorcycle_parking_space_number' => 'required|max:255',
-            'motorcycle_parking_count' =>
-                'required|integer|digits_between:1,11',
-            'effective' => 'required|boolean',
-            'contract_start' => 'required|date',
-            'contract_end' => 'required|date',
-            'rent' => 'required|integer|digits_between:1,11',
-            'rent_pay_day' => 'required|integer|between:1,31',
-            'deposit' => 'required|integer|digits_between:1,11',
-            'deposit_paid' => 'required|integer|digits_between:1,11',
-            'electricity_calculate_method' => [
+            'motorcycle_parking_count'        => 'required|integer|digits_between:1,11',
+            'contract_start'                  => 'required|date',
+            'contract_end'                    => 'required|date',
+            'rent'                            => 'required|integer|digits_between:1,11',
+            'rent_pay_day'                    => 'required|integer|between:1,31',
+            'deposit'                         => 'required|integer|digits_between:1,11',
+            'deposit_paid'                    => 'required|integer|digits_between:1,11',
+            'electricity_calculate_method'    => [
                 'required',
                 Rule::in(
                     config('enums.tenant_contract.electricity_calculate_method')
                 )
             ],
-            'electricity_price_per_degree' =>
-                'required|numeric|between:0,99.99',
-            'electricity_price_per_degree_summer' =>
-                'required|numeric|between:0,99.99',
-            '110v_start_degree' => 'required|integer|digits_between:1,11|lte:110v_end_degree',
-            '220v_start_degree' => 'nullable|integer|digits_between:1,11|lte:220v_end_degree',
-            '110v_end_degree' => 'required|integer|digits_between:1,11',
-            '220v_end_degree' => 'nullable|integer|digits_between:1,11',
-            'invoice_collection_method' => [
+            'electricity_price_per_degree'        => 'required|numeric|between:0,99.99',
+            'electricity_price_per_degree_summer' => 'required|numeric|between:0,99.99',
+            '110v_start_degree'                   => 'required|integer|digits_between:1,11',
+            '220v_start_degree'                   => 'nullable|integer|digits_between:1,11',
+            '110v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:110v_start_degree',
+            '220v_end_degree'                     => 'sometimes|nullable|integer|digits_between:1,11|gt:220v_end_degree',
+            'invoice_collection_method'           => [
                 'required',
                 Rule::in(
                     config('enums.tenant_contract.invoice_collection_method')
                 )
             ],
             'invoice_collection_number' => 'nullable',
-            'commissioner_id' => 'exists:users,id',
-            'comment' => 'present',
+            'commissioner_id'           => 'exists:users,id',
+            'comment'                   => 'present',
+            'overdue_fine'              => 'required'
         ]);
 
         $tenantContract->update($validatedData);
@@ -288,6 +331,7 @@ class TenantContractController extends Controller
             'original_file',
             'carrier_file'
         ]);
+
         return redirect($request->_redirect);
     }
 
@@ -300,12 +344,13 @@ class TenantContractController extends Controller
     public function destroy(TenantContract $tenantContract)
     {
         $tenantContract->delete();
+
         return response()->json(true);
     }
 
     public function electricityPaymentReport(string $data)
     {
-        $data = explode('|', base64_decode($data));
+        $data           = explode('|', base64_decode($data));
         $tenantContract = TenantContract::find(intval($data[0], 10));
         $year = intval($data[1], 10);
         $month =  intval($data[2], 10);
@@ -332,19 +377,20 @@ class TenantContractController extends Controller
     public function sendElectricityPaymentReportSMS(Request $request)
     {
         $tenantContractId = intval($request->input('tenantContractId'));
-        $year = intval($request->input('year'));
-        $month = intval($request->input('month'));
+        $year             = intval($request->input('year'));
+        $month            = intval($request->input('month'));
 
         $tenantContract = TenantContract::find($tenantContractId);
         $tenantContract->sendElectricityPaymentReportSMS($year, $month);
+
         return response()->json(true);
     }
 
     public function electricityDegree(TenantContract $tenantContract)
     {
         return response()->json([
-            'method' => $tenantContract->electricity_calculate_method,
-            'pricePerDegree' => $tenantContract->electricity_price_per_degree,
+            'method'               => $tenantContract->electricity_calculate_method,
+            'pricePerDegree'       => $tenantContract->electricity_price_per_degree,
             'pricePerDegreeSummer' => $tenantContract->electricity_price_per_degree_summer,
         ]);
     }
@@ -353,8 +399,8 @@ class TenantContractController extends Controller
     {
         $responseData = new NestedRelationResponser();
         $responseData
-            ->show($tenantContract->load(['tenantPayments','tenantElectricityPayments','payLogs']))
-            ->relations(['tenantPayments','tenantElectricityPayments','payLogs']);
+            ->show($tenantContract->load(['tenantPayments', 'tenantElectricityPayments', 'payLogs']))
+            ->relations(['tenantPayments', 'tenantElectricityPayments', 'payLogs']);
 
         return view('tenant_contracts.payment_recheck', $responseData->get());
     }

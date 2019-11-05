@@ -1,3 +1,6 @@
+@php
+    $tenantContractId = Request::get('tenantContractId')?? $data['tenant_contract_id'] ?? null;
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -16,6 +19,27 @@
                         @method($method)
                         <table class="table table-bordered">
                             <tbody>
+                                <tr>
+                                    <td>@lang("model.DebtCollection.tenant_contract_id")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="tenant_contract_id"
+                                            value="{{ $tenantContractId }}"
+                                        />
+                                    </td>
+
+                                    <td>費用編號</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="loggable_id"
+                                            class="form-control form-control-sm"
+                                            value="{{ $data['loggable_id'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>類型</td>
                                     <td>
@@ -37,17 +61,6 @@
                                             </option>
                                         </select>
                                     </td>
-                                    <td>費用編號</td>
-                                    <td>
-                                        <input
-                                            type="number"
-                                            name="loggable_id"
-                                            class="form-control form-control-sm"
-                                            value="{{ $data['loggable_id'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>科目</td>
                                     <td>
                                         <select
@@ -65,6 +78,9 @@
                                             @endforeach
                                         </select>
                                     </td>
+
+                                </tr>
+                                <tr>
                                     <td>繳費類別</td>
                                     <td>
                                         <select
@@ -81,8 +97,6 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>費用</td>
                                     <td>
                                         <input
@@ -92,6 +106,8 @@
                                             value="{{ $data['amount'] ?? '' }}"
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>虛擬帳號</td>
                                     <td>
                                         <input
@@ -101,8 +117,6 @@
                                             value="{{ $data['virtual_account'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>匯款時間</td>
                                     <td>
                                         @php

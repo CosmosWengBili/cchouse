@@ -1,9 +1,7 @@
 @php
     $user = Auth::User();
-    $tenantContractIds = \App\TenantContract::select('id')->pluck('id')->toArray();
     $userIds = \App\User::select('id')->pluck('id')->toArray();
     $isManageGroup = Auth::User()->belongsToGroup('管理組');
-
     $isCreate = request()->routeIs('maintenances.create');
 @endphp
 
@@ -29,15 +27,20 @@
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
-                                    <td>@lang("model.Maintenance.tenant_contract_id")</td>
+                                    <td>@lang("model.Maintenance.room_id")</td>
                                     <td>
-                                        <input
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="room_code"
+                                            data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
+                                            name="room_id"
                                             class="form-control form-control-sm"
-                                            type="text"
-                                            name="tenant_contract_id"
-                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
-                                        />
+                                        >
+                                        </select>
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
@@ -47,8 +50,6 @@
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
                                     </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Maintenance.commissioner_id")</td>
                                     <td>
                                         <select
@@ -61,15 +62,7 @@
                                         >
                                         </select>
                                     </td>
-                                    <td>@lang("model.Maintenance.service_comment")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="service_comment"
-                                            value="{{ $data['service_comment'] ?? '' }}"
-                                        />
-                                    </td>
+
                                 </tr>
                                 <tr>
                                     <td>@lang("model.Maintenance.incident_details")</td>
@@ -107,8 +100,15 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>@lang("model.Maintenance.service_comment")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="service_comment"
+                                            value="{{ $data['service_comment'] ?? '' }}"
+                                        />
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -117,16 +117,33 @@
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
-                                    <td>@lang("model.Maintenance.tenant_contract_id")</td>
+                                    <td>@lang("model.Maintenance.room_id")</td>
                                     <td>
-                                        <input
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="rooms"
+                                            data-text="room_code"
+                                            data-selected="{{ isset($data["room_id"]) ? $data['room_id'] : '0' }}"
+                                            name="room_id"
                                             class="form-control form-control-sm"
-                                            type="text"
-                                            name="tenant_contract_id"
-                                            readonly
-                                            value="{{ $data['tenant_contract_id'] ?? '' }}"
-                                        />
+                                        >
+                                        </select>
                                     </td>
+                                    <td>@lang("model.Maintenance.commissioner_id")</td>
+                                    <td>
+                                        <select
+                                            name="commissioner_id"
+                                            readonly
+                                            class="form-control form-control-sm"
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
+                                        >
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Maintenance.reported_at")</td>
                                     <td>
                                         <input
@@ -136,6 +153,18 @@
                                             readonly
                                             value="{{ $data['reported_at'] ?? '' }}"
                                         />
+                                    </td>
+                                    <td>@lang("model.Maintenance.maintenance_staff_id")</td>
+                                    <td>
+                                        <select
+                                            name="maintenance_staff_id"
+                                            class="form-control form-control-sm"
+                                            data-toggle="selectize"
+                                            data-table="users"
+                                            data-text="name"
+                                            data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
+                                        >
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -168,33 +197,6 @@
                                             value="{{ $data['dispatch_date'] ?? '' }}"
                                         />
                                     </td>
-                                    <td>@lang("model.Maintenance.commissioner_id")</td>
-                                    <td>
-                                        <select
-                                            name="commissioner_id"
-                                            readonly
-                                            class="form-control form-control-sm"
-                                            data-toggle="selectize"
-                                            data-table="users"
-                                            data-text="name"
-                                            data-selected="{{ $data['commissioner_id'] ?? 0 }}"
-                                        >
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Maintenance.maintenance_staff_id")</td>
-                                    <td>
-                                        <select
-                                            name="maintenance_staff_id"
-                                            class="form-control form-control-sm"
-                                            data-toggle="selectize"
-                                            data-table="users"
-                                            data-text="name"
-                                            data-selected="{{ $data['maintenance_staff_id'] ?? 0 }}"
-                                        >
-                                        </select>
-                                    </td>
                                     <td>@lang("model.Maintenance.closed_date")</td>
                                     <td>
                                         <input
@@ -222,8 +224,7 @@
                                             type="text"
                                             name="service_comment"
                                             readonly
-                                            value="{{ $data['service_comment'] ?? '' }}"
-                                        />
+                                            value="{{ $data['service_comment'] ?? '' }}"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -407,8 +408,8 @@
         const $submitButton = $('button.submit');
         $submitButton.click(function () {
             const data = {
-                tenant_contract_id: $('input[name=tenant_contract_id]').val(),
-                work_type: $('select[name=work_type]').val(),
+                'room_id' :$('select[name=room_id]').val(),
+                'work_type': $('select[name=work_type]').val(),
             };
             $submitButton.prop('disabled', 'disabled');
 
@@ -449,9 +450,6 @@
             }, "負擔方為『房東』的資料，只有帳務組，可以將狀態從『案件完成』變成『已取消』");
 
             const rules = {
-                tenant_contract_id: {
-                    required: true
-                },
                 reported_at: {
                     required: true
                 },
@@ -476,9 +474,6 @@
             };
 
             const messages = {
-                tenant_contract_id: {
-                    required: '必須輸入'
-                },
                 reported_at: {
                     required: '必須輸入'
                 },

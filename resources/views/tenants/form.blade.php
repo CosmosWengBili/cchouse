@@ -17,6 +17,7 @@
                         <h3 class="mt-3">基本資料</h3>
                         <table class="table table-bordered">
                             <tbody>
+                            <input type="hidden" name="id"  value="{{ isset($data["id"]) ? $data['id'] : 0 }}"/>
                             <tr>
                                 <td>@lang("model.Tenant.name")</td>
                                 <td>

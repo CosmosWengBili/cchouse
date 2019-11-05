@@ -4,24 +4,24 @@
     <div class="row justify-content-center">
         <div class="col">
             <ul class="nav nav-tabs justify-content-center" role="tablist">
-                @for($i = 5; $i >= 0; $i--)
+                @for($i = 0; $i <= 5; $i++)
                     @php
-                        $current = \Carbon\Carbon::now()->copy()->subMonth($i)
+                        $current = \Carbon\Carbon::now()->copy()->subMonth($i);
                     @endphp
                     <li class="nav-item">
                         <a
-                            class="nav-link {{ $i == 5 ? 'active' : ''  }}"
+                            class="nav-link {{ $i == 0 ? 'active' : ''  }}"
                             data-toggle="tab"
                             href="#pane-{{ $current->year }}-{{ $current->month }}"
                             role="tab"
                         >
-                           {{ $current->year }}年 {{ $current->month }}月
+                            {{ $current->year }}年 {{ $current->month }}月
                         </a>
                     </li>
                 @endfor
             </ul>
             <div class="tab-content pt-0">
-                @for($i = 5; $i >= 0; $i--)
+                    @for($i = 0; $i <= 5; $i++)
                     @php
                         $current = \Carbon\Carbon::now()->copy()->subMonth($i);
                         $entries = $companyIncomes[$current->month] ?? [];
@@ -30,7 +30,7 @@
                         $total = 0
                     @endphp
                     @foreach( $entries as $entry )
-                        @php 
+                        @php
                             $total += $entry['amount']
                         @endphp
                     @endforeach

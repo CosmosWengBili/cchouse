@@ -56,7 +56,11 @@ class ShareholderTotalSheet implements WithHeadings, WithTitle, FromArray
             $rows = $this->excelData;
         }
 
+        usort($rows, function($a, $b) {
+            return $a[1] <=> $b[1];
+        });
         $rows = $this->appendCountTotal($rows);
+        
 
         return $rows;
     }
@@ -77,10 +81,9 @@ class ShareholderTotalSheet implements WithHeadings, WithTitle, FromArray
             ' ',
             "{$this->year}年{$this->month}月",
             ' ',
-            "{$this->month}/10出帳",
+            "{$this->month}月出帳",
         ];
         $headings[] = [
-            '組別',
             '物件屬性',
             '物件代碼',
             '物件地址',
@@ -140,7 +143,7 @@ class ShareholderTotalSheet implements WithHeadings, WithTitle, FromArray
             // 根據method計算總和
             foreach ($groupCountByKeys as $groupCountByKey) {
                 ! isset($countByMethod[$row[$groupCountByKey]]) and ($countByMethod[$row[$groupCountByKey]] = 0);
-                $countByMethod[$row[$groupCountByKey]] +=  $row['carry_forward'];
+                $countByMethod[$row[$groupCountByKey]] +=  $row['money'];
             }
         }
 

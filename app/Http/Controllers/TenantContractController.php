@@ -309,7 +309,14 @@ class TenantContractController extends Controller
         $tenantContract = TenantContract::find(intval($data[0], 10));
         $year = intval($data[1], 10);
         $month =  intval($data[2], 10);
+        $now = Carbon::parse("${year}-${month}-01");
+        $fromDate = $now->copy()->startOfMonth();
+        $tillDate =  $now->copy()->endOfMonth();
         $createdAt = Carbon::createFromTimestamp($data[3]);
+        $tenantElectricityPayment = $tenantContract->tenantElectricityPayments()
+                                                   ->whereBetween('due_time', [$fromDate, $tillDate])
+                                                   ->first();
+        $ammeterReadDate = $tenantElectricityPayment ? $tenantElectricityPayment->ammeter_read_date : null;
         $room = $tenantContract->room()->first();
         $row = $room->buildElectricityPaymentData($year, $month);
 
@@ -318,6 +325,7 @@ class TenantContractController extends Controller
             'year' => $year,
             'month' => $month,
             'createdAt' => $createdAt,
+            'ammeterReadDate' => $ammeterReadDate,
         ]);
     }
 

@@ -68,7 +68,7 @@ class ShareholderController extends Controller
             'contact_method' => 'required',
             'bank_name' => 'required',
             'bank_code' => 'required',
-            'account_number' => 'required',
+            'account_number' => 'required|integer',
             'account_name' => 'required',
             'is_remittance_fee_collected' => 'required|boolean',
             'transfer_from' => 'required',
@@ -90,7 +90,7 @@ class ShareholderController extends Controller
 
         $shareholder = Shareholder::create($validatedData);
 
-        $building_code = array_wrap($request->input('building_code'));
+        $building_code = explode(',', str_replace(' ', '', $request->input('building_code')));
         // get building ids by building_code
         $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
         if (! empty($building_ids)) {
@@ -206,11 +206,11 @@ class ShareholderController extends Controller
     {
         $year = $request->input('year', now()->format('Y'));
         $month = $request->input('month', now()->format('m'));
-        $date = Carbon::create($year, $month);
+        $date = Carbon::create($year, $month)->subMonth();
 
         return Excel::download(
             new ShareholderExport($date),
-            "出帳明細-{$date->format('Y-m')}.xlsx"
+            "出帳明細-{$year}-{$month}.xlsx"
         );
     }
 }

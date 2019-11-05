@@ -50,6 +50,10 @@ class FakeDataSeeder extends Seeder
             $room->keys()->save(factory(\App\Key::class)->make([
                 'room_id' => $room->id,
             ]));
+
+            $room->maintenances()->saveMany(factory(\App\Maintenance::class, 5)->make([
+                'room_id' => $room->id,
+            ]));
         });
 
         \App\Key::all()->each(function (\App\Key $key) {
@@ -84,10 +88,6 @@ class FakeDataSeeder extends Seeder
             $tenant_contract->payOff()->create([
                 'pay_off_type' => '中途退租'
             ]);
-            $tenant_contract->maintenances()->saveMany(factory(\App\Maintenance::class, 5)->make([
-                'tenant_contract_id' => $tenant_contract->id,
-                'room_id' => $tenant_contract->room_id,
-            ]));
         });
 
         \App\TenantPayment::all()->each(function (\App\TenantPayment $tenant_payment) {

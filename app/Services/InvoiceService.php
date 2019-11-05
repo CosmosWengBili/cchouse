@@ -24,11 +24,12 @@ class InvoiceService
     public function makeInvoiceData($start_date, $end_date)
     {
         $this->global_data = [
-            'tenant' => [], 'landlord' => [],  'company' => []  
+            'tenant' => [], 'landlord' => []
         ];
         // Init pay logs data
         $pay_logs = PayLog::whereBetween('paid_at', [$start_date, $end_date])
             ->where('receipt_type', '=', '發票')
+            ->where('subject', '<>', '租金')
             ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment'])
             ->orderBy('virtual_account', 'DESC')
             ->orderBy('paid_at', 'ASC')
@@ -84,7 +85,7 @@ class InvoiceService
             }
 
             // Set comment
-            if( !is_null($pay_log->loggable->receipts()->first()) ){
+            if( !is_null($receipt) ){
                 $comment = $receipt['comment'];
             }
             else{
@@ -149,25 +150,12 @@ class InvoiceService
                 );
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
-
-                if($pay_log->loggable->subject == '租金'){
-                    $data['invoice_count'] = $this->invoice_count;
-                    $data['invoice_item_idx'] = 1;
-                    $data['invoice_price'] = $pay_log->amount;
-                    $data['subtotal'] = $pay_log->amount;
-                }
-                else{
-                    $data['invoice_price'] = $subtotal;
-                    $data['subtotal'] = $subtotal;
-                    $subtotal = 0;
-                }
+                
+                $data['invoice_price'] = $subtotal;
+                $data['subtotal'] = $subtotal;
+                $subtotal = 0;
             }
-            if( $pay_log->loggable->subject == "租金" ){
-                array_push($this->global_data['company'], $data);
-            }
-            else{
-                array_push($this->global_data['tenant'], $data);
-            }
+            array_push($this->global_data['tenant'], $data);
             
         }
 
@@ -362,8 +350,6 @@ class InvoiceService
                 return '管理服務費(代收電費)';
             } elseif ($object['subject'] == '水雜費') {
                 return '管理服務費(代收水費)';
-            } elseif ($object['subject'] == '租金') {
-                return '租金收入';
             } elseif ($object['subject'] == '設備扣款') {
                 return '違約金';
             } elseif ($object['subject'] == '清潔費(公司)') {

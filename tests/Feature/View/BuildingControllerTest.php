@@ -24,7 +24,7 @@ class BuildingControllerTest extends TestCase
 
         // create a fake user for testing
         $this->fakeUser = User::create(['name' => 'tester']);
-        $this->fakeGroup = Group::where('name', '管理組')->first();
+        $this->fakeGroup = Group::first();
         $this->permission = Permission::where('name', 'delete building');
         $this->fakeUser->assignGroup($this->fakeGroup);
         $this->fakeGroup->givePermissionTo($this->permission);

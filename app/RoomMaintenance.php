@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
+use App\Traits\Controllers\HandleDocumentsUpload;
+
 /**
  * Class RoomMaintenance
  * @package App\Models
@@ -21,6 +23,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
  */
 class RoomMaintenance extends Model implements AuditableContract
 {
+    use HandleDocumentsUpload;
     use AuditableTrait;
     use SoftDeletes;
     use WithExtraInfo;
@@ -38,7 +41,8 @@ class RoomMaintenance extends Model implements AuditableContract
         'room_id',
         'maintainer',
         'maintained_location',
-        'maintained_date'
+        'maintained_date',
+        'pictures'
     ];
 
     /**
@@ -51,7 +55,8 @@ class RoomMaintenance extends Model implements AuditableContract
         'room_id' => 'integer',
         'maintainer' => 'string',
         'maintained_location' => 'string',
-        'maintained_date' => 'date:Y-m-d'
+        'maintained_date' => 'date:Y-m-d',
+        'pictures' => 'array'
     ];
 
     /**
@@ -65,6 +70,12 @@ class RoomMaintenance extends Model implements AuditableContract
         'maintained_location' => 'required',
         'maintained_date' => 'required'
     ];
+
+    public function setPicturesAttribute($value)
+    {
+        $this->handleDocumentsUploadByArray($this, $value, 'picture');
+        unset($this->pictures);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -83,19 +83,21 @@ class RoomService
             ->whereNotIn('id', $keepIds)
             ->delete();
 
-        $maintenances = array_map(function ($maintenance) {
+        $maintenances = array_map(function ($maintenance) use ($room) {
+            $maintenance['room_id'] = $room->id;
+            $fill_data = $maintenance;
             if (isset($maintenance['id'])) {
-                $fill_data = $maintenance;
                 $maintenance = \App\RoomMaintenance::find($maintenance['id']);
                 $maintenance->fill($fill_data);
             } else {
-                $maintenance =new \App\RoomMaintenance($maintenance);
+                $maintenance = new \App\RoomMaintenance($maintenance);
+                $maintenance->save();
             }
 
             return $maintenance;
         }, $maintenances);
 
-        $room->roomMaintenances()->saveMany($maintenances);
+        $maintenances = $room->roomMaintenances()->saveMany($maintenances);
 
         self::notifyMaintenanceBuilder($room, $data);
 

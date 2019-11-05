@@ -151,11 +151,10 @@ class RoomController extends Controller
         $data = $responseData->edit($room, 'rooms.update')->get();
         $data['data']['pictures'] = $room->pictures()->get();
         $data['data']['appliances'] = $room->appliances()->get();
-        $data['data']['maintenances'] = $room->roomMaintenances()->get()->toArray();
-
-        if ($request->old()) {
-            $data['data'] = array_merge($data['data'], $request->old());
-        }
+        $data['data']['maintenances'] = $room->roomMaintenances()
+                                        ->with('pictures')
+                                        ->get()
+                                        ->toArray();
 
         return view('rooms.form', $data);
     }
@@ -216,18 +215,17 @@ class RoomController extends Controller
             'appliances.*.vendor' => 'required',
         ]);
 
-        // dd($request->all());
-
         $validatedMaintenanceData = $request->validate([
             'maintenances' => 'nullable|array',
             'maintenances.*.maintainer' => 'required',
             'maintenances.*.maintained_location' => 'required',
             'maintenances.*.maintained_date' => 'required',
+            // 'maintenances.*.picture' => 'nullable',
         ]);
 
-        // $validatedPictureData = $request->validate([
-        //     'documents.picture' => 'required|array|min:5',
-        // ]);
+        $validatedPictureData = $request->validate([
+            'documents.picture' => 'required|array|min:5',
+        ]);
 
         RoomService::update(
             $room,

@@ -14,6 +14,14 @@ class Document extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $hidden = ['pivot', 'deleted_at'];
+
+    protected $appends = ['url'];
+
+    public function getUrlAttribute()
+    {
+        return Storage::url($this->path);
+    }
+
     /**
      * Get the owning attachable model.
      */

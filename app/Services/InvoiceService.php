@@ -96,10 +96,19 @@ class InvoiceService
             // Set normal value
             $data['invoice_count'] = $this->invoice_count;
             $data['invoice_item_idx'] = $invoice_item_count;
-            $data['invoice_item_name'] = $this->makeInvoiceItemName(
-                $pay_log['loggable'],
-                'payment'
-            );
+            if( !$pay_log['loggable']['is_pay_off'] ){
+                $data['invoice_item_name'] = $this->makeInvoiceItemName(
+                    $pay_log['loggable'],
+                    'payment'
+                );
+            }
+            else{
+                $data['invoice_item_name'] = $this->makeInvoiceItemName(
+                    $pay_log['loggable'],
+                    'pay_off'
+                );
+            }
+
             $data['quantity'] = 1;
             $data['amount'] = $pay_log->amount;
             $data['tax_type'] = 1;
@@ -168,7 +177,6 @@ class InvoiceService
         $maintenance_data = $this->makeMaintenance($start_date, $end_date);
         $deposit_data = $this->makeDeposits($start_date, $end_date);
         $landlord_other_subject_data = $this->makeLandlordOtherSubjects($start_date, $end_date);
-        
         return $this->global_data;
     }
 
@@ -395,6 +403,29 @@ class InvoiceService
                 return '管理服務費';
             } else {
                 return '管理服務費(查無對應科目)';
+            }
+        }
+        else if($type == 'pay_off'){
+            if ($object['subject'] == '沒收押金') {
+                return '違約金';
+            }
+            else if( $object['subject'] == '電費' ){
+                return '管理服務費(代收電費)';
+            }
+            else if( $object['subject'] == '水費' ){
+                return '管理服務費(代收水費)';
+            }
+            else if( $object['subject'] == '遲繳扣款' ){
+                return '行政手續費';
+            }
+            else if( $object['subject'] == '設備扣款' ){
+                return '違約金';
+            }
+            else if( $object['subject'] == '維修費' ){
+                return '管理服務費(維修費)';
+            }
+            else {
+                return '管理服務費';
             }
         }
     }

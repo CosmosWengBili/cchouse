@@ -41,8 +41,7 @@ class ScheduleTest extends TestCase
         $this->assertEquals($eventNotify->description, 'Notify contract due in two months');
         $this->assertEquals($eventRent->description, 'Adjust rent');
 
-        $rent_list_price = 1000;
-        $rent_landlord = 1500;
+        $rent_reserve_price = 1000;
         $adjust_ratio = 5.50;
 
         $userId = DB::table('users')->insertGetId([
@@ -98,20 +97,16 @@ class ScheduleTest extends TestCase
 
         $roomId = DB::table('rooms')->insertGetId([
             'building_id' => $buildingId,
-            'rent_list_price' => $rent_list_price,
-            'rent_landlord' => $rent_landlord,
-            'needs_decoration' => 1,
             'room_code' => '',
             'virtual_account' => '',
             'room_status' => '',
             'room_number' => '',
             'room_layout' => '',
-            'room_attribute' => '',
             'living_room_count' => 1,
             'room_count' => 1,
             'bathroom_count' => 1,
             'parking_count' => 1,
-            'rent_reserve_price' => 1,
+            'rent_reserve_price' => $rent_reserve_price,
             'rent_actual' => 1,
             'internet_form' => '',
             'management_fee_mode' => '',
@@ -162,20 +157,16 @@ class ScheduleTest extends TestCase
         for ($k = 0 ; $k < 5; $k++){
             $roomIds[] = DB::table('rooms')->insertGetId([
                 'building_id' => $buildingCharterId,
-                'rent_list_price' => $rent_list_price,
-                'rent_landlord' => $rent_landlord,
-                'needs_decoration' => 1,
                 'room_code' => '',
                 'virtual_account' => '',
                 'room_status' => '',
                 'room_number' => '',
                 'room_layout' => '',
-                'room_attribute' => '',
                 'living_room_count' => 1,
                 'room_count' => 1,
                 'bathroom_count' => 1,
                 'parking_count' => 1,
-                'rent_reserve_price' => 1,
+                'rent_reserve_price' => $rent_reserve_price,
                 'rent_actual' => 1,
                 'internet_form' => '',
                 'management_fee_mode' => '',
@@ -226,6 +217,7 @@ class ScheduleTest extends TestCase
         foreach(array(false, false, false, false, true) as $key => $is_legal_person){
             $tenantId = DB::table('tenants')->insertGetId([
                 'is_legal_person' => $is_legal_person,
+                'certificate_number' => 'id'.rand(0,10000)
             ]);
             $tenantContractId = DB::table('tenant_contract')->insertGetId([
                 'room_id' => $roomIds[$key],
@@ -273,8 +265,7 @@ class ScheduleTest extends TestCase
         // assert that rent were adjusted correctly
         $this->assertDatabaseHas('rooms', [
             'id' => $roomId,
-            'rent_list_price' => intval(round($rent_list_price * (100 + $adjust_ratio ) / 100)),
-            'rent_landlord' => intval(round($rent_landlord * (100 + $adjust_ratio ) / 100))
+            'rent_reserve_price' => intval(round($rent_reserve_price * (100 + $adjust_ratio ) / 100)),
         ]);
 
         // assert that paylogs were adjusted correctly

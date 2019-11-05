@@ -4,6 +4,8 @@ namespace Tests\Feature\View;
 
 use App\Building;
 use App\User;
+use App\Group;
+use App\Permission;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +23,11 @@ class BuildingControllerTest extends TestCase
         parent::setUp();
 
         // create a fake user for testing
-        $this->fakeUser = new User(['name' => 'tester']);
+        $this->fakeUser = User::create(['name' => 'tester']);
+        $this->fakeGroup = Group::where('name', '管理組')->first();
+        $this->permission = Permission::where('name', 'delete building');
+        $this->fakeUser->assignGroup($this->fakeGroup);
+        $this->fakeGroup->givePermissionTo($this->permission);
 
         // set the user as login
         $this->be($this->fakeUser);

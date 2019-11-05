@@ -26,6 +26,7 @@ class TenantContractServiceTest extends TestCase
 
         $tenantId = DB::table('tenants')->insertGetId([
             'name' => 'test tenant',
+            'certificate_number' => 'id'.rand(0,10000)
         ]);
 
         // by default adds a month
@@ -51,7 +52,9 @@ class TenantContractServiceTest extends TestCase
             'id' => $tenantContractId + 1,
             'contract_serial_number' => 'modified contract',
         ]);
-
+        $this->assertEquals($tempContract->old_tenant_contract_id, $tenantContractId);
+        
+        unset($tempContract['old_tenant_contract_id']);
         $tempContract->save();
 
         // the new record exists and the dates, other attributes and id are correct
@@ -84,6 +87,7 @@ class TenantContractServiceTest extends TestCase
 
         $tenantId = DB::table('tenants')->insertGetId([
             'name' => 'test tenant',
+            'certificate_number' => 'id'.rand(0,10000)
         ]);
 
         // some dummy data

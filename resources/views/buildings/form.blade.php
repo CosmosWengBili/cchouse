@@ -128,7 +128,7 @@
                                             class="form-control form-control-sm"
                                             type="number"
                                             name="decoration_price"
-                                            value="{{ $data['decoration_price']}}"
+                                            value="{{ $data['decoration_price'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>

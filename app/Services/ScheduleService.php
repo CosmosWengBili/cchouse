@@ -22,6 +22,7 @@ use App\SystemVariable;
 use App\Notifications\LandlordContractDue;
 use App\Notifications\TenantContractDueInTwoMonths;
 use App\Notifications\TextNotify;
+use App\Notifications\RoomHasChanged;
 
 use App\Services\MonthlyReportService;
 use App\Services\ReceiptService;
@@ -92,9 +93,9 @@ class ScheduleService
                     $landlordContract
                 ) {
                     if ($room->rent_reserve_price > $room->rent_actual) {
-                        $users = \App\User::group('管理組')->get();
+                        $users = User::group('管理組')->get();
                         foreach ($users as $user) {
-                            $user->notify(new \App\Notifications\RoomHasChanged('PriceOverActual', $room));
+                            $user->notify(new RoomHasChanged('PriceOverActual', $room));
                         }
                     }
                 });

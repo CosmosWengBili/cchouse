@@ -13,9 +13,10 @@ use Faker\Generator as Faker;
 class FakeDataSeeder extends Seeder
 {
     const SEEDER_TABLES = [
-        'landlords', 'landlord_contracts', 'landlord_landlord_contract', 'buildings', 'rooms',
-        'appliances', 'tenants', 'tenant_contract', 'tenant_payments', 'tenant_electricity_payments',
-        'shareholders', 'building_shareholder', 'pay_logs', 'pay_offs'
+        'landlords', 'landlord_contracts', 'landlord_landlord_contract',
+        'buildings', 'rooms', 'appliances', 'maintenances', 'keys', 'key_requests',
+        'tenants', 'tenant_contract', 'tenant_payments', 'tenant_electricity_payments',
+        'shareholders', 'building_shareholder', 'building_shareholder', 'pay_logs', 'pay_offs', 'company_incomes'
     ];
 
     /**
@@ -23,49 +24,52 @@ class FakeDataSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(Faker $faker)
     {
         $this->truncate();
 
-        factory(\App\LandlordContract::class, 2)->create();
+        // 先有 建築, 在對應房東契約
+        factory(\App\Building::class, 13)
+            ->create()
+            ->each(function (\App\Building $building) {
+                $building->landlordContracts()->save(factory(\App\LandlordContract::class)->make());
+
+                $building->shareholders()->saveMany(factory(\App\Shareholder::class, rand(1, 5))->make());
+
+                $building->rooms()->saveMany(factory(\App\Room::class, 1)->make([
+                    'room_layout' => '公區'
+                ]));
+
+                $building->rooms()->saveMany(factory(\App\Room::class, rand(3, 10))->make([
+                    'room_layout' => '套房'
+                ]));
+            });
 
         \App\LandlordContract::all()->each(function (\App\LandlordContract $landlord_contract) {
-            $landlord_contract->landlords()->save(factory(\App\Landlord::class)->create());
-        });
-
-        \App\Building::all()->each(function (\App\Building $building) {
-            $building->shareholders()->save(factory(\App\Shareholder::class)->create());
-            $building->rooms()->saveMany(factory(\App\Room::class, 1)->make([
-                'building_id' => $building->id,
-                'room_layout' => '公區'
-            ]));
+            $landlord_contract->landlords()->save(factory(\App\Landlord::class)->make());
         });
 
         \App\Room::all()->each(function (\App\Room $room) {
-            $room->appliances()->save(factory(\App\Appliance::class)->create());
+            // 一個房間對應一個租客契約
             $room->tenantContracts()->save(factory(\App\TenantContract::class)->make([
                 'tenant_id' => factory(\App\Tenant::class)->create()->id,
-                'room_id' => $room->id,
-            ]));
-            $room->keys()->save(factory(\App\Key::class)->make([
-                'room_id' => $room->id,
             ]));
 
-            $room->maintenances()->saveMany(factory(\App\Maintenance::class, 5)->make([
-                'room_id' => $room->id,
-            ]));
+            $room->appliances()->save(factory(\App\Appliance::class)->make());
+
+            $room->keys()->save(factory(\App\Key::class)->make());
+
+            $room->maintenances()->saveMany(factory(\App\Maintenance::class, rand(0, 5))->make());
         });
 
         \App\Key::all()->each(function (\App\Key $key) {
             $key->keyRequests()->saveMany(factory(\App\KeyRequest::class, 3)->make([
-                'key_id' => $key->id,
-                'request_user_id' => $key->keeper_id
+                'request_user_id' => \App\User::inRandomOrder()->first(),
             ]));
         });
 
-        \App\TenantContract::all()->each(function (\App\TenantContract $tenant_contract) {
+        \App\TenantContract::all()->each(function (\App\TenantContract $tenant_contract) use ($faker) {
             $tenant_contract->tenantPayments()->save(factory(\App\TenantPayment::class)->make([
-                'tenant_contract_id' => $tenant_contract->id,
                 'subject' => '履約保證金',
                 'collected_by' => '房東',
                 'amount'=> $tenant_contract->deposit,
@@ -73,53 +77,29 @@ class FakeDataSeeder extends Seeder
                 'comment' => '初次履約金',
             ]));
 
-            $tenant_contract->tenantElectricityPayments()->save(factory(\App\TenantElectricityPayment::class)->make([
-                'tenant_contract_id' => $tenant_contract->id
+            $tenant_contract->tenantPayments()->save(factory(\App\TenantPayment::class)->make([
+                'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
             ]));
+
+            $tenant_contract->tenantElectricityPayments()->save(factory(\App\TenantElectricityPayment::class)->make());
 
             $tenant_contract->companyIncomes()->save(factory(\App\CompanyIncome::class)->make([
-                'incomable_id' => $tenant_contract->id,
-                'incomable_type' => \App\TenantContract::class
+                'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
             ]));
 
-            $tenant_contract->payOff()->create([
+            $tenant_contract->payOff()->make([
                 'pay_off_type' => '協調退租'
             ]);
-            $tenant_contract->payOff()->create([
+            $tenant_contract->payOff()->make([
                 'pay_off_type' => '中途退租'
             ]);
         });
 
-        \App\TenantPayment::all()->each(function (\App\TenantPayment $tenant_payment) {
-            $tenant_payment->payLogs()->create([
-                'loggable_type' => 'tenant_payment',
-                'payment_type' => \App\TenantPayment::class,
+        \App\TenantPayment::all()->each(function (\App\TenantPayment $tenant_payment) use ($faker) {
+            $tenant_payment->payLogs()->make([
                 'receipt_type' => '發票',
             ]);
         });
-
-//        dd(
-//            'Landlord',
-//            \App\Landlord::all()->count(),
-//            'LandlordContract',
-//            \App\LandlordContract::all()->count(),
-//            'Building',
-//            \App\Building::all()->count(),
-//            'Room',
-//            \App\Room::all()->count(),
-//            'Appliance',
-//            \App\Appliance::all()->count(),
-//            'Tenant',
-//            \App\Tenant::all()->count(),
-//            'TenantContract',
-//            \App\TenantContract::all()->count(),
-//            'TenantPayment',
-//            \App\TenantPayment::all()->count(),
-//            'TenantElectricityPayment',
-//            \App\TenantElectricityPayment::all()->count(),
-//            'Shareholder',
-//            \App\Shareholder::all()->count()
-//        );
     }
 
     private function truncate()

@@ -1,13 +1,18 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\Model;
+use App\CompanyIncome;
 use Faker\Generator as Faker;
 
-$factory->define(\App\CompanyIncome::class, function (Faker $faker) {
+$factory->define(CompanyIncome::class, function (Faker $faker) {
     return [
-        'subject' => $faker->text(random_int(10, 100)),
-        'incomable_id' => 1,
-        'incomable_type' => \App\TenantContract::class
+        'subject'        => $faker->randomElement(config('enums.tenant_payments.subject')),
+        'incomable_id'   => \App\TenantContract::inRandomOrder()->first(),
+        'incomable_type' => \App\TenantContract::class,
+        'income_date'    => $faker->dateTimeBetween('-15 day', 'now'),
+        'amount'         => $faker->randomDigitNotNull,
+        'comment'        => $faker->text,
+        'created_at'     => $faker->date('Y-m-d H:i:s'),
+        'updated_at'     => $faker->date('Y-m-d H:i:s'),
     ];
 });

@@ -92,6 +92,27 @@ class ScheduleService
                 $landlordContract->building->rooms->each(function ($room) use (
                     $landlordContract
                 ) {
+
+                    $ratio = intval($landlordContract->adjust_ratio);
+                    $isRatioLTE100 = $ratio <= 100;
+                    if ($isRatioLTE100) {
+                        // 用 % 數調漲
+                        $room->rent_reserve_price = intval(
+                            round(
+                                ($room->rent_reserve_price * (100 + $landlordContract->adjust_ratio) ) / 100
+                            )
+                        );
+                    } else {
+                        // 直接將租金加上此值
+                        $room->rent_reserve_price = intval(
+                            round(
+                                $room->rent_reserve_price + $landlordContract->adjust_ratio
+                            )
+                        );
+                    }
+                    $room->save();
+
+
                     if ($room->rent_reserve_price > $room->rent_actual) {
                         $users = User::group('管理組')->get();
                         foreach ($users as $user) {

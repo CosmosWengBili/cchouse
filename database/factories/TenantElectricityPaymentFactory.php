@@ -14,20 +14,32 @@ $factory->define(TenantElectricityPayment::class, function (Faker $faker) {
         $due_time = $faker->dateTimeBetween($charge_off_date->modify('-7 days'), $charge_off_date);
     }
 
+    $star_110v = $faker->randomFloat();
+    $end_110v = $faker->randomFloat(null, $star_110v, null);
+
+    $star_220v = $faker->randomFloat();
+    $end_220v = $faker->randomFloat(null, $star_220v, null);
+
     return [
         'tenant_contract_id' => \App\TenantContract::inRandomOrder()->first(),
         'subject'            => $faker->randomElement(config('enums.tenant_payments.subject')),
         'ammeter_read_date'  => $faker->dateTimeBetween('-15 day', '-10 day'),
         'due_time'           => $due_time,
-        '110v_start_degree'  => $faker->randomDigitNotNull,
-        '110v_end_degree'    => $faker->randomDigitNotNull,
-        '220v_start_degree'  => $faker->randomDigitNotNull,
-        '220v_end_degree'    => $faker->randomDigitNotNull,
-        'amount'             => $faker->randomDigitNotNull,
+        '110v_start_degree'  => $star_110v,
+        '110v_end_degree'    => $end_110v,
+        '220v_start_degree'  => $star_220v,
+        '220v_end_degree'    => $end_220v,
+        'amount'             => $faker->numberBetween(0, 9999),
         'is_charge_off_done' => $is_charge_off_done,
         'comment'            => $faker->text,
         'created_at'         => $faker->date('Y-m-d H:i:s'),
         'updated_at'         => $faker->date('Y-m-d H:i:s'),
         'charge_off_date'    => $charge_off_date
+    ];
+});
+
+$factory->state(TenantElectricityPayment::class, 'new', function ($faker) {
+    return [
+        'tenant_contract_id' => factory(\App\TenantContract::class)->states('new'),
     ];
 });

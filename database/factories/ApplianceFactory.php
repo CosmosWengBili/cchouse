@@ -15,3 +15,9 @@ $factory->define(Appliance::class, function (Faker $faker) {
         'comment'           => 'comment here'
     ];
 });
+
+$factory->state(Appliance::class, 'new', function ($faker) {
+    return [
+        'room_id' => factory(\App\Room::class)->states('new'),
+    ];
+});

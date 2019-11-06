@@ -10,3 +10,10 @@ $factory->define(KeyRequest::class, function (Faker $faker) {
         'request_user_id' => \App\User::inRandomOrder()->first()
     ];
 });
+
+$factory->state(KeyRequest::class, 'new', function ($faker) {
+    return [
+        'key_id'          => factory(\App\Key::class)->states('new'),
+        'request_user_id' => factory(\App\User::class),
+    ];
+});

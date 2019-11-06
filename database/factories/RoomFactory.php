@@ -11,7 +11,7 @@ $factory->define(Room::class, function (Faker $faker) {
     $management_fee_mode = $faker->randomElement(array_keys(config('enums.rooms.management_fee_mode')));
 
     return [
-        'building_id'                 => App\Building::inRandomOrder()->first(),
+        'building_id'                 => \App\Building::inRandomOrder()->first(),
         'room_code'                   => '',
         'electricity_virtual_account' => $faker->bankAccountNumber,
         'virtual_account'             => $faker->bankAccountNumber,
@@ -35,5 +35,11 @@ $factory->define(Room::class, function (Faker $faker) {
         'comment'                     => $faker->text,
         'created_at'                  => $faker->date('Y-m-d H:i:s'),
         'updated_at'                  => $faker->date('Y-m-d H:i:s'),
+    ];
+});
+
+$factory->state(Room::class, 'new', function ($faker) {
+    return [
+        'building_id' => factory(\App\Building::class),
     ];
 });

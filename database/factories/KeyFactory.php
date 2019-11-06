@@ -10,3 +10,10 @@ $factory->define(Key::class, function (Faker $faker) {
         'room_id'   => \App\Room::inRandomOrder()->first(),
     ];
 });
+
+$factory->state(Key::class, 'new', function ($faker) {
+    return [
+        'room_id'   => factory(\App\Room::class)->states('new'),
+        'keeper_id' => factory(\App\User::class),
+    ];
+});

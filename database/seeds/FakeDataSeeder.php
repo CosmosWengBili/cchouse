@@ -27,6 +27,7 @@ class FakeDataSeeder extends Seeder
     public function run(Faker $faker)
     {
         $this->truncate();
+        DB::enableQueryLog();
 
         // 先有 建築, 在對應房東契約
         factory(\App\Building::class, 13)

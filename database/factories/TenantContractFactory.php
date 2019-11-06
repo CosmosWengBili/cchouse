@@ -46,3 +46,11 @@ $factory->define(TenantContract::class, function (Faker $faker) {
         'updated_at'                          => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(TenantContract::class, 'new', function ($faker) {
+    return [
+        'room_id'         => factory(\App\Room::class)->states('new'),
+        'tenant_id'       => factory(\App\Tenant::class)->states('new'),
+        'commissioner_id' => factory(\App\User::class),
+    ];
+});

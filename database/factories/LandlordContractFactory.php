@@ -33,3 +33,11 @@ $factory->define(LandlordContract::class, function (Faker $faker) {
         'withdrawal_revenue_distribution'   => $faker->randomDigitNotNull
     ];
 });
+
+$factory->state(LandlordContract::class, 'new', function ($faker) {
+    return [
+        'building_id'     => factory(\App\Building::class)->states('new'),
+        'commissioner_id' => factory(\App\User::class),
+        'commission_type' => \App\User::class,
+    ];
+});

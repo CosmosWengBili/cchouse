@@ -32,3 +32,10 @@ $factory->define(Deposit::class, function (Faker $faker) {
         'updated_at'                       => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(Deposit::class, 'new', function ($faker) {
+    return [
+        'room_id'            => factory(\App\Room::class)->states('new'),
+        'tenant_contract_id' => factory(\App\TenantContract::class)->states('new'),
+    ];
+});

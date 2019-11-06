@@ -23,3 +23,9 @@ $factory->define(Tenant::class, function (Faker $faker) {
         'birth'              => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(Tenant::class, 'new', function ($faker) {
+    return [
+        'confirm_by' => factory(\App\User::class),
+    ];
+});

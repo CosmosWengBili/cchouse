@@ -33,3 +33,9 @@ $factory->define(TenantPayment::class, function (Faker $faker) {
         'period'               => $faker->randomElement(config('enums.tenant_payments.period')),
     ];
 });
+
+$factory->state(TenantPayment::class, 'new', function ($faker) {
+    return [
+        'tenant_contract_id' => factory(\App\TenantContract::class)->states('new'),
+    ];
+});

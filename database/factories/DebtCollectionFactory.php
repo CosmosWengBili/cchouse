@@ -17,3 +17,10 @@ $factory->define(DebtCollection::class, function (Faker $faker) {
         'updated_at'           => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(DebtCollection::class, 'new', function ($faker) {
+    return [
+        'tenant_contract_id' => factory(\App\TenantContract::class)->states('new'),
+        'collector_id'       => factory(\App\User::class),
+    ];
+});

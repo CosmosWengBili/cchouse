@@ -20,3 +20,9 @@ $factory->define(LandlordPayment::class, function (Faker $faker) {
         'updated_at'         => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(LandlordPayment::class, 'new', function ($faker) {
+    return [
+        'room_id' => factory(\App\Room::class)->states('new'),
+    ];
+});

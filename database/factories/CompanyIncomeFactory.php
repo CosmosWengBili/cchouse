@@ -16,3 +16,10 @@ $factory->define(CompanyIncome::class, function (Faker $faker) {
         'updated_at'     => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(CompanyIncome::class, 'new', function ($faker) {
+    return [
+        'incomable_id'   => factory(\App\TenantContract::class)->states('new'),
+        'incomable_type' => \App\TenantContract::class,
+    ];
+});

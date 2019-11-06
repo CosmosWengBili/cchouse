@@ -34,3 +34,11 @@ $factory->define(Maintenance::class, function (Faker $faker) {
         'is_printed'                    => $faker->boolean
     ];
 });
+
+$factory->state(Maintenance::class, 'new', function ($faker) {
+    return [
+        'room_id'              => factory(\App\Room::class)->states('new'),
+        'commissioner_id'      => factory(\App\User::class),
+        'maintenance_staff_id' => factory(\App\User::class),
+    ];
+});

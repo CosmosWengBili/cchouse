@@ -14,3 +14,9 @@ $factory->define(MonthlyReport::class, function (Faker $faker) {
         'updated_at'           => $faker->date('Y-m-d H:i:s'),
     ];
 });
+
+$factory->state(MonthlyReport::class, 'new', function ($faker) {
+    return [
+        'landlord_contract_id' => factory(\App\LandlordContract::class)->states('new'),
+    ];
+});

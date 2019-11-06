@@ -19,31 +19,19 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>@lang("model.Room.building_id")</td>
+                                    <td>@lang("model.Room.building_code")</td>
                                     <td>
                                         <select
                                             data-toggle="selectize"
                                             data-table="buildings"
-                                            data-text="id"
+                                            data-text="building_code"
+                                            data-text="building_id"
                                             data-selected="{{ $data['building_id'] ?? 0 }}"
                                             name="building_id"
                                             class="form-control form-control-sm"
                                         >
                                         </select>
                                     </td>
-                                    <td>@lang("model.Room.needs_decoration")</td>
-                                    <td>
-
-                                        <input type="hidden" value="0" name="needs_decoration"/>
-                                        <input
-                                            type="checkbox"
-                                            name="needs_decoration"
-                                            value="1"
-                                            {{ isset($data["needs_decoration"]) ? ($data['needs_decoration'] ? 'checked' : '') : '' }}
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.room_code")</td>
                                     <td>
                                         <input
@@ -51,8 +39,11 @@
                                             type="text"
                                             name="room_code"
                                             value="{{ $data['room_code'] ?? '' }}"
+                                            readonly
                                         />
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.Room.virtual_account")</td>
                                     <td>
                                         <input
@@ -60,6 +51,15 @@
                                             type="text"
                                             name="virtual_account"
                                             value="{{ $data['virtual_account'] ?? '' }}"
+                                        />
+                                    </td>
+                                    <td>@lang("model.Room.room_layout")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="room_layout"
+                                            value="{{ $data['room_layout'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -83,29 +83,6 @@
                                             type="text"
                                             name="room_number"
                                             value="{{ $data['room_number'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>@lang("model.Room.room_layout")</td>
-                                    <td>
-                                        <select
-                                            class="form-control form-control-sm"
-                                            name="room_layout"
-                                            value="{{ $data['room_layout'] ?? '' }}"
-                                        />
-                                            @foreach(config('enums.rooms.room_layout') as $value)
-                                                <option value="{{$value}}">{{$value}}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>@lang("model.Room.room_attribute")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="room_attribute"
-                                            value="{{ $data['room_attribute'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -150,26 +127,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>@lang("model.Room.ammeter_reading_date")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="date"
-                                            name="ammeter_reading_date"
-                                            value="{{ $data['ammeter_reading_date'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Room.rent_list_price")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="rent_list_price"
-                                            value="{{ $data['rent_list_price'] ?? '' }}"
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>@lang("model.Room.rent_reserve_price")</td>
                                     <td>
                                         <input
@@ -177,15 +134,6 @@
                                             type="number"
                                             name="rent_reserve_price"
                                             value="{{ $data['rent_reserve_price'] ?? '' }}"
-                                        />
-                                    </td>
-                                    <td>@lang("model.Room.rent_landlord")</td>
-                                    <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number"
-                                            name="rent_landlord"
-                                            value="{{ $data['rent_landlord'] ?? '' }}"
                                         />
                                     </td>
                                 </tr>
@@ -230,6 +178,7 @@
                                             step="0.01"
                                             name="management_fee"
                                             value="{{ $data['management_fee'] ?? '' }}"
+                                            placeholder="$"
                                         />
                                     </td>
                                 </tr>
@@ -284,6 +233,11 @@
                         <h3 class="mt-3">附屬設備</h3>
                         @include('rooms.appliance', ['appliances' => $data['appliances']])
 
+                        @if (isset( $data['room_layout'] ) && $data['room_layout'] =='公區')
+                            <h3 class="mt-3">清潔紀錄</h3>
+                            @include('rooms.maintenance', ['maintenances' => $data['maintenances']])
+                        @endif
+
                         <button class="mt-5 btn btn-success" type="submit">送出</button>
                     </form>
                 </div>
@@ -293,19 +247,35 @@
 </div>
     <script id="validation">
 
+        var defaultManagementFeePlaceholderText = function(){
+            var management_fee_mode = $('[name="management_fee_mode"]')
+            var management_fee = $('[name="management_fee"]')
+
+            if (management_fee_mode.val() == '比例') {
+                management_fee.attr('placeholder','%')
+            }else{
+                management_fee.attr('placeholder','$')
+            }
+        }
+
         $(document).ready(function () {
+            defaultManagementFeePlaceholderText()
+
+            $('[name="management_fee_mode"]').change(function () {
+                defaultManagementFeePlaceholderText()
+            })
 
             const rules = {
-                room_code: {
-                    required: true
-                },
+                // room_code: {
+                //     required: true
+                // },
                 virtual_account: {
                     required: true
                 },
                 room_number: {
                     required: true
                 },
-                room_attribute: {
+                room_layout:{
                     required: true
                 },
                 living_room_count: {
@@ -320,16 +290,7 @@
                 parking_count: {
                     required: true
                 },
-                ammeter_reading_date: {
-                    required: true
-                },
-                rent_list_price: {
-                    required: true
-                },
                 rent_reserve_price: {
-                    required: true
-                },
-                rent_landlord: {
                     required: true
                 },
                 rent_actual: {
@@ -359,9 +320,6 @@
                 room_number: {
                     required: '必須輸入'
                 },
-                room_attribute: {
-                    required: '必須輸入'
-                },
                 living_room_count: {
                     required: '必須輸入',
                 },
@@ -374,16 +332,7 @@
                 parking_count: {
                     required: '必須輸入'
                 },
-                ammeter_reading_date: {
-                    required: '必須輸入'
-                },
-                rent_list_price: {
-                    required: '必須輸入'
-                },
                 rent_reserve_price: {
-                    required: '必須輸入'
-                },
-                rent_landlord: {
                     required: '必須輸入'
                 },
                 rent_actual: {

@@ -42,7 +42,7 @@ class DebtCollectionExport implements FromCollection, WithHeadings
             '垃圾費',
             '水雜費',
             '服務費',
-            '履保金',
+            '押金',
             '已收',
             '110v',
             '220v',
@@ -77,7 +77,9 @@ class DebtCollectionExport implements FromCollection, WithHeadings
         $building =  $tenantContract->building;
         $room =  $tenantContract->room;
         $tenant = $tenantContract->tenant;
-        $phones = $tenant ? $tenant->phones()->get()->map(function ($p) { return $p->value; })->toArray() : [];
+        $phones = $tenant ? $tenant->phones()->get()->map(function ($p) {
+            return $p->value;
+        })->toArray() : [];
         $managementFee = $this->fetchPaymentSumBySubject('管理費');
         $trashFee = $this->fetchPaymentSumBySubject('垃圾費');
         $waterFee = $this->fetchPaymentSumBySubject('水雜費');
@@ -94,10 +96,10 @@ class DebtCollectionExport implements FromCollection, WithHeadings
             $trashFee,                                                                      // 垃圾費
             $waterFee,                                                                      // 水雜費
             $serviceFee,                                                                    // 管理服務費
-            $tenantContract->deposit,                                                       // 履保金
+            $tenantContract->deposit,                                                       // 押金
             $tenantContract->deposit_paid,                                                  // 已收
-            $tenantContract->{"110v_start_degree"},                                         // 110v
-            $tenantContract->{"220v_start_degree"},                                         // 220v
+            $tenantContract->{'110v_start_degree'},                                         // 110v
+            $tenantContract->{'220v_start_degree'},                                         // 220v
             $tenant->name,                                                                  // 承租人
             join(', ', $phones),                                                            // 電話
             $contractRange[0]->format('Y-m-d'),                                                              // 合約起
@@ -117,8 +119,9 @@ class DebtCollectionExport implements FromCollection, WithHeadings
         $data[] = $unpaidElectricityFee;
         $data[] = $total;                                                                   // 合計
 
-
-        return array_map(function ($value) { return strval($value); }, $data);
+        return array_map(function ($value) {
+            return strval($value);
+        }, $data);
     }
 
     private function buildDebtMonths(): array
@@ -179,6 +182,7 @@ class DebtCollectionExport implements FromCollection, WithHeadings
     private function fetchPaymentSumBySubject(string $subject): string
     {
         $lastMonth = [$this->date->copy()->subMonth()->startOfMonth(), $this->date->copy()->subMonth()->endOfMonth()];
+
         return TenantPayment::where('subject', $subject)
                             ->where('is_charge_off_done', false)
                             ->whereBetween('due_time', $lastMonth)
@@ -201,15 +205,18 @@ class DebtCollectionExport implements FromCollection, WithHeadings
         return [$startAt, $endAt];
     }
 
-    private function sumTenantPaymentAmountsByMonth(TenantContract $tenantContract, Carbon $month) {
+    private function sumTenantPaymentAmountsByMonth(TenantContract $tenantContract, Carbon $month)
+    {
         $monthRange = [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()];
+
         return $tenantContract->tenantPayments()
                               ->where('is_charge_off_done', false)
                               ->whereBetween('due_time', $monthRange)
                               ->sum('amount');
     }
 
-    private function sumTenantElectricityPaymentsAmount(TenantContract $tenantContract) {
+    private function sumTenantElectricityPaymentsAmount(TenantContract $tenantContract)
+    {
         return $tenantContract->tenantElectricityPayments()
                               ->where('is_charge_off_done', false)
                               ->where('due_time', '<=', $this->date)

@@ -71,7 +71,7 @@
                                                 </select>
                                                 <button type="button" class="btn btn-info btn-xs js-apply-undertake">套用</button>
                                             @elseif ($isManagementGroup && $statusKey == 'done')
-                                                <button type="button" class="btn btn-info btn-xs js-is-printed">確認已列印</button>
+                                                <button type="button" class="btn btn-info btn-xs js-is-printed">確認已儲存</button>
                                             @endif
                                         </div>
                                         <form data-target="#{{ $statusKey }}-table" data-toggle="datatable-query">
@@ -118,7 +118,7 @@
                                                         <td>@include('shared.helpers.value_helper', ['value' => $value])</td>
                                                     @endforeach
                                                     <td>
-                                                        <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=tenant;room">查看</a>
+                                                        <a class="btn btn-success btn-xs" href="{{ route( 'maintenances.show', $maintenance['id']) }}?with=room">查看</a>
                                                         <a class="btn btn-primary btn-xs" href="{{ route( 'maintenances.edit', $maintenance['id']) }}">編輯</a>
                                                         @if($isAccountGroup && $statusKey == 'request')
                                                             <a class="btn btn-success btn-xs js-get-record" href="#" data-id="{{$maintenance['id']}}" data-toggle="modal" data-target="#maintenance-record-model">查看記錄</a>
@@ -191,7 +191,7 @@
                                                         return;
                                                     }
                                                     const who = $('.js-who-undertake').val();
-                                                    if (!confirm('確認已列印？')) {
+                                                    if (!confirm('確認已儲存？')) {
                                                         return;
                                                     }
 

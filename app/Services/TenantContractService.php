@@ -22,7 +22,6 @@ class TenantContractService
     public function create($data, $payments = [])
     {
         $tenantContract = DB::transaction(function () use ($data, $payments) {
-
             // insertGetId does not support auto created_at
             $data['created_at'] = $data['updated_at'] = Carbon::now();
 
@@ -36,9 +35,9 @@ class TenantContractService
 
             // by default, each tenant contract has one rent payment per month
             $payments[] = [
-                'subject' => '租金',
-                'period' => '月',
-                'amount' => $tenantContract->rent,
+                'subject'      => '租金',
+                'period'       => '月',
+                'amount'       => $tenantContract->rent,
                 'collected_by' => '房東'
             ];
 
@@ -52,11 +51,14 @@ class TenantContractService
                     $tenantContract->contract_end,
                     function ($date) use ($payment) {
                         return TenantPayment::make([
-                            'subject' => $payment['subject'],
-                            'due_time' => $date,
-                            'amount' => $payment['amount'],
-                            'collected_by' => $payment['collected_by'],
-                            'period' => $payment['period'],
+                            'subject'              => $payment['subject'],
+                            'due_time'             => $date,
+                            'amount'               => $payment['amount'],
+                            'collected_by'         => $payment['collected_by'],
+                            'period'               => $payment['period'],
+                            'is_visible_at_report' => true,
+                            'is_charge_off_done'   => $payment['is_charge_off_done'] ?? false,
+                            'charge_off_date'      => $payment['charge_off_date'] ?? null
                         ]);
                     }
                 );
@@ -76,16 +78,26 @@ class TenantContractService
         TenantContract $oldTenantContract,
         $months = 1
     ) {
-        $endedAt = Carbon::create($oldTenantContract->contract_end->format('Y-m-d'));
+        $endedAt  = Carbon::create($oldTenantContract->contract_end->format('Y-m-d'));
         $newStart = $endedAt->copy()->addDay();
 
-        $newTenantContract = $oldTenantContract->replicate(['deleted_at']);
+        $newTenantContract                         = $oldTenantContract->replicate(['deleted_at']);
         $newTenantContract->contract_serial_number = '';
-        $newTenantContract->contract_start = $newStart->format('Y-m-d');
-        $newTenantContract->contract_end = $newStart
-            ->copy()
-            ->addMonthsWithoutOverflow($months)
-            ->format('Y-m-d');
+        $newTenantContract->contract_start         = $newStart->format('Y-m-d');
+        $newTenantContract->contract_end           = $newStart
+                                                        ->copy()
+                                                        ->addMonthsWithoutOverflow($months)
+                                                        ->format('Y-m-d');
+
+        $newTenantContract->rent                = '';
+        $newTenantContract->deposit             = '';
+        $newTenantContract->deposit_paid        = '';
+        $newTenantContract['110v_start_degree'] = '';
+        $newTenantContract['220v_start_degree'] = '';
+        $newTenantContract['110v_end_degree']   = '';
+        $newTenantContract['220v_end_degree']   = '';
+        $newTenantContract->old_tenant_contract_id = $oldTenantContract->id;
+
         return $newTenantContract;
     }
 }

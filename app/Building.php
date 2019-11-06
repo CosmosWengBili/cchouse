@@ -40,13 +40,15 @@ class Building extends Model implements AuditableContract
         'has_elevator' => 'boolean'
     ];
 
-    protected $appends = array('location', 'carry');
+    protected $appends = ['location', 'carry'];
 
-    public function getLocationAttribute() {
+    public function getLocationAttribute()
+    {
         return $this->city.$this->district.$this->address;
     }
 
-    public function getCarryAttribute() {
+    public function getCarryAttribute()
+    {
         return Redis::get('monthlyRepost:carry:'.$this->activeContracts()->first()['id']) ?? 0;
     }
     /**
@@ -78,7 +80,7 @@ class Building extends Model implements AuditableContract
      */
     public function publicRoom()
     {
-        return $this->rooms()->where('room_code', '公用')->first();
+        return $this->rooms()->where('room_layout', '公用')->first();
     }
 
     /**
@@ -86,7 +88,7 @@ class Building extends Model implements AuditableContract
      */
     public function normalRooms()
     {
-        return $this->rooms()->where('room_code', '!=', '公用')->get();
+        return $this->rooms()->where('room_layout', '!=', '公用')->get();
     }
 
     /**

@@ -15,7 +15,7 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        $rooms = Room::where('room_code', '<>', '公用')
+        $rooms = Room::where('room_layout', '<>', '公用')
                     ->with('building')
                     ->orderBy('rooms.building_id')
                     ->get();
@@ -35,16 +35,17 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
                                     ->orderBy('due_time', 'desc')
                                     ->first(); // 上期 tenantElectricityPayments
                 if (is_null($payment)) { // 第一期
-                    $prev110v = $contract->{"110v_start_degree"};
-                    $prev220v = $contract->{"220v_start_degree"};
+                    $prev110v = $contract->{'110v_start_degree'};
+                    $prev220v = $contract->{'220v_start_degree'};
                 } else {
-                    $prev110v = $payment->{"110v_end_degree"};
-                    $prev220v = $payment->{"220v_end_degree"};
+                    $prev110v = $payment->{'110v_end_degree'};
+                    $prev220v = $payment->{'220v_end_degree'};
                 }
             }
 
             $buildingCode = $building ? $building->building_code : '';
             $roomNumber = $room->room_number;
+
             return [
                 strval($buildingCode),
                 strval($roomNumber),

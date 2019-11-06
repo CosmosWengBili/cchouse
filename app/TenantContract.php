@@ -19,6 +19,7 @@ class TenantContract extends Pivot implements AuditableContract
     use AuditableTrait;
     use WithExtraInfo;
 
+    public $incrementing = true;
     /**
      * The attributes that aren't mass assignable.
      *

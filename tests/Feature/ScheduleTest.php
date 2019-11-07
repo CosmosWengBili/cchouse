@@ -19,17 +19,17 @@ class ScheduleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->createApplication();
 
         Artisan::call('migrate');
         Artisan::call('db:seed');
-
     }
     /**
      * @TODO: Fix test and remove ignore group.
      * @group ignore
      */
-    public function testDailySchedule() {
-
+    public function testDailySchedule()
+    {
         Carbon::setTestNow(Carbon::create(2019, 8, 31));
 
         $schedule = app()->make(Schedule::class);
@@ -152,9 +152,9 @@ class ScheduleTest extends TestCase
             'rental_receipt' => '',
             'comment' => ''
         ]);
-        
-        $roomIds = array();
-        for ($k = 0 ; $k < 5; $k++){
+
+        $roomIds = [];
+        for ($k = 0 ; $k < 5; $k++) {
             $roomIds[] = DB::table('rooms')->insertGetId([
                 'building_id' => $buildingCharterId,
                 'room_code' => '',
@@ -212,12 +212,12 @@ class ScheduleTest extends TestCase
             'is_collected_by_third_party' => 1,
             'is_notarized' => 1,
         ]);
-        
-        $payLogIds = array();
-        foreach(array(false, false, false, false, true) as $key => $is_legal_person){
+
+        $payLogIds = [];
+        foreach ([false, false, false, false, true] as $key => $is_legal_person) {
             $tenantId = DB::table('tenants')->insertGetId([
                 'is_legal_person' => $is_legal_person,
-                'certificate_number' => 'id'.rand(0,10000)
+                'certificate_number' => 'id'.rand(0, 10000)
             ]);
             $tenantContractId = DB::table('tenant_contract')->insertGetId([
                 'room_id' => $roomIds[$key],
@@ -228,7 +228,7 @@ class ScheduleTest extends TestCase
             $tenantPaymentId = DB::table('tenant_payments')->insertGetId([
                 'is_charge_off_done' => true,
                 'subject' => '租金',
-                'due_time' => Carbon::create(2019, 8, rand(1,31)),
+                'due_time' => Carbon::create(2019, 8, rand(1, 31)),
                 'amount' => 12000,
                 'tenant_contract_id' => $tenantContractId
             ]);
@@ -240,7 +240,6 @@ class ScheduleTest extends TestCase
             ]);
         }
 
-        
         // run schedule event
         Artisan::call('schedule:run');
         sleep(2);
@@ -254,18 +253,18 @@ class ScheduleTest extends TestCase
         $this->assertTrue(
             User::find($userId)
                 ->notifications
-                ->contains(function ($value, $key) use ($userId){
+                ->contains(function ($value, $key) use ($userId) {
                     return ($value->notifiable_type === 'App\User')
                         && ($value->notifiable_id === $userId)
                         && ($value->type === 'App\Notifications\LandlordContractDue')
                         && (strpos($value->data['content'], '合約即將到期! 物件編號') == 0);
                 })
         );
-        
+
         // assert that rent were adjusted correctly
         $this->assertDatabaseHas('rooms', [
             'id' => $roomId,
-            'rent_reserve_price' => intval(round($rent_reserve_price * (100 + $adjust_ratio ) / 100)),
+            'rent_reserve_price' => intval(round($rent_reserve_price * (100 + $adjust_ratio) / 100)),
         ]);
 
         // assert that paylogs were adjusted correctly
@@ -276,11 +275,10 @@ class ScheduleTest extends TestCase
         $this->assertDatabaseHas('pay_logs', [
             'id' => $payLogIds[3],
             'receipt_type' => '發票'
-        ]);      
+        ]);
         $this->assertDatabaseHas('pay_logs', [
             'id' => $payLogIds[4],
             'receipt_type' => '發票'
-        ]);        
-
+        ]);
     }
 }

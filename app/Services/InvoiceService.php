@@ -264,9 +264,18 @@ class InvoiceService
             $data = $this->makeInvoiceMockData();
             $data['invoice_date'] = $receipt['date'];
             if( $deposit->subject == "訂金(房東)" ){
+                $landlords = $deposit->loggable->room->building->activeContracts()->landlords;
+                if (in_array(true, $landlords->pluck('is_legal_person')->toArray()) ) {
+                    $data['company_number'] = $landlords->where('is_legal_person', true)->first()->certificate_number;
+                    $data['company_name'] = $landlords->where('is_legal_person', true)->first()->name;;
+                }
                 $data['invoice_item_name'] = '管理服務費';
             }
             else if( $deposit->subject == "訂金" ){
+                if ($deposit->loggable->payer_is_legal_person) {
+                    $data['company_number'] = $deposit->loggable->payer_certification_number;
+                    $data['company_name'] = $deposit->loggable->payer_name;
+                }
                 $data['invoice_item_name'] = '違約金';
             }
             $data['amount'] = $deposit->amount;
@@ -277,10 +286,6 @@ class InvoiceService
             $data['data_table_id'] = $deposit->id;
             $data['data_receipt_id'] = $receipt['id'];
 
-            if ($deposit->loggable->payer_is_legal_person) {
-                $data['company_number'] = $deposit->loggable->payer_certification_number;
-                $data['company_name'] = $deposit->loggable->payer_name;
-            }
             
             $data['building_code'] = $deposit->loggable->room->building->building_code;
             $data['room_number'] = $deposit->loggable->room->room_number;

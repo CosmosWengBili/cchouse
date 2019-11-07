@@ -289,8 +289,12 @@ class InvoiceService
             
             $data['building_code'] = $deposit->loggable->room->building->building_code;
             $data['room_number'] = $deposit->loggable->room->room_number;
-            $data['comment'] = '此筆為訂金沒定相關資料'.$receipt['comment'];
-
+            if(is_null($receipt)){
+                $data['comment'] = '此筆為訂金沒定相關資料';
+            }
+            else{
+                $data['comment'] = $receipt['comment'];
+            }
             $data['deposit_date'] = $deposit->paid_at->format('Y-m-d');
             $data['actual_deposit_date'] = $deposit->paid_at->format('Y-m-d');
             $data['invoice_collection_number'] = '';

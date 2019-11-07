@@ -212,6 +212,7 @@ class PayOffController extends Controller
                         'is_charge_off_done' => true,
                         'comment' => $comment,
                         'charge_off_date' => $payOffDate,
+                        'is_pay_off' => true
                     ]);
             });
 

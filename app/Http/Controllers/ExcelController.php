@@ -87,13 +87,11 @@ class ExcelController extends Controller
                 $service = new InvoiceService();
                 $start_date = Input::get('start_date');
                 $end_date = Input::get('end_date');
-                $invoiceData = [];
-                $initData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
-                foreach( $initData as $receiverData ){
-                    $invoiceData = array_merge($invoiceData, $receiverData);
-                }
+                $category = Input::get('category');
+                $invoiceData = $service->makeInvoiceData(Carbon::parse($start_date), Carbon::parse($end_date));
+                
                 return Excel::download(
-                    new InvoiceExport($invoiceData),
+                    new InvoiceExport($invoiceData[$category]),
                     '發票報表.xlsx'
                 );
             case 'receipt':

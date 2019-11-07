@@ -98,6 +98,7 @@ class ReverseTenantPayments
     private function reverse($tenantContract, $virtualAccount, $paidAt, $amount) {
         $order = $this->order;
         $payments = collect(); // TenantPayment and TenantElectricityPayment collection
+        $building = $tenantContract->room->building;
 
         TenantPayment::with('payLogs')
             ->where('tenant_contract_id', $tenantContract->id)
@@ -149,7 +150,9 @@ class ReverseTenantPayments
 
                 // Set payLogData
                 $payLogData['amount'] = $shouldPayAmount;
-                if( $payment->collected_by == '房東'){
+                if( $payment->collected_by == '房東' ||
+                    ($payment->subject == '電費' && $building->activeContracts()['commission_type'] == '代管')
+                ){
                     $payLogData['receipt_type'] = '收據';
                 }
                 $payLog = $payment->payLogs()->create($payLogData);
@@ -168,7 +171,7 @@ class ReverseTenantPayments
 
                 // determine who gets the income
                 $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
-                $electricityPaymentMethod = $tenantContract->room->building->electricity_payment_method;
+                $electricityPaymentMethod = $building->electricity_payment_method;
                 $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod != '自行帳單繳付';
                 $rentPayment = $payment->subject == '租金';
                 if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
@@ -186,7 +189,7 @@ class ReverseTenantPayments
                             $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($shouldPayAmount / $payment->amount)));
                         }
 
-                        if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                        if($building->activeContracts()['commission_type'] == "包租"){
                             return $amount;
                         }
                     }
@@ -216,7 +219,7 @@ class ReverseTenantPayments
                         $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
                     }
                     
-                    if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                    if($building->activeContracts()['commission_type'] == "包租"){
                         return 0;
                     }
                     $tenantContract->companyIncomes()->create($incomeData);

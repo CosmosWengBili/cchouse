@@ -266,7 +266,7 @@ class PayOffController extends Controller
     {
         return [
             'commission_type' => $tenantContract->building->landlordContracts()->active()->commission_type,
-            'room_id' => $tenantContract->room->id,
+            'room_code' => $tenantContract->room->room_code,
             'location' => $tenantContract->building->location,
             'tenant_name' => $tenantContract->tenant->name,
         ];

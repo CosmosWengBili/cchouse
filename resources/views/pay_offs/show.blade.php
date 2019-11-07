@@ -51,9 +51,9 @@
                                 <div class="d-inline-flex">
                                     <a
                                         target="_blank"
-                                        href="{{ route('rooms.show', $headerInfo['room_id']) }}"
+                                        href="{{ route('rooms.show', $headerInfo['room_code']) }}"
                                     >
-                                        {{ $headerInfo['room_id'] }}
+                                        {{ $headerInfo['room_code'] }}
                                     </a>
                                 </div>
                             </li>

@@ -98,6 +98,11 @@ class FakeDataSeeder extends Seeder
 
             $tenant_contract->tenantElectricityPayments()->save(factory(\App\TenantElectricityPayment::class)->make());
 
+            // test 管理服務費
+            $tenant_contract->companyIncomes()->save(factory(\App\CompanyIncome::class)->make([
+                'subject' => '管理服務費',
+            ]));
+            // 其他收入
             $tenant_contract->companyIncomes()->save(factory(\App\CompanyIncome::class)->make([
                 'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
             ]));

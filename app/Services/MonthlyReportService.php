@@ -249,7 +249,24 @@ class MonthlyReportService
                             }
                         }
                     }
+
+                    // 管理服務費, 科目為『租金服務費』form company_incomes
+                    $companyIncomes = $tenantContract->companyIncomes()
+                                        ->whereBetween('income_date', [$start_date, $end_date])
+                                        ->where('subject', '管理服務費')
+                                        ->get();
+
+                    foreach ($companyIncomes as $companyIncome) {
+                        $roomData['incomes'][] = [
+                            'subject' => '租金服務費',
+                            'month' => Carbon::parse($companyIncome->income_date)->month.'月',
+                            'paid_at' => $companyIncome->income_date,
+                            'amount' => $companyIncome->amount,
+                        ];
+                        $roomData['meta']['room_total_income'] += $companyIncome->amount;
+                    }
                 }
+
                 $data['rooms'][] = $roomData;
                 $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
                 $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];

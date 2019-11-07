@@ -262,23 +262,35 @@ class ScheduleService
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
             // store to Redis each time
             Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
+        }
+    }
 
-            // store carry forward if current day it the ten day of the month
-            if ($now->day == 10) {
-                $sub_month_time = $now->subMonth();
-                $sub_month_year = $sub_month_time->year;
-                $sub_month = $sub_month_time->month;
+    // 傳入參數來控制生成哪時候的月報表, 預設: 傳入 subMonth, Schedule 在每月十號
+    // loading 太重, 可能要改用 job queue
+    public function storeMonthlyReportFromLandlordContracts($now = null)
+    {
+        if (! $now) {
+            $now = Carbon::now();
+        }
 
-                $data = $service->getMonthlyReport($landlordContract, $sub_month, $sub_month_year);
-                $carry_forward = $data['meta']['total_income'] - $data['meta']['total_expense'];
+        $year = $now->year;
+        $month = $now->month;
+        $service = new MonthlyReportService();
 
-                MonthlyReport::create([
-                    'year' => $year,
-                    'month' => $month,
-                    'carry_forward' => $carry_forward,
-                    'landlord_contract_id' => $landlordContract->id
-                ]);
-            }
+        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+                                            ->where('commission_end_date', '>', Carbon::today())
+                                            ->get();
+
+        foreach ($landlordContracts as $landlordContract) {
+            $data = $service->getMonthlyReport($landlordContract, $month, $year);
+            $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+
+            MonthlyReport::create([
+                'year' => $year,
+                'month' => $month,
+                'carry_forward' => $revenue,
+                'landlord_contract_id' => $landlordContract->id
+            ]);
         }
     }
     // public function anotherNotification($data) {

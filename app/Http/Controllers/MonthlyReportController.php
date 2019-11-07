@@ -100,11 +100,8 @@ class MonthlyReportController extends Controller
         $landlord_contract = $building->activeContracts();
         $data = $service->getMonthlyReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
         $eletricity_data = $service->getEletricityReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
+
         $data['report_used_date'] = $report_used_date;
-        $pdf_data = [
-            'data' => $data,
-            'eletricity_data' => $eletricity_data
-        ];
 
         return view('monthly_reports.pdf')
                 ->with('data', $data)

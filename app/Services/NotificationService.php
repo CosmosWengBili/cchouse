@@ -23,10 +23,8 @@ class NotificationService
     
     public static function notifyLandlordUpdated($model, $key)
     {
-        $users = User::group('帳務組')->get();
-        foreach( $users as $user ){
-            $user->notify(new LandlordUpdated($model, $key));
-        }
+        $user = User::group('帳務組')->get()->first();
+        $user->notify(new LandlordUpdated($model, $key));
     }
 
     public static function notifyReceiptUpdated($model)

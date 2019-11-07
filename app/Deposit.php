@@ -61,13 +61,13 @@ class Deposit extends Model implements AuditableContract
 
     // 是否為代管
     public function isManagedByCompany() {
-        $contract = $this->tenantContract;
-        if (!$contract) return false;
+        $room = $this->room;
+        if (!$room) return false;
 
-        $building = $contract->building;
+        $building = $room->building;
         if (!$building) return false;
-
-        $landlordContract = $building->activeContracts()->first();
+        
+        $landlordContract = $building->activeContracts();
         if (!$landlordContract) return false;
 
         return $landlordContract->commission_type == '代管';

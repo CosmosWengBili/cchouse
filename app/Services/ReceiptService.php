@@ -47,7 +47,7 @@ class ReceiptService
                             $data['building_code'] = $room->building->building_code;
                             $data['room_number'] = $room->room_number;
                             $data['tenant_name'] = $tenantContract->tenant->name;
-                            $data['paid_at'] = $payment->due_time;
+                            $data['paid_at'] = $payment->due_time->format('Y-m-d');
                             $data['amount'] = $payment->amount;
                             $data['group'] = $room->building->group;
 
@@ -77,15 +77,17 @@ class ReceiptService
                 '、',
                 $landlordContract->landlords->pluck('name')->toArray()
             );
+            
+            $data['taxable_charter_fee'] = $landlordContract->taxable_charter_fee;
             $taxableCharteFee = $this->countTaxableCharterFee($landlordContract, $selectedStartDate->year, $selectedStartDate->month);
-            $data['taxable_charter_fee'] = $taxableCharteFee;
             $data['actual_charter_fee'] =
-                $this->countActualCharterFee($landlordContract, $taxableCharteFee, $selectedStartDate, $selectedEndDate);
+                round($this->countActualCharterFee($landlordContract, $taxableCharteFee, $selectedStartDate, $selectedEndDate));
             $data['rent_collection_time'] =
                 $landlordContract->rent_collection_time;
             $data['rent_collection_year'] = Carbon::now()->year;
             $data['commission_end_date'] =
                 Carbon::create($landlordContract->commission_end_date)->format('Y/m/d');
+            $data['empty_column'] = '';
 
             array_push($this->globalData['receipt_building'], $data);
         }
@@ -111,37 +113,25 @@ class ReceiptService
     public function countActualCharterFee($landlordContract, $this_month_taxable_charter_fee, $start_date, $end_date){
 
         $rooms = $landlordContract->building->normalRooms();
-        $should_paid_amount = 0;
-        $paid_amount = 0;
+        $should_paid_amount = $rooms->sum('rent_actual');
         $should_ignored_amount = 0;
-
         foreach( $rooms as $room ){
             $tenantContracts = $room->activeContracts()->get();
-	    foreach( $tenantContracts as $tenantContract){
+	        foreach( $tenantContracts as $tenantContract){
                 if(is_null($tenantContract)){}
                 else{
-                    $should_paid_amount += $tenantContract->rent;
-		    $temp_paid = $tenantContract->tenantPayments->where('is_charge_off_done', True)
-                                                            ->where('subject', '租金')
-                                                            ->whereBetween('due_time', [$start_date, $end_date])
-                                                            ->sum('amount');
-                    $paid_amount += $temp_paid;
-                    if($tenantContract->tenant->is_legal_person && $temp_paid != 0){
-                        $should_ignored_amount += $temp_paid;
+                    if($tenantContract->tenant->is_legal_person){
+                        $should_ignored_amount += $room->rent_actual;
                     }
                 }
             }
         }
-        if( $should_paid_amount == 0 ){
-            return 0;
+        $valid_amount = $should_paid_amount - $should_ignored_amount;
+        if( $valid_amount > $this_month_taxable_charter_fee ){
+            return $this_month_taxable_charter_fee;
         }
         else{
-            if( ($should_paid_amount - $should_ignored_amount)/$should_paid_amount > $this_month_taxable_charter_fee ){
-                return ($should_paid_amount - $should_ignored_amount)/$should_paid_amount * $this_month_taxable_charter_fee;
-            }
-            else{
-                return ($should_paid_amount - $should_ignored_amount);
-            }
+            return $valid_amount/$should_paid_amount * $this_month_taxable_charter_fe;
         }
     }
 }

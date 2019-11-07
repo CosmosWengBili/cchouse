@@ -17,7 +17,8 @@ class FakeDataSeeder extends Seeder
         'landlord_payments', 'landlord_other_subjects',
         'buildings', 'rooms', 'appliances', 'maintenances', 'keys', 'key_requests',
         'tenants', 'tenant_contract', 'tenant_payments', 'tenant_electricity_payments',
-        'shareholders', 'building_shareholder', 'building_shareholder', 'pay_logs', 'pay_offs', 'company_incomes'
+        'shareholders', 'building_shareholder', 'building_shareholder', 'pay_logs', 'pay_offs', 'company_incomes',
+        'notifications'
     ];
 
     /**
@@ -29,12 +30,8 @@ class FakeDataSeeder extends Seeder
     {
         $this->truncate();
 
-        $now = \Carbon\Carbon::now();
-        $this->year  = $now->year;
-        $this->month = $now->month;
-
         // 先有 建築, 在對應房東契約
-        factory(\App\Building::class, 2)
+        factory(\App\Building::class, 7)
             ->create()
             ->each(function (\App\Building $building) {
                 $building->landlordContracts()->save(factory(\App\LandlordContract::class)->make());
@@ -103,9 +100,9 @@ class FakeDataSeeder extends Seeder
                 'subject' => '管理服務費',
             ]));
             // 其他收入
-            $tenant_contract->companyIncomes()->save(factory(\App\CompanyIncome::class)->make([
-                'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
-            ]));
+            // $tenant_contract->companyIncomes()->save(factory(\App\CompanyIncome::class)->make([
+            //     'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
+            // ]));
 
             $tenant_contract->payOff()->create([
                 'pay_off_type' => '協調退租'
@@ -129,21 +126,9 @@ class FakeDataSeeder extends Seeder
             ]));
         });
 
+        $this->call(testMaintenanceMarkDoneSeeder::class);
         // 生成 月結報告
-        App\Services\ScheduleService::setMonthlyReportCarryFoward();
-        \App\Building::all()->each(function (\App\Building $building) {
-            $contract = $building->activeContracts()->first();
-
-            if ($contract) {
-                $revenue = Redis::get('monthlyRepost:carry:'.$contract->id);
-                $monthlyReport = \App\MonthlyReport::create([
-                    'year' => $this->year,
-                    'month' => $this->month,
-                    'carry_forward' => $revenue,
-                    'landlord_contract_id' => $contract->id
-                ]);
-            }
-        });
+        $this->call(testMonthlyReportSeeder::class);
     }
 
     private function truncate()

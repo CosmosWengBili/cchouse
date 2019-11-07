@@ -260,17 +260,25 @@ class ScheduleService
         foreach ($landlordContracts as $landlordContract) {
             $data = $service->getMonthlyReport($landlordContract, $month, $year);
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
-
-            // store carry forward if current day it the ten day of the month
-            if (Carbon::now()->day == 10) {
-                $monthlyReport = MonthlyReport::create(['year' => $year,
-                    'month' => $month,
-                    'carry_forward' => $revenue,
-                    'landlord_contract_id' => $landlordContract->id]);
-            }
-
             // store to Redis each time
             Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
+
+            // store carry forward if current day it the ten day of the month
+            if ($now->day == 10) {
+                $sub_month_time = $now->subMonth();
+                $sub_month_year = $sub_month_time->year;
+                $sub_month = $sub_month_time->month;
+
+                $data = $service->getMonthlyReport($landlordContract, $sub_month, $sub_month_year);
+                $carry_forward = $data['meta']['total_income'] - $data['meta']['total_expense'];
+
+                MonthlyReport::create([
+                    'year' => $year,
+                    'month' => $month,
+                    'carry_forward' => $carry_forward,
+                    'landlord_contract_id' => $landlordContract->id
+                ]);
+            }
         }
     }
     // public function anotherNotification($data) {

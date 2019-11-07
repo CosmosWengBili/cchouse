@@ -122,6 +122,7 @@ class MonthlyReportService
             // section : details
             $landlordPayments = $room->landlordPayments->whereBetween('collection_date', [$start_date, $end_date]);
             $landlordOtherSubjects = $room->landlordOtherSubjects
+                ->where('subject', '!=', '清潔費')
                 ->where('subject_type', '!=', '點交')
                 ->whereBetween('expense_date', [$start_date, $end_date]);
 
@@ -199,9 +200,12 @@ class MonthlyReportService
                 foreach ($tenantContracts as $tenantContract) {
                     $payLogs = $tenantContract->payLogs->whereBetween('paid_at', [$start_date, $end_date])
                                                         ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment']);
+
+                    // PayLog 裡面好像沒有 collected_by Attribute
                     $payLogs->reject(function ($payLog) {
                         return $payLog->collected_by == '公司';
                     });
+
                     foreach ($payLogs as $payLog) {
                         $roomData['incomes'][] = [
                             'subject' => $payLog->subject,
@@ -252,6 +256,7 @@ class MonthlyReportService
             }
             // end section : rooms
         }
+
         // section: add carry forward
         $carry_forward = MonthlyReport::where('year', $year)
             ->where('month', $month - 1)
@@ -374,6 +379,7 @@ class MonthlyReportService
             ];
         }
         // end section : shareholders
+
         return collect($data);
     }
 

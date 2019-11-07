@@ -29,8 +29,12 @@ class FakeDataSeeder extends Seeder
     {
         $this->truncate();
 
+        $now = \Carbon\Carbon::now();
+        $this->year  = $now->year;
+        $this->month = $now->month;
+
         // 先有 建築, 在對應房東契約
-        factory(\App\Building::class, 13)
+        factory(\App\Building::class, 2)
             ->create()
             ->each(function (\App\Building $building) {
                 $building->landlordContracts()->save(factory(\App\LandlordContract::class)->make());
@@ -118,6 +122,22 @@ class FakeDataSeeder extends Seeder
                 'tenant_contract_id' => $tenant_electricity_payment->tenant_contract_id,
                 'receipt_type' => '發票',
             ]));
+        });
+
+        // 生成 月結報告
+        App\Services\ScheduleService::setMonthlyReportCarryFoward();
+        \App\Building::all()->each(function (\App\Building $building) {
+            $contract = $building->activeContracts()->first();
+
+            if ($contract) {
+                $revenue = Redis::get('monthlyRepost:carry:'.$contract->id);
+                $monthlyReport = \App\MonthlyReport::create([
+                    'year' => $this->year,
+                    'month' => $this->month,
+                    'carry_forward' => $revenue,
+                    'landlord_contract_id' => $contract->id
+                ]);
+            }
         });
     }
 

@@ -92,14 +92,13 @@ class ScheduleService
                 $landlordContract->building->rooms->each(function ($room) use (
                     $landlordContract
                 ) {
-
                     $ratio = intval($landlordContract->adjust_ratio);
                     $isRatioLTE100 = $ratio <= 100;
                     if ($isRatioLTE100) {
                         // 用 % 數調漲
                         $room->rent_reserve_price = intval(
                             round(
-                                ($room->rent_reserve_price * (100 + $landlordContract->adjust_ratio) ) / 100
+                                ($room->rent_reserve_price * (100 + $landlordContract->adjust_ratio)) / 100
                             )
                         );
                     } else {
@@ -111,7 +110,6 @@ class ScheduleService
                         );
                     }
                     $room->save();
-
 
                     if ($room->rent_reserve_price > $room->rent_actual) {
                         $users = User::group('管理組')->get();
@@ -263,8 +261,8 @@ class ScheduleService
             $data = $service->getMonthlyReport($landlordContract, $month, $year);
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
 
-            // store carry forward if current day it the last day of the month
-            if (Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d')) {
+            // store carry forward if current day it the ten day of the month
+            if (Carbon::now()->day == 10) {
                 $monthlyReport = MonthlyReport::create(['year' => $year,
                     'month' => $month,
                     'carry_forward' => $revenue,

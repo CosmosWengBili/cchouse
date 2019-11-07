@@ -108,7 +108,8 @@ class MonthlyReportController extends Controller
 
         return view('monthly_reports.pdf')
                 ->with('data', $data)
-                ->with('eletricity_data', $eletricity_data);
+                ->with('eletricity_data', $eletricity_data)
+                ->with('file_name', $report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
     }
 
     public function print_tenant(building $building)

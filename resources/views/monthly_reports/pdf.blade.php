@@ -420,7 +420,7 @@
                             }
                         }
                     }
-                    // pdf.save('content.pdf');
+                    pdf.save("{{ $file_name }}");
                 })
         },3000)
     };

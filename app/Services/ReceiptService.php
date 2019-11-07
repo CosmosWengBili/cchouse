@@ -47,7 +47,7 @@ class ReceiptService
                             $data['building_code'] = $room->building->building_code;
                             $data['room_number'] = $room->room_number;
                             $data['tenant_name'] = $tenantContract->tenant->name;
-                            $data['paid_at'] = $payment->due_time;
+                            $data['paid_at'] = $payment->due_time->format('Y-m-d');
                             $data['amount'] = $payment->amount;
                             $data['group'] = $room->building->group;
 
@@ -87,6 +87,7 @@ class ReceiptService
             $data['rent_collection_year'] = Carbon::now()->year;
             $data['commission_end_date'] =
                 Carbon::create($landlordContract->commission_end_date)->format('Y/m/d');
+            $data['empty_column'] = '';
 
             array_push($this->globalData['receipt_building'], $data);
         }

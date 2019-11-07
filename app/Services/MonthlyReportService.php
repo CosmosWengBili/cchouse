@@ -120,11 +120,15 @@ class MonthlyReportService
             ];
 
             // section : details
-            $landlordPayments = $room->landlordPayments->whereBetween('collection_date', [$start_date, $end_date]);
+            $landlordPayments = $room->landlordPayments
+                                    ->whereBetween('collection_date', [$start_date, $end_date])
+                                    ->where('subject', 'like', '維修案件%')
+                                    // ->where('billing_vendor', 'CCHOUSE')
+                                    ;
+
             $landlordOtherSubjects = $room->landlordOtherSubjects
-                ->where('subject', '!=', '清潔費')
-                ->where('subject_type', '!=', '點交')
-                ->whereBetween('expense_date', [$start_date, $end_date]);
+                                        ->where('subject_type', '!=', '點交')
+                                        ->whereBetween('expense_date', [$start_date, $end_date]);
 
             foreach ($landlordPayments as $landlordPayment) {
                 $data['details']['data'][] = [

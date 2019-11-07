@@ -26,6 +26,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             )->name('buildings.electricityPaymentReport');
             Route::get('rooms/{room}/deposits', 'RoomController@deposits')->name('rooms.deposits');
             Route::resource('rooms', 'RoomController');
+            Route::resource('roomMaintenances', 'RoomMaintenanceController');
             Route::resource('keys', 'KeyController');
             Route::resource('keyRequests', 'KeyRequestController');
             Route::get('landlords/createMulti', 'LandlordController@createMulti')->name('landlordMulti.create');

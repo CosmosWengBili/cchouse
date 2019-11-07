@@ -34,17 +34,16 @@ class TenantContract extends Pivot implements AuditableContract
      * @var array
      */
     protected $casts = [
-        'set_other_rights' => 'boolean',
+        'set_other_rights'  => 'boolean',
         'sealed_registered' => 'boolean',
-        'effective' => 'boolean',
-        'contract_end' => 'date',
-        'contract_start' => 'date',
+        'contract_end'      => 'date',
+        'contract_start'    => 'date',
     ];
 
+    protected $appends = ['currentBalance'];
 
-    protected $appends = array('currentBalance');
-
-    public function getCurrentBalanceAttribute() {
+    public function getCurrentBalanceAttribute()
+    {
         return $this->calculateCurrentBalance();
     }
 
@@ -64,7 +63,8 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->belongsTo('App\Room');
     }
 
-    public function building() {
+    public function building()
+    {
         return $this->hasOneThrough(
             'App\Building',
             'App\Room',
@@ -186,21 +186,20 @@ class TenantContract extends Pivot implements AuditableContract
         return $this->hasOne('App\PayOff', 'tenant_contract_id');
     }
 
-    public function calculateCurrentBalance() {
-
-        $month = 0;
+    public function calculateCurrentBalance()
+    {
+        $month        = 0;
         $payment_date = '';
 
-        if( Carbon::now()->format('d') < $this->rent_pay_day ){
-            $month = Carbon::now()->subMonth()->month;
-            $payment_date = Carbon::create(Carbon::now()->year,$month,$this->rent_pay_day);
-            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+        if (Carbon::now()->format('d') < $this->rent_pay_day) {
+            $month             = Carbon::now()->subMonth()->month;
+            $payment_date      = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
+            $unpaid            = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
             $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<', $payment_date)->sum('amount');
-        }
-        else{
-            $month = Carbon::now()->month;
-            $payment_date = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
-            $unpaid = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
+        } else {
+            $month             = Carbon::now()->month;
+            $payment_date      = Carbon::create(Carbon::now()->year, $month, $this->rent_pay_day);
+            $unpaid            = $this->tenantPayments()->where('due_time', '<=', $payment_date)->sum('amount');
             $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');
         }
 
@@ -222,11 +221,12 @@ class TenantContract extends Pivot implements AuditableContract
             ->where('contract_start', '<=', Carbon::today());
     }
 
-    public function sendElectricityPaymentReportSMS(int $year, int $month) {
+    public function sendElectricityPaymentReportSMS(int $year, int $month)
+    {
         $smsService = resolve(SmsService::class);
-        $mobile = $this->tenant()->first()->phones()->first()->value;
-        $createdAt = Carbon::now()->getTimestamp();
-        $url = route('tenantContracts.electricityPaymentReport', [
+        $mobile     = $this->tenant()->first()->phones()->first()->value;
+        $createdAt  = Carbon::now()->getTimestamp();
+        $url        = route('tenantContracts.electricityPaymentReport', [
             'data' => base64_encode("{$this->id}|{$year}|${month}|{$createdAt}")
         ]);
 
@@ -237,7 +237,8 @@ class TenantContract extends Pivot implements AuditableContract
     /**
      * 取得下一期的 TenantContract
      */
-    public function nextTenantContract() {
+    public function nextTenantContract()
+    {
         return $this->tenant
              ->tenantContracts()
              ->where('tenant_contract.id', '>', $this->id)
@@ -246,8 +247,10 @@ class TenantContract extends Pivot implements AuditableContract
              ->first();
     }
 
-    private function electricityPaymentAmount($year, $month) {
+    private function electricityPaymentAmount($year, $month)
+    {
         $data = $this->room()->first()->buildElectricityPaymentData($year, $month);
+
         return $data['本期應付金額'];
     }
 }

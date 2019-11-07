@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -6,18 +7,22 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use function foo\func;
 
-trait WithExtraInfo {
-    public function scopeWithExtraInfo(Builder $builder) {
+trait WithExtraInfo
+{
+    public function scopeWithExtraInfo(Builder $builder)
+    {
         $tableName = $this->getTable();
 
         return $this->joinRequiredTable($builder)->groupBy("{$tableName}.id");
     }
 
-    public static function extraInfoColumns() {
+    public static function extraInfoColumns()
+    {
         return (new self())->getExtraSelects();
     }
 
-    private function joinRequiredTable(Builder $builder) {
+    private function joinRequiredTable(Builder $builder)
+    {
         $tableName = $this->getTable();
 
         switch ($tableName) {
@@ -44,12 +49,17 @@ trait WithExtraInfo {
                         ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
                 break;
-            case 'debt_collections':
             case 'maintenances':
+                    return $builder
+                    ->join('rooms', 'rooms.id', '=', 'maintenances.room_id')
+                    ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
+                    ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
+                break;
+            case 'debt_collections':
             case 'deposits':
                 return $builder
                     ->Leftjoin('tenant_contract', 'tenant_contract.id', '=', "{$tableName}.tenant_contract_id")
-                    ->join('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                    ->join('rooms', 'rooms.id', '=', 'tenant_contract.room_id')
                     ->join('buildings', 'buildings.id', '=', 'rooms.building_id')
                     ->join('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id');
                 break;
@@ -59,7 +69,7 @@ trait WithExtraInfo {
                             $join->on('tenant_contract.id', '=', "{$tableName}.incomable_id")
                                  ->on("{$tableName}.incomable_type", '=', DB::raw("'App\TenantContract'"));
                         })
-                        ->leftJoin('rooms', 'rooms.id', '=', "tenant_contract.room_id")
+                        ->leftJoin('rooms', 'rooms.id', '=', 'tenant_contract.room_id')
                         ->leftJoin('buildings', 'buildings.id', '=', 'rooms.building_id')
                         ->leftJoin('landlord_contracts', 'landlord_contracts.building_id', '=', 'rooms.building_id')
                         ->leftJoin('receipts', function (JoinClause $query) {
@@ -72,7 +82,8 @@ trait WithExtraInfo {
         }
     }
 
-    private function getExtraSelects() {
+    private function getExtraSelects()
+    {
         $tableName = $this->getTable();
 
         switch ($tableName) {

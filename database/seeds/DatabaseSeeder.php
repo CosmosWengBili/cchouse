@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call(SystemVariableSeeder::class);
         $this->command->info('system variable table seeded!');
+
+        // test
+        $this->call(FakeDataSeeder::class);
+        $this->command->info('test date seeded!');
     }
 }

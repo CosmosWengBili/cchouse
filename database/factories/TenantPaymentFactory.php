@@ -10,7 +10,7 @@ use Faker\Generator as Faker;
 // this is just a demo of attributes, all relations should be assigned by yourself
 $factory->define(TenantPayment::class, function (Faker $faker) {
     return [
-        'tenant_contract_id' => factory(TenantContract::class),
+        'tenant_contract_id' => 0,
         'subject' => '水雜費',
         'due_time' => '2019-08-10',
         'amount' => 300,

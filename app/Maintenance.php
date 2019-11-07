@@ -61,41 +61,11 @@ class Maintenance extends Model implements AuditableContract
     }
 
     /**
-     * Get the tenant contract of this maintenance.
-     */
-    public function tenantContract()
-    {
-        return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
-    }
-
-    /**
-     * Get the tenant of this maintenance.
-     */
-    public function tenant()
-    {
-        return $this->hasOneThrough(
-            'App\Tenant',
-            'App\TenantContract',
-            'id',
-            'id',
-            'tenant_contract_id',
-            'tenant_id'
-        );
-    }
-
-    /**
-     * Get the tenant of this maintenance.
+     * Get the room of this maintenance.
      */
     public function room()
     {
-        return $this->hasOneThrough(
-            'App\Room',
-            'App\TenantContract',
-            'id',
-            'id',
-            'tenant_contract_id',
-            'room_id'
-        );
+        return $this->belongsTo('App\Room');
     }
 
     /**
@@ -133,7 +103,7 @@ class Maintenance extends Model implements AuditableContract
     {
         return $this->morphMany('App\Receipt', 'receiptable');
     }
-    
+
     public function companyIncomes()
     {
         return $this->morphMany('App\CompanyIncome', 'incomable');

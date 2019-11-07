@@ -1,3 +1,7 @@
+@php
+    $tenantContractId = Request::get('tenantContractId')?? $data['tenant_contract_id'] ?? null;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -36,7 +40,7 @@
                                             data-toggle="selectize"
                                             data-table="tenant_contract"
                                             data-text="id"
-                                            data-selected="{{ $data['tenant_contract_id'] ?? 0 }}"
+                                            data-selected="{{$tenantContractId}}"
                                             name="tenant_contract_id"
                                             class="form-control form-control-sm"
                                         >

@@ -10,6 +10,7 @@ use App\Observers\LandlordContractObserver;
 use App\Landlord;
 use App\LandlordContract;
 use Illuminate\Support\ServiceProvider;
+use DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if (config('app.debug')) {
+            DB::enableQueryLog();
+        }
     }
 
     /**

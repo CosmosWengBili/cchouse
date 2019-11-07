@@ -5,6 +5,8 @@ use App\PayLog;
 use Faker\Generator as Faker;
 
 $factory->define(PayLog::class, function (Faker $faker) {
+    $faker->addProvider(new \Faker\Provider\en_US\Payment($faker));
+
     return [
         'tenant_contract_id' => \App\TenantContract::inRandomOrder()->first(),
         'subject'            => $faker->randomElement(config('enums.tenant_payments.subject')),
@@ -12,10 +14,10 @@ $factory->define(PayLog::class, function (Faker $faker) {
         'loggable_id'     => \App\TenantPayment::inRandomOrder()->first(),
         'payment_type'    => $faker->randomElement(config('enums.pay_logs.payment_type')),
         'amount'          => $faker->randomDigitNotNull,
-        'virtual_account' => $faker->word,
+        'virtual_account' => $faker->bankAccountNumber,
         'receipt_type'    => $faker->word,
         'comment'         => $faker->text,
-        'paid_at'         => $faker->date('Y-m-d H:i:s'),
+        'paid_at'         => $faker->dateTimeBetween('-15 day', '15 day'),
         'created_at'      => $faker->date('Y-m-d H:i:s'),
         'updated_at'      => $faker->date('Y-m-d H:i:s'),
     ];

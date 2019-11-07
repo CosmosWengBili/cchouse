@@ -16,6 +16,7 @@ $factory->define(Maintenance::class, function (Faker $faker) {
         'closed_date'                   => \Carbon\Carbon::create('next wednesday'),
         'closed_comment'                => $faker->text,
         'service_comment'               => $faker->sentence(),
+        'status'                        => $faker->randomElement(config('enums.maintenance.status')),
         'incident_details'              => $faker->sentence(),
         'incident_type'                 => $faker->randomElement(config('enums.maintenance.incident_type')),
         'work_type'                     => $faker->randomElement(config('enums.maintenance.work_type')),
@@ -30,7 +31,7 @@ $factory->define(Maintenance::class, function (Faker $faker) {
         'is_recorded'                   => $faker->boolean,
         'comment'                       => $faker->sentence(),
         'created_at'                    => $faker->date('Y-m-d H:i:s'),
-        'updated_at'                    => $faker->date('Y-m-d H:i:s'),
+        'updated_at'                    => $faker->dateTimeBetween('-15 day', '15 day'),
         'is_printed'                    => $faker->boolean
     ];
 });

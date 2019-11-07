@@ -628,7 +628,7 @@ return [
         'created_at'            => '建立時間',
         'updated_at'            => '更新時間',
         'deleted_at'            => '刪除時間',
-        'invoice_price'         => '發票價格',
+        'invoice_price'         => '發票金額',
         'receiptable_id'        => '發票編號',
         'receiptable_type'      => '發票類別',
         'invoice_serial_number' => '發票號碼',

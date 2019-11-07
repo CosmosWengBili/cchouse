@@ -126,10 +126,11 @@ class InvoiceService
             $data['data_table_id'] = $pay_log->loggable->id;
             $data['data_receipt_id'] = $receipt['id'];
 
+            $data['invoice_price'] = $receipt['invoice_price'] ?? $subtotal;
+
             $subtotal += $pay_log->loggable->amount;
 
             // Make subtotal row
-
             if ($payment_count == $invoice_item_count || $pay_log->loggable->subject == "租金") {
                 $data['invoice_item_idx'] = $data['invoice_item_idx'];
                 if (
@@ -150,8 +151,7 @@ class InvoiceService
                 );
                 $data['invoice_collection_number'] =
                     $pay_log->loggable->tenantContract->invoice_collection_number;
-                
-                $data['invoice_price'] = $subtotal;
+                $data['invoice_price'] = $receipt['invoice_price'] ?? $subtotal;
                 $data['subtotal'] = $subtotal;
                 $subtotal = 0;
             }

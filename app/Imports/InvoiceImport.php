@@ -22,6 +22,7 @@ use App\Services\NotificationService;
 class InvoiceImport implements ToModel, WithHeadingRow
 {
     private $result;
+    private $temp_rows;
     public function __construct()
     {
       $this->result = ['status'=>'success', 'msg' => ''];
@@ -37,11 +38,30 @@ class InvoiceImport implements ToModel, WithHeadingRow
         $service = new InvoiceService();
         $model = app("App\\".studly_case(Str::singular($row['資料來源(程式用)'])))->find($row['來源資料編號']);
         if(isset($model)){
+            // Haven't created Receipt
             if ($row['發票ID(程式用)'] == null) {
                 // Check whether invoice_serial_number exist to avoid generating redundant receipt
                 if( $row['發票號碼'] == '' ){
                     return ;
                 }
+                if( $row['發票金額'] == ''){
+                    $row['費用來源'] = $model;
+                    $this->temp_rows[] = $row;
+                    return ; 
+                }
+
+                // Save temp rows( subtotal source )
+                foreach( $this->temp_rows as $temp_row){
+                    $receipt = new Receipt();
+                    $receipt->invoice_serial_number = $temp_row['發票號碼'];
+                    $receipt->date = $temp_row['發票日期'];
+                    $receipt->invoice_price = $row['發票金額'];
+                    $receipt->comment = $temp_row['備註'];
+                    $temp_row['費用來源']->receipts()->save($receipt);                    
+                }
+                $this->temp_rows = [];
+
+                // Save subtotal row
                 $receipt = new Receipt();
                 $receipt->invoice_serial_number = $row['發票號碼'];
                 $receipt->date = $row['發票日期'];
@@ -49,6 +69,7 @@ class InvoiceImport implements ToModel, WithHeadingRow
                 $receipt->comment = $row['備註'];
                 $model->receipts()->save($receipt);
             }
+            // Have created Receipt
             else{
                 $receipt = Receipt::find($row['發票ID(程式用)']);
       

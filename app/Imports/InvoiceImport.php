@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -12,9 +13,11 @@ use App\PayLog;
 use App\Receipt;
 use App\Maintenance;
 use App\TenantPayment;
+use App\EditorialReview;
 use App\TenantElectricityPayment;
 use App\LandlordOtherSubject;
 use App\Services\InvoiceService;
+use App\Services\NotificationService;
 
 class InvoiceImport implements ToModel, WithHeadingRow
 {
@@ -52,12 +55,28 @@ class InvoiceImport implements ToModel, WithHeadingRow
                 // If the invoice_serial_number from user is different with receipt, notify invoice group users
                 if( $receipt->invoice_serial_number != $row['發票號碼']){
                     NotificationService::notifyReceiptUpdated($model);
+                    EditorialReview::create([
+                        'editable_id' => $receipt->id,
+                        'editable_type' => get_class($receipt),
+                        'original_value' => $receipt->getAttributes(),
+                        'edit_value' => [
+                            'invoice_serial_number' => $row['發票號碼'],
+                            'date' => $row['發票日期'],
+                            'invoice_price' => $row['發票金額'],
+                            'comment' => $row['備註'],
+                        ],
+                        'edit_user' => Auth::id(),
+                        'extra_data' => '',
+                        'comment' => '發票號碼更新',
+                    ]);  
                 }
-                $receipt->invoice_serial_number = $row['發票號碼'];
-                $receipt->date = $row['發票日期'];
-                $receipt->invoice_price = $row['發票金額'];
-                $receipt->comment = $row['備註'];
-                $receipt->save();
+                else{
+                    $receipt->invoice_serial_number = $row['發票號碼'];
+                    $receipt->date = $row['發票日期'];
+                    $receipt->invoice_price = $row['發票金額'];
+                    $receipt->comment = $row['備註'];
+                    $receipt->save();
+                }
             }    
         }
         else{

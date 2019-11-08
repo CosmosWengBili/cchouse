@@ -187,6 +187,7 @@
                         @endforeach
                         {{-- PayOff data end --}}
                         {{-- Detail data --}}
+                        @if (count($data['details']['data']) > 0)
                         <div class="col-12 row px-0 border border-dark">
                             <div class="col-2 text-center border border-dark py-5 my-0">
                                 費用明細
@@ -223,6 +224,7 @@
                                 <div class="col-1 text-right"><span>{{ $data['details']['meta']['total_expenses'] }}</span></div>
                             </div>
                         </div>
+                        @endif
                         {{-- Detail data end --}}
                         {{-- Shareholder data --}}
                         @if( !empty($data['shareholders'] ))

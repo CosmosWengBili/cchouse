@@ -103,22 +103,6 @@ class MonthlyReportService
 
         // section : rooms
         foreach ($landlordContract->building->rooms as $room) {
-            $roomData = [
-                'meta' => [
-                    'room_total_income' => 0,
-                    'room_total_expense' => 0,
-                ],
-                'incomes' => [
-                    // [  // example
-                    //     'subject' => '租金',
-                    //     'month'   => '8月',
-                    //     'paid_at' => '2019-08-20',
-                    //     'amount'  => '1000',
-                    // ]
-                ],
-                'expenses' => []
-            ];
-
             // section : details
             $landlordPayments = $room->landlordPayments
                                     ->whereBetween('collection_date', [$start_date, $end_date])
@@ -186,31 +170,55 @@ class MonthlyReportService
                 $data['details']['meta']['total_expenses'] += $maintenance->price;
             }
 
-            $tenantContracts = $room->tenantContracts
-                ->where('contract_start', '<', $end_date)
-                ->where('contract_end', '>', $start_date);
-
             // end section : details
             if ($room->room_layout === '公用') {
                 continue;
             }
 
-            $roomData['meta']['room_number'] = $room->room_number;
-            $roomData['meta']['management_fee'] = $room->management_fee;
-            $roomData['meta']['management_fee_mode'] = $room->management_fee_mode;
-            $roomData['meta']['status'] = $room->room_status;
+            $roomData = [
+                'meta' => [
+                    'room_total_income' => 0,
+                    'room_total_expense' => 0,
+                    'room_number' => $room->room_number,
+                    'management_fee' => $room->management_fee,
+                    'management_fee_mode' => $room->management_fee_mode,
+                    'status' => $room->room_status,
+                ],
+                'incomes' => [
+                    // [  // example
+                    //     'subject' => '租金',
+                    //     'month'   => '8月',
+                    //     'paid_at' => '2019-08-20',
+                    //     'amount'  => '1000',
+                    // ]
+                ],
+                'expenses' => []
+            ];
 
+            $tenantContracts = $room->tenantContracts;
             if ($tenantContracts->count() > 0) {
+                // room
                 foreach ($tenantContracts as $tenantContract) {
-                    $payLogs = $tenantContract->payLogs->whereBetween('paid_at', [$start_date, $end_date])
-                                                        ->whereIn('loggable_type', ['App\TenantPayment', 'App\TenantElectricityPayment']);
+                    $tenantContract->load([
+                        'payLogs' => function ($query) use ($start_date, $end_date) {
+                            $query->with('loggable')
+                                ->whereHasMorph('loggable', '*', function ($query, $type) {
+                                    if ($type == 'App\TenantPayment') {
+                                        $query->where('is_pay_off', 0)
+                                            ->where('collected_by', '房東');
+                                    }
+                                })
+                                ->whereBetween('paid_at', [$start_date, $end_date]);
+                        },
+                        // 管理服務費, 科目為『租金服務費』form company_incomes
+                        'companyIncomes' => function ($query) use ($start_date, $end_date) {
+                            $query->where('subject', '管理服務費')
+                                ->whereBetween('income_date', [$start_date, $end_date]);
+                        }
+                    ]);
 
-                    // PayLog 裡面好像沒有 collected_by Attribute
-                    $payLogs->reject(function ($payLog) {
-                        return $payLog->collected_by == '公司';
-                    });
-
-                    foreach ($payLogs as $payLog) {
+                    // payLogs
+                    foreach ($tenantContract->payLogs as $payLog) {
                         $roomData['incomes'][] = [
                             'subject' => $payLog->subject,
                             'month' => Carbon::parse($payLog->loggable->due_time)->month.'月',
@@ -234,14 +242,8 @@ class MonthlyReportService
                             }
                         }
                     }
-
-                    // 管理服務費, 科目為『租金服務費』form company_incomes
-                    $companyIncomes = $tenantContract->companyIncomes()
-                                        ->whereBetween('income_date', [$start_date, $end_date])
-                                        ->where('subject', '管理服務費')
-                                        ->get();
-
-                    foreach ($companyIncomes as $companyIncome) {
+                    // companyIncomes
+                    foreach ($tenantContract->companyIncomes as $companyIncome) {
                         $roomData['incomes'][] = [
                             'subject' => '租金服務費',
                             'month' => Carbon::parse($companyIncome->income_date)->month.'月',
@@ -255,9 +257,74 @@ class MonthlyReportService
                 $data['rooms'][] = $roomData;
                 $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
                 $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
+
+                // section : payoffs
+                foreach ($tenantContracts as $tenantContract) {
+                    $payoffData = [
+                        'meta' => [
+                            'room_number' =>  $room->room_number,
+                            'room_total_income' => 0,
+                            'room_total_expense' => 0,
+                        ],
+                        'incomes' => [],
+                        'expenses' => []
+                    ];
+
+                    $tenantContract->load([
+                        'payLogs' => function ($query) use ($start_date, $end_date) {
+                            $query->with('loggable')
+                                ->whereHasMorph('loggable', ['App\TenantPayment'], function ($query, $type) use ($start_date, $end_date) {
+                                    if ($type == 'App\TenantPayment') {
+                                        $query->where('is_pay_off', 1)
+                                            ->where('collected_by', '房東')
+                                            ->whereBetween('due_time', [$start_date, $end_date]);
+                                    }
+                                });
+                        }
+                    ]);
+
+                    //
+                    if ($tenantContract->payLogs->count() > 0) {
+                        foreach ($tenantContract->payLogs as $payoffPayment) {
+                            if ($payoffPayment->amount <= 0) {
+                                $payoffData['incomes'][] = [
+                                    'subject' => $payoffPayment->subject,
+                                    'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',
+                                    'paid_at' => $payoffPayment->paid_at,
+                                    'amount' => -$payoffPayment->amount,
+                                ];
+                                $payoffData['meta']['room_total_income'] += -$payoffPayment->amount;
+                            } else {
+                                $payoffData['expenses'][] = [
+                                    'subject' => $payoffPayment->subject,
+                                    'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',
+                                    'paid_at' => $payoffPayment->paid_at,
+                                    'amount' => $payoffPayment->amount,
+                                ];
+                                $payoffData['meta']['room_total_expense'] += $payoffPayment->amount;
+                            }
+                        }
+                        //
+                        $payOffSum = $tenantContract->payOff()->get()->first();
+                        $landlordPaid = $payOffSum->landlord_paid;
+                        if ($landlordPaid > 0) {
+                            $payoffData['expenses'][] = [
+                                'subject' => '房東應付',
+                                'month' => $month.'月',
+                                'paid_at' => $payOffSum->created_at,
+                                'amount' => $landlordPaid,
+                            ];
+                            $payoffData['meta']['room_total_expense'] = $payOffSum->landlordPaid;
+                        }
+                        $data['payoffs'][] = $payoffData;
+                        $data['meta']['total_income'] += $payoffData['meta']['room_total_income'];
+                        $data['meta']['total_expense'] += $payoffData['meta']['room_total_expense'];
+                    }
+                }
+                // end section : payoffs
             }
-            // end section : rooms
         }
+        // end section : rooms
 
         // section: add carry forward
         $carry_forward = MonthlyReport::where('year', $year)
@@ -298,64 +365,6 @@ class MonthlyReportService
         // add detail total after room section
         $data['meta']['total_income'] += $data['details']['meta']['total_incomes'];
         $data['meta']['total_expense'] += $data['details']['meta']['total_expenses'];
-
-        // section : payoffs
-        foreach ($landlordContract->building->rooms as $room) {
-            $tenantContract = $room->activeContracts->first();
-            if (is_null($tenantContract)) {
-                // there are no active contracts
-            } else {
-                $payoffPayments = $tenantContract->tenantPayments
-                    ->where('is_pay_off', true)
-                    ->where('collected_by', '房東')
-                    ->whereBetween('due_time', [$start_date, $end_date]);
-                if ($payoffPayments->count() > 0) {
-                    $roomData = [
-                        'meta' => [
-                            'room_total_income' => 0,
-                            'room_total_expense' => 0,
-                        ],
-                        'incomes' => [],
-                        'expenses' => []
-                    ];
-                    $roomData['meta']['room_number'] = $room->room_number;
-                    foreach ($payoffPayments as $payoffPayment) {
-                        if ($payoffPayment->amount <= 0) {
-                            $roomData['incomes'][] = [
-                                'subject' => $payoffPayment->subject,
-                                'month' => Carbon::parse($payoffPayment->due_time)->month.'月',
-                                'paid_at' => $payoffPayment->due_time,
-                                'amount' => -$payoffPayment->amount,
-                            ];
-                            $roomData['meta']['room_total_income'] += -$payoffPayment->amount;
-                        } else {
-                            $roomData['expenses'][] = [
-                                'subject' => $payoffPayment->subject,
-                                'month' => Carbon::parse($payoffPayment->due_time)->month.'月',
-                                'paid_at' => $payoffPayment->due_time,
-                                'amount' => $payoffPayment->amount,
-                            ];
-                            $roomData['meta']['room_total_expense'] += $payoffPayment->amount;
-                        }
-                    }
-                    $payOffSum = $tenantContract->payOff()->get()->first();
-                    $landlordPaid = $payOffSum->landlordPaid;
-                    if ($landlordPaid > 0) {
-                        $roomData['expenses'][] = [
-                            'subject' => '房東應付',
-                            'month' => $month.'月',
-                            'paid_at' => $payOffSum->created_at,
-                            'amount' => $payOffSum->amount,
-                        ];
-                        $roomData['meta']['room_total_expense'] = $payOffSum->landlordPaid;
-                    }
-                    $data['payoffs'][] = $roomData;
-                    $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
-                    $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
-                }
-            }
-        }
-        // end section : payoffs
 
         // section : shareholders
         foreach ($landlordContract->building->shareholders as $shareholder) {

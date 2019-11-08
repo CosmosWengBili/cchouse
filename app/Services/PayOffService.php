@@ -219,7 +219,7 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // ROUND($C5−$B5×$G2,0)
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             // SUM(E49:E50)+SUM(E52:E54)
@@ -295,10 +295,12 @@ class PayOffService
         foreach ($others as $fee) {
             $copy = [];
             $fee['is_showed'] = true;
-
-            if ($fee['subject'] === '管理費') {
+            if ($fee['subject'] === '租金') {
+                $data[] = $fee;
+                ! empty($copy) and $data[] = $copy;
                 // 計算管理費
                 $fee['amount'] = $this->managementFee($diffInDays, $lastPayedUntilToday);
+                $fee['subject'] = '管理費';
 
                 $copy = $fee;
                 $copy['subject'] = '折抵管理費';
@@ -325,7 +327,6 @@ class PayOffService
             $data[] = $fee;
             ! empty($copy) and $data[] = $copy;
         }
-
         return $data;
     }
 
@@ -346,9 +347,12 @@ class PayOffService
         $percentage = $lastPayedUntilToday / $diffInDays;
         $payments = $this->lastTenantPayments();
         $payments = $this->sumPayLogsByPayments($payments);
-
+        // only cauculate 代管 building
+        if( $this->tenantContract->room->building->activeContracts()->commission_type == '包租' ){
+            return 0;
+        }
         foreach ($payments as $payment) {
-            if ($payment['subject'] === '管理費') {
+            if ($payment['subject'] === '租金') {
                 // 沖銷金額
                 $pay_log_amount = $payment['pay_log_amount'];
                 if (($pay_log_amount - $rent * $percentage) > 0) {
@@ -537,7 +541,10 @@ class PayOffService
             if ($fee['collected_by'] === '公司') {
                 // 只要是來自公司的帳 都計算成清潔費
                 $cleanFee['amount'] += $pay_log_amount - ($payment->amount * $percentage);
-            } else {
+            } 
+            else{
+                // Although rent is collected_by landlord, but it should be cauculated by percentage, too
+                $fee['amount'] = $pay_log_amount - ($payment->amount * $percentage);
                 $fees[] = $fee;
             }
             //// END 計算清潔費

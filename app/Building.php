@@ -80,7 +80,7 @@ class Building extends Model implements AuditableContract
      */
     public function publicRoom()
     {
-        return $this->rooms()->where('room_layout', '公用')->first();
+        return $this->rooms()->where('room_layout', '公區')->first();
     }
 
     /**
@@ -88,7 +88,7 @@ class Building extends Model implements AuditableContract
      */
     public function normalRooms()
     {
-        return $this->rooms()->where('room_layout', '!=', '公用')->get();
+        return $this->rooms()->where('room_layout', '!=', '公區')->get();
     }
 
     /**

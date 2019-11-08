@@ -171,7 +171,7 @@ class MonthlyReportService
             }
 
             // end section : details
-            if ($room->room_layout === '公用') {
+            if ($room->room_layout === '公區') {
                 continue;
             }
 

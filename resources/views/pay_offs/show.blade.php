@@ -384,8 +384,7 @@
                             <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
                     </select>
-                    </td>
-                <td>
+                </td>
             </tr>`;
     }
 

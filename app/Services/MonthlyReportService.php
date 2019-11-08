@@ -280,7 +280,7 @@ class MonthlyReportService
                         }
                     }
 
-                    // payLogs for Deposit
+                    // payLogs for Deposit.
                     $payLogsFormDeposits = $tenantContract->payLogs()
                         ->with('loggable')
                         ->whereHasMorph('loggable', 'App\Deposit')

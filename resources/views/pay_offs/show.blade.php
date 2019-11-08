@@ -170,17 +170,16 @@
                                     </td>
                                 </tr>
                             @endif
-                            <tr>
+                            <tr class='report-header'>
                                 <th>科目</th>
-                                <th>負擔方</th>
                                 <th>費用</th>
                                 <th>備註</th>
+                                <th>負擔方</th>
                             </tr>
                             @foreach($payOffData['fees'] as $fee)
                                 @continue($fee['is_showed'] === false)
                                 <tr class="old-payment">
                                     <td><span class="subject">{{ $fee['subject'] }}</span></td>
-                                    <td></td>
                                     <td>
                                         @php
                                             $refundAmount += $fee['amount'];
@@ -188,6 +187,7 @@
                                         <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
                                     </td>
                                     <td><span class="comment">{{ $fee['comment'] }}</span></td>
+                                    <td></td>
                                 </tr>
                             @endforeach
                             <tr class="functions-row">
@@ -273,6 +273,9 @@
     tr > td:nth-child(3) {
         width: 200px
     }
+    .report-header th:not(:last-child){
+        width:25%;
+    }
 </style>
 
 <!-- init payOffData -->
@@ -297,11 +300,11 @@
     $('#cal_110v_stored, #cal_220v_stored').click(function () {
         const res_110 = parseInt($( "#e_110v_stored" ).val());
         const res_220 = parseInt($( "#e_220v_stored" ).val());
-        if (res_110 && res_220) {
-            calculateElectricityPrice($(this),res_110, res_220, '儲值電');
+        if ( isNaN(res_110) || isNaN(res_220) ) {
+            Swal.fire('請務必兩欄都填入值')
         }
         else{
-            Swal.fire('請務必兩欄都填入值')
+            calculateElectricityPrice($(this),res_110, res_220, '儲值電');
         }
     });
 
@@ -355,6 +358,13 @@
             <tr class="cal-v">
                 <td>電費</td>
                 <td>
+                    <input class="form-control form-control-sm electricity-amount edit-added-item-amount" type="number" id="cal_v" name="cal_v" readonly>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
+                </td>
+                
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                             <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
@@ -362,11 +372,6 @@
                     </select>
                     </td>
                 <td>
-                    <input class="form-control form-control-sm electricity-amount edit-added-item-amount" type="number" id="cal_v" name="cal_v" readonly>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
-                </td>
             </tr>`;
     }
 
@@ -402,17 +407,17 @@
             <tr class="exchange-fee">
                 <td>匯費</td>
                 <td>
+                    <input class="form-control form-control-sm exchange-fee-amount edit-added-item-amount" type="number" name="amount" readonly value="-30">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
+                </td>
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                             <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
                     </select>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm exchange-fee-amount edit-added-item-amount" type="number" name="amount" readonly value="-30">
-                </td>
-                <td>
-                    <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
                 </td>
             </tr>`;
     }
@@ -679,17 +684,17 @@
                     </select>
                 </td>
                 <td>
+                    <input class="form-control form-control-sm edit-added-item-amount" type="number" name="amount" value="0">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm" type="text" name="comment">
+                </td>
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                     @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                         <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
                     @endforeach
                     </select>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm edit-added-item-amount" type="number" name="amount" value="0">
-                </td>
-                <td>
-                    <input class="form-control form-control-sm" type="text" name="comment">
                 </td>
             </tr>
 `;

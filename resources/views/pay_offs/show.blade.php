@@ -193,7 +193,6 @@
                             <tr class="functions-row">
                                 <td colspan="4" class="text-center">
                                     <button class="btn btn-success btn-xs js-new-item">新增項目</button>
-                                    <button class="btn btn-info btn-xs js-save-payments">儲存</button>
                                     <label for="exchange_fee">匯費</label>
                                     <input type="checkbox" id="exchange_fee" >
                                 </td>
@@ -258,6 +257,7 @@
                             </tr>
                             </tbody>
                         </table>
+                        <button class="d-block my-3 mx-auto btn btn-lg btn-info js-save-payments">儲存</button>
                     @else
                         <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
                     @endif

@@ -106,7 +106,6 @@ class PayOffService
             '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
         ];
-
         // 整理成 excel 內的格式
         foreach ($fees as $fee) {
             if( array_key_exists($fee['subject'], $defaultItems) ){
@@ -122,12 +121,10 @@ class PayOffService
                 ];                
             }
             
-        }
-
+        }   
+        
         if ($commission_type === '包租' && $return_ways === '中途退租') {
             $defaultItems['履保金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
-            $defaultItems['折抵滯納金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
@@ -155,7 +152,7 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // ROUND($C5−$B5×$G2,0)
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             // −1×(B52+B54)+B56+B51
@@ -173,12 +170,11 @@ class PayOffService
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true; // 不顯示在月結單 ????
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // SUM(B32:B34)+SUM(B36:B38)
@@ -194,8 +190,6 @@ class PayOffService
                 $defaultItems['點交中退盈餘分配']['amount'];
         } elseif ($commission_type === '代管' && $return_ways === '中途退租') {
             $defaultItems['履保金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
-            $defaultItems['折抵滯納金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
@@ -215,7 +209,6 @@ class PayOffService
         } elseif ($commission_type === '代管' && $return_ways === '到期退租') {
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
@@ -238,12 +231,11 @@ class PayOffService
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // −E32÷2
             $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
@@ -275,6 +267,12 @@ class PayOffService
             return round($item);
         })->toArray();
 
+        // hide all zero subjects
+        foreach ($defaultItems as $key => $defaultItem) {
+            if( $defaultItem['amount'] == 0 ){
+                $defaultItems[$key]['is_showed'] = false;
+            }    
+        }    
         return [
             $defaultItems,
             $sumItems,
@@ -304,20 +302,12 @@ class PayOffService
 
                 $copy = $fee;
                 $copy['subject'] = '折抵管理費';
-                if ($fee['amount'] === 0) {
-                    $fee['is_showed'] = $copy['is_showed'] = false; // 0 不顯示
-                } else {
-                    $copy['amount'] = $copy['amount'] * -1;
-                }
+                $copy['amount'] = $copy['amount'] * -1;
             } elseif ($fee['subject'] === '清潔費') {
                 $copy = $fee;
                 $copy['subject'] = '折抵清潔費';
                 $copy['amount'] = $fee['amount'] * -1;
-                if ($fee['amount'] === 0) {
-                    $fee['is_showed'] = $copy['is_showed'] = false;
-                } else if($this->returnWay != '中途退租'){
-                    $copy['is_showed'] = false;
-                }
+
             } elseif ($fee['subject'] === '滯納金') {
                 $copy = $fee;
                 $copy['subject'] = '折抵滯納金';

@@ -5,27 +5,41 @@ use App\Deposit;
 use Faker\Generator as Faker;
 
 $factory->define(Deposit::class, function (Faker $faker) {
+    $is_deposit_collected = $faker->boolean;
+
+    $deposit_collection_date = null;
+    $deposit_confiscated_amount = null;
+
+    if ($is_deposit_collected) {
+        $deposit_collection_date = $faker->dateTimeBetween('-15 day', 'now');
+        $deposit_confiscated_amount = $faker->randomDigitNotNull;
+    }
+
+    // tenant
+    $tenant_contract = \App\TenantContract::inRandomOrder()->first();
+    $tenant = $tenant_contract->tenant;
+
     return [
-        'tenant_contract_id'               => \App\TenantContract::inRandomOrder()->first(),
-        'room_id'                          => \App\Room::inRandomOrder()->first(),
-        'deposit_collection_date'          => $faker->word,
-        'deposit_collection_serial_number' => $faker->word,
-        'deposit_confiscated_amount'       => $faker->randomDigitNotNull,
-        'deposit_returned_amount'          => $faker->randomDigitNotNull,
-        'confiscated_or_returned_date'     => $faker->word,
+        'tenant_contract_id'               => $tenant_contract,
+        'room_id'                          => $tenant_contract->room_id ?? 0,
+        'deposit_collection_date'          => $deposit_collection_date,
+        'deposit_collection_serial_number' => $faker->iban(),
+        'deposit_confiscated_amount'       => $deposit_confiscated_amount,
+        'deposit_returned_amount'          => null,
+        'confiscated_or_returned_date'     => null,
         'invoicing_amount'                 => $faker->randomDigitNotNull,
-        'invoice_date'                     => $faker->word,
-        'is_deposit_collected'             => $faker->boolean,
+        'invoice_date'                     => $faker->dateTimeBetween('now', '10 day'),
+        'is_deposit_collected'             => $is_deposit_collected,
         'comment'                          => $faker->text,
-        'payer_name'                       => $faker->word,
-        'payer_certification_number'       => $faker->word,
-        'payer_is_legal_person'            => $faker->boolean,
+        'payer_name'                       => $tenant->name,
+        'payer_certification_number'       => $tenant->certificate_number,
+        'payer_is_legal_person'            => $tenant->is_legal_person,
         'payer_phone'                      => $faker->phoneNumber,
         'receiver'                         => \App\User::inRandomOrder()->first(),
-        'appointment_date'                 => $faker->word,
+        'appointment_date'                 => $faker->date('Y-m-d H:i:s'),
         'reason_of_deletions'              => $faker->word,
-        'returned_method'                  => $faker->word,
-        'returned_serial_number'           => $faker->word,
+        'returned_method'                  => $faker->randomElement(config('enums.deposits.returned_method')),
+        'returned_serial_number'           => $faker->iban(),
         'returned_bank'                    => $faker->word,
         'company_allocation_amount'        => $faker->randomDigitNotNull,
         'created_at'                       => $faker->date('Y-m-d H:i:s'),

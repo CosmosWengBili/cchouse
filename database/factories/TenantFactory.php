@@ -8,7 +8,7 @@ $factory->define(Tenant::class, function (Faker $faker) {
     $faker->addProvider(new \Faker\Provider\es_ES\Person($faker));
 
     return [
-        'name'               => $faker->word,
+        'name'               => $faker->name,
         'certificate_number' => $faker->vat(false),
         'is_legal_person'    => $faker->boolean,
         'line_id'            => $faker->word,

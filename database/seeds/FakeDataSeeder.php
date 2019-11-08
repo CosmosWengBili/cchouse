@@ -82,6 +82,14 @@ class FakeDataSeeder extends Seeder
                 'period'       => '次',
                 'comment' => '初次履約金',
             ]));
+            // deposit
+            if ($tenant_contract->deposit_paid > 0) {
+                $tenant_contract->deposits()->save(factory(\App\Deposit::class)->make([
+                    'room_id' => $tenant_contract->room_id,
+                    'invoicing_amount' => $tenant_contract->deposit_paid,
+                    'appointment_date' => $tenant_contract->contract_start
+                ]));
+            }
 
             // faker 第一次租金
             $tenant_contract->tenantPayments()->save(factory(\App\TenantPayment::class)->make([

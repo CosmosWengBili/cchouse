@@ -9,6 +9,12 @@ use Faker\Generator as Faker;
 $factory->define(TenantContract::class, function (Faker $faker) {
     $rent = $faker->numberBetween(5000, 20000);
     $deposit = $faker->numberBetween($rent, $rent * 2 - 1);
+    $deposit_paid = 0;
+
+    $contract_start = $faker->dateTimeBetween('-1 years', 'now');
+    if ($contract_start < \Carbon\Carbon::now()) {
+        $deposit_paid = $deposit;
+    }
 
     return [
         'room_id'                             => \App\Room::inRandomOrder()->first(),
@@ -24,12 +30,12 @@ $factory->define(TenantContract::class, function (Faker $faker) {
         'motorcycle_parking_floor'            => $faker->randomDigitNotNull,
         'motorcycle_parking_space_number'     => $faker->postcode,
         'motorcycle_parking_count'            => $faker->randomDigitNotNull,
-        'contract_start'                      => $faker->dateTimeBetween('-1 years', 'now'),
+        'contract_start'                      => $contract_start,
         'contract_end'                        => $faker->dateTimeBetween('now', '+3 years'),
         'rent'                                => $rent,
         'rent_pay_day'                        => $faker->randomDigitNotNull,
         'deposit'                             => $deposit,
-        'deposit_paid'                        => $deposit,
+        'deposit_paid'                        => $deposit_paid,
         'electricity_calculate_method'        => $faker->word,
         'electricity_price_per_degree'        => $faker->randomDigitNotNull,
         'electricity_price_per_degree_summer' => $faker->randomDigitNotNull,

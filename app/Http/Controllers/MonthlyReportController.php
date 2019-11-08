@@ -81,7 +81,8 @@ class MonthlyReportController extends Controller
                 ->with('data', $monthly_data)
                 ->with('eletricity_data', $eletricity_data)
                 ->with('month_options', $month_options)
-                ->with('report_used_date', $report_used_date);
+                ->with('report_used_date', $report_used_date)
+                ->with('file_name', $report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
     }
 
     public function print(building $building)

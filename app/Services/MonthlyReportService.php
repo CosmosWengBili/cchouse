@@ -201,6 +201,7 @@ class MonthlyReportService
                 // room
                 foreach ($tenantContracts as $tenantContract) {
                     $tenantContract->load([
+                        'deposits',
                         'payLogs' => function ($query) use ($start_date, $end_date) {
                             $query->with('loggable')
                                 ->whereHasMorph('loggable', '*', function ($query, $type) {
@@ -217,6 +218,34 @@ class MonthlyReportService
                                 ->whereBetween('income_date', [$start_date, $end_date]);
                         }
                     ]);
+
+                    // deposits
+                    foreach ($tenantContract->deposits as $deposit) {
+                        // 訂金也要顯示在房區塊，並且名稱為訂金，是收入;
+                        if ($deposit->deposit_collection_date && $month == Carbon::parse($deposit->deposit_collection_date)->month) {
+                            if ($deposit->invoicing_amount && $deposit->invoicing_amount > 0) {
+                                $roomData['incomes'][] = [
+                                    'subject' => '訂金',
+                                    'month' => $month.'月',
+                                    'paid_at' =>$deposit->deposit_collection_date,
+                                    'amount' => $deposit->invoicing_amount,
+                                ];
+                                $roomData['meta']['room_total_income'] += $deposit->invoicing_amount;
+                            }
+                        }
+
+                        // 如果有退訂金額, 依照退訂月份開在該月月結單
+                        if ($deposit->confiscated_or_returned_date && $month == Carbon::parse($deposit->confiscated_or_returned_date)->month) {
+                            if ($deposit->deposit_returned_amount && $deposit->deposit_returned_amount > 0) {
+                                $roomData['expenses'][] = [
+                                    'subject' => '退訂',
+                                    'paid_at' => $deposit->confiscated_or_returned_date,
+                                    'amount' => $deposit->deposit_returned_amount,
+                                ];
+                                $roomData['meta']['room_total_expense'] += $deposit->deposit_returned_amount;
+                            }
+                        }
+                    }
 
                     // payLogs
                     foreach ($tenantContract->payLogs as $payLog) {

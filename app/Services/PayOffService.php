@@ -488,8 +488,8 @@ class PayOffService
      */
     private function buildComment()
     {
-        $contractEnd = $this->tenantContract->contract_end;
-        $payOffDate = $this->payOffDate->format('m/d');
+        $contractEnd = $this->tenantContract->contract_end->format('Y-m-d');
+        $payOffDate = $this->payOffDate->format('Y-m-d');
 
         return "合約 ${contractEnd} 到期，${payOffDate} 點交。";
     }

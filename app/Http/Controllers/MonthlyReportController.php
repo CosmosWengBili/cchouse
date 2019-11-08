@@ -114,14 +114,12 @@ class MonthlyReportController extends Controller
     {
         $month = Input::get('month');
         $year = Input::get('year');
-        $building_lazy_load = Building::with(['rooms'])
-                                    ->where('id', '=', $building->id)
-                                    ->get()
-                                    ->first();
+        $building_lazy_load = $building->load(['rooms']);
+        $MonthlyTenantExport = new MonthlyTenantExport($building_lazy_load, $year, $month);
 
         return Excel::download(
-            new MonthlyTenantExport($building_lazy_load, $year, $month),
-            $building->building_code.'_'.$building->location.'_'.$year.$month.'.xlsx'
+            $MonthlyTenantExport,
+            $MonthlyTenantExport->getFileName()
         );
     }
 }

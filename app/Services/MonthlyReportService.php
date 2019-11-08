@@ -208,7 +208,7 @@ class MonthlyReportService
                                 $roomData['incomes'][] = [
                                     'subject' => '訂金',
                                     'month' => $month.'月',
-                                    'paid_at' =>$deposit->deposit_collection_date,
+                                    'paid_at' =>  Carbon::parse($deposit->deposit_collection_date),
                                     'amount' => $deposit->invoicing_amount,
                                 ];
                                 $roomData['meta']['room_total_income'] += $deposit->invoicing_amount;
@@ -220,7 +220,7 @@ class MonthlyReportService
                             if ($deposit->deposit_returned_amount && $deposit->deposit_returned_amount > 0) {
                                 $roomData['expenses'][] = [
                                     'subject' => '退訂',
-                                    'paid_at' => $deposit->confiscated_or_returned_date,
+                                    'paid_at' => Carbon::parse($deposit->confiscated_or_returned_date),
                                     'amount' => $deposit->deposit_returned_amount,
                                 ];
                                 $roomData['meta']['room_total_expense'] += $deposit->deposit_returned_amount;
@@ -238,7 +238,7 @@ class MonthlyReportService
                         $roomData['incomes'][] = [
                             'subject' => '租金服務費',
                             'month' => Carbon::parse($companyIncome->income_date)->month.'月',
-                            'paid_at' => $companyIncome->income_date,
+                            'paid_at' =>  Carbon::parse($companyIncome->income_date),
                             'amount' => $companyIncome->amount,
                         ];
                         $roomData['meta']['room_total_income'] += $companyIncome->amount;
@@ -259,7 +259,7 @@ class MonthlyReportService
                         $roomData['incomes'][] = [
                             'subject' => $payLog->subject,
                             'month' => Carbon::parse($payLog->loggable->due_time)->month.'月',
-                            'paid_at' => $payLog->paid_at,
+                            'paid_at' =>  Carbon::parse($payLog->paid_at),
                             'amount' => $payLog->amount,
                         ];
                         $roomData['meta']['room_total_income'] += $payLog->amount;
@@ -271,7 +271,7 @@ class MonthlyReportService
                                 $agency_fee = intval(round($payLog->amount * $landlordContract->agency_service_fee));
                                 $roomData['expenses'][] = [
                                     'subject' => '仲介費',
-                                    'paid_at' => $payLog->paid_at,
+                                    'paid_at' => Carbon::parse($payLog->paid_at),
                                     'amount' => $agency_fee,
                                 ];
                                 $data['meta']['total_agency_fee'] += $agency_fee;
@@ -324,7 +324,7 @@ class MonthlyReportService
                                 $payoffData['incomes'][] = [
                                     'subject' => $payoffPayment->subject,
                                     'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',
-                                    'paid_at' => $payoffPayment->paid_at,
+                                    'paid_at' => Carbon::parse($payoffPayment->paid_at),
                                     'amount' => -$payoffPayment->amount,
                                 ];
                                 $payoffData['meta']['room_total_income'] += -$payoffPayment->amount;
@@ -332,7 +332,7 @@ class MonthlyReportService
                                 $payoffData['expenses'][] = [
                                     'subject' => $payoffPayment->subject,
                                     'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',
-                                    'paid_at' => $payoffPayment->paid_at,
+                                    'paid_at' => Carbon::parse($payoffPayment->paid_at),
                                     'amount' => $payoffPayment->amount,
                                 ];
                                 $payoffData['meta']['room_total_expense'] += $payoffPayment->amount;
@@ -345,7 +345,7 @@ class MonthlyReportService
                             $payoffData['expenses'][] = [
                                 'subject' => '房東應付',
                                 'month' => $month.'月',
-                                'paid_at' => $payOffSum->created_at,
+                                'paid_at' => Carbon::parse($payOffSum->created_at),
                                 'amount' => $landlordPaid,
                             ];
                             $payoffData['meta']['room_total_expense'] = $payOffSum->landlordPaid;

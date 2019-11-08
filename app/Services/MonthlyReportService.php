@@ -218,28 +218,9 @@ class MonthlyReportService
                             'amount' => $payLog->amount,
                         ];
                         $roomData['meta']['room_total_income'] += $payLog->amount;
-                        // pack expense data relative '租金'
+
+                        // pack expense data relative '仲介費'
                         if ($payLog->subject == '租金') {
-                            if ($room->management_fee_mode === '比例') {
-                                $total_management_fee = 0;
-                                $total_management_fee += intval(round($payLog->amount * $room->management_fee / 100));
-                                $roomData['expenses'][] = [
-                                    'subject' => '管理服務費',
-                                    'paid_at' => $start_date,
-                                    'amount' => $total_management_fee
-                                ];
-                                $roomData['meta']['room_total_expense'] += $total_management_fee;
-                                $data['meta']['total_management_fee'] += $total_management_fee;
-                            } elseif ($room->management_fee_mode === '固定') {
-                                $management_fee = intval($room->management_fee);
-                                $roomData['expenses'][] = [
-                                    'subject' => '管理服務費',
-                                    'paid_at' => $start_date,
-                                    'amount' => $management_fee,
-                                ];
-                                $roomData['meta']['room_total_expense'] += $management_fee;
-                                $data['meta']['total_management_fee'] += $management_fee;
-                            }
                             $firstRentPayment = $tenantContract->tenantPayments->where('subject', '租金')->sortBy('due_time')->first();
                             if ($payLog->loggable->id == $firstRentPayment->id) {
                                 $agency_fee = intval(round($payLog->amount * $landlordContract->agency_service_fee));

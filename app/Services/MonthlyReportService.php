@@ -200,25 +200,6 @@ class MonthlyReportService
             if ($tenantContracts->count() > 0) {
                 // room
                 foreach ($tenantContracts as $tenantContract) {
-                    $tenantContract->load([
-                        'deposits',
-                        'payLogs' => function ($query) use ($start_date, $end_date) {
-                            $query->with('loggable')
-                                ->whereHasMorph('loggable', '*', function ($query, $type) {
-                                    if ($type == 'App\TenantPayment') {
-                                        $query->where('is_pay_off', 0)
-                                            ->where('collected_by', '房東');
-                                    }
-                                })
-                                ->whereBetween('paid_at', [$start_date, $end_date]);
-                        },
-                        // 管理服務費, 科目為『租金服務費』form company_incomes
-                        'companyIncomes' => function ($query) use ($start_date, $end_date) {
-                            $query->where('subject', '管理服務費')
-                                ->whereBetween('income_date', [$start_date, $end_date]);
-                        }
-                    ]);
-
                     // deposits
                     foreach ($tenantContract->deposits as $deposit) {
                         // 訂金也要顯示在房區塊，並且名稱為訂金，是收入;
@@ -247,8 +228,34 @@ class MonthlyReportService
                         }
                     }
 
+                    // companyIncomes, 管理服務費, 科目為『租金服務費』form company_incomes
+                    $companyIncomes = $tenantContract->companyIncomes()
+                                        ->where('subject', '管理服務費')
+                                        ->whereBetween('income_date', [$start_date, $end_date])
+                                        ->get();
+
+                    foreach ($companyIncomes as $companyIncome) {
+                        $roomData['incomes'][] = [
+                            'subject' => '租金服務費',
+                            'month' => Carbon::parse($companyIncome->income_date)->month.'月',
+                            'paid_at' => $companyIncome->income_date,
+                            'amount' => $companyIncome->amount,
+                        ];
+                        $roomData['meta']['room_total_income'] += $companyIncome->amount;
+                    }
+
                     // payLogs
-                    foreach ($tenantContract->payLogs as $payLog) {
+                    $payLogsFormTenantTypes = $tenantContract->payLogs()
+                    ->with('loggable')
+                    ->whereHasMorph('loggable', '*', function ($query, $type) {
+                        if ($type == 'App\TenantPayment') {
+                            $query->where('is_pay_off', 0)
+                                ->where('collected_by', '房東');
+                        }
+                    })
+                    ->whereBetween('paid_at', [$start_date, $end_date])
+                    ->get();
+                    foreach ($payLogsFormTenantTypes as $payLog) {
                         $roomData['incomes'][] = [
                             'subject' => $payLog->subject,
                             'month' => Carbon::parse($payLog->loggable->due_time)->month.'月',
@@ -272,24 +279,24 @@ class MonthlyReportService
                             }
                         }
                     }
-                    // companyIncomes
-                    foreach ($tenantContract->companyIncomes as $companyIncome) {
-                        $roomData['incomes'][] = [
-                            'subject' => '租金服務費',
-                            'month' => Carbon::parse($companyIncome->income_date)->month.'月',
-                            'paid_at' => $companyIncome->income_date,
-                            'amount' => $companyIncome->amount,
+
+                    // payLogs for Deposit
+                    $payLogsFormDeposits = $tenantContract->payLogs()
+                        ->with('loggable')
+                        ->whereHasMorph('loggable', 'App\Deposit')
+                        ->whereBetween('paid_at', [$start_date, $end_date])
+                        ->get();
+                    foreach ($payLogsFormDeposits as $payLog) {
+                        $confiscated_amount = $payLog->amount *0.5;
+                        $roomData['expenses'][] = [
+                            'subject' => '沒定',
+                            'paid_at' => $payLog->paid_at,
+                            'amount' => $confiscated_amount,
                         ];
-                        $roomData['meta']['room_total_income'] += $companyIncome->amount;
+                        $roomData['meta']['room_total_expense'] += $confiscated_amount;
                     }
-                }
 
-                $data['rooms'][] = $roomData;
-                $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
-                $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
-
-                // section : payoffs
-                foreach ($tenantContracts as $tenantContract) {
+                    // section : payoffs
                     $payoffData = [
                         'meta' => [
                             'room_number' =>  $room->room_number,
@@ -300,20 +307,17 @@ class MonthlyReportService
                         'expenses' => []
                     ];
 
-                    $tenantContract->load([
-                        'payLogs' => function ($query) use ($start_date, $end_date) {
-                            $query->with('loggable')
-                                ->whereHasMorph('loggable', ['App\TenantPayment'], function ($query, $type) use ($start_date, $end_date) {
-                                    if ($type == 'App\TenantPayment') {
-                                        $query->where('is_pay_off', 1)
-                                            ->where('collected_by', '房東')
-                                            ->whereBetween('due_time', [$start_date, $end_date]);
-                                    }
-                                });
+                    $payLogsFormTenantTypesForPayOff = $tenantContract->payLogs()
+                    ->with('loggable')
+                    ->whereHasMorph('loggable', ['App\TenantPayment'], function ($query, $type) use ($start_date, $end_date) {
+                        if ($type == 'App\TenantPayment') {
+                            $query->where('is_pay_off', 1)
+                                ->where('collected_by', '房東')
+                                ->whereBetween('due_time', [$start_date, $end_date]);
                         }
-                    ]);
-
-                    //
+                    })
+                    ->whereBetween('paid_at', [$start_date, $end_date])
+                    ->get();
                     if ($tenantContract->payLogs->count() > 0) {
                         foreach ($tenantContract->payLogs as $payoffPayment) {
                             if ($payoffPayment->amount > 0) {
@@ -350,8 +354,12 @@ class MonthlyReportService
                         $data['meta']['total_income'] += $payoffData['meta']['room_total_income'];
                         $data['meta']['total_expense'] += $payoffData['meta']['room_total_expense'];
                     }
+                    // end section : payoffs
                 }
-                // end section : payoffs
+
+                $data['rooms'][] = $roomData;
+                $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
+                $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
             }
         }
         // end section : rooms

@@ -162,8 +162,8 @@
                                 @foreach( $payoff['incomes'] as $income )
                                     <div class="col-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
                                     <div class="col-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
-                                    <div class="col-1 text-center">{{ $income['amount'] }}</div>
-                                    <div class="col-1 text-center"></div>
+                                    <div class="col-1 text-right">{{ $income['amount'] }}</div>
+                                    <div class="col-1 text-right"></div>
                                 @endforeach
                                 @if( count($payoff['incomes']) > 0 )
                                     <div class="col-12 border border-dark ml-3 mb-0" style="height: 0px;"></div>
@@ -236,8 +236,8 @@
                                         {{ $shareholder['name'] }}
                                     </div>
                                     <div class="col-2 text-center">{{ $shareholder['current_period'] }} / {{ $shareholder['max_period'] }}</div>
-                                    <div class="col-1 text-center"></div>
-                                    <div class="col-1 text-center">{{ $shareholder['distribution_fee'] }}</div>
+                                    <div class="col-1 text-right"></div>
+                                    <div class="col-1 text-right">{{ $shareholder['distribution_fee'] }}</div>
                                 @endforeach
                             </div>
                         </div>

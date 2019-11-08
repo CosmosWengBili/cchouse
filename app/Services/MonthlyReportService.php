@@ -195,6 +195,7 @@ class MonthlyReportService
                 'expenses' => []
             ];
 
+            // 找出房間所有契約, 對 "當月" 有 "付款紀錄" 做處理
             $tenantContracts = $room->tenantContracts;
             if ($tenantContracts->count() > 0) {
                 // room
@@ -286,7 +287,7 @@ class MonthlyReportService
                     //
                     if ($tenantContract->payLogs->count() > 0) {
                         foreach ($tenantContract->payLogs as $payoffPayment) {
-                            if ($payoffPayment->amount <= 0) {
+                            if ($payoffPayment->amount > 0) {
                                 $payoffData['incomes'][] = [
                                     'subject' => $payoffPayment->subject,
                                     'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',

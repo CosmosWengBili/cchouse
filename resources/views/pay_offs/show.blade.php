@@ -177,7 +177,7 @@
                                 <th>負擔方</th>
                             </tr>
                             @foreach($payOffData['fees'] as $fee)
-                                @continue($fee['is_showed'] === false)
+                                @continue($fee['is_showed'] === false || $fee['is_tenant'] === false)
                                 <tr class="old-payment">
                                     <td><span class="subject">{{ $fee['subject'] }}</span></td>
                                     <td>
@@ -218,6 +218,20 @@
                                     </div>
                                 </td>
                             </tr>
+                            @foreach($payOffData['fees'] as $fee)
+                                @continue($fee['is_showed'] == false || $fee['is_tenant'] == true)
+                                <tr class="old-payment">
+                                    <td><span class="subject">{{ $fee['subject'] }}</span></td>
+                                    <td>
+                                        @php
+                                            $refundAmount += $fee['amount'];
+                                        @endphp
+                                        <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
+                                    </td>
+                                    <td><span class="comment">{{ $fee['comment'] }}</span></td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
                             <tr>
                                 <th>兆基應收</th>
                                 <td colspan="3">

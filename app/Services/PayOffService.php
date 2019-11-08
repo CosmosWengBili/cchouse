@@ -94,17 +94,17 @@ class PayOffService
         ];
 
         $defaultItems = [
-            '履保金' => ['subject' => '履保金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '管理費' => ['subject' => '管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '點交中退盈餘分配' => ['subject' => '點交中退盈餘分配', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
+            '履保金' => ['subject' => '履保金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '管理費' => ['subject' => '管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '點交中退盈餘分配' => ['subject' => '點交中退盈餘分配', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
         ];
 
         // 整理成 excel 內的格式
@@ -117,7 +117,8 @@ class PayOffService
                     'subject' => $fee['subject'],
                     'amount' => $fee['amount'],
                     'comment' => $fee['comment'],
-                    'is_showed' => true
+                    'is_showed' => true,
+                    'is_tenant' => true
                 ];                
             }
             

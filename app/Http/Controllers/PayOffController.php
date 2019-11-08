@@ -85,6 +85,7 @@ class PayOffController extends Controller
             'header.pay_off_date' => 'required|date',
             'header.commission_type' => 'required',
             'header.return_ways' => 'required',
+            'header.is_monthly_report' => 'nullable'
         ])['header'];
         // 科目相關
         $validatedItemsData = $request->validate([

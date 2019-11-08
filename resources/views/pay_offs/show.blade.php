@@ -271,7 +271,11 @@
                             </tr>
                             </tbody>
                         </table>
-                        <button class="d-block my-3 mx-auto btn btn-lg btn-info js-save-payments">儲存</button>
+                        <div class="text-center">
+                            <button class="d-inline-block my-3 mx-auto btn btn-lg btn-info js-save-payments">儲存</button>
+                            <input type="checkbox" name="is_monthly_report" id="is_monthly_report"> 為月結單資料
+                        </div>
+
                     @else
                         <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
                     @endif
@@ -747,6 +751,7 @@
                 pay_off_date: $('#pay-off-date').val(),
                 commission_type: $('#commission_type').text(),
                 return_ways: $('#return_ways').val(),
+                is_monthly_report: $('#is_monthly_report').is(':checked')
             },
             electricity: {
                 old_110v: $('span.old-110v').text(),

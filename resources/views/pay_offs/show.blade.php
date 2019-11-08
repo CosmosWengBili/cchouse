@@ -65,62 +65,111 @@
 
                         <table class="table table-bordered">
                             <tbody>
-                            <tr>
-                                <th>110v 電費度數</th>
-                                <td colspan="3">
-                                    <form id="e_110v_form" onsubmit="return false;">
+                            <!-- divide eletecity section to two method -->
+                            @if( $tenantContract->room->building->electricity_payment_method == '儲值電表' )
+                                <tr>
+                                    <th>110v 電費度數</th>
+                                    <td colspan="3">                          
                                         <div class="input-group w-50">
-                                            <span class="align-self-center"><span class="old-110v">{{ $payOffData['110v_end_degree'] }}</span> 度</span>
                                             <input
                                                 class="form-control form-control-sm ml-3"
                                                 type="number"
-                                                id="e_110v"
-                                                name="e_110v"
-                                                value="{{ $payOffData['110v_end_degree'] }}"
-                                                min="{{ $payOffData['110v_end_degree'] }}"
+                                                id="e_110v_stored"
+                                                name="e_110v_stored"
                                             />
                                             <div class="input-group-append">
-                                                <button
-                                                    id="cal_110v"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-info"
-                                                >
+                                                    <button
+                                                        id="cal_110v_stored"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
                                                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                                     計算
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>220v 電費度數</th>
-                                <td colspan="3">
-                                    <form id="e_220v_form" onsubmit="return false;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>220v 電費度數</th>
+                                    <td colspan="3">
                                         <div class="input-group w-50">
-                                            <span class="align-self-center"><span class="old-220v">{{ $payOffData['220v_end_degree'] }}</span> 度</span>
                                             <input
                                                 class="form-control form-control-sm ml-3"
                                                 type="number"
-                                                id="e_220v"
-                                                name="e_220v"
-                                                value="{{ $payOffData['220v_end_degree'] }}"
-                                                min="{{ $payOffData['220v_end_degree'] }}"
+                                                id="e_220v_stored"
+                                                name="e_220v_stored"
                                             />
-                                            <div class="input-group-append">
-                                                <button
-                                                    id="cal_220v"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-info"
-                                                >
-                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                                    計算
-                                                </button>
-                                            </div>
+                                        <div class="input-group-append">
+                                            <button
+                                                id="cal_220v_stored"
+                                                type="button"
+                                                class="btn btn-sm btn-outline-info"
+                                            >
+                                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                計算
+                                            </button>
                                         </div>
-                                    </form>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th>110v 電費度數</th>
+                                    <td colspan="3">
+                                        <form id="e_110v_form" onsubmit="return false;">
+                                            <div class="input-group w-50">
+                                                <span class="align-self-center"><span class="old-110v">{{ $payOffData['110v_end_degree'] }}</span> 度</span>
+                                                <input
+                                                    class="form-control form-control-sm ml-3"
+                                                    type="number"
+                                                    id="e_110v"
+                                                    name="e_110v"
+                                                    value="{{ $payOffData['110v_end_degree'] }}"
+                                                    min="{{ $payOffData['110v_end_degree'] }}"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button
+                                                        id="cal_110v"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
+                                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                        計算
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>220v 電費度數</th>
+                                    <td colspan="3">
+                                        <form id="e_220v_form" onsubmit="return false;">
+                                            <div class="input-group w-50">
+                                                <span class="align-self-center"><span class="old-220v">{{ $payOffData['220v_end_degree'] }}</span> 度</span>
+                                                <input
+                                                    class="form-control form-control-sm ml-3"
+                                                    type="number"
+                                                    id="e_220v"
+                                                    name="e_220v"
+                                                    value="{{ $payOffData['220v_end_degree'] }}"
+                                                    min="{{ $payOffData['220v_end_degree'] }}"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button
+                                                        id="cal_220v"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
+                                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                        計算
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <th>科目</th>
                                 <th>負擔方</th>
@@ -233,21 +282,33 @@
 
 <script>
 
+    // For normal eletricity payment 
     $('#cal_110v, #cal_220v').click(function () {
-        const res_110 = validate_110v.element( "#e_110v" );
-        const res_220 = validate_220v.element( "#e_220v" );
-        if (res_110 && res_220) {
-            calculatePrice($(this));
+        const res_110_check = validate_110v.element( "#e_110v" );
+        const res_220_check = validate_220v.element( "#e_220v" );
+        if (res_110_check && res_220_check) {
+            const res_110 = parseInt($( "#e_110v" ).val());
+            const res_220 = parseInt($( "#e_220v" ).val());
+            calculateElectricityPrice($(this), res_110, res_220, '普通');
         }
     });
 
-    function calculatePrice($clickedButton) {
+    // For 儲值電 eletricity payment 
+    $('#cal_110v_stored, #cal_220v_stored').click(function () {
+        const res_110 = parseInt($( "#e_110v_stored" ).val());
+        const res_220 = parseInt($( "#e_220v_stored" ).val());
+        if (res_110 && res_220) {
+            calculateElectricityPrice($(this),res_110, res_220, '儲值電');
+        }
+        else{
+            Swal.fire('請務必兩欄都填入值')
+        }
+    });
 
+    function calculateElectricityPrice($clickedButton, input_110v, input_220v, mode = '普通') {
         const tenantContractsId = '{{ $tenantContract->id }}';
         const e_110v_end = parseInt('{{ $payOffData['110v_end_degree'] }}');
         const e_220v_end = parseInt('{{ $payOffData['220v_end_degree'] }}');
-        const input_110v = parseInt($('#e_110v').val());
-        const input_220v = parseInt($('#e_220v').val());
         const template = getElectricityTemplate();
 
         $clickedButton.find('span').removeClass('d-none');
@@ -257,15 +318,22 @@
                 const pricePerDegreeSummer = data.pricePerDegreeSummer || 0;
                 const readMonth = (new Date).getMonth() + 1;
                 const ratio = [7, 8, 9, 10].includes(readMonth) ? pricePerDegreeSummer : pricePerDegree;
-                const amount = _.round (
-                    _.multiply (
-                        _.add (
-                            _.subtract(input_110v, e_110v_end),
-                            _.subtract(input_220v, e_220v_end)
-                        ),
-                        ratio
-                    )
-                );
+                let amount = 0
+                if( mode == '普通' ){
+                    amount = _.round (
+                        _.multiply (
+                            _.add (
+                                _.subtract(input_110v, e_110v_end),
+                                _.subtract(input_220v, e_220v_end)
+                            ),
+                            ratio
+                        )
+                    );
+                }
+                else{
+                    amount = input_110v * ratio + input_220v * ratio
+                }
+
 
                 let $calV = $('table tr.cal-v');
                 if ($calV.length === 0) {
@@ -792,28 +860,27 @@
     })
 
     const validate_220v = $("#e_220v_form").validate({
-            rules: {
-                e_220v: {
-                    required: true,
-                    gtEnd220v: true,
-                }
-            },
-            errorElement: "em",
-            errorPlacement: function ( error, element ) {
-                error.addClass( "invalid-feedback" );
-                if ( element.prop( "type" ) === "checkbox" ) {
-                    error.insertAfter( element.next( "label" ) );
-                } else {
-                    error.insertAfter( element );
-                }
-            },
-            highlight: function ( element, errorClass, validClass ) {
-                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        rules: {
+            e_220v: {
+                required: true,
+                gtEnd220v: true,
             }
-        })
-
+        },
+        errorElement: "em",
+        errorPlacement: function ( error, element ) {
+            error.addClass( "invalid-feedback" );
+            if ( element.prop( "type" ) === "checkbox" ) {
+                error.insertAfter( element.next( "label" ) );
+            } else {
+                error.insertAfter( element );
+            }
+        },
+        highlight: function ( element, errorClass, validClass ) {
+            $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        }
+    })
 </script>
 @endsection

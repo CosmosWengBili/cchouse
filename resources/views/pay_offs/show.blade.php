@@ -604,9 +604,9 @@
                     extraAmount
                     ) * -1;
                 
-
+                    
                 // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
                 payOffData['sums']['兆基應收'] = payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount'] + payOffData['fees']['點交中退盈餘分配']['amount'];
 
                 payOffData['sums']['業主應付'] = payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額'];   
@@ -630,7 +630,7 @@
             else if( returnWay == '協調退租' ){
 
                 payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
                 
                 
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
@@ -661,7 +661,7 @@
                     payOffData['fees']['滯納金']['amount'] +
                     extraAmount
                 ) * -1;
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
                 payOffData['sums']['兆基應收'] = payOffData['fees']['管理費']['amount'] + 
                                                 ( payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
                                                 payOffData['fees']['點交中退盈餘分配']['amount'];  
@@ -691,7 +691,7 @@
 
                 // −E32÷2
                 payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
 
                 // SUM(E32:E34)+SUM(E36:E38)
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +

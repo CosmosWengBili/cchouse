@@ -582,6 +582,9 @@ return [
         'updated_at'         => '更新時間',
         'receipt_type'       => '收據類型',
         'due_time'           => '應繳時間',
+        'come_from_bank'     => '來源銀行',
+        'pay_sum'            => '匯款總額',
+        'comment'            => '備註',
     ],
     'EditorialReview' => [
         'id'             => '編號',

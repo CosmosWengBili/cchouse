@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use function foo\func;
 
 class PayLogController extends Controller
 {
@@ -42,11 +44,20 @@ class PayLogController extends Controller
         return view('pay_logs.show', $responseData->get());
     }
 
-    public function create() {
-        $responser = new FormDataResponser();
-        $data = $responser->create(PayLog::class, 'payLogs.store')->get();
+    public function create(Request $request)
+    {
+        $tenantContractId = $request->input('tenantContractId');
+        $unchargedPayments = TenantPayment::where([
+            'tenant_contract_id' => $tenantContractId,
+            'is_charge_off_done' => false,
+        ])
+            ->orderBy('due_time', 'asc')
+            ->get();
 
-        return view('pay_logs.form', $data);
+        return view('pay_logs.massive_create_form', [
+            'tenantContractId' => $tenantContractId,
+            'unchargedPayments' => $unchargedPayments,
+        ]);
     }
 
     public function edit(PayLog $payLog) {
@@ -56,19 +67,41 @@ class PayLogController extends Controller
         return view('pay_logs.form', $data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+        $now = Carbon::now();
         $validatedData = $request->validate([
-            'loggable_type' => 'required',
-            'loggable_id' => 'required',
-            'subject' => 'required',
-            'payment_type' => 'required',
-            'amount' => 'required',
-            'virtual_account' => 'required',
-            'paid_at' => 'required',
+            'tenant_contract_id' => 'required|exists:tenant_contract,id',
+            'come_from_bank' => 'required',
+            'pay_sum' => 'required',
+            'pay_logs' => 'required|array',
+            'pay_logs.*.loggable_type' => 'required',
+            'pay_logs.*.loggable_id' => 'required|exists:tenant_payments,id',
+            'pay_logs.*.subject' => 'required',
+            'pay_logs.*.payment_type' => 'required',
+            'pay_logs.*.amount' => 'required',
+            'pay_logs.*.virtual_account' => 'required',
         ]);
-        $payment = $validatedData['loggable_type']::find($validatedData['loggable_id']);
-        $tenantContractId = $payment->tenant_contract_id;
-        $payLog = PayLog::create(array_merge($validatedData, ['tenant_contract_id' => $tenantContractId]));
+        $commonAttrs = [
+            'tenant_contract_id' => $validatedData['tenant_contract_id'],
+            'come_from_bank' => $validatedData['come_from_bank'],
+            'pay_sum' => $validatedData['pay_sum'],
+            'paid_at' => $now,
+        ];
+        $payLogsAttrs = array_map(function ($payLogsAttr) use ($commonAttrs) {
+            return array_merge($payLogsAttr, $commonAttrs);
+        }, $validatedData['pay_logs']);
+
+        DB::transaction(function () use ($now, $payLogsAttrs) {
+            foreach ($payLogsAttrs as $payLogsAttr) {
+                $payLog = PayLog::create($payLogsAttr);
+                $payment = $payLog->loggable;
+                $sum = $payment->payLogs()->sum('amount');
+                if ($payment->amount == $sum) {
+                    $payment->update(['is_charge_off_done' => true, 'charge_off_date' => $now]);
+                }
+            };
+        });
 
         return redirect($request->_redirect);
     }
@@ -148,7 +181,7 @@ class PayLogController extends Controller
             ];
             $rows[] = $data;
         }
-  
+
         $total = $payLogs->sum('amount');
         $data['tableRows'] = $rows;
         $data['total'] = $total;

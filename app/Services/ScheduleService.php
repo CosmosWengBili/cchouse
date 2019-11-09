@@ -366,4 +366,23 @@ class ScheduleService
             ]);
         }
     }
+
+    /**
+     * 每天檢查每份有效租客合約，
+     * 把租客合約下 tenantPayment 科目為『履約保證金』對應的 paylog amount 做加總，
+     * 並更新『押金已繳納 deposit_paid』這個欄位。
+     */
+
+    public function updateDepositPaid() {
+        $contracts = TenantContract::active()->get();
+
+        foreach ($contracts as $contract) {
+            $payments = $contract->tenantPayments()->where('subject', '履約保證金')->get();
+            $sum = 0;
+            foreach ($payments as $payment) {
+                $sum += $payment->payLogs()->sum('amount');
+            }
+            $contract->update(['deposit_paid' => $sum]);
+        }
+    }
 }

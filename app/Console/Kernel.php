@@ -102,6 +102,10 @@ class Kernel extends ConsoleKernel
                 ->name("Notify User Key Request expired")
                 ->dailyAt('06:00')
                 ->runInBackground();
+        $schedule->call(ScheduleService::make('updateDepositPaid'))
+            ->name("Update deposit_paid on active contract")
+            ->dailyAt('03:00')
+            ->runInBackground();
     }
 
     /**

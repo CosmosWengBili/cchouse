@@ -529,6 +529,31 @@
         reCountSum();
     });
 
+    // added item should be counted to 
+    $(document).on('change', '[name="collected_by"], .edit-added-item-amount', function(){
+        var $select = $(this).closest('tr').find('[name="collected_by"]')
+        var $input = $(this).closest('tr').find('.edit-added-item-amount')
+        var changedAmount = parseInt($(this).closest('tr').find('.edit-added-item-amount').val())
+        if( $select.val() == '公司' ){
+            if( !$input.data('counted')){
+                $input.data('counted', true)
+                var result = parseInt($('#edit_received_amount').val()) + changedAmount
+                $('#edit_received_amount').val(result)
+                $('#received_amount').text(result);
+                payOffData['sums']['兆基應收'] = result
+            }
+        }
+        else if( $select.val() == '房東' ){
+            if( $input.data('counted')){
+                $input.data('counted', false)
+                var result = parseInt($('#edit_received_amount').val()) - changedAmount
+                $('#edit_received_amount').val(result)
+                $('#received_amount').text(result);
+                payOffData['sums']['兆基應收'] = result
+            }
+        }
+    })
+
     /**
      * 計算 應退房客金額
      */

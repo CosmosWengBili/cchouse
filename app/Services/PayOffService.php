@@ -95,13 +95,13 @@ class PayOffService
 
         $defaultItems = [
             '履保金' => ['subject' => '履保金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '管理費' => ['subject' => '管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
             '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
             '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
             '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
-            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '點交中退盈餘分配' => ['subject' => '點交中退盈餘分配', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
             '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
             '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
@@ -204,16 +204,18 @@ class PayOffService
             // −1×(E13+E14+E16+E18+E19)
             $defaultItems['沒收押金']['amount'] = (
                     $defaultItems['履保金']['amount'] +
-                    $defaultItems['管理費']['amount'] +
+                    $defaultItems['租金']['amount'] +
                     $defaultItems['清潔費']['amount'] +
-                    $defaultItems['滯納金']['amount']
+                    $defaultItems['滯納金']['amount'] +
+                    $extraAmount
                 ) * -1;
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // −1×(IF(B16>0,0,B16)+IF(B19>0,0,B19))+B22
-            $sumItems['兆基應收'] = $sumItems['業主應付'] = -1 *
-                ($defaultItems['清潔費']['amount'] > 0 ? 0 : $defaultItems['清潔費']['amount']) +
-                ($defaultItems['滯納金']['amount'] > 0 ? 0 : $defaultItems['滯納金']['amount']) +
-                $defaultItems['點交中退盈餘分配']['amount'];
+            $sumItems['兆基應收'] = $defaultItems['管理費']['amount'] +
+                                  ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount'] ) * -1 +
+                                  $defaultItems['點交中退盈餘分配']['amount'];
+
+            $sumItems['業主應付'] = $sumItems['兆基應收'] + $sumItems['應退金額'];
         } elseif ($commission_type === '代管' && $return_ways === '到期退租') {
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
@@ -227,7 +229,9 @@ class PayOffService
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['滯納金']['amount'];
+                $defaultItems['滯納金']['amount'] + 
+                $extraAmount
+                ;
             // −1×(E54+E52)+E51
             $sumItems['兆基應收'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
                 $defaultItems['管理費']['amount'];
@@ -254,7 +258,8 @@ class PayOffService
                 $defaultItems['沒收押金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['滯納金']['amount'];
+                $defaultItems['滯納金']['amount'] + 
+                $extraAmount;
             // E39+−1×(E36+E38)+E35
             $sumItems['兆基應收'] = $defaultItems['點交中退盈餘分配']['amount'] +
                 -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +

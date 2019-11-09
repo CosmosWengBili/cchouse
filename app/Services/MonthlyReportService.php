@@ -494,20 +494,12 @@ class MonthlyReportService
 
     public function getEletricityReport(LandlordContract $landlordContract, $month, $year)
     {
-        $data = [
-            'meta'         => [],
-            'rooms'        => [],
-        ];
-
         $selected_month = Carbon::create($year, $month);
-
-        $data['meta']['year'] = $year;
-        $data['meta']['month'] = $month-1;
-        $data['meta']['produce_date'] = $selected_month->copy()->subMonth()->endOfMonth()->format('Y/m/d');
-
         $end_date = $selected_month->copy()->endOfMonth();
         $start_date = $selected_month->copy()->startOfMonth();
 
+        $data = [];
+        $take_amount = 2;
         foreach ($landlordContract->building->normalRooms() as $room) {
             $tenantContracts = $room->tenantContracts
                                     ->where('contract_start', '<', $end_date)
@@ -515,57 +507,67 @@ class MonthlyReportService
             $tenantContractIds = $tenantContracts->pluck('id')->toArray();
 
             // Find payments data
-            $electricity_payments = TenantElectricityPayment::whereIn('tenant_contract_id', $tenantContractIds)->get();
-            $current_payment = $electricity_payments->whereBetween('due_time', [$start_date, $end_date])
-                                                    ->where(['is_charge_off_done', true])
-                                                    ->last();
-            $last_unpaid_payments = $electricity_payments->where('due_time', '<', $selected_month->startOfMonth())
-                                                        ->where('is_charge_off_done', '=', false);
-            $debt = 0;
-            foreach ($last_unpaid_payments as $last_unpaid_payment) {
-                $debt += $last_unpaid_payment->amount - $last_unpaid_payment->payLogs()->sum('amount');
-            }
+            // 找出 最後兩筆 比當月底還小的 電費紀錄
+            $current_payments = TenantElectricityPayment::with('tenantContract')
+                                                        ->whereIn('tenant_contract_id', $tenantContractIds)
+                                                        ->where('ammeter_read_date', '<', $end_date)
+                                                        // ->where('is_charge_off_done', true)
+                                                        ->orderBy('ammeter_read_date', 'desc') // 外層還有個 room
+                                                        ->take($take_amount)
+                                                        ->get();
 
-            // Find pay logs data
-            $current_pay_amount = 0;
-            $current_pay_logs_dates = ['尚無繳款'];
-            if (isset($current_payment)) {
-                $current_pay_logs = $current_payment->payLogs();
-                $current_pay_amount = $current_pay_logs->sum('amount');
-                $current_pay_logs_dates = $current_pay_logs->pluck('paid_at')->toArray();
-                $current_pay_logs_dates = array_map(function ($current_pay_logs_date) {
-                    return $current_pay_logs_date->format('m-d');
-                }, $current_pay_logs_dates);
-            } else {
-                // Set default value if current_payment not been set
-                $current_payment['110v_start_degree'] = $current_payment['110v_end_degree'] = $room->current_110v;
-                $current_payment['220v_start_degree'] = $current_payment['220v_end_degree'] = $room->current_220v;
-                $current_payment['amount'] = 0;
-            }
+            foreach ($current_payments as $current_payment) {
+                //
+                $year = Carbon::parse($current_payment->ammeter_read_date)->year;
+                $month = Carbon::parse($current_payment->ammeter_read_date)->month;
+                $tenantContract = $current_payment->tenantContract;
 
-            // Find electricity degree
-            $electricity_price_per_degree = 5.5;
-            if ($tenantContracts->isNotEmpty()) {
-                if (in_array($selected_month->month, [7, 8, 9, 10])) {
-                    $electricity_price_per_degree =  $tenantContracts->last()->electricity_price_per_degree_summer;
+                // Find pay logs data
+                $current_pay_amount = 0;
+                $current_pay_logs_dates = ['尚無繳款'];
+                if (isset($current_payment)) {
+                    $current_pay_logs = $current_payment->payLogs();
+                    $current_pay_amount = $current_pay_logs->sum('amount');
+                    $current_pay_logs_dates = $current_pay_logs->pluck('paid_at')->toArray();
+                    $current_pay_logs_dates = array_map(function ($current_pay_logs_date) {
+                        return $current_pay_logs_date->format('m-d');
+                    }, $current_pay_logs_dates);
                 } else {
-                    $electricity_price_per_degree =  $tenantContracts->last()->electricity_price_per_degree;
+                    // Set default value if current_payment not been set
+                    $current_payment['110v_start_degree'] = $current_payment['110v_end_degree'] = $room->current_110v;
+                    $current_payment['220v_start_degree'] = $current_payment['220v_end_degree'] = $room->current_220v;
+                    $current_payment['amount'] = 0;
                 }
-            }
 
-            $data['rooms'][] = [
-                'start_110v' => $current_payment['110v_start_degree'],
-                'start_220v' => $current_payment['220v_start_degree'],
-                'end_110v' => $current_payment['110v_end_degree'],
-                'end_220v' => $current_payment['220v_end_degree'],
-                'electricity_price_per_degree' =>  $electricity_price_per_degree,
-                'current_amount' =>  $current_payment['amount'],
-                'debt' => $debt,
-                'should_paid' => $debt + $current_payment['amount'],
-                'room_number' => $room->room_number,
-                'pay_log_amount' => $current_pay_amount,
-                'pay_log_date' => implode(',', $current_pay_logs_dates)
-            ];
+                // Find electricity degree
+                // 電費紀錄 沒有費率和計算方式, 要從契約撈取, 所以變動後會影響之前的電費費率
+                // 考慮是否增加 費率和計算方式 在 電費紀錄 上
+                $electricity_price_per_degree = 5.5;
+                if ($tenantContract) {
+                    if (in_array($month, [7, 8, 9, 10])) {
+                        $electricity_price_per_degree =  $tenantContract->electricity_price_per_degree_summer;
+                    } else {
+                        $electricity_price_per_degree =  $tenantContract->electricity_price_per_degree;
+                    }
+                }
+
+                $payment = [
+                    'ammeter_read_date' => $current_payment['ammeter_read_date']->format('Y-m-d'),
+                    'start_110v' => $current_payment['110v_start_degree'],
+                    'start_220v' => $current_payment['220v_start_degree'],
+                    'end_110v' => $current_payment['110v_end_degree'],
+                    'end_220v' => $current_payment['220v_end_degree'],
+                    'electricity_price_per_degree' =>  $electricity_price_per_degree,
+                    'current_amount' =>  $current_payment['amount'],
+                    'room_number' => $room->room_number,
+                    'pay_log_amount' => $current_pay_amount,
+                    'pay_log_date' => implode(',', $current_pay_logs_dates)
+                ];
+
+                $data[$month]['meta']['year'] = $year;
+                $data[$month]['meta']['month'] = $month;
+                $data[$month]['rooms'][] = $payment;
+            }
         }
 
         return $data;

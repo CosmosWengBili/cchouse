@@ -276,45 +276,43 @@
                         {{-- Footer end --}}
                     </div>
                     <h3 class="text-center py-4">電費報表</h3>
-                    <div class="row electricity-report">
-                        {{-- Electricity start --}}
-                        {{-- Meta start --}}
-                        <div class="col-1 font-weight-bold">年度</div>
-                        <div class="col-1">{{ $eletricity_data['meta']['year'] }}</div>
-                        <div class="col-1 font-weight-bold">月度</div>
-                        <div class="col-1">{{ $eletricity_data['meta']['month'] }}</div>
-                        <div class="col-1 font-weight-bold">製表日</div>
-                        <div class="col-2">{{ $eletricity_data['meta']['produce_date'] }}</div>
-                        <div class="col-5"> </div>
-                        {{-- Meta end --}}
-                        {{-- header start --}}
-                        <div class="col-1 font-weight-bold">110v起</div>
-                        <div class="col-1 font-weight-bold">220v起</div>
-                        <div class="col-1 font-weight-bold">110v結</div>
-                        <div class="col-1 font-weight-bold">220v結</div>
-                        <div class="col-1 font-weight-bold">元/度</div>
-                        <div class="col-1 font-weight-bold">用電金額</div>
-                        <div class="col-1 font-weight-bold">欠額</div>
-                        <div class="col-1 font-weight-bold">應付金額</div>
-                        <div class="col-1 font-weight-bold">房號</div>
-                        <div class="col-1 font-weight-bold">入帳金額</div>
-                        <div class="col-2 font-weight-bold">繳款日</div>
-                        {{-- header end --}}
-                        @foreach( $eletricity_data['rooms'] as $room_data )
-                            <div class="col-1">{{$room_data['start_110v']}}</div>
-                            <div class="col-1">{{$room_data['start_220v']}}</div>
-                            <div class="col-1">{{$room_data['end_110v']}}</div>
-                            <div class="col-1">{{$room_data['end_220v']}}</div>
-                            <div class="col-1">{{$room_data['electricity_price_per_degree']}}</div>
-                            <div class="col-1">{{$room_data['current_amount']}}</div>
-                            <div class="col-1">{{$room_data['debt']}}</div>
-                            <div class="col-1">{{$room_data['should_paid']}}</div>
-                            <div class="col-1">{{$room_data['room_number']}}</div>
-                            <div class="col-1">{{$room_data['pay_log_amount']}}</div>
-                            <div class="col-2">{{$room_data['pay_log_date']}}</div>
-                        @endforeach
-                        {{-- Electricity end --}}
-                    </div>
+                    @foreach ($eletricity_data as $data)
+                        <div class="row electricity-report">
+                            {{-- Electricity start --}}
+                            {{-- Meta start --}}
+                            <div class="col-1 font-weight-bold">年度</div>
+                            <div class="col-1">{{ $data['meta']['year'] }}</div>
+                            <div class="col-1 font-weight-bold">月度</div>
+                            <div class="col-1">{{ $data['meta']['month'] }}</div>
+                            <div class="col-8"> </div>
+                            {{-- Meta end --}}
+                            {{-- header start --}}
+                            <div class="col-1 font-weight-bold">抄表日</div>
+                            <div class="col-2 font-weight-bold">110v起</div>
+                            <div class="col-1 font-weight-bold">220v起</div>
+                            <div class="col-2 font-weight-bold">110v結</div>
+                            <div class="col-1 font-weight-bold">220v結</div>
+                            <div class="col-1 font-weight-bold">元/度</div>
+                            <div class="col-1 font-weight-bold">用電金額</div>
+                            <div class="col-1 font-weight-bold">房號</div>
+                            <div class="col-1 font-weight-bold">入帳金額</div>
+                            <div class="col-1 font-weight-bold">繳款日</div>
+                            {{-- header end --}}
+                            @foreach( $data['rooms'] as $room_data )
+                                <div class="col-1">{{$room_data['ammeter_read_date']}}</div>
+                                <div class="col-2">{{$room_data['start_110v']}}</div>
+                                <div class="col-1">{{$room_data['start_220v']}}</div>
+                                <div class="col-2">{{$room_data['end_110v']}}</div>
+                                <div class="col-1">{{$room_data['end_220v']}}</div>
+                                <div class="col-1">{{$room_data['electricity_price_per_degree']}}</div>
+                                <div class="col-1">{{$room_data['current_amount']}}</div>
+                                <div class="col-1">{{$room_data['room_number']}}</div>
+                                <div class="col-1">{{$room_data['pay_log_amount']}}</div>
+                                <div class="col-1">{{$room_data['pay_log_date']}}</div>
+                            @endforeach
+                            {{-- Electricity end --}}
+                        </div>
+                    @endforeach
             </div>
         </div>
     </div>

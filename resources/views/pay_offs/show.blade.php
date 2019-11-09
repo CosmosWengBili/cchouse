@@ -625,6 +625,7 @@
             }
             else if( returnWay == '協調退租' ){
 
+                payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
                 payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
                 
                 
@@ -640,6 +641,7 @@
                 payOffData['fees']['點交中退盈餘分配']['amount'];
 
                 $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
+                $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'] )
                 renderSum() 
             }
         }

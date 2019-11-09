@@ -175,6 +175,7 @@ class PayOffService
             // 租金
             $rent = $this->tenantContract->rent;
             $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
+            $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // SUM(B32:B34)+SUM(B36:B38)

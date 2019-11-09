@@ -279,7 +279,7 @@ class ScheduleService
                     $income  = intval($room->management_fee);
                 }
                 CompanyIncome::create([
-                    'subject' => '租金',
+                    'subject' => '租金服務費',
                     'income_date' => Carbon::today(),
                     'amount' => $income,
                     'incomable_id' => $room->id,

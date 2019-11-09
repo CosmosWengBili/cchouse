@@ -184,6 +184,8 @@ class ReverseTenantPayments
                     ];
 
                     if ($payment->subject === '租金') {
+                        $incomeData['subject'] = '租金服務費';
+
                         if ($tenantContract->room->management_fee_mode == '比例') {
                             $incomeData['amount'] = intval(round($shouldPayAmount * $tenantContract->room->management_fee / 100));
                         } else {

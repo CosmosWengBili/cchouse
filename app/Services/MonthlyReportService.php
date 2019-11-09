@@ -230,7 +230,7 @@ class MonthlyReportService
 
                     // companyIncomes, 管理服務費, 科目為『租金服務費』form company_incomes
                     $companyIncomes = $tenantContract->companyIncomes()
-                                        ->where('subject', '管理服務費')
+                                        ->where('subject', '租金服務費')
                                         ->whereBetween('income_date', [$start_date, $end_date])
                                         ->get();
 

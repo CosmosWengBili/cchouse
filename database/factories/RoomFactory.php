@@ -26,7 +26,7 @@ $factory->define(Room::class, function (Faker $faker) {
         'rent_actual'                 => $faker->numberBetween(5000, 10000),
         'internet_form'               => $faker->word,
         'management_fee_mode'         => $management_fee_mode,
-        'management_fee'              => $management_fee_mode === '比例' ? $faker->randomFloat(1, 10) : $faker->numberBetween(100, 500),
+        'management_fee'              => $management_fee_mode === '比例' ? $faker->randomFloat(2, 10) : $faker->numberBetween(100, 500),
         'wifi_account'                => $faker->word,
         'wifi_password'               => $faker->word,
         'has_digital_tv'              => $faker->word,

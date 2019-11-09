@@ -23,7 +23,7 @@ $factory->define(Shareholder::class, function (Faker $faker) {
         'distribution_method'         => $faker->randomElement(array_keys(config('enums.shareholders.distribution_method'))),
         'distribution_start_date'     => $faker->dateTimeBetween('-3 years', 'now'),
         'distribution_end_date'       => $faker->dateTimeBetween('1 years', '3 years'),
-        'distribution_rate'           => $faker->randomFloat,
+        'distribution_rate'           => $faker->randomFloat(2),
         'distribution_amount'         => $faker->randomDigitNotNull,
         'investment_amount'           => $faker->randomDigitNotNull,
         'exchange_fee'                => $faker->randomDigitNotNull,

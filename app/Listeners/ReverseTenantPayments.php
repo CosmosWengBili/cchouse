@@ -99,6 +99,7 @@ class ReverseTenantPayments
         $order = $this->order;
         $payments = collect(); // TenantPayment and TenantElectricityPayment collection
         $building = $tenantContract->room->building;
+        $receiptType = $tenantContract->getReceiptType();
 
         TenantPayment::with('payLogs')
             ->where('tenant_contract_id', $tenantContract->id)
@@ -126,7 +127,7 @@ class ReverseTenantPayments
                 'virtual_account'    => $virtualAccount,
                 'paid_at'            => $paidAt,
                 'tenant_contract_id' => $tenantContract->id,
-                'receipt_type'       => '發票'
+                'receipt_type'       => $receiptType,
             ];
 
             // previously paid total amount for this tenant payment(which is not enough)
@@ -218,7 +219,7 @@ class ReverseTenantPayments
                     } else {
                         $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
                     }
-                    
+
                     if($building->activeContracts()['commission_type'] == "包租"){
                         return 0;
                     }

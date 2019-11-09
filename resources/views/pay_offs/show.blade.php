@@ -187,7 +187,7 @@
                                         <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
                                     </td>
                                     <td><span class="comment">{{ $fee['comment'] }}</span></td>
-                                    <td></td>
+                                    <td><span class="comment">{{ isset($fee['collected_by']) ? $fee['collected_by'] : '' }}</span></td>
                                 </tr>
                             @endforeach
                             <tr class="functions-row">
@@ -236,7 +236,7 @@
                                 <th>兆基應收</th>
                                 <td colspan="3">
                                     <div class="d-inline-flex">
-                                        <span id="received_amount">{{ $payOffData['sums']['兆基應收'] }}</span>
+                                        <span id="received_amount" data-origin="{{ $payOffData['sums']['兆基應收'] }}">{{ $payOffData['sums']['兆基應收'] }}</span>
                                         <input id="edit_received_amount"
                                                 data-subject="received"
                                                 type="number"
@@ -531,27 +531,23 @@
 
     // added item should be counted to 
     $(document).on('change', '[name="collected_by"], .edit-added-item-amount', function(){
-        var $select = $(this).closest('tr').find('[name="collected_by"]')
-        var $input = $(this).closest('tr').find('.edit-added-item-amount')
-        var changedAmount = parseInt($(this).closest('tr').find('.edit-added-item-amount').val())
-        if( $select.val() == '公司' ){
-            if( !$input.data('counted')){
-                $input.data('counted', true)
-                var result = parseInt($('#edit_received_amount').val()) + changedAmount
-                $('#edit_received_amount').val(result)
-                $('#received_amount').text(result);
-                payOffData['sums']['兆基應收'] = result
+        var $inputs = $('[name="collected_by"]')
+        changeAmount = $.map($inputs, function(select, index){
+            var input = select.closest('tr').querySelector('.edit-added-item-amount')
+            if( select.value == '公司' ){
+                return parseInt(input.value)
+            }else{
+                return 0   
             }
-        }
-        else if( $select.val() == '房東' ){
-            if( $input.data('counted')){
-                $input.data('counted', false)
-                var result = parseInt($('#edit_received_amount').val()) - changedAmount
-                $('#edit_received_amount').val(result)
-                $('#received_amount').text(result);
-                payOffData['sums']['兆基應收'] = result
-            }
-        }
+        })
+        .reduce((a,b) => a + b)
+        
+        var origin = $('#received_amount').data('origin')
+        var result = parseInt(origin) + changeAmount
+
+        $('#edit_received_amount').val(result)
+        $('#received_amount').text(result);
+        payOffData['sums']['兆基應收'] = result
     })
 
     /**
@@ -610,17 +606,14 @@
                 renderSum()    
             }
             else if( returnWay == '到期退租' ){
-                
-                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
-                payOffData['fees']['管理費']['amount'] + payOffData['sums']['應退金額'];
-
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                 payOffData['fees']['租金']['amount'] +
                 payOffData['fees']['清潔費']['amount'] +
                 payOffData['fees']['滯納金']['amount'];
 
                 // B49−B56
-                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額'];
+                payOffData['sums']['兆基應收'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) + payOffData['fees']['管理費']['amount']
+                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) + payOffData['sums']['應退金額'];
                 renderSum()
             }
             else if( returnWay == '協調退租' ){
@@ -631,7 +624,9 @@
                 
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                                                 payOffData['fees']['沒收押金']['amount'] +
-                                                payOffData['fees']['租金']['amount'];
+                                                payOffData['fees']['租金']['amount'] +
+                                                payOffData['fees']['清潔費']['amount'] + 
+                                                payOffData['fees']['滯納金']['amount'];
                 
                 payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額']['amount'];
                 

@@ -158,7 +158,7 @@ class ReverseTenantPayments
                 }
                 $payLog = $payment->payLogs()->create($payLogData);
                 // Error if reversal next period payment( set magic number temporarily )
-                if ( $payment->due_time->diff($paidAt)->days > 28) {
+                if (!$payment->isUnderpaid() && $payment->due_time->diff($paidAt)->days > 28) {
                     $this->createReversalErrorCase('溢繳入帳', $payLog);
                 }
 

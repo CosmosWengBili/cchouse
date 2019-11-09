@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
@@ -18,7 +19,7 @@ class TenantPayment extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
 
@@ -55,5 +56,17 @@ class TenantPayment extends Model implements AuditableContract
     public function receipts()
     {
         return $this->morphMany('App\Receipt', 'receiptable');
+    }
+
+    /**
+     * 是否為欠繳
+     */
+    public function isUnderpaid()
+    {
+        if (is_null($this->due_time)) {
+            return false;
+        }
+        $now = Carbon::now();
+        return !$this->is_charge_off_done && $now->isAfter($this->due_time);
     }
 }

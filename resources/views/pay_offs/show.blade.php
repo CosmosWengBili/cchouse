@@ -548,6 +548,8 @@
         $('#edit_received_amount').val(result)
         $('#received_amount').text(result);
         payOffData['sums']['兆基應收'] = result
+
+        countTenantPayment();
     })
 
     /**

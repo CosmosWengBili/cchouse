@@ -124,7 +124,7 @@ class TenantPaymentController extends Controller
         $startDateString = $request->input('start_date');
         $endDateString = $request->input('end_date');
 
-        if ($startDateString && $endDateString) {
+        if ($roomCode || $tenantName || $startDateString || $endDateString) {
             $startDate = Carbon::parse($startDateString);
             $endDate = Carbon::parse($endDateString);
 

@@ -211,7 +211,7 @@ class ReverseTenantPayments
                 }
                 if ($payment->subject == '租金'){
                     $incomeData = [
-                        'subject' => $payLogData['subject'],
+                        'subject' => '租金服務費',
                         'income_date' => $payLogData['paid_at'],
                         'amount' => 0
                     ];

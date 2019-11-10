@@ -148,7 +148,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $newContract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => 150,
         ]);
@@ -292,7 +292,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $contract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => 3,
         ]);
@@ -348,7 +348,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $nextContract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => 3,
         ]);
@@ -415,7 +415,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $contract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => intval(round(5401 * $contract->room->management_fee / 100)) ,
         ]);
@@ -482,7 +482,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $contract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => intval(round($contract->room->management_fee * (5401 / 10000))),
         ]);
@@ -550,7 +550,7 @@ class AutoReversalTest extends TestCase
         $this->assertDatabaseHas('company_incomes', [
             'incomable_id' => $contract->id,
             'incomable_type' => "App\\TenantContract",
-            'subject' => '租金',
+            'subject' => '租金服務費',
             'income_date' => '2019-08-10',
             'amount' => intval(round(100 * $contract->room->management_fee / 100)) ,
         ]);

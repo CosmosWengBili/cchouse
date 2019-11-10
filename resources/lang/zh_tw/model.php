@@ -405,7 +405,7 @@ return [
         'created_at'                          => '建立時間',
         'updated_at'                          => '更新時間',
         'commissioner_id'                     => '專員編號',
-        'currentBalance'                      => '目前餘額',
+        'currentBalance'                      => '目前欠費',
         'building'                            => '物件',
         'room'                                => '房',
         'rooms'                               => '房',

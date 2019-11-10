@@ -46,6 +46,8 @@ class LandlordOtherSubjectController extends Controller
             'amount' => 'required',
             'comment' => 'nullable',
             'room_id' => 'required|exists:rooms,id',
+            'is_invoiced' => 'nullable',
+            'invoice_item_name' => 'nullable',
         ]);
 
         LandlordOtherSubject::create($validatedData);
@@ -74,6 +76,8 @@ class LandlordOtherSubjectController extends Controller
             'amount' => 'required',
             'comment' => 'nullable',
             'room_id' => 'required|exists:rooms,id',
+            'is_invoiced' => 'nullable',
+            'invoice_item_name' => 'nullable',
         ]);
 
         $result = InvoiceService::compareReceipt($landlordOtherSubject, $validatedData);

@@ -609,7 +609,7 @@ return [
         'invoice_item_name'       => '發票科目名稱',
         'created_at'              => '建立時間',
         'updated_at'              => '更新時間',
-        'room_id'                 => '房編號',
+        'room_id'                 => '房代號',
         'rooms'                   => '房',
         'room'                    => '房'
     ],

@@ -99,6 +99,27 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>@lang("model.LandlordOtherSubject.is_invoiced")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="is_invoiced"/>
+                                        <input
+                                            type="checkbox"
+                                            name="is_invoiced"
+                                            value="1"
+                                            {{ isset($data["is_invoiced"]) ? ($data['is_invoiced'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
+                                    <td>@lang("model.LandlordOtherSubject.invoice_item_name")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_item_name"
+                                            value="{{ $data['invoice_item_name'] ?? '' }}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>@lang("model.LandlordOtherSubject.comment")</td>
                                     <td colspan="3">
                                         <textarea name="comment" class="form-control" rows="15">{{  $data['comment'] ?? '' }}</textarea>

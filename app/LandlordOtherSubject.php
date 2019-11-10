@@ -18,8 +18,12 @@ class LandlordOtherSubject extends Model implements AuditableContract
      * @var array
      */
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
+
+    protected $casts = [
+        'is_invoiced' => 'boolean',
+    ];
 
     /**
      * Get the room of this landlord other subject.

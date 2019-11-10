@@ -38,4 +38,17 @@ class PayLog extends Model implements AuditableContract
     {
         return $this->morphMany('App\Receipt', 'receiptable');
     }
+
+    public function getCommissionType() {
+        try {
+            return $this->tenantContract
+                        ->room
+                        ->building
+                        ->activeContracts()
+                        ->first()
+                        ->commission_type;
+        } catch (\Exception $e) {}
+
+        return null;
+    }
 }

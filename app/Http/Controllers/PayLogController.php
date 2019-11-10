@@ -168,16 +168,22 @@ class PayLogController extends Controller
 
         $data = ['tableRows' => [], 'total' => 0];
         $rows = [];
-        $payLogs = PayLog::whereBetween('paid_at', [$startDateStr, $endDateStr])
+        $payLogs = PayLog::with(['tenantContract.room.building', 'loggable'])
+                        ->whereBetween('paid_at', [$startDateStr, $endDateStr])
                         ->get()
                         ->sortByDesc('paid_at');
 
         foreach ($payLogs as $payLog) {
+
             $data = [
                 '繳費科目' => $payLog->subject,
                 '繳費費用' => $payLog->amount,
                 '繳費虛擬帳號' => $payLog->virtual_account,
                 '繳費日期' => Carbon::parse($payLog->paid_at)->toDateString(),
+                '應繳時間' => $payLog->loggable['due_time'],
+                '承租方式' => $payLog->getCommissionType(),
+                '應繳費用' =>$payLog->loggable['amount'],
+                '匯款總額' => $payLog->pay_sum,
             ];
             $rows[] = $data;
         }

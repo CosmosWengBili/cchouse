@@ -104,9 +104,18 @@ class TenantElectricityPaymentController extends Controller
             'comment' => '',
         ]);
 
-        $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
-        if (! $result) {
-            $tenantElectricityPayment->update($validatedData);
+        if ($tenantElectricityPayment->is_charge_off_done) {
+            $this->generateEditorialReview($tenantElectricityPayment, $validatedData);
+            //Notify specific manager
+            $user = User::find(1);
+            $notify = new NotifyUsers($user);
+            $content = new TextContent($this->makeTenantPaymentUpdatedContent('updated', $tenantElectricityPayment));
+            $notify->notifySelf($content);
+        } else {
+            $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
+            if(!$result){
+                $tenantElectricityPayment->update($validatedData);
+            }
         }
 
         return redirect($request->_redirect);

@@ -6,6 +6,7 @@ use App\Building;
 use App\Classes\NotifyUsers;
 use App\Classes\TextContent;
 use App\EditorialReview;
+use App\Services\InvoiceService;
 use App\Shareholder;
 use App\User;
 use Carbon\Carbon;
@@ -55,11 +56,23 @@ class EditorialReviewObserver
                         $this->doShareholderUpdate($editorialReview, $model);
                     }
                     break;
+                case 'App\TenantPayment':
+                case 'App\TenantElectricityPayment':
+                    if ($editorialReview->status == '已通過') {
+                        $tenantPayment = $editorialReview->editable;
+                        $validatedData = $editorialReview->edit_value;
+
+                        $result = InvoiceService::compareReceipt($tenantPayment, $validatedData);
+                        if(!$result){
+                            $tenantPayment->update($validatedData);
+                        }
+                    }
+                    break;
                 default:
                     if ($editorialReview->status === '已通過') {
                         $model = $this->doModelUpdate($editorialReview);
                     }
-                break;                
+                break;
             }
         }
     }
@@ -167,7 +180,7 @@ class EditorialReviewObserver
      * 審核通過做刪除
      * @param EditorialReview $editorialReview
      *
-     * 
+     *
      */
     private function doModelDelete(EditorialReview $editorialReview)
     {

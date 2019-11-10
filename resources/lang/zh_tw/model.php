@@ -528,7 +528,8 @@ return [
         'period'                => '期數',
         'comment'               => '備註',
         'created_at'            => '建立時間',
-        'updated_at'            => '更新時間'
+        'updated_at'            => '更新時間',
+        'deleted_at'            => '刪除時間',
     ],
     'TenantElectricityPayment' => [
         'id'                    => '編號',

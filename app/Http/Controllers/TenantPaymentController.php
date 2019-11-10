@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\NotifyUsers;
+use App\Classes\TextContent;
 use App\Responser\FormDataResponser;
 use App\Responser\NestedRelationResponser;
 use App\Services\TenantPaymentService;
 use App\Services\InvoiceService;
 use App\TenantContract;
 use App\TenantPayment;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -94,9 +97,18 @@ class TenantPaymentController extends Controller
             'comment' => '',
         ]);
 
-        $result = InvoiceService::compareReceipt($tenantPayment, $validatedData);
-        if(!$result){
-            $tenantPayment->update($validatedData);
+        if ($tenantPayment->is_charge_off_done) {
+            $this->generateEditorialReview($tenantPayment, $validatedData);
+            //Notify specific manager
+            $user = User::find(1);
+            $notify = new NotifyUsers($user);
+            $content = new TextContent($this->makeTenantPaymentUpdatedContent('updated', $tenantPayment));
+            $notify->notifySelf($content);
+        } else {
+            $result = InvoiceService::compareReceipt($tenantPayment, $validatedData);
+            if(!$result){
+                $tenantPayment->update($validatedData);
+            }
         }
 
         return redirect($request->_redirect);
@@ -153,5 +165,22 @@ class TenantPaymentController extends Controller
 
     private function buildTableRows(?string $roomCode, ?string $tenantName, Carbon $startDate, Carbon$endDate) {
         return TenantPaymentService::buildTenantPaymentTableRows($roomCode, $tenantName, $startDate, $endDate);
+    }
+
+    private function makeTenantPaymentUpdatedContent(string $type, TenantPayment $tenantPayment)
+    {
+        $now = Carbon::now();
+        $id = $tenantPayment->id;
+        $comment = $tenantPayment->comment;
+
+        switch ($type) {
+            case 'deleted':
+                $content = "應繳用費編號: {$id} 資料被申請刪除，備註: {$comment}。";
+                break;
+            default:
+                $content = "應繳用費編號: {$id} 資料被申請更新，請立即前往確認，備註: {$comment}。";
+        }
+
+        return $content;
     }
 }

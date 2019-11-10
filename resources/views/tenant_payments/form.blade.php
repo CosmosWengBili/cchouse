@@ -74,7 +74,7 @@
                                             type="checkbox"
                                             name="is_charge_off_done"
                                             value="1"
-                                            {{ ($data['sealed_registered'] ?? false) ? 'checked' : '' }}
+                                            {{ ($data['is_charge_off_done'] ?? false) ? 'checked' : '' }}
                                         />
                                     </td>
                                     <td>沖銷日期</td>

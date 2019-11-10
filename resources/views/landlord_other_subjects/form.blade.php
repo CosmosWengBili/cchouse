@@ -21,21 +21,29 @@
                                 <tr>
                                     <td>@lang("model.LandlordOtherSubject.subject")</td>
                                     <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="landlord_other_subjects"
+                                            data-text="subject"
+                                            data-value="subject"
+                                            data-selected="{{ isset($data["subject"]) ? $data['subject'] : '' }}"
                                             name="subject"
-                                            value="{{ $data['subject'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
                                     </td>
                                     <td>@lang("model.LandlordOtherSubject.subject_type")</td>
                                     <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="landlord_other_subjects"
+                                            data-text="subject_type"
+                                            data-value="subject_type"
+                                            data-selected="{{ isset($data["subject_type"]) ? $data['subject'] : '' }}"
                                             name="subject_type"
-                                            value="{{ $data['subject_type'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>

@@ -20,7 +20,8 @@
                                 <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}" required>
                             </div>
                             <div class="col">
-                                <button class="btn btn-success btn-sm m-1" type="submit">查詢</button>
+                                <button class="btn btn-success btn-sm m-1" name="submit_type" type="submit" value="view">查詢</button>
+                                <button class="btn btn-info btn-sm m-1" name="submit_type" type="submit" value="export">匯出</button>
                             </div>
                         </div>
 

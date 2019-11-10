@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DebtCollectionExport;
+use App\Exports\PayLogReportExport;
 use App\PayLog;
 use App\Services\InvoiceService;
 use App\Responser\FormDataResponser;
@@ -14,14 +16,20 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use function foo\func;
 
 class PayLogController extends Controller
 {
     public function index(Request $request) {
         $by = $request->input('by');
+        $isExport = $request->input('submit_type') == 'export';
 
         if ($by == 'date') {
+            if ($isExport) {
+                return $this->exportByDate($request);
+            }
+
             return $this->indexByDate($request);
         }
         return $this->indexByContract($request);
@@ -165,34 +173,20 @@ class PayLogController extends Controller
     private function indexByDate(Request $request) {
         $startDateStr = $request->input('start_date');
         $endDateStr = $request->input('end_date');
-
-        $data = ['tableRows' => [], 'total' => 0];
-        $rows = [];
-        $payLogs = PayLog::with(['tenantContract.room.building', 'loggable'])
-                        ->whereBetween('paid_at', [$startDateStr, $endDateStr])
-                        ->get()
-                        ->sortByDesc('paid_at');
-
-        foreach ($payLogs as $payLog) {
-
-            $data = [
-                '繳費科目' => $payLog->subject,
-                '繳費費用' => $payLog->amount,
-                '繳費虛擬帳號' => $payLog->virtual_account,
-                '繳費日期' => $payLog->paid_at,
-                '應繳時間' => $payLog->loggable['due_time'],
-                '承租方式' => $payLog->getCommissionType(),
-                '應繳費用' =>$payLog->loggable['amount'],
-                '匯款總額' => $payLog->pay_sum,
-            ];
-            $rows[] = $data;
-        }
-
-        $total = $payLogs->sum('amount');
-        $data['tableRows'] = $rows;
-        $data['total'] = $total;
+        $data = $this->generateDataByDate($startDateStr, $endDateStr);
 
         return view('pay_logs.index_by_date', $data);
+    }
+
+    private function exportByDate(Request $request) {
+        $startDateStr = $request->input('start_date');
+        $endDateStr = $request->input('end_date');
+        $data = $this->generateDataByDate($startDateStr, $endDateStr);
+
+        return Excel::download(
+            new PayLogReportExport($data['tableRows']),
+            "${startDateStr}~${endDateStr}-現金流報表.xlsx"
+        );
     }
 
     public function changeLoggable(Request $request, PayLog $payLog) {
@@ -205,5 +199,40 @@ class PayLogController extends Controller
         ]);
 
         return response()->json(true);
+    }
+
+    /**
+     * @param $startDateStr
+     * @param $endDateStr
+     * @return array
+     */
+    private function generateDataByDate($startDateStr, $endDateStr): array
+    {
+        $data = ['tableRows' => [], 'total' => 0];
+        $rows = [];
+        $payLogs = PayLog::with(['tenantContract.room.building', 'loggable'])
+            ->whereBetween('paid_at', [$startDateStr, $endDateStr])
+            ->get()
+            ->sortByDesc('paid_at');
+
+        foreach ($payLogs as $payLog) {
+            $rows[] = [
+                '繳費科目' => $payLog->subject,
+                '繳費費用' => $payLog->amount,
+                '繳費虛擬帳號' => $payLog->virtual_account,
+                '繳費日期' => $payLog->paid_at,
+                '應繳時間' => $payLog->loggable['due_time'],
+                '承租方式' => $payLog->getCommissionType(),
+                '應繳費用' => $payLog->loggable['amount'],
+                '匯款總額' => $payLog->pay_sum,
+            ];
+        }
+
+
+        $total = $payLogs->sum('amount');
+        $data['tableRows'] = $rows;
+        $data['total'] = $total;
+
+        return $data;
     }
 }

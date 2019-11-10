@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use phpDocumentor\Reflection\Types\Integer;
+use function foo\func;
 
 class TenantContract extends Pivot implements AuditableContract
 {
@@ -128,7 +130,23 @@ class TenantContract extends Pivot implements AuditableContract
      */
     public function payLogs()
     {
-        return $this->hasMany('App\PayLog', 'tenant_contract_id');
+        $commonSelect = [
+            'pay_logs.id',
+            'pay_logs.loggable_type',
+            'pay_logs.loggable_id',
+            'pay_logs.subject',
+            DB::raw('due_time AS due_time'),
+            'pay_logs.*'
+        ];
+        $joinedTenantPayment = $this->hasMany('App\PayLog', 'tenant_contract_id')
+                                    ->leftJoin('tenant_payments', 'tenant_payments.id', '=', 'pay_logs.loggable_id')
+                                    ->where('pay_logs.loggable_type', 'App\TenantPayment')
+                                    ->select($commonSelect);
+        $joinedTenantElectricityPayment = $this->hasMany('App\PayLog', 'tenant_contract_id')
+                                               ->leftJoin('tenant_electricity_payments', 'tenant_electricity_payments.id', '=', 'pay_logs.loggable_id')
+                                               ->where('pay_logs.loggable_type', 'App\TenantElectricityPayment')
+                                               ->select($commonSelect);
+        return $joinedTenantPayment->unionAll($joinedTenantElectricityPayment);
     }
 
     /**
@@ -203,7 +221,7 @@ class TenantContract extends Pivot implements AuditableContract
             $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');
         }
 
-        $paid = $this->payLogs()->sum('amount');
+        $paid = $this->payLogs()->get()->sum(function ($p) { return $p->amount ?? 0; });
 
         return $paid - $unpaid - $electricityUnpaid;
     }

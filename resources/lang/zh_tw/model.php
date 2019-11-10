@@ -474,6 +474,7 @@ return [
         'exchange_fee'                => '匯費',
         'bank_branch'                 => '銀行分行',
         'method'                      => '方式',
+        'deleted_at'                  => '刪除時間',
     ],
     'Deposit' => [
         'id'                               => '編號',

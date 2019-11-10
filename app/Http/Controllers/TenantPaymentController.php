@@ -123,7 +123,15 @@ class TenantPaymentController extends Controller
     public function destroy(TenantPayment $tenantPayment)
     {
         if ($tenantPayment->is_charge_off_done) {
-            return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
+            $this->generateEditorialReviewWithCommand($tenantPayment, '刪除');
+
+            //Notify specific manager
+            $user = User::find(1);
+            $notify = new NotifyUsers($user);
+            $content = new TextContent($this->makeTenantPaymentUpdatedContent('deleted', $tenantPayment));
+            $notify->notifySelf($content);
+
+            return response()->json(['errors' => ['已加入刪除審核列表']], 422);
         }
         $tenantPayment->delete();
         return response()->json(true);
@@ -175,10 +183,10 @@ class TenantPaymentController extends Controller
 
         switch ($type) {
             case 'deleted':
-                $content = "應繳用費編號: {$id} 資料被申請刪除，備註: {$comment}。";
+                $content = "應繳費用編號: {$id} 資料被申請刪除，備註: {$comment}。";
                 break;
             default:
-                $content = "應繳用費編號: {$id} 資料被申請更新，請立即前往確認，備註: {$comment}。";
+                $content = "應繳費用編號: {$id} 資料被申請更新，請立即前往確認，備註: {$comment}。";
         }
 
         return $content;

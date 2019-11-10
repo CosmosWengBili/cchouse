@@ -179,7 +179,7 @@ class PayLogController extends Controller
                 '繳費科目' => $payLog->subject,
                 '繳費費用' => $payLog->amount,
                 '繳費虛擬帳號' => $payLog->virtual_account,
-                '繳費日期' => Carbon::parse($payLog->paid_at)->toDateString(),
+                '繳費日期' => $payLog->paid_at,
                 '應繳時間' => $payLog->loggable['due_time'],
                 '承租方式' => $payLog->getCommissionType(),
                 '應繳費用' =>$payLog->loggable['amount'],

@@ -13,7 +13,7 @@ class PayLog extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $casts = [
-        'paid_at' => 'datetime:Y-m-d',
+        'paid_at' => 'datetime',
     ];
     protected $guarded = [];
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Deposit;
 use App\Exports\DebtCollectionExport;
 use App\Exports\PayLogReportExport;
 use App\PayLog;
@@ -144,6 +145,33 @@ class PayLogController extends Controller
     {
         $payLog->delete();
         return response()->json(true);
+    }
+
+    public function transformToDeposit(Request $request, PayLog $payLog) {
+        $validatedData = $request->validate([
+            'deposit_collection_serial_number' => 'required',
+            'payer_name' => 'required',
+            'payer_certification_number' => 'required',
+            'payer_is_legal_person' => 'required',
+            'payer_phone' => 'required',
+            'appointment_date' => 'required',
+            'receiver' => 'required|exists:users,id',
+        ]);
+
+        $depositAttrs = array_merge($validatedData, [
+            'tenant_contract_id' => $payLog->tenant_contract_id,
+            'deposit_collection_date' => $payLog->paid_at,
+            'invoicing_amount' => $payLog->amount,
+            'reason_of_deletions' => '',
+            'room_id' => $payLog->getRoomId(),
+        ]);
+
+        DB::transaction(function () use ($depositAttrs, $payLog) {
+           Deposit::create($depositAttrs);
+            $payLog->delete();
+        });
+
+        return back();
     }
 
     /**

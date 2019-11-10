@@ -51,4 +51,16 @@ class PayLog extends Model implements AuditableContract
 
         return null;
     }
+
+    public function getRoomId() {
+        try {
+             if ($this->tenantContract) {
+                 return $this->tenantContract->room_id;
+             }
+
+             return $this->loggable->tenantContract->room_id;
+        } catch (\Exception $e) {}
+
+        return null;
+    }
 }

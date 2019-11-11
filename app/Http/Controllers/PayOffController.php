@@ -85,6 +85,7 @@ class PayOffController extends Controller
             'header.pay_off_date' => 'required|date',
             'header.commission_type' => 'required',
             'header.return_ways' => 'required',
+            'header.is_monthly_report' => 'nullable'
         ])['header'];
         // 科目相關
         $validatedItemsData = $request->validate([
@@ -140,8 +141,13 @@ class PayOffController extends Controller
                 'landlord_paid' => $validatedSumsData['should_pay'],
                 'tenant_contract_id' => $tenantContract->id,
             ]);
+            $room = $tenantContract->room;
+            $room->update([
+                'current_110v' => $validatedElectricityData['final_110v'],
+                'current_220v' => $validatedElectricityData['final_220v']
+            ]);
 
-            $room_id = $tenantContract->room->id;
+            $room_id = $room->id;
             // 產生點交盈餘相關科目
             $landlordOtherSubjects = collect($validatedItemsData)
                                     ->where('subject', '點交中退盈餘分配');
@@ -221,7 +227,7 @@ class PayOffController extends Controller
             // save electricity payment
             $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
 
-            $virtual_account = $tenantContract->room->virtual_account;
+            $virtual_account = $room->virtual_account;
 
             // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 paylog，費用等同此科目費用，但轉化為正數 ;
             $allPayments = $tenantPayments->merge($tenantElectricityPayments);
@@ -266,7 +272,7 @@ class PayOffController extends Controller
     {
         return [
             'commission_type' => $tenantContract->building->landlordContracts()->active()->commission_type,
-            'room_id' => $tenantContract->room->id,
+            'room_code' => $tenantContract->room->room_code,
             'location' => $tenantContract->building->location,
             'tenant_name' => $tenantContract->tenant->name,
         ];

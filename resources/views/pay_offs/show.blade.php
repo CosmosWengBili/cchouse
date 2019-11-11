@@ -51,9 +51,9 @@
                                 <div class="d-inline-flex">
                                     <a
                                         target="_blank"
-                                        href="{{ route('rooms.show', $headerInfo['room_id']) }}"
+                                        href="{{ route('rooms.show', $headerInfo['room_code']) }}"
                                     >
-                                        {{ $headerInfo['room_id'] }}
+                                        {{ $headerInfo['room_code'] }}
                                     </a>
                                 </div>
                             </li>
@@ -65,73 +65,121 @@
 
                         <table class="table table-bordered">
                             <tbody>
-                            <tr>
-                                <th>110v 電費度數</th>
-                                <td colspan="3">
-                                    <form id="e_110v_form" onsubmit="return false;">
+                            <!-- divide eletecity section to two method -->
+                            @if( $tenantContract->room->building->electricity_payment_method == '儲值電表' )
+                                <tr>
+                                    <th>110v 電費度數</th>
+                                    <td colspan="3">                          
                                         <div class="input-group w-50">
-                                            <span class="align-self-center"><span class="old-110v">{{ $payOffData['110v_end_degree'] }}</span> 度</span>
                                             <input
                                                 class="form-control form-control-sm ml-3"
                                                 type="number"
-                                                id="e_110v"
-                                                name="e_110v"
-                                                value="{{ $payOffData['110v_end_degree'] }}"
-                                                min="{{ $payOffData['110v_end_degree'] }}"
+                                                id="e_110v_stored"
+                                                name="e_110v_stored"
                                             />
                                             <div class="input-group-append">
-                                                <button
-                                                    id="cal_110v"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-info"
-                                                >
+                                                    <button
+                                                        id="cal_110v_stored"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
                                                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                                     計算
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>220v 電費度數</th>
-                                <td colspan="3">
-                                    <form id="e_220v_form" onsubmit="return false;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>220v 電費度數</th>
+                                    <td colspan="3">
                                         <div class="input-group w-50">
-                                            <span class="align-self-center"><span class="old-220v">{{ $payOffData['220v_end_degree'] }}</span> 度</span>
                                             <input
                                                 class="form-control form-control-sm ml-3"
                                                 type="number"
-                                                id="e_220v"
-                                                name="e_220v"
-                                                value="{{ $payOffData['220v_end_degree'] }}"
-                                                min="{{ $payOffData['220v_end_degree'] }}"
+                                                id="e_220v_stored"
+                                                name="e_220v_stored"
                                             />
-                                            <div class="input-group-append">
-                                                <button
-                                                    id="cal_220v"
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-info"
-                                                >
-                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                                    計算
-                                                </button>
-                                            </div>
+                                        <div class="input-group-append">
+                                            <button
+                                                id="cal_220v_stored"
+                                                type="button"
+                                                class="btn btn-sm btn-outline-info"
+                                            >
+                                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                計算
+                                            </button>
                                         </div>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th>110v 電費度數</th>
+                                    <td colspan="3">
+                                        <form id="e_110v_form" onsubmit="return false;">
+                                            <div class="input-group w-50">
+                                                <span class="align-self-center"><span class="old-110v">{{ $payOffData['110v_end_degree'] }}</span> 度</span>
+                                                <input
+                                                    class="form-control form-control-sm ml-3"
+                                                    type="number"
+                                                    id="e_110v"
+                                                    name="e_110v"
+                                                    value="{{ $payOffData['110v_end_degree'] }}"
+                                                    min="{{ $payOffData['110v_end_degree'] }}"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button
+                                                        id="cal_110v"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
+                                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                        計算
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>220v 電費度數</th>
+                                    <td colspan="3">
+                                        <form id="e_220v_form" onsubmit="return false;">
+                                            <div class="input-group w-50">
+                                                <span class="align-self-center"><span class="old-220v">{{ $payOffData['220v_end_degree'] }}</span> 度</span>
+                                                <input
+                                                    class="form-control form-control-sm ml-3"
+                                                    type="number"
+                                                    id="e_220v"
+                                                    name="e_220v"
+                                                    value="{{ $payOffData['220v_end_degree'] }}"
+                                                    min="{{ $payOffData['220v_end_degree'] }}"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button
+                                                        id="cal_220v"
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                    >
+                                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                        計算
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endif
+                            <tr class='report-header'>
                                 <th>科目</th>
-                                <th>負擔方</th>
                                 <th>費用</th>
                                 <th>備註</th>
+                                <th>負擔方</th>
                             </tr>
                             @foreach($payOffData['fees'] as $fee)
-                                @continue($fee['is_showed'] === false)
+                                @continue($fee['is_showed'] === false || $fee['is_tenant'] === false)
                                 <tr class="old-payment">
                                     <td><span class="subject">{{ $fee['subject'] }}</span></td>
-                                    <td></td>
                                     <td>
                                         @php
                                             $refundAmount += $fee['amount'];
@@ -139,12 +187,12 @@
                                         <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
                                     </td>
                                     <td><span class="comment">{{ $fee['comment'] }}</span></td>
+                                    <td><span class="comment">{{ isset($fee['collected_by']) ? $fee['collected_by'] : '' }}</span></td>
                                 </tr>
                             @endforeach
                             <tr class="functions-row">
                                 <td colspan="4" class="text-center">
                                     <button class="btn btn-success btn-xs js-new-item">新增項目</button>
-                                    <button class="btn btn-info btn-xs js-save-payments">儲存</button>
                                     <label for="exchange_fee">匯費</label>
                                     <input type="checkbox" id="exchange_fee" >
                                 </td>
@@ -170,11 +218,25 @@
                                     </div>
                                 </td>
                             </tr>
+                            @foreach($payOffData['fees'] as $fee)
+                                @continue($fee['is_showed'] == false || $fee['is_tenant'] == true)
+                                <tr class="old-payment">
+                                    <td><span class="subject">{{ $fee['subject'] }}</span></td>
+                                    <td>
+                                        @php
+                                            $refundAmount += $fee['amount'];
+                                        @endphp
+                                        <input data-subject="{{$fee['subject']}}" class="form-control form-control-sm edit-new-item-amount" type="number" value={{ $fee['amount'] }}>
+                                    </td>
+                                    <td><span class="comment">{{ $fee['comment'] }}</span></td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
                             <tr>
                                 <th>兆基應收</th>
                                 <td colspan="3">
                                     <div class="d-inline-flex">
-                                        <span id="received_amount">{{ $payOffData['sums']['兆基應收'] }}</span>
+                                        <span id="received_amount" data-origin="{{ $payOffData['sums']['兆基應收'] }}">{{ $payOffData['sums']['兆基應收'] }}</span>
                                         <input id="edit_received_amount"
                                                 data-subject="received"
                                                 type="number"
@@ -209,6 +271,11 @@
                             </tr>
                             </tbody>
                         </table>
+                        <div class="text-center">
+                            <button class="d-inline-block my-3 mx-auto btn btn-lg btn-info js-save-payments">儲存</button>
+                            <input type="checkbox" name="is_monthly_report" id="is_monthly_report"> 為月結單資料
+                        </div>
+
                     @else
                         <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
                     @endif
@@ -224,6 +291,9 @@
     tr > td:nth-child(3) {
         width: 200px
     }
+    .report-header th:not(:last-child){
+        width:25%;
+    }
 </style>
 
 <!-- init payOffData -->
@@ -233,21 +303,33 @@
 
 <script>
 
+    // For normal eletricity payment 
     $('#cal_110v, #cal_220v').click(function () {
-        const res_110 = validate_110v.element( "#e_110v" );
-        const res_220 = validate_220v.element( "#e_220v" );
-        if (res_110 && res_220) {
-            calculatePrice($(this));
+        const res_110_check = validate_110v.element( "#e_110v" );
+        const res_220_check = validate_220v.element( "#e_220v" );
+        if (res_110_check && res_220_check) {
+            const res_110 = parseInt($( "#e_110v" ).val());
+            const res_220 = parseInt($( "#e_220v" ).val());
+            calculateElectricityPrice($(this), res_110, res_220, '普通');
         }
     });
 
-    function calculatePrice($clickedButton) {
+    // For 儲值電 eletricity payment 
+    $('#cal_110v_stored, #cal_220v_stored').click(function () {
+        const res_110 = parseInt($( "#e_110v_stored" ).val());
+        const res_220 = parseInt($( "#e_220v_stored" ).val());
+        if ( isNaN(res_110) || isNaN(res_220) ) {
+            Swal.fire('請務必兩欄都填入值')
+        }
+        else{
+            calculateElectricityPrice($(this),res_110, res_220, '儲值電');
+        }
+    });
 
+    function calculateElectricityPrice($clickedButton, input_110v, input_220v, mode = '普通') {
         const tenantContractsId = '{{ $tenantContract->id }}';
         const e_110v_end = parseInt('{{ $payOffData['110v_end_degree'] }}');
         const e_220v_end = parseInt('{{ $payOffData['220v_end_degree'] }}');
-        const input_110v = parseInt($('#e_110v').val());
-        const input_220v = parseInt($('#e_220v').val());
         const template = getElectricityTemplate();
 
         $clickedButton.find('span').removeClass('d-none');
@@ -257,15 +339,22 @@
                 const pricePerDegreeSummer = data.pricePerDegreeSummer || 0;
                 const readMonth = (new Date).getMonth() + 1;
                 const ratio = [7, 8, 9, 10].includes(readMonth) ? pricePerDegreeSummer : pricePerDegree;
-                const amount = _.round (
-                    _.multiply (
-                        _.add (
-                            _.subtract(input_110v, e_110v_end),
-                            _.subtract(input_220v, e_220v_end)
-                        ),
-                        ratio
-                    )
-                );
+                let amount = 0
+                if( mode == '普通' ){
+                    amount = _.round (
+                        _.multiply (
+                            _.add (
+                                _.subtract(input_110v, e_110v_end),
+                                _.subtract(input_220v, e_220v_end)
+                            ),
+                            ratio
+                        )
+                    );
+                }
+                else{
+                    amount = input_110v * ratio + input_220v * ratio
+                }
+
 
                 let $calV = $('table tr.cal-v');
                 if ($calV.length === 0) {
@@ -287,17 +376,18 @@
             <tr class="cal-v">
                 <td>電費</td>
                 <td>
+                    <input class="form-control form-control-sm electricity-amount edit-added-item-amount" type="number" id="cal_v" name="cal_v" readonly>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
+                </td>
+                
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                             <option value="{{ $collected_by }}" {{ $collected_by==='房東' ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
                     </select>
-                    </td>
-                <td>
-                    <input class="form-control form-control-sm electricity-amount edit-added-item-amount" type="number" id="cal_v" name="cal_v" readonly>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
                 </td>
             </tr>`;
     }
@@ -334,17 +424,17 @@
             <tr class="exchange-fee">
                 <td>匯費</td>
                 <td>
+                    <input class="form-control form-control-sm exchange-fee-amount edit-added-item-amount" type="number" name="amount" readonly value="-30">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
+                </td>
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                             <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
                         @endforeach
                     </select>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm exchange-fee-amount edit-added-item-amount" type="number" name="amount" readonly value="-30">
-                </td>
-                <td>
-                    <input class="form-control form-control-sm exchange-fee-comment" type="text" name="comment">
                 </td>
             </tr>`;
     }
@@ -439,6 +529,29 @@
         reCountSum();
     });
 
+    // added item should be counted to 
+    $(document).on('change', '[name="collected_by"], .edit-added-item-amount', function(){
+        var $inputs = $('[name="collected_by"]')
+        changeAmount = $.map($inputs, function(select, index){
+            var input = select.closest('tr').querySelector('.edit-added-item-amount')
+            if( select.value == '公司' ){
+                return parseInt(input.value)
+            }else{
+                return 0   
+            }
+        })
+        .reduce((a,b) => a + b)
+        
+        var origin = $('#received_amount').data('origin')
+        var result = parseInt(origin) + changeAmount
+
+        $('#edit_received_amount').val(result)
+        $('#received_amount').text(result);
+        payOffData['sums']['兆基應收'] = result
+
+        countTenantPayment();
+    })
+
     /**
      * 計算 應退房客金額
      */
@@ -471,60 +584,71 @@
     function reCountSum(){
         var commissionType = $('#commission_type').text()
         var returnWay = $('#return_ways').val()
+
+        var initItems = [
+            '履保金', '管理費', '折抵管理費', '清潔費', '折抵清潔費', '滯納金', '折抵滯納金', '沒收押金', '點交中退盈餘分配', '租金', '電費'
+        ]
+        var extraItems = Object.keys(payOffData['fees']).filter(item => !initItems.includes(item));
+        var extraAmount = extraItems.map(function(value, index){
+            return payOffData['fees'][value]['amount']
+        }).reduce((a,b) => a + b)
+
         if( commissionType == '包租' ){
             if( returnWay == '中途退租' ){
                 // -(履保金+管理費+清潔費+設備+滯納金)
                 payOffData['fees']['沒收押金']['amount'] = (
                     payOffData['fees']['履保金']['amount'] +
-                    payOffData['fees']['管理費']['amount'] +
                     payOffData['fees']['清潔費']['amount'] +
-                    payOffData['fees']['滯納金']['amount']
+                    payOffData['fees']['滯納金']['amount'] +
+                    payOffData['fees']['租金']['amount'] +
+                    extraAmount
                     ) * -1;
                 
-
+                    
                 // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
-                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'];
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
+                payOffData['sums']['兆基應收'] = payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount'] + payOffData['fees']['點交中退盈餘分配']['amount'];
 
-                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] > 0 ? 0 : payOffData['fees']['清潔費']['amount'])
-                                        + (payOffData['fees']['滯納金']['amount'] > 0 ? 0 : payOffData['fees']['滯納金']['amount'])
-                                        + payOffData['fees']['點交中退盈餘分配']['amount'];   
+                payOffData['sums']['業主應付'] = payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額'];   
                                          
                 $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
                 $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
                 renderSum()    
             }
             else if( returnWay == '到期退租' ){
-                
-                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
-                payOffData['fees']['管理費']['amount'] + payOffData['sums']['應退金額'];
-
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                 payOffData['fees']['租金']['amount'] +
                 payOffData['fees']['清潔費']['amount'] +
-                payOffData['fees']['滯納金']['amount'];
+                payOffData['fees']['滯納金']['amount'] + 
+                extraAmount;
 
                 // B49−B56
-                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額'];
+                payOffData['sums']['兆基應收'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) + payOffData['fees']['管理費']['amount']
+                payOffData['sums']['業主應付'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) + payOffData['sums']['應退金額'];
                 renderSum()
             }
             else if( returnWay == '協調退租' ){
 
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
                 
                 
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                                                 payOffData['fees']['沒收押金']['amount'] +
-                                                payOffData['fees']['租金']['amount'];
+                                                payOffData['fees']['租金']['amount'] +
+                                                payOffData['fees']['清潔費']['amount'] + 
+                                                payOffData['fees']['滯納金']['amount'] +
+                                                extraAmount; 
                 
-                payOffData['sums']['兆基應收'] = payOffData['fees']['履保金']['amount'] - payOffData['sums']['應退金額']['amount'];
+                payOffData['sums']['兆基應收'] = (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
+                                                 payOffData['fees']['點交中退盈餘分配']['amount'];
                 
                 payOffData['sums']['業主應付'] = payOffData['sums']['應退金額'] +
-                payOffData['fees']['管理費']['amount'] +
-                (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
-                payOffData['fees']['點交中退盈餘分配']['amount'];
+                                                (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
+                                                payOffData['fees']['點交中退盈餘分配']['amount'];
 
                 $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
+                $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'] )
                 renderSum() 
             }
         }
@@ -532,15 +656,16 @@
             if( returnWay == '中途退租' ){
                 payOffData['fees']['沒收押金']['amount'] = (
                     payOffData['fees']['履保金']['amount'] +
-                    payOffData['fees']['管理費']['amount'] +
+                    payOffData['fees']['租金']['amount'] +
                     payOffData['fees']['清潔費']['amount'] +
-                    payOffData['fees']['滯納金']['amount']
+                    payOffData['fees']['滯納金']['amount'] +
+                    extraAmount
                 ) * -1;
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
-                payOffData['sums']['兆基應收'] = payOffData['sums']['業主應付'] = -1 *
-                ( payOffData['fees']['清潔費']['amount'] > 0 ? 0 :  payOffData['fees']['清潔費']['amount']) +
-                ( payOffData['fees']['滯納金']['amount'] > 0 ? 0 :  payOffData['fees']['滯納金']['amount']) +
-                  payOffData['fees']['點交中退盈餘分配']['amount'];    
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
+                payOffData['sums']['兆基應收'] = payOffData['fees']['管理費']['amount'] + 
+                                                ( payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
+                                                payOffData['fees']['點交中退盈餘分配']['amount'];  
+                payOffData['sums']['業主應付'] =  payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額']
 
                 $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
                 $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )                  
@@ -550,7 +675,8 @@
             payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                 payOffData['fees']['租金']['amount'] +
                 payOffData['fees']['清潔費']['amount'] +
-                payOffData['fees']['滯納金']['amount'];
+                payOffData['fees']['滯納金']['amount'] +
+                extraAmount;
             // −1×(E54+E52)+E51
             payOffData['sums']['兆基應收'] = -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
                 payOffData['fees']['管理費']['amount'];
@@ -565,14 +691,15 @@
 
                 // −E32÷2
                 payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
-                payOffData['fees']['點交中退盈餘分配']['amount'] = payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']);
+                payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
 
                 // SUM(E32:E34)+SUM(E36:E38)
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                     payOffData['fees']['沒收押金']['amount'] +
                     payOffData['fees']['租金']['amount'] +
                     payOffData['fees']['清潔費']['amount'] +
-                    payOffData['fees']['滯納金']['amount'];
+                    payOffData['fees']['滯納金']['amount'] +
+                    extraAmount;
                 // E39+−1×(E36+E38)+E35
                 payOffData['sums']['兆基應收'] = payOffData['fees']['點交中退盈餘分配']['amount'] +
                     -1 * (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) +
@@ -611,17 +738,17 @@
                     </select>
                 </td>
                 <td>
+                    <input class="form-control form-control-sm edit-added-item-amount" type="number" name="amount" value="0">
+                </td>
+                <td>
+                    <input class="form-control form-control-sm" type="text" name="comment">
+                </td>
+                <td>
                     <select class="form-control form-control-sm" name="collected_by">
                     @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
                         <option value="{{ $collected_by }}" {{$loop->first ? 'selected' : ''}}>{{ $collected_by }}</option>
                     @endforeach
                     </select>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm edit-added-item-amount" type="number" name="amount" value="0">
-                </td>
-                <td>
-                    <input class="form-control form-control-sm" type="text" name="comment">
                 </td>
             </tr>
 `;
@@ -661,6 +788,7 @@
                 pay_off_date: $('#pay-off-date').val(),
                 commission_type: $('#commission_type').text(),
                 return_ways: $('#return_ways').val(),
+                is_monthly_report: $('#is_monthly_report').is(':checked')
             },
             electricity: {
                 old_110v: $('span.old-110v').text(),
@@ -792,28 +920,27 @@
     })
 
     const validate_220v = $("#e_220v_form").validate({
-            rules: {
-                e_220v: {
-                    required: true,
-                    gtEnd220v: true,
-                }
-            },
-            errorElement: "em",
-            errorPlacement: function ( error, element ) {
-                error.addClass( "invalid-feedback" );
-                if ( element.prop( "type" ) === "checkbox" ) {
-                    error.insertAfter( element.next( "label" ) );
-                } else {
-                    error.insertAfter( element );
-                }
-            },
-            highlight: function ( element, errorClass, validClass ) {
-                $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        rules: {
+            e_220v: {
+                required: true,
+                gtEnd220v: true,
             }
-        })
-
+        },
+        errorElement: "em",
+        errorPlacement: function ( error, element ) {
+            error.addClass( "invalid-feedback" );
+            if ( element.prop( "type" ) === "checkbox" ) {
+                error.insertAfter( element.next( "label" ) );
+            } else {
+                error.insertAfter( element );
+            }
+        },
+        highlight: function ( element, errorClass, validClass ) {
+            $( element ).addClass( "is-invalid" ).removeClass( "is-valid" );
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $( element ).addClass( "is-valid" ).removeClass( "is-invalid" );
+        }
+    })
 </script>
 @endsection

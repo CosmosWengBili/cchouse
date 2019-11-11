@@ -94,19 +94,19 @@ class PayOffService
         ];
 
         $defaultItems = [
-            '履保金' => ['subject' => '履保金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '管理費' => ['subject' => '管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '點交中退盈餘分配' => ['subject' => '點交中退盈餘分配', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false],
-            '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false],
+            '履保金' => ['subject' => '履保金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '沒收押金' => ['subject' => '沒收押金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '管理費' => ['subject' => '管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '折抵管理費' => ['subject' => '折抵管理費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '清潔費' => ['subject' => '清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '折抵清潔費' => ['subject' => '折抵清潔費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '滯納金' => ['subject' => '滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '折抵滯納金' => ['subject' => '折抵滯納金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '點交中退盈餘分配' => ['subject' => '點交中退盈餘分配', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => false],
+            '租金' => ['subject' => '租金', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
+            '電費' => ['subject' => '電費', 'amount' => 0, 'comment' => '', 'is_showed' => false, 'is_tenant' => true],
         ];
-
+        $originalItems = array_keys($defaultItems);
         // 整理成 excel 內的格式
         foreach ($fees as $fee) {
             if( array_key_exists($fee['subject'], $defaultItems) ){
@@ -117,16 +117,22 @@ class PayOffService
                     'subject' => $fee['subject'],
                     'amount' => $fee['amount'],
                     'comment' => $fee['comment'],
-                    'is_showed' => true
+                    'collected_by' => $fee['collected_by'],
+                    'is_showed' => true,
+                    'is_tenant' => true
                 ];                
             }
             
-        }
+        }   
+        
+        // Summarize extra items ( collected_by 房東 ) 
+        $extraItems = array_diff(array_keys($defaultItems), $originalItems);
+        $extraAmount = array_sum(array_map(function($extraItem) use($defaultItems){
+            return $defaultItems[$extraItem]['amount'];
+        }, $extraItems));
 
         if ($commission_type === '包租' && $return_ways === '中途退租') {
             $defaultItems['履保金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
-            $defaultItems['折抵滯納金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
@@ -134,19 +140,18 @@ class PayOffService
             // -(履保金+管理費+清潔費+設備+滯納金)
             $defaultItems['沒收押金']['amount'] = (
                     $defaultItems['履保金']['amount'] +
-                    $defaultItems['管理費']['amount'] +
                     $defaultItems['清潔費']['amount'] +
-                    $defaultItems['滯納金']['amount']
+                    $defaultItems['滯納金']['amount'] +
+                    $defaultItems['租金']['amount'] + 
+                    $extraAmount
                 ) * -1;
             // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
 
-            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'];
+            $sumItems['兆基應收'] = $defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount'] + $defaultItems['點交中退盈餘分配']['amount'];
 
             // −1×(IF(B16>0,0,B16)+IF(B19>0,0,B19))+B22
-            $sumItems['業主應付'] = -1 * ($defaultItems['清潔費']['amount'] > 0 ? 0 : $defaultItems['清潔費']['amount'])
-                + ($defaultItems['滯納金']['amount'] > 0 ? 0 : $defaultItems['滯納金']['amount'])
-                + $defaultItems['點交中退盈餘分配']['amount'];
+            $sumItems['業主應付'] = $sumItems['兆基應收'] + $sumItems['應退金額'];
         } elseif ($commission_type === '包租' && $return_ways === '到期退租') {
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
@@ -154,78 +159,79 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // ROUND($C5−$B5×$G2,0)
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
-            // −1×(B52+B54)+B56+B51
-            $sumItems['業主應付'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
-                $defaultItems['管理費']['amount'] +
-                $sumItems['應退金額'];
             // SUM(B49:B50)+SUM(B52:B54)
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['滯納金']['amount'];
+                $defaultItems['滯納金']['amount'] + $extraAmount;
             // B49−B56
-            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'] - $sumItems['應退金額'];
+            $sumItems['兆基應收'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) + $defaultItems['管理費']['amount'];
+            $sumItems['業主應付'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
+            $sumItems['應退金額'];
         } elseif ($commission_type === '包租' && $return_ways === '協調退租') {
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true; // 不顯示在月結單 ????
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
+            $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // SUM(B32:B34)+SUM(B36:B38)
-            $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
-                $defaultItems['沒收押金']['amount'] +
-                $defaultItems['租金']['amount'];
+            $sumItems['應退金額'] = $defaultItems['履保金']['amount'] + 
+                                   $defaultItems['沒收押金']['amount'] + 
+                                   $defaultItems['租金']['amount'] + 
+                                   $defaultItems['清潔費']['amount'] + 
+                                   $defaultItems['滯納金']['amount'];
             // B32−B41
-            $sumItems['兆基應收'] = $defaultItems['履保金']['amount'] - $sumItems['應退金額']['amount'];
+            $sumItems['兆基應收'] = ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) * -1 +
+                                    $defaultItems['點交中退盈餘分配']['amount'];
             // B41+B35+(B36+B38)×−1+B39
             $sumItems['業主應付'] = $sumItems['應退金額'] +
-                $defaultItems['管理費']['amount'] +
-                ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) * -1 +
-                $defaultItems['點交中退盈餘分配']['amount'];
+                                    ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) * -1 +
+                                    $defaultItems['點交中退盈餘分配']['amount'];
         } elseif ($commission_type === '代管' && $return_ways === '中途退租') {
             $defaultItems['履保金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
-            $defaultItems['折抵滯納金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
             // −1×(E13+E14+E16+E18+E19)
             $defaultItems['沒收押金']['amount'] = (
                     $defaultItems['履保金']['amount'] +
-                    $defaultItems['管理費']['amount'] +
+                    $defaultItems['租金']['amount'] +
                     $defaultItems['清潔費']['amount'] +
-                    $defaultItems['滯納金']['amount']
+                    $defaultItems['滯納金']['amount'] +
+                    $extraAmount
                 ) * -1;
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // −1×(IF(B16>0,0,B16)+IF(B19>0,0,B19))+B22
-            $sumItems['兆基應收'] = $sumItems['業主應付'] = -1 *
-                ($defaultItems['清潔費']['amount'] > 0 ? 0 : $defaultItems['清潔費']['amount']) +
-                ($defaultItems['滯納金']['amount'] > 0 ? 0 : $defaultItems['滯納金']['amount']) +
-                $defaultItems['點交中退盈餘分配']['amount'];
+            $sumItems['兆基應收'] = $defaultItems['管理費']['amount'] +
+                                  ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount'] ) * -1 +
+                                  $defaultItems['點交中退盈餘分配']['amount'];
+
+            $sumItems['業主應付'] = $sumItems['兆基應收'] + $sumItems['應退金額'];
         } elseif ($commission_type === '代管' && $return_ways === '到期退租') {
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // ROUND($C5−$B5×$G2,0)
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             // SUM(E49:E50)+SUM(E52:E54)
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['滯納金']['amount'];
+                $defaultItems['滯納金']['amount'] + 
+                $extraAmount
+                ;
             // −1×(E54+E52)+E51
             $sumItems['兆基應收'] = -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
                 $defaultItems['管理費']['amount'];
@@ -237,12 +243,11 @@ class PayOffService
             $defaultItems['履保金']['is_showed'] = true;
             $defaultItems['沒收押金']['is_showed'] = true;
             $defaultItems['租金']['is_showed'] = true;
-            $defaultItems['滯納金']['is_showed'] = true;
             $defaultItems['點交中退盈餘分配']['is_showed'] = true;
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->sum('amount');
+            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
             // −E32÷2
             $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
             $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
@@ -253,7 +258,8 @@ class PayOffService
                 $defaultItems['沒收押金']['amount'] +
                 $defaultItems['租金']['amount'] +
                 $defaultItems['清潔費']['amount'] +
-                $defaultItems['滯納金']['amount'];
+                $defaultItems['滯納金']['amount'] + 
+                $extraAmount;
             // E39+−1×(E36+E38)+E35
             $sumItems['兆基應收'] = $defaultItems['點交中退盈餘分配']['amount'] +
                 -1 * ($defaultItems['清潔費']['amount'] + $defaultItems['滯納金']['amount']) +
@@ -274,6 +280,12 @@ class PayOffService
             return round($item);
         })->toArray();
 
+        // hide all zero subjects
+        foreach ($defaultItems as $key => $defaultItem) {
+            if( $defaultItem['amount'] == 0 ){
+                $defaultItems[$key]['is_showed'] = false;
+            }    
+        }    
         return [
             $defaultItems,
             $sumItems,
@@ -294,27 +306,21 @@ class PayOffService
         foreach ($others as $fee) {
             $copy = [];
             $fee['is_showed'] = true;
-
-            if ($fee['subject'] === '管理費') {
+            if ($fee['subject'] === '租金') {
+                $data[] = $fee;
+                ! empty($copy) and $data[] = $copy;
                 // 計算管理費
                 $fee['amount'] = $this->managementFee($diffInDays, $lastPayedUntilToday);
+                $fee['subject'] = '管理費';
 
                 $copy = $fee;
                 $copy['subject'] = '折抵管理費';
-                if ($fee['amount'] === 0) {
-                    $fee['is_showed'] = $copy['is_showed'] = false; // 0 不顯示
-                } else {
-                    $copy['amount'] = $copy['amount'] * -1;
-                }
+                $copy['amount'] = $copy['amount'] * -1;
             } elseif ($fee['subject'] === '清潔費') {
                 $copy = $fee;
                 $copy['subject'] = '折抵清潔費';
                 $copy['amount'] = $fee['amount'] * -1;
-                if ($fee['amount'] === 0) {
-                    $fee['is_showed'] = $copy['is_showed'] = false;
-                } else if($this->returnWay != '中途退租'){
-                    $copy['is_showed'] = false;
-                }
+
             } elseif ($fee['subject'] === '滯納金') {
                 $copy = $fee;
                 $copy['subject'] = '折抵滯納金';
@@ -324,7 +330,6 @@ class PayOffService
             $data[] = $fee;
             ! empty($copy) and $data[] = $copy;
         }
-
         return $data;
     }
 
@@ -345,9 +350,12 @@ class PayOffService
         $percentage = $lastPayedUntilToday / $diffInDays;
         $payments = $this->lastTenantPayments();
         $payments = $this->sumPayLogsByPayments($payments);
-
+        // only cauculate 代管 building
+        if( $this->tenantContract->room->building->activeContracts()->commission_type == '包租' ){
+            return 0;
+        }
         foreach ($payments as $payment) {
-            if ($payment['subject'] === '管理費') {
+            if ($payment['subject'] === '租金') {
                 // 沖銷金額
                 $pay_log_amount = $payment['pay_log_amount'];
                 if (($pay_log_amount - $rent * $percentage) > 0) {
@@ -358,9 +366,9 @@ class PayOffService
                     // 不論管理費的計算模式 都需要按照天數差異做計算 假設管理費一個月一千 這個月30天只住了15天 則管理費應該是五百
                     $managementFee = 0;
                     if ($room->management_fee_mode === '比例') {
-                        $managementFee = $pay_log_amount - ($rent * $percentage) * ( ($room->management_fee / 100) * $percentage);
+                        $managementFee =  ($pay_log_amount - ($rent * $percentage) * ( ($room->management_fee / 100) * $percentage)) * -1;
                     } elseif ($room->management_fee_mode === '固定') {
-                        $managementFee = $pay_log_amount - ($rent * $percentage) - ($room->management_fee * $percentage);
+                        $managementFee = ($pay_log_amount - ($rent * $percentage) - ($room->management_fee * $percentage)) * -1;
                     }
                 }
             }
@@ -487,8 +495,8 @@ class PayOffService
      */
     private function buildComment()
     {
-        $contractEnd = $this->tenantContract->contract_end;
-        $payOffDate = $this->payOffDate->format('m/d');
+        $contractEnd = $this->tenantContract->contract_end->format('Y-m-d');
+        $payOffDate = $this->payOffDate->format('Y-m-d');
 
         return "合約 ${contractEnd} 到期，${payOffDate} 點交。";
     }
@@ -536,12 +544,14 @@ class PayOffService
             if ($fee['collected_by'] === '公司') {
                 // 只要是來自公司的帳 都計算成清潔費
                 $cleanFee['amount'] += $pay_log_amount - ($payment->amount * $percentage);
-            } else {
+            } 
+            else{
+                // Although rent is collected_by landlord, but it should be cauculated by percentage, too
+                $fee['amount'] = $pay_log_amount - ($payment->amount * $percentage);
                 $fees[] = $fee;
             }
             //// END 計算清潔費
         }
-
         $fees[] = $cleanFee;
 
         return $fees;

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\NotifyUsers;
+use App\Classes\TextContent;
 use App\Exports\TenantElectricityPaymentExport;
 use App\Imports\TenantElectricityPaymentImport;
 use App\PayLog;
@@ -10,6 +12,7 @@ use App\Responser\NestedRelationResponser;
 use App\Services\InvoiceService;
 use App\TenantContract;
 use App\TenantElectricityPayment;
+use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -104,9 +107,18 @@ class TenantElectricityPaymentController extends Controller
             'comment' => '',
         ]);
 
-        $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
-        if (! $result) {
-            $tenantElectricityPayment->update($validatedData);
+        if ($tenantElectricityPayment->is_charge_off_done) {
+            $this->generateEditorialReview($tenantElectricityPayment, $validatedData);
+            //Notify specific manager
+            $user = User::find(1);
+            $notify = new NotifyUsers($user);
+            $content = new TextContent($this->makeTenantPaymentUpdatedContent('updated', $tenantElectricityPayment));
+            $notify->notifySelf($content);
+        } else {
+            $result = InvoiceService::compareReceipt($tenantElectricityPayment, $validatedData);
+            if(!$result){
+                $tenantElectricityPayment->update($validatedData);
+            }
         }
 
         return redirect($request->_redirect);
@@ -122,10 +134,17 @@ class TenantElectricityPaymentController extends Controller
     public function destroy(TenantElectricityPayment $tenantElectricityPayment)
     {
         if ($tenantElectricityPayment->is_charge_off_done) {
-            return response()->json(['errors' => ['已沖銷科目不得刪除']], 422);
+            $this->generateEditorialReviewWithCommand($tenantElectricityPayment, '刪除');
+
+            //Notify specific manager
+            $user = User::find(1);
+            $notify = new NotifyUsers($user);
+            $content = new TextContent($this->makeTenantElectricityPaymentUpdatedContent('deleted', $tenantElectricityPayment));
+            $notify->notifySelf($content);
+
+            return response()->json(['errors' => ['已加入刪除審核列表']], 422);
         }
         $tenantElectricityPayment->delete();
-
         return response()->json(true);
     }
 
@@ -223,5 +242,22 @@ class TenantElectricityPaymentController extends Controller
         $data = $responseData->index('PayLogs', $relation->get())->get();
 
         return view('tenant_electricity_payments.charged_index', $data);
+    }
+
+    private function makeTenantElectricityPaymentUpdatedContent(string $type, TenantElectricityPayment $tenantElectricityPayment)
+    {
+        $now = Carbon::now();
+        $id = $tenantElectricityPayment->id;
+        $comment = $tenantElectricityPayment->comment;
+
+        switch ($type) {
+            case 'deleted':
+                $content = "應繳電費編號: {$id} 資料被申請刪除，備註: {$comment}。";
+                break;
+            default:
+                $content = "應繳電費編號: {$id} 資料被申請更新，請立即前往確認，備註: {$comment}。";
+        }
+
+        return $content;
     }
 }

@@ -59,6 +59,31 @@ class PayOffController extends Controller
         ]);
     }
 
+    public function update(Request $request, PayOff $payOff)
+    {
+        $input = $request->validate([
+            'payment_detail.*' => 'nullable|array',
+            'payment_detail.*.comment' => 'required',
+        ]);
+
+        if (empty($payOff)) {
+            return $this->sendError('PayOff not found');
+        }
+
+        if (isset($input['payment_detail'])) {
+            $payment_detail = $payOff->payment_detail;
+            foreach ($input['payment_detail'] as $index => $value) {
+                $payment_detail[$index] = array_merge($payment_detail[$index], $value);
+            }
+            $payOff->payment_detail = $payment_detail;
+            $payOff->save();
+        }
+
+        // $payOff->update($input);
+
+        return response()->json(['data'=>$payOff->toArray(), 'message' =>  'PayOff updated successfully'], 200);
+    }
+
     public function history(Request $request, TenantContract $tenantContract)
     {
         $payOff = PayOff::where('tenant_contract_id', $tenantContract->id)
@@ -71,7 +96,9 @@ class PayOffController extends Controller
                 ->show($payOff->load($request->withNested))
                 ->relations($request->withNested);
 
-            return view('pay_offs.history', $responseData->get());
+            // dd($responseData);
+
+            return view('pay_offs.history', $responseData ->get());
         }
 
         return redirect()->back()->with('alert', '沒有呆帳');

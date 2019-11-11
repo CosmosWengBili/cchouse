@@ -9,7 +9,7 @@ use Faker\Generator as Faker;
 $factory->define(TenantPayment::class, function (Faker $faker) {
     $is_charge_off_done = $faker->boolean;
 
-    $due_time = $faker->dateTimeBetween('-10 day', '2019-10-31 19:02:08');
+    $due_time = $faker->dateTimeBetween('-10 day', 'now');
 
     $charge_off_date = null;
     if ($is_charge_off_done) {

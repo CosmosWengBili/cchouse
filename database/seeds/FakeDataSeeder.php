@@ -97,7 +97,7 @@ class FakeDataSeeder extends Seeder
                 'period'  => '月',
             ]));
 
-            $tenant_contract->tenantPayments()->save(factory(\App\TenantPayment::class)->make([
+            $tenantPayments = $tenant_contract->tenantPayments()->saveMany(factory(\App\TenantPayment::class, rand(1, 5))->make([
                 'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
             ]));
 
@@ -112,12 +112,17 @@ class FakeDataSeeder extends Seeder
             //     'subject' => $faker->randomElement(array_slice(config('enums.tenant_payments.subject'), 1)),
             // ]));
 
-            $tenant_contract->payOff()->create([
-                'pay_off_type' => '協調退租'
-            ]);
-            $tenant_contract->payOff()->create([
-                'pay_off_type' => '中途退租'
-            ]);
+            if ($faker->boolean) {
+                $tenant_contract->payOff()->create([
+                    'pay_off_type' => '協調退租',
+                    'payment_detail' => $tenantPayments->toArray()
+                ]);
+            } else {
+                $tenant_contract->payOff()->create([
+                    'pay_off_type' => '中途退租',
+                    'payment_detail' => $tenantPayments->toArray()
+                ]);
+            }
         });
 
         \App\TenantPayment::all()->each(function (\App\TenantPayment $tenant_payment) use ($faker) {

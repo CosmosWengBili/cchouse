@@ -44,7 +44,7 @@ class Room extends Model implements AuditableContract
         $building = $this->building;
         $room_code = 'B'.$building->building_code;
 
-        if ($this->room_layout == '公用') {
+        if ($this->room_layout == '公區') {
             $room_code .= 'P'.$this->room_number;
         } else {
             $room_code .= 'G'.$this->room_number;

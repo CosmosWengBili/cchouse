@@ -92,14 +92,13 @@ class ScheduleService
                 $landlordContract->building->rooms->each(function ($room) use (
                     $landlordContract
                 ) {
-
                     $ratio = intval($landlordContract->adjust_ratio);
                     $isRatioLTE100 = $ratio <= 100;
                     if ($isRatioLTE100) {
                         // 用 % 數調漲
                         $room->rent_reserve_price = intval(
                             round(
-                                ($room->rent_reserve_price * (100 + $landlordContract->adjust_ratio) ) / 100
+                                ($room->rent_reserve_price * (100 + $landlordContract->adjust_ratio)) / 100
                             )
                         );
                     } else {
@@ -111,7 +110,6 @@ class ScheduleService
                         );
                     }
                     $room->save();
-
 
                     if ($room->rent_reserve_price > $room->rent_actual) {
                         $users = User::group('管理組')->get();
@@ -223,17 +221,37 @@ class ScheduleService
         foreach ($landlordContracts as $landlordContract) {
             $data = $service->getMonthlyReport($landlordContract, $month, $year);
             $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
-
-            // store carry forward if current day it the last day of the month
-            if (Carbon::now()->format('Y-m-d') == Carbon::now()->endOfMonth()->format('Y-m-d')) {
-                $monthlyReport = MonthlyReport::create(['year' => $year,
-                    'month' => $month,
-                    'carry_forward' => $revenue,
-                    'landlord_contract_id' => $landlordContract->id]);
-            }
-
             // store to Redis each time
             Redis::set('monthlyRepost:carry:'.$landlordContract->id, $revenue);
+        }
+    }
+
+    // 傳入參數來控制生成哪時候的月報表, 預設: 傳入 subMonth, Schedule 在每月十號
+    // loading 太重, 可能要改用 job queue
+    public function storeMonthlyReportFromLandlordContracts($now = null)
+    {
+        if (! $now) {
+            $now = Carbon::now();
+        }
+
+        $year = $now->year;
+        $month = $now->month;
+        $service = new MonthlyReportService();
+
+        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
+                                            ->where('commission_end_date', '>', Carbon::today())
+                                            ->get();
+
+        foreach ($landlordContracts as $landlordContract) {
+            $data = $service->getMonthlyReport($landlordContract, $month, $year);
+            $revenue = $data['meta']['total_income'] - $data['meta']['total_expense'];
+
+            MonthlyReport::create([
+                'year' => $year,
+                'month' => $month,
+                'carry_forward' => $revenue,
+                'landlord_contract_id' => $landlordContract->id
+            ]);
         }
     }
     // public function anotherNotification($data) {

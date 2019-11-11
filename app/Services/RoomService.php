@@ -136,7 +136,7 @@ class RoomService
     public static function makeEmptyRoom()
     {
         return Room::make([
-            'room_layout' => '公用'
+            'room_layout' => '公區'
         ]);
     }
 

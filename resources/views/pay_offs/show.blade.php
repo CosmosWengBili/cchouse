@@ -793,7 +793,7 @@
             '滯納金': {collected_by:'公司'},
             // '折抵滯納金': {collected_by:''},
             // '沒收押金': {collected_by:''},
-            // '點交中退盈餘分配': {collected_by:''},
+            '點交中退盈餘分配': {collected_by:'房東'},
             // '租金': {collected_by:''},
             '電費': {collected_by:'房東'},
             '匯費' :{collected_by:'公司'}

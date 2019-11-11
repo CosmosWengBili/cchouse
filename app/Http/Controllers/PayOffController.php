@@ -118,7 +118,7 @@ class PayOffController extends Controller
             'header.pay_off_date' => 'required|date',
             'header.commission_type' => 'required',
             'header.return_ways' => 'required',
-            'header.is_monthly_report' => 'nullable'
+            'header.is_monthly_report' => 'nullable|boolean'
         ])['header'];
         // 科目相關
         $validatedItemsData = $request->validate([
@@ -158,34 +158,26 @@ class PayOffController extends Controller
      */
     private function handlePayOffPayments(TenantContract $tenantContract, $validatedElectricityData, $validatedHeaderData, $validatedItemsData, $validatedSumsData)
     {
-        DB::transaction(function () use ($tenantContract,
-                                    $validatedElectricityData,
-                                    $validatedHeaderData,
-                                    $validatedItemsData,
-                                    $validatedSumsData) {
-            PayOff::create([
-                'pay_off_type' => $validatedHeaderData['return_ways'],
-                '110v_degree' => $validatedElectricityData['final_110v'],
-                '220v_degree' => $validatedElectricityData['final_220v'],
-                'payment_detail' => $validatedItemsData,
-                'tenant_amount' => $validatedSumsData['refund_amount'],
-                'company_income' => $validatedSumsData['should_received'],
-                'landlord_paid' => $validatedSumsData['should_pay'],
-                'tenant_contract_id' => $tenantContract->id,
-            ]);
-            $room = $tenantContract->room;
-            $room->update([
-                'current_110v' => $validatedElectricityData['final_110v'],
-                'current_220v' => $validatedElectricityData['final_220v']
-            ]);
+        DB::transaction(function () use (
+            $tenantContract,$validatedElectricityData,
+            $validatedHeaderData,
+            $validatedItemsData,
+            $validatedSumsData
+        ) {
+            if (isset($validatedHeaderData['is_monthly_report']) && $validatedHeaderData['is_monthly_report']) {
+                $room = $tenantContract->room;
+                $room->update([
+                    'current_110v' => $validatedElectricityData['final_110v'],
+                    'current_220v' => $validatedElectricityData['final_220v']
+                ]);
 
-            $room_id = $room->id;
-            // 產生點交盈餘相關科目
-            $landlordOtherSubjects = collect($validatedItemsData)
+                $room_id = $room->id;
+                // 產生點交盈餘相關科目
+                $landlordOtherSubjects = collect($validatedItemsData)
                                     ->where('subject', '點交中退盈餘分配');
-            if ($landlordOtherSubjects->count() != 0) {
-                $landlordOtherSubject = $landlordOtherSubjects->first();
-                LandlordOtherSubject::create([
+                if ($landlordOtherSubjects->count() != 0) {
+                    $landlordOtherSubject = $landlordOtherSubjects->first();
+                    LandlordOtherSubject::create([
                     'subject' => $landlordOtherSubject['subject'],
                     'subject_type' => '點交',
                     'income_or_expense' => '支出',
@@ -196,11 +188,11 @@ class PayOffController extends Controller
                     'is_invoiced' => true,
                     'invoice_item_name' => '管理服務費'
                 ]);
-            }
+                }
 
-            $payOffDate = $validatedHeaderData['pay_off_date'];
-            // 產生 payments
-            $tenantPayments = collect($validatedItemsData)
+                $payOffDate = $validatedHeaderData['pay_off_date'];
+                // 產生 payments
+                $tenantPayments = collect($validatedItemsData)
                 ->where('subject', '<>', '電費')
                 ->where('subject', '<>', '點交中退盈餘分配')
                 ->where('amount', '<>', '0')
@@ -227,8 +219,8 @@ class PayOffController extends Controller
                         ]);
                     }
                 });
-            // 產生 electricity payments
-            $tenantElectricityPayments = collect($validatedItemsData)
+                // 產生 electricity payments
+                $tenantElectricityPayments = collect($validatedItemsData)
                 ->where('subject', '電費')
                 ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate, $validatedElectricityData) {
@@ -253,22 +245,22 @@ class PayOffController extends Controller
                     ]);
                 });
 
-            // save payments
-            $tenantContract->tenantPayments()->saveMany($tenantPayments);
-            // save electricity payment
-            $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
+                // save payments
+                $tenantContract->tenantPayments()->saveMany($tenantPayments);
+                // save electricity payment
+                $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
 
-            $virtual_account = $room->virtual_account;
+                $virtual_account = $room->virtual_account;
 
-            // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 paylog，費用等同此科目費用，但轉化為正數 ;
-            $allPayments = $tenantPayments->merge($tenantElectricityPayments);
-            foreach ($allPayments as $payment) {
-                if ((int) $payment->amount != 0) {
-                    $amount = (int) $payment->amount;
-                    $subject = $payment->subject;
+                // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 payLog ，費用等同此科目費用，但轉化為正數 ;
+                $allPayments = $tenantPayments->merge($tenantElectricityPayments);
+                foreach ($allPayments as $payment) {
+                    if ((int) $payment->amount != 0) {
+                        $amount = (int) $payment->amount;
+                        $subject = $payment->subject;
 
-                    if ($payment instanceof TenantElectricityPayment) {
-                        $tenantContract->payLogs()->create([
+                        if ($payment instanceof TenantElectricityPayment) {
+                            $tenantContract->payLogs()->create([
                             'loggable_type' => TenantElectricityPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
@@ -277,8 +269,8 @@ class PayOffController extends Controller
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
                         ]);
-                    } else {
-                        $tenantContract->payLogs()->create([
+                        } else {
+                            $tenantContract->payLogs()->create([
                             'loggable_type' => TenantPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
@@ -287,8 +279,20 @@ class PayOffController extends Controller
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
                         ]);
+                        }
                     }
                 }
+            } else {
+                PayOff::create([
+                    'pay_off_type' => $validatedHeaderData['return_ways'],
+                    '110v_degree' => $validatedElectricityData['final_110v'],
+                    '220v_degree' => $validatedElectricityData['final_220v'],
+                    'payment_detail' => $validatedItemsData,
+                    'tenant_amount' => $validatedSumsData['refund_amount'],
+                    'company_income' => $validatedSumsData['should_received'],
+                    'landlord_paid' => $validatedSumsData['should_pay'],
+                    'tenant_contract_id' => $tenantContract->id,
+                ]);
             }
         });
     }

@@ -69,7 +69,7 @@
                             @if( $tenantContract->room->building->electricity_payment_method == '儲值電表' )
                                 <tr>
                                     <th>110v 電費度數</th>
-                                    <td colspan="3">                          
+                                    <td colspan="3">
                                         <div class="input-group w-50">
                                             <input
                                                 class="form-control form-control-sm ml-3"
@@ -303,7 +303,7 @@
 
 <script>
 
-    // For normal eletricity payment 
+    // For normal eletricity payment
     $('#cal_110v, #cal_220v').click(function () {
         const res_110_check = validate_110v.element( "#e_110v" );
         const res_220_check = validate_220v.element( "#e_220v" );
@@ -314,7 +314,7 @@
         }
     });
 
-    // For 儲值電 eletricity payment 
+    // For 儲值電 eletricity payment
     $('#cal_110v_stored, #cal_220v_stored').click(function () {
         const res_110 = parseInt($( "#e_110v_stored" ).val());
         const res_220 = parseInt($( "#e_220v_stored" ).val());
@@ -381,7 +381,7 @@
                 <td>
                     <input class="form-control form-control-sm electricity-comment" type="text" name="comment">
                 </td>
-                
+
                 <td>
                     <select class="form-control form-control-sm" name="collected_by">
                         @foreach(config('enums.tenant_payments.collected_by') as $collected_by)
@@ -529,7 +529,7 @@
         reCountSum();
     });
 
-    // added item should be counted to 
+    // added item should be counted to
     $(document).on('change', '[name="collected_by"], .edit-added-item-amount', function(){
         var $inputs = $('[name="collected_by"]')
         changeAmount = $.map($inputs, function(select, index){
@@ -537,11 +537,11 @@
             if( select.value == '公司' ){
                 return parseInt(input.value)
             }else{
-                return 0   
+                return 0
             }
         })
         .reduce((a,b) => a + b)
-        
+
         var origin = $('#received_amount').data('origin')
         var result = parseInt(origin) + changeAmount
 
@@ -574,9 +574,9 @@
         $('[data-subject="refund"]').val(payOffData['sums']['應退金額'] )
         $('#refund_amount').text(payOffData['sums']['應退金額']) 
         $('[data-subject="received"]').val(payOffData['sums']['兆基應收'] )
-        $('#received_amount').text(payOffData['sums']['兆基應收']) 
+        $('#received_amount').text(payOffData['sums']['兆基應收'])
         $('[data-subject="pay"]').val(payOffData['sums']['業主應付'] )
-        $('#pay_amount').text(payOffData['sums']['業主應付'])   
+        $('#pay_amount').text(payOffData['sums']['業主應付']) 
      }
     /**
      * 重新計算所有總額
@@ -603,13 +603,13 @@
                     payOffData['fees']['租金']['amount'] +
                     extraAmount
                     ) * -1;
-                
-                    
+
+
                 // ( 沒收押金 * -1 * ( 1 - landlordContract - withdrawal_revenue_distribution ) )
                 payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
                 payOffData['sums']['兆基應收'] = payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount'] + payOffData['fees']['點交中退盈餘分配']['amount'];
 
-                payOffData['sums']['業主應付'] = payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額'];   
+                payOffData['sums']['業主應付'] = payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額'];
                                          
                 $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
                 $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
@@ -619,7 +619,7 @@
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                 payOffData['fees']['租金']['amount'] +
                 payOffData['fees']['清潔費']['amount'] +
-                payOffData['fees']['滯納金']['amount'] + 
+                payOffData['fees']['滯納金']['amount'] +
                 extraAmount;
 
                 // B49−B56
@@ -631,18 +631,18 @@
 
                 payOffData['fees']['沒收押金']['amount'] = -1 * payOffData['fees']['履保金']['amount'] / 2;
                 payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
-                
-                
+
+
                 payOffData['sums']['應退金額'] = payOffData['fees']['履保金']['amount'] +
                                                 payOffData['fees']['沒收押金']['amount'] +
                                                 payOffData['fees']['租金']['amount'] +
-                                                payOffData['fees']['清潔費']['amount'] + 
+                                                payOffData['fees']['清潔費']['amount'] +
                                                 payOffData['fees']['滯納金']['amount'] +
-                                                extraAmount; 
-                
+                                                extraAmount;
+
                 payOffData['sums']['兆基應收'] = (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
                                                  payOffData['fees']['點交中退盈餘分配']['amount'];
-                
+
                 payOffData['sums']['業主應付'] = payOffData['sums']['應退金額'] +
                                                 (payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
                                                 payOffData['fees']['點交中退盈餘分配']['amount'];
@@ -662,13 +662,13 @@
                     extraAmount
                 ) * -1;
                 payOffData['fees']['點交中退盈餘分配']['amount'] = Math.round(payOffData['fees']['沒收押金']['amount'] * -1 * (1 - payOffData['withdrawal_revenue_distribution']));
-                payOffData['sums']['兆基應收'] = payOffData['fees']['管理費']['amount'] + 
+                payOffData['sums']['兆基應收'] = payOffData['fees']['管理費']['amount'] +
                                                 ( payOffData['fees']['清潔費']['amount'] + payOffData['fees']['滯納金']['amount']) * -1 +
-                                                payOffData['fees']['點交中退盈餘分配']['amount'];  
+                                                payOffData['fees']['點交中退盈餘分配']['amount'];
                 payOffData['sums']['業主應付'] =  payOffData['sums']['兆基應收'] + payOffData['sums']['應退金額']
 
                 $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
-                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )                  
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
                 renderSum()             
             }
             else if( returnWay == '到期退租' ){
@@ -711,7 +711,7 @@
                     payOffData['fees']['點交中退盈餘分配']['amount'];
 
                 $('[data-subject="沒收押金"]').val(payOffData['fees']['沒收押金']['amount'])
-                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )  
+                $('[data-subject="點交中退盈餘分配"]').val(payOffData['fees']['點交中退盈餘分配']['amount'] )
                 renderSum() 
             }
         }
@@ -771,7 +771,7 @@
 
             $.post(apiURL, postData, function (data) {
                 if (data) {
-                    location.reload();
+                    // location.reload();
                 }
                 else {
                     alert('儲存失敗');
@@ -788,7 +788,7 @@
                 pay_off_date: $('#pay-off-date').val(),
                 commission_type: $('#commission_type').text(),
                 return_ways: $('#return_ways').val(),
-                is_monthly_report: $('#is_monthly_report').is(':checked')
+                is_monthly_report: $('#is_monthly_report').is(':checked') ? 1 : 0
             },
             electricity: {
                 old_110v: $('span.old-110v').text(),

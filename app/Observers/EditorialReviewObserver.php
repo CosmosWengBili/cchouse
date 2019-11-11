@@ -6,6 +6,7 @@ use App\Building;
 use App\Classes\NotifyUsers;
 use App\Classes\TextContent;
 use App\EditorialReview;
+use App\Services\InvoiceService;
 use App\Shareholder;
 use App\User;
 use Carbon\Carbon;
@@ -16,7 +17,7 @@ class EditorialReviewObserver
     /**
      * 每當有一筆審核資料被新增的時候 新增完畢後需要做的事情寫在這裡
      *
-     * @param  \App\EditorialReview  $editorialReview
+     * @param \App\EditorialReview $editorialReview
      * @return void
      */
     public function created(EditorialReview $editorialReview)
@@ -33,33 +34,44 @@ class EditorialReviewObserver
     /**
      * 表editorial_reviews 正常只能修改/更新 「審核狀態」
      *
-     * @param  \App\EditorialReview  $editorialReview
+     * @param \App\EditorialReview $editorialReview
      * @return void
      */
     public function updated(EditorialReview $editorialReview)
     {
         /** @var string $type */
         $type = $editorialReview->editable_type;
-        if( isset($editorialReview->edit_value['command']) && !isset($editorialReview->edit_value['id'])){
+        if (isset($editorialReview->edit_value['command']) && !isset($editorialReview->edit_value['id'])) {
             $command = $editorialReview->edit_value['command'];
-            if( $command == '刪除' ){
+            if ($command == '刪除' && $editorialReview->status == '已通過') {
                 $this->doModelDelete($editorialReview);
             }
-        }
-        else{
+        } else {
             switch ($type) {
                 case 'App\Shareholder':
                     $this->notifyAfterUpdatedEditableTypeIsShareHolder($editorialReview);
-                    if ($editorialReview->status === '已通過') {
+                    if ($editorialReview->status == '已通過') {
                         $model = $this->doModelUpdate($editorialReview);
                         $this->doShareholderUpdate($editorialReview, $model);
                     }
                     break;
+                case 'App\TenantPayment':
+                case 'App\TenantElectricityPayment':
+                    if ($editorialReview->status == '已通過') {
+                        $payment = $editorialReview->editable;
+                        $validatedData = $editorialReview->edit_value;
+
+                        $result = InvoiceService::compareReceipt($payment, $validatedData);
+                        if (!$result) {
+                            $payment->update($validatedData);
+                        }
+                    }
+                    break;
                 default:
-                    if ($editorialReview->status === '已通過') {
+                    if ($editorialReview->status == '已通過') {
                         $model = $this->doModelUpdate($editorialReview);
                     }
-                break;                
+                    break;
             }
         }
     }
@@ -67,7 +79,7 @@ class EditorialReviewObserver
     /**
      * Handle the editorial review "deleted" event.
      *
-     * @param  \App\EditorialReview  $editorialReview
+     * @param \App\EditorialReview $editorialReview
      * @return void
      */
     public function deleted(EditorialReview $editorialReview)
@@ -78,7 +90,7 @@ class EditorialReviewObserver
     /**
      * Handle the editorial review "restored" event.
      *
-     * @param  \App\EditorialReview  $editorialReview
+     * @param \App\EditorialReview $editorialReview
      * @return void
      */
     public function restored(EditorialReview $editorialReview)
@@ -89,7 +101,7 @@ class EditorialReviewObserver
     /**
      * Handle the editorial review "force deleted" event.
      *
-     * @param  \App\EditorialReview  $editorialReview
+     * @param \App\EditorialReview $editorialReview
      * @return void
      */
     public function forceDeleted(EditorialReview $editorialReview)
@@ -138,8 +150,8 @@ class EditorialReviewObserver
         $notify->notifySelf($content);
 
         // 只有在更新 status 時
-        if ($nowStatus !== $oldStatus && $nowStatus === '不通過') {
-        } elseif ($nowStatus !== $oldStatus && $nowStatus === '已通過') {
+        if ($nowStatus !== $oldStatus && $nowStatus == '不通過') {
+        } elseif ($nowStatus !== $oldStatus && $nowStatus == '已通過') {
             // 通知管理單位及帳務單位
             $notify = new NotifyUsers($editor);
             $now = Carbon::now();
@@ -163,11 +175,12 @@ class EditorialReviewObserver
 
         return $model;
     }
+
     /**
      * 審核通過做刪除
      * @param EditorialReview $editorialReview
      *
-     * 
+     *
      */
     private function doModelDelete(EditorialReview $editorialReview)
     {
@@ -178,7 +191,7 @@ class EditorialReviewObserver
 
     /**
      * @param EditorialReview $editorialReview
-     * @param Model           $model
+     * @param Model $model
      */
     private function doShareholderUpdate(EditorialReview $editorialReview, Model $model)
     {
@@ -186,7 +199,7 @@ class EditorialReviewObserver
         $building_code = array_wrap($extra['building_code']);
         // get building ids by building_code
         $building_ids = Building::whereIn('building_code', $building_code)->get()->pluck('id')->toArray();
-        if (! empty($building_ids)) {
+        if (!empty($building_ids)) {
             $model->buildings()->sync($building_ids);
         } else {
             $model->buildings()->sync([]);

@@ -6,10 +6,10 @@
             @elseif ( $key === "command" )
                 <div class="m-1">
                     <span>指令 : {{ $value }}</span>
-                </div>                
+                </div>
             @elseif ( isset($model) )
                 @php
-                    $langFromTable = ucfirst(strtolower(Arr::last(explode('\\', $model))));
+                    $langFromTable = ucfirst(Str::camel(Arr::last(explode('\\', $model))));
                     $color = '';
                     if (isset($colorfulKey) && in_array($key, $colorfulKey)) {
                         $color = 'text-danger';
@@ -25,7 +25,7 @@
                     <span >@lang("model.General.{$value_name}") :</span>
                     <span>{{ $value_value }}</span><br>
                 @endforeach
-                </div>                
+                </div>
             @endif
 
         @endforeach

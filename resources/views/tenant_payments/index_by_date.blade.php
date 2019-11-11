@@ -17,13 +17,13 @@
                                 <input type="text" class="form-control form-control-sm" name="tenant_name" placeholder="租客姓名" value="{{ Request::get('tenant_name') ?? '' }}">
                             </div>
                             <div class="col">
-                                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}" required>
+                                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ Request::get('start_date') ?? '' }}">
                             </div>
                             <div class="col" style="flex: 0 0;">
                                 <span class="font-weight-bold" style="line-height: 41px;">至</span>
                             </div>
                             <div class="col">
-                                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}" required>
+                                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}">
                             </div>
                             <div class="col">
                                 <button class="btn btn-success btn-sm m-1" type="submit">查詢</button>
@@ -41,7 +41,6 @@
                                 <thead>
                                 <tr>
                                     <th>應繳費用</th>
-                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
@@ -93,7 +92,6 @@
                                     <tr>
                                         <th>餘額:</th>
                                         <td colspan="2">{{ $remain }} (查看當日的餘額)</td>
-                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>

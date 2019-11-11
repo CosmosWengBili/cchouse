@@ -171,7 +171,6 @@ class PayOffController extends Controller
                     'current_220v' => $validatedElectricityData['final_220v']
                 ]);
 
-                $room_id = $room->id;
                 // 產生點交盈餘相關科目
                 $landlordOtherSubjects = collect($validatedItemsData)
                                     ->where('subject', '點交中退盈餘分配');
@@ -184,7 +183,7 @@ class PayOffController extends Controller
                     'expense_date' => now(),
                     'amount' => $landlordOtherSubject['amount'],
                     'comment' => $landlordOtherSubject['comment'],
-                    'room_id' => $room_id,
+                    'room_id' => $room->id,
                     'is_invoiced' => true,
                     'invoice_item_name' => '管理服務費'
                 ]);
@@ -278,6 +277,7 @@ class PayOffController extends Controller
                             'amount' => $amount,
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
+                            'receipt_type' => ($subject == '履約保證金') ? '收據' : '發票'
                         ]);
                         }
                     }

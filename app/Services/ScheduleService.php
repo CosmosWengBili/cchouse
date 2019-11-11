@@ -192,46 +192,8 @@ class ScheduleService
         }
     }
 
-    public static function setReceiptType()
+    public static function setElectricityReceiptType()
     {
-        // set receipt type for payment '租金'
-        $landlordContracts = LandlordContract::where('commission_start_date', '<', Carbon::today())
-                                                ->where('commission_end_date', '>', Carbon::today())
-                                                ->where('commission_type', '包租')
-                                                ->with(['building.rooms.activeContracts.payLogs'])->get();
-        $service = new ReceiptService;
-        $startDate = Carbon::today()->startOfMonth();
-        $endDate = Carbon::today()->endOfMonth();
-
-        foreach ($landlordContracts as $landlordContract) {
-            $taxableCharterFee = $service->countTaxableCharterFee($landlordContract, Carbon::today()->year, Carbon::today()->month);
-            $rooms = $landlordContract->building->normalRooms();
-            $paidAmount = 0;
-            foreach ($rooms as $room) {
-                $tenantContracts = $room->activeContracts()->get();
-                foreach ($tenantContracts as $tenantContract) {
-                    if (is_null($tenantContract)) {
-                    } else {
-                        $rentPayments = $tenantContract->tenantPayments->where('is_charge_off_done', true)
-                                                                ->where('subject', '租金')
-                                                                ->whereBetween('due_time', [$startDate, $endDate]);
-                        $is_legal_person = $tenantContract->tenant->is_legal_person;
-                        if (! $is_legal_person) {
-                            $paidAmount += $rentPayments->sum('amount');
-                        }
-                        foreach ($rentPayments as $rentPayment) {
-                            $rentPayment->payLogs->each(function ($payLog) use ($taxableCharterFee, $paidAmount, $is_legal_person) {
-                                if ($taxableCharterFee < $paidAmount || $is_legal_person) {
-                                    $payLog->update(['receipt_type' => '發票']);
-                                } else {
-                                    $payLog->update(['receipt_type' => '收據']);
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
         // set receipt type for patment '電費' with commission type is '代管'
         $landlordContracts = $landlordContracts->where('commission_type', '代管');
         foreach ($landlordContracts as $landlordContract) {
@@ -243,9 +205,8 @@ class ScheduleService
                     $paylogs->update(['receipt_type'=>'收據']);
                 }
             }
-        }
+        }        
     }
-
     public static function setMonthlyReportCarryFoward()
     {
         $now = Carbon::now();
@@ -351,7 +312,7 @@ class ScheduleService
                     $income  = intval($room->management_fee);
                 }
                 CompanyIncome::create([
-                    'subject' => '租金',
+                    'subject' => '租金服務費',
                     'income_date' => Carbon::today(),
                     'amount' => $income,
                     'incomable_id' => $room->id,
@@ -382,6 +343,25 @@ class ScheduleService
                 'incomable_id' => $tenantContract->id,
                 'incomable_type' => TenantContract::class
             ]);
+        }
+    }
+
+    /**
+     * 每天檢查每份有效租客合約，
+     * 把租客合約下 tenantPayment 科目為『履約保證金』對應的 paylog amount 做加總，
+     * 並更新『押金已繳納 deposit_paid』這個欄位。
+     */
+
+    public function updateDepositPaid() {
+        $contracts = TenantContract::active()->get();
+
+        foreach ($contracts as $contract) {
+            $payments = $contract->tenantPayments()->where('subject', '履約保證金')->get();
+            $sum = 0;
+            foreach ($payments as $payment) {
+                $sum += $payment->payLogs()->sum('amount');
+            }
+            $contract->update(['deposit_paid' => $sum]);
         }
     }
 }

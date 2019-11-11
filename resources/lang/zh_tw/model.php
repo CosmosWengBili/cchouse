@@ -474,6 +474,7 @@ return [
         'exchange_fee'                => '匯費',
         'bank_branch'                 => '銀行分行',
         'method'                      => '方式',
+        'deleted_at'                  => '刪除時間',
     ],
     'Deposit' => [
         'id'                               => '編號',
@@ -582,6 +583,9 @@ return [
         'updated_at'         => '更新時間',
         'receipt_type'       => '收據類型',
         'due_time'           => '應繳時間',
+        'come_from_bank'     => '來源銀行',
+        'pay_sum'            => '匯款總額',
+        'comment'            => '備註',
     ],
     'EditorialReview' => [
         'id'             => '編號',
@@ -609,7 +613,7 @@ return [
         'invoice_item_name'       => '發票科目名稱',
         'created_at'              => '建立時間',
         'updated_at'              => '更新時間',
-        'room_id'                 => '房編號',
+        'room_id'                 => '房代號',
         'rooms'                   => '房',
         'room'                    => '房'
     ],

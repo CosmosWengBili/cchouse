@@ -266,19 +266,5 @@ class ScheduleTest extends TestCase
             'id' => $roomId,
             'rent_reserve_price' => intval(round($rent_reserve_price * (100 + $adjust_ratio) / 100)),
         ]);
-
-        // assert that paylogs were adjusted correctly
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[0],
-            'receipt_type' => '收據'
-        ]);
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[3],
-            'receipt_type' => '發票'
-        ]);
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[4],
-            'receipt_type' => '發票'
-        ]);
     }
 }

@@ -78,11 +78,6 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('00:30')
                 ->runInBackground();
 
-        $schedule->call(ScheduleService::make('setReceiptType'))
-                ->name('Set Receipt Type')
-                ->dailyAt('04:30')
-                ->runInBackground();
-
         $schedule->call(ScheduleService::make('setMonthlyReportCarryFoward'))
                 ->name('Set Monthly Report CarryFoward')
                 ->dailyAt('05:00')
@@ -105,6 +100,10 @@ class Kernel extends ConsoleKernel
                 ->name('Notify User Key Request expired')
                 ->dailyAt('06:00')
                 ->runInBackground();
+        $schedule->call(ScheduleService::make('updateDepositPaid'))
+            ->name("Update deposit_paid on active contract")
+            ->dailyAt('03:00')
+            ->runInBackground();
     }
 
     /**

@@ -248,6 +248,31 @@ class TenantContract extends Pivot implements AuditableContract
              ->first();
     }
 
+    /*
+     * 如果該 Room 的 landlord Contract 為包租，
+     * 然後 landlord 和 tenant 都不是法人 is_legal_person，
+     * 則該 receipt_type 為收據
+     */
+    public function getReceiptType()
+    {
+        try {
+            $room = $this->room;
+            $building = $room->building;
+            $landlordContract = $building->activeContracts()->first();
+            $tenantContract = $room->activeContracts()->first();
+            $tenant = $tenantContract->tenant;
+            $tenantIsLegalPerson = $tenant->is_legal_person;
+            $landlordIsLegalPerson = $landlordContract->landlords()->where('is_legal_person', true)->exists();
+
+            if ($landlordContract->commission_type == '包租' && !$tenantIsLegalPerson && !$landlordIsLegalPerson) {
+                return '收據';
+            }
+        } catch (\Exception $e) {
+        }
+
+        return '發票';
+    }
+
     private function electricityPaymentAmount($year, $month)
     {
         $data = $this->room()->first()->buildElectricityPaymentData($year, $month);

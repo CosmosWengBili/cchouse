@@ -783,6 +783,22 @@
     })();
 
     function makeSendData() {
+
+        const paymentOjects = {
+            // '履保金' : {collected_by:''},
+            // '管理費': {collected_by:''},
+            // '折抵管理費': {collected_by:''},
+            '清潔費': {collected_by:'公司'},
+            // '折抵清潔費': {collected_by:''},
+            '滯納金': {collected_by:'公司'},
+            // '折抵滯納金': {collected_by:''},
+            // '沒收押金': {collected_by:''},
+            // '點交中退盈餘分配': {collected_by:''},
+            // '租金': {collected_by:''},
+            '電費': {collected_by:'房東'},
+            '匯費' :{collected_by:'公司'}
+        }
+
         return {
             header: {
                 pay_off_date: $('#pay-off-date').val(),
@@ -809,9 +825,11 @@
 
             // 從伺服器來的資料
             $('tr.old-payment').each(function (index, item) {
+                var subject = $(item).find('span.subject').text()
+                var collected_by = paymentOjects.hasOwnProperty(subject) ? paymentOjects[subject]['collected_by']: ''
                 const temp = {
-                    subject: $(item).find('span.subject').text(),
-                    collected_by: '',
+                    subject: subject,
+                    collected_by: collected_by,
                     amount: $(item).find('input.edit-new-item-amount').val(),
                     comment: '',
                     is_old: true,

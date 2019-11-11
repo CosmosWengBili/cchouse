@@ -13,7 +13,7 @@ class PayLog extends Model implements AuditableContract
     use AuditableTrait;
 
     protected $casts = [
-        'paid_at' => 'datetime:Y-m-d',
+        'paid_at' => 'datetime',
     ];
     protected $guarded = [];
 
@@ -37,5 +37,30 @@ class PayLog extends Model implements AuditableContract
     public function receipts()
     {
         return $this->morphMany('App\Receipt', 'receiptable');
+    }
+
+    public function getCommissionType() {
+        try {
+            return $this->tenantContract
+                        ->room
+                        ->building
+                        ->activeContracts()
+                        ->first()
+                        ->commission_type;
+        } catch (\Exception $e) {}
+
+        return null;
+    }
+
+    public function getRoomId() {
+        try {
+             if ($this->tenantContract) {
+                 return $this->tenantContract->room_id;
+             }
+
+             return $this->loggable->tenantContract->room_id;
+        } catch (\Exception $e) {}
+
+        return null;
     }
 }

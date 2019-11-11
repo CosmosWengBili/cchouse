@@ -152,7 +152,7 @@ class ScheduleTest extends TestCase
             'rental_receipt' => '',
             'comment' => ''
         ]);
-        
+
         $roomIds = array();
         for ($k = 0 ; $k < 5; $k++){
             $roomIds[] = DB::table('rooms')->insertGetId([
@@ -212,7 +212,7 @@ class ScheduleTest extends TestCase
             'is_collected_by_third_party' => 1,
             'is_notarized' => 1,
         ]);
-        
+
         $payLogIds = array();
         foreach(array(false, false, false, false, true) as $key => $is_legal_person){
             $tenantId = DB::table('tenants')->insertGetId([
@@ -240,7 +240,7 @@ class ScheduleTest extends TestCase
             ]);
         }
 
-        
+
         // run schedule event
         Artisan::call('schedule:run');
         sleep(2);
@@ -261,26 +261,11 @@ class ScheduleTest extends TestCase
                         && (strpos($value->data['content'], '合約即將到期! 物件編號') == 0);
                 })
         );
-        
+
         // assert that rent were adjusted correctly
         $this->assertDatabaseHas('rooms', [
             'id' => $roomId,
             'rent_reserve_price' => intval(round($rent_reserve_price * (100 + $adjust_ratio ) / 100)),
         ]);
-
-        // assert that paylogs were adjusted correctly
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[0],
-            'receipt_type' => '收據'
-        ]);
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[3],
-            'receipt_type' => '發票'
-        ]);      
-        $this->assertDatabaseHas('pay_logs', [
-            'id' => $payLogIds[4],
-            'receipt_type' => '發票'
-        ]);        
-
     }
 }

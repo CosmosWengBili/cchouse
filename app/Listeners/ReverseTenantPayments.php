@@ -99,6 +99,7 @@ class ReverseTenantPayments
         $order = $this->order;
         $payments = collect(); // TenantPayment and TenantElectricityPayment collection
         $building = $tenantContract->room->building;
+        $receiptType = $tenantContract->getReceiptType();
 
         TenantPayment::with('payLogs')
             ->where('tenant_contract_id', $tenantContract->id)
@@ -126,7 +127,7 @@ class ReverseTenantPayments
                 'virtual_account'    => $virtualAccount,
                 'paid_at'            => $paidAt,
                 'tenant_contract_id' => $tenantContract->id,
-                'receipt_type'       => '發票'
+                'receipt_type'       => $receiptType,
             ];
 
             // previously paid total amount for this tenant payment(which is not enough)
@@ -157,7 +158,7 @@ class ReverseTenantPayments
                 }
                 $payLog = $payment->payLogs()->create($payLogData);
                 // Error if reversal next period payment( set magic number temporarily )
-                if ( $payment->due_time->diff($paidAt)->days > 28) {
+                if (!$payment->isUnderpaid() && $payment->due_time->diff($paidAt)->days > 28) {
                     $this->createReversalErrorCase('溢繳入帳', $payLog);
                 }
 
@@ -183,6 +184,8 @@ class ReverseTenantPayments
                     ];
 
                     if ($payment->subject === '租金') {
+                        $incomeData['subject'] = '租金服務費';
+
                         if ($tenantContract->room->management_fee_mode == '比例') {
                             $incomeData['amount'] = intval(round($shouldPayAmount * $tenantContract->room->management_fee / 100));
                         } else {
@@ -208,7 +211,7 @@ class ReverseTenantPayments
                 }
                 if ($payment->subject == '租金'){
                     $incomeData = [
-                        'subject' => $payLogData['subject'],
+                        'subject' => '租金服務費',
                         'income_date' => $payLogData['paid_at'],
                         'amount' => 0
                     ];
@@ -218,7 +221,7 @@ class ReverseTenantPayments
                     } else {
                         $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
                     }
-                    
+
                     if($building->activeContracts()['commission_type'] == "包租"){
                         return 0;
                     }

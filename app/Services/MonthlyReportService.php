@@ -255,6 +255,7 @@ class MonthlyReportService
                     })
                     ->whereBetween('paid_at', [$start_date, $end_date])
                     ->get();
+
                     foreach ($payLogsFormTenantTypes as $payLog) {
                         $roomData['incomes'][] = [
                             'subject' => $payLog->subject,
@@ -286,6 +287,7 @@ class MonthlyReportService
                         ->whereHasMorph('loggable', 'App\Deposit')
                         ->whereBetween('paid_at', [$start_date, $end_date])
                         ->get();
+
                     foreach ($payLogsFormDeposits as $payLog) {
                         $confiscated_amount = $payLog->amount *0.5;
                         $roomData['expenses'][] = [
@@ -318,8 +320,46 @@ class MonthlyReportService
                     })
                     ->whereBetween('paid_at', [$start_date, $end_date])
                     ->get();
-                    if ($tenantContract->payLogs->count() > 0) {
-                        foreach ($tenantContract->payLogs as $payoffPayment) {
+
+                    if ($payLogsFormTenantTypesForPayOff->count() > 0) {
+                        //
+                        $payOffSum = $tenantContract->payOff()->latest()->first();
+                        $landlordPaid = $payOffSum->landlord_paid;
+                        if ($landlordPaid > 0) {
+                            $payoffData['expenses'][] = [
+                                'subject' => '房東應付',
+                                'month' => $month.'月',
+                                'paid_at' => Carbon::parse($payOffSum->created_at),
+                                'amount' => $landlordPaid,
+                            ];
+                            $payoffData['meta']['room_total_expense'] = $payOffSum->landlordPaid;
+                        }
+
+                        foreach ($payLogsFormTenantTypesForPayOff as $payoffPayment) {
+                            //點交中退盈餘分配 = (沒收押金 + 點交中退盈餘分配) * -1
+                            if ($payoffPayment->subject == '點交中退盈餘分配') {
+                                // Comment
+                                $payment_details = $payOffSum->payment_detail;
+                                $key = array_search('點交中退盈餘分配', array_column($payment_details, 'subject'));
+
+                                if ($key && $payment_details[$key] && $payment_details[$key]['comment']) {
+                                    $payoffPayment->subject .= '('.$payment_details[$key]['comment'].')';
+                                }
+
+                                // Amount
+                                $deposit_amount = 0;
+                                $deposit = $payLogsFormTenantTypesForPayOff->first(function ($payLog) {
+                                    return $payLog->subject == '沒收押金';
+                                });
+
+                                if ($deposit) {
+                                    $deposit_amount = $deposit->amount;
+                                }
+
+                                $payoffPayment->amount = ($deposit_amount + $payoffPayment->amount)*-1;
+                            }
+
+                            //
                             if ($payoffPayment->amount > 0) {
                                 $payoffData['incomes'][] = [
                                     'subject' => $payoffPayment->subject,
@@ -338,18 +378,7 @@ class MonthlyReportService
                                 $payoffData['meta']['room_total_expense'] += $payoffPayment->amount;
                             }
                         }
-                        //
-                        $payOffSum = $tenantContract->payOff()->get()->first();
-                        $landlordPaid = $payOffSum->landlord_paid;
-                        if ($landlordPaid > 0) {
-                            $payoffData['expenses'][] = [
-                                'subject' => '房東應付',
-                                'month' => $month.'月',
-                                'paid_at' => Carbon::parse($payOffSum->created_at),
-                                'amount' => $landlordPaid,
-                            ];
-                            $payoffData['meta']['room_total_expense'] = $payOffSum->landlordPaid;
-                        }
+
                         $data['payoffs'][] = $payoffData;
                         $data['meta']['total_income'] += $payoffData['meta']['room_total_income'];
                         $data['meta']['total_expense'] += $payoffData['meta']['room_total_expense'];

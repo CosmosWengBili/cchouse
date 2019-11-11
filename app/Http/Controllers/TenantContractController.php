@@ -204,11 +204,30 @@ class TenantContractController extends Controller
      */
     public function show(Request $request, TenantContract $tenantContract)
     {
+        $tenantContract->load($request->withNested)
+                    ->load(['payLogs' => function ($query) {
+                        $query->addSelect([
+                            'pay_logs.id',
+                            'pay_logs.loggable_type',
+                            'pay_logs.loggable_id',
+                            'pay_logs.subject',
+                            DB::raw('due_time AS due_time'),
+                            'pay_logs.*'
+                        ])
+                        ->join('tenant_payments', function ($join) {
+                            $join->on('tenant_payments.id', '=', 'pay_logs.loggable_id')
+                                ->where('pay_logs.loggable_type', 'App\TenantPayment');
+                        });
+                    }]);
+
         $responseData = new NestedRelationResponser();
         $responseData
-            ->show($tenantContract->load($request->withNested))
+            ->show($tenantContract)
             ->relations($request->withNested);
-        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->get()->sum(function ($p) { return $p->amount ?? 0; });
+
+        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->get()->sum(function ($p) {
+            return $p->amount ?? 0;
+        });
 
         $responseData = $responseData->get();
 

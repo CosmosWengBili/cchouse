@@ -171,37 +171,16 @@ class PayOffController extends Controller
                     'current_220v' => $validatedElectricityData['final_220v']
                 ]);
 
-                // 產生點交盈餘相關科目
-                $landlordOtherSubjects = collect($validatedItemsData)
-                                    ->where('subject', '點交中退盈餘分配');
-                if ($landlordOtherSubjects->count() != 0) {
-                    $landlordOtherSubject = $landlordOtherSubjects->first();
-                    LandlordOtherSubject::create([
-                    'subject' => $landlordOtherSubject['subject'],
-                    'subject_type' => '點交',
-                    'income_or_expense' => '支出',
-                    'expense_date' => now(),
-                    'amount' => $landlordOtherSubject['amount'],
-                    'comment' => $landlordOtherSubject['comment'],
-                    'room_id' => $room->id,
-                    'is_invoiced' => true,
-                    'invoice_item_name' => '管理服務費'
-                ]);
-                }
-
                 $payOffDate = $validatedHeaderData['pay_off_date'];
                 // 產生 payments
                 $tenantPayments = collect($validatedItemsData)
                 ->where('subject', '<>', '電費')
-                ->where('subject', '<>', '點交中退盈餘分配')
                 ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate) {
                     $subject = $payment['subject'];
                     $amount = -($payment['amount']);
                     $comment = is_null($payment['comment']) ? '' : $payment['comment'];
-                    $collected_by = is_null($payment['collected_by'])
-                        ? '公司'
-                        : $payment['collected_by'];
+                    $collected_by = is_null($payment['collected_by']) ? '公司' : $payment['collected_by'];
                     if (strpos($subject, '折抵') == false) {
                         return new TenantPayment([
                             'tenant_contract_id' => $tenantContract->id,
@@ -218,6 +197,7 @@ class PayOffController extends Controller
                         ]);
                     }
                 });
+
                 // 產生 electricity payments
                 $tenantElectricityPayments = collect($validatedItemsData)
                 ->where('subject', '電費')

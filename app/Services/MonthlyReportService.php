@@ -507,13 +507,12 @@ class MonthlyReportService
             $tenantContractIds = $tenantContracts->pluck('id')->toArray();
 
             // Find payments data
-            // 找出 最後兩筆 比當月底還小的 電費紀錄
+            // 找出 範圍在 指定抄表日月份的 兩個月內 電費紀錄
             $current_payments = TenantElectricityPayment::with('tenantContract')
                                                         ->whereIn('tenant_contract_id', $tenantContractIds)
                                                         ->where('ammeter_read_date', '<', $end_date)
-                                                        // ->where('is_charge_off_done', true)
+                                                        ->where('ammeter_read_date', '>', $end_date->copy()->subMonth(1))
                                                         ->orderBy('ammeter_read_date', 'desc') // 外層還有個 room
-                                                        ->take($take_amount)
                                                         ->get();
 
             foreach ($current_payments as $current_payment) {
@@ -521,6 +520,11 @@ class MonthlyReportService
                 $year = Carbon::parse($current_payment->ammeter_read_date)->year;
                 $month = Carbon::parse($current_payment->ammeter_read_date)->month;
                 $tenantContract = $current_payment->tenantContract;
+
+                // 每月只取兩筆
+                if (isset($data[$month]) && count($data[$month]['rooms']) > $take_amount) {
+                    continue;
+                }
 
                 // Find pay logs data
                 $current_pay_amount = 0;

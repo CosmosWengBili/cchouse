@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\DB;
 
 class PayOffController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $responseData = new NestedRelationResponser();
         $selectColumns = array_merge(['tenant_contract.*'], TenantContract::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
@@ -37,7 +38,8 @@ class PayOffController extends Controller
         return view('pay_offs.index', $responseData->get());
     }
 
-    public function show(Request $request, TenantContract $tenantContract) {
+    public function show(Request $request, TenantContract $tenantContract)
+    {
         $payOffDate = $request->input('payOffDate');
         $returnWay = $request->input('return_ways');
 
@@ -57,18 +59,22 @@ class PayOffController extends Controller
         ]);
     }
 
-    public function history(Request $request, TenantContract $tenantContract) {
-
+    public function history(Request $request, TenantContract $tenantContract)
+    {
         $payOff = PayOff::where('tenant_contract_id', $tenantContract->id)
-                ->get()
-                ->last();
-        $responseData = new NestedRelationResponser();
-        $responseData
-            ->show($payOff->load($request->withNested))
-            ->relations($request->withNested);
+                    ->latest()
+                    ->first();
 
+        if ($payOff) {
+            $responseData = new NestedRelationResponser();
+            $responseData
+                ->show($payOff->load($request->withNested))
+                ->relations($request->withNested);
 
-       return view('pay_offs.history', $responseData->get());
+            return view('pay_offs.history', $responseData->get());
+        }
+
+        return redirect()->back()->with('alert', '沒有呆帳');
     }
 
     public function storePayOffPayments(Request $request, TenantContract $tenantContract)
@@ -125,11 +131,10 @@ class PayOffController extends Controller
     private function handlePayOffPayments(TenantContract $tenantContract, $validatedElectricityData, $validatedHeaderData, $validatedItemsData, $validatedSumsData)
     {
         DB::transaction(function () use ($tenantContract,
-                                  $validatedElectricityData,
-                                  $validatedHeaderData,
-                                  $validatedItemsData,
-                                  $validatedSumsData)
-        {
+                                    $validatedElectricityData,
+                                    $validatedHeaderData,
+                                    $validatedItemsData,
+                                    $validatedSumsData) {
             PayOff::create([
                 'pay_off_type' => $validatedHeaderData['return_ways'],
                 '110v_degree' => $validatedElectricityData['final_110v'],
@@ -145,7 +150,7 @@ class PayOffController extends Controller
             // 產生點交盈餘相關科目
             $landlordOtherSubjects = collect($validatedItemsData)
                                     ->where('subject', '點交中退盈餘分配');
-            if($landlordOtherSubjects->count() != 0){
+            if ($landlordOtherSubjects->count() != 0) {
                 $landlordOtherSubject = $landlordOtherSubjects->first();
                 LandlordOtherSubject::create([
                     'subject' => $landlordOtherSubject['subject'],
@@ -159,7 +164,6 @@ class PayOffController extends Controller
                     'invoice_item_name' => '管理服務費'
                 ]);
             }
-            
 
             $payOffDate = $validatedHeaderData['pay_off_date'];
             // 產生 payments
@@ -174,7 +178,7 @@ class PayOffController extends Controller
                     $collected_by = is_null($payment['collected_by'])
                         ? '公司'
                         : $payment['collected_by'];
-                    if( strpos($subject, '折抵') == false ){
+                    if (strpos($subject, '折抵') == false) {
                         return new TenantPayment([
                             'tenant_contract_id' => $tenantContract->id,
                             'due_time' => $payOffDate,
@@ -189,7 +193,7 @@ class PayOffController extends Controller
                             'period' => '次'
                         ]);
                     }
-            });
+                });
             // 產生 electricity payments
             $tenantElectricityPayments = collect($validatedItemsData)
                 ->where('subject', '電費')
@@ -197,7 +201,7 @@ class PayOffController extends Controller
                 ->map(function ($payment) use ($tenantContract, $payOffDate, $validatedElectricityData) {
                     $subject = $payment['subject'];
                     $amount = abs($payment['amount']);
-                    $comment = is_null($payment['comment']) ? '': $payment['comment'];
+                    $comment = is_null($payment['comment']) ? '' : $payment['comment'];
 
                     return new TenantElectricityPayment([
                         'tenant_contract_id' => $tenantContract->id,
@@ -214,7 +218,7 @@ class PayOffController extends Controller
                         'charge_off_date' => $payOffDate,
                         'is_pay_off' => true
                     ]);
-            });
+                });
 
             // save payments
             $tenantContract->tenantPayments()->saveMany($tenantPayments);
@@ -226,7 +230,7 @@ class PayOffController extends Controller
             // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 paylog，費用等同此科目費用，但轉化為正數 ;
             $allPayments = $tenantPayments->merge($tenantElectricityPayments);
             foreach ($allPayments as $payment) {
-                if ( (int) $payment->amount != 0) {
+                if ((int) $payment->amount != 0) {
                     $amount = (int) $payment->amount;
                     $subject = $payment->subject;
 
@@ -271,5 +275,4 @@ class PayOffController extends Controller
             'tenant_name' => $tenantContract->tenant->name,
         ];
     }
-
 }

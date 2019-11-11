@@ -14,11 +14,11 @@ $factory->define(TenantElectricityPayment::class, function (Faker $faker) {
         $due_time = $faker->dateTimeBetween($charge_off_date->modify('-7 days'), $charge_off_date);
     }
 
-    $star_110v = $faker->randomFloat(2);
-    $end_110v = $faker->randomFloat(2, $star_110v, null);
+    $star_110v = $faker->randomFloat(0);
+    $end_110v = $faker->randomFloat(0, $star_110v, null);
 
-    $star_220v = $faker->randomFloat(2);
-    $end_220v = $faker->randomFloat(2, $star_220v, null);
+    $star_220v = $faker->randomFloat(0);
+    $end_220v = $faker->randomFloat(0, $star_220v, null);
 
     return [
         'tenant_contract_id' => \App\TenantContract::inRandomOrder()->first(),

@@ -31750,13 +31750,15 @@ div.tagsinput span.tag a {
 
 @media (min-width: 992px) {
     .content-wrapper {
-        max-width: 960px;
+        // max-width: 960px;
+        max-width: 100%;
     }
 }
 
 @media (min-width: 1200px) {
     .content-wrapper {
-        max-width: 1140px;
+        // max-width: 1140px;
+        max-width: 100%;
     }
 }
 

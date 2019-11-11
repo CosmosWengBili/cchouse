@@ -507,23 +507,34 @@ class MonthlyReportService
             $tenantContractIds = $tenantContracts->pluck('id')->toArray();
 
             // Find payments data
-            // 找出 範圍在 指定抄表日月份的 兩個月內 電費紀錄
+            // 找出 範圍在 指定抄表日月份的  三個月內 電費紀錄
+            // 假如 中間月份擁有資料, 則不顯示前個月份
+            // 三個月內每間房至少要有兩筆資料
             $current_payments = TenantElectricityPayment::with('tenantContract')
                                                         ->whereIn('tenant_contract_id', $tenantContractIds)
-                                                        ->where('ammeter_read_date', '<', $end_date)
-                                                        ->where('ammeter_read_date', '>', $end_date->copy()->subMonth(1))
+                                                        ->where('ammeter_read_date', '<', $start_date)
+                                                        ->where('ammeter_read_date', '>=', $start_date->copy()->subMonth(3))
                                                         ->orderBy('ammeter_read_date', 'desc') // 外層還有個 room
                                                         ->get();
-
+            // dd($room->toArray(), $current_payments->toArray());
             foreach ($current_payments as $current_payment) {
                 //
                 $year = Carbon::parse($current_payment->ammeter_read_date)->year;
                 $month = Carbon::parse($current_payment->ammeter_read_date)->month;
                 $tenantContract = $current_payment->tenantContract;
 
-                // 每月只取兩筆
-                if (isset($data[$month]) && count($data[$month]['rooms']) > $take_amount) {
-                    continue;
+                // 每間房 每月 只取兩筆
+                if (isset($data[$month]['rooms'][$room->id])) {
+                    if (count($data[$month]['rooms'][$room->id]) >= $take_amount) {
+                        continue;
+                    }
+                }
+
+                // 假如房間 前月有資料, 則前前月不顯示
+                if (isset($data[$month+1]['rooms'][$room->id]) && isset($data[$month+2]['rooms'][$room->id])) {
+                    if ($data[$month+1]['rooms'][$room->id] > 0) {
+                        continue;
+                    }
                 }
 
                 // Find pay logs data
@@ -564,15 +575,19 @@ class MonthlyReportService
                     'electricity_price_per_degree' =>  $electricity_price_per_degree,
                     'current_amount' =>  $current_payment['amount'],
                     'room_number' => $room->room_number,
+                    'room_id' => $room->id,
                     'pay_log_amount' => $current_pay_amount,
                     'pay_log_date' => implode(',', $current_pay_logs_dates)
                 ];
 
                 $data[$month]['meta']['year'] = $year;
                 $data[$month]['meta']['month'] = $month;
-                $data[$month]['rooms'][] = $payment;
+                $data[$month]['rooms'][$room->id][] = $payment;
             }
         }
+
+        krsort($data, true);
+        // dd($data);
 
         return $data;
     }

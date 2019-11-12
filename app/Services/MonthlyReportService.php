@@ -106,9 +106,7 @@ class MonthlyReportService
             // section : details
             $landlordPayments = $room->landlordPayments
                                     ->whereBetween('collection_date', [$start_date, $end_date])
-                                    ->where('subject', 'like', '維修案件%')
-                                    // ->where('billing_vendor', 'CCHOUSE')
-                                    ;
+                                    ->where('subject', 'like', '維修案件%');
 
             $landlordOtherSubjects = $room->landlordOtherSubjects
                                         ->where('subject_type', '!=', '點交')
@@ -235,13 +233,13 @@ class MonthlyReportService
                                         ->get();
 
                     foreach ($companyIncomes as $companyIncome) {
-                        $roomData['incomes'][] = [
+                        $roomData['expenses'][] = [
                             'subject' => '租金服務費',
                             'month' => Carbon::parse($companyIncome->income_date)->month.'月',
                             'paid_at' =>  Carbon::parse($companyIncome->income_date),
                             'amount' => $companyIncome->amount,
                         ];
-                        $roomData['meta']['room_total_income'] += $companyIncome->amount;
+                        $roomData['meta']['room_total_expense'] += $companyIncome->amount;
                     }
 
                     // payLogs
@@ -328,7 +326,7 @@ class MonthlyReportService
                     if ($payLogsFormTenantTypesForPayOff->count() > 0) {
                         //
                         $payOffSum = $tenantContract->payOff()->latest()->first();
-                        $landlordPaid = $payOffSum->landlord_paid;
+                        $landlordPaid = $payOffSum['landlord_paid'];
                         if ($landlordPaid > 0) {
                             $payoffData['expenses'][] = [
                                 'subject' => '房東應付',

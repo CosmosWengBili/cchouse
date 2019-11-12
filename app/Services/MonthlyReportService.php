@@ -248,9 +248,11 @@ class MonthlyReportService
                     $payLogsFormTenantTypes = $tenantContract->payLogs()
                     ->with('loggable')
                     ->whereHasMorph('loggable', '*', function ($query, $type) {
-                        if ($type == 'App\TenantPayment') {
-                            $query->where('is_pay_off', 0)
-                                ->where('collected_by', '房東');
+                        if ($type == 'App\TenantPayment' || $type=='App\TenantElectricityPayment') {
+                            $query = $query->where('is_pay_off', 0);
+                            if ($type == 'App\TenantPayment') {
+                                $query = $query->where('collected_by', '房東');
+                            }
                         }
                     })
                     ->whereBetween('paid_at', [$start_date, $end_date])
@@ -311,11 +313,13 @@ class MonthlyReportService
 
                     $payLogsFormTenantTypesForPayOff = $tenantContract->payLogs()
                     ->with('loggable')
-                    ->whereHasMorph('loggable', ['App\TenantPayment'], function ($query, $type) use ($start_date, $end_date) {
-                        if ($type == 'App\TenantPayment') {
-                            $query->where('is_pay_off', 1)
-                                ->where('collected_by', '房東')
-                                ->whereBetween('due_time', [$start_date, $end_date]);
+                    ->whereHasMorph('loggable', ['*'], function ($query, $type) use ($start_date, $end_date) {
+                        if ($type == 'App\TenantPayment' || $type=='App\TenantElectricityPayment') {
+                            $query = $query->where('is_pay_off', 1)
+                                        ->whereBetween('due_time', [$start_date, $end_date]);
+                            if ($type == 'App\TenantPayment') {
+                                $query = $query->where('collected_by', '房東');
+                            }
                         }
                     })
                     ->whereBetween('paid_at', [$start_date, $end_date])

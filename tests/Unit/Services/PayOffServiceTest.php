@@ -55,9 +55,12 @@ class PayOffServiceTest extends TestCase
         // set fake pay off date
         $this->payOffDate = $this->tenantContract->contract_end->subDays(5);
         // build fake tenant electricity payment
-        $this->tenantElectricityPayment = factory(TenantElectricityPayment::class)->make([
-            'tenant_contract_id' => $this->tenantContract->id,
-        ]);
+        $this->tenantElectricityPayment = factory(TenantElectricityPayment::class)
+                                            // ->states('is_charge_off_done')
+                                            ->make([
+                                                'tenant_contract_id' => $this->tenantContract->id,
+                                                // 'amount' => 1815
+                                            ]);
 
         $this->tenantContract->tenantElectricityPayments()->save($this->tenantElectricityPayment);
 
@@ -69,7 +72,7 @@ class PayOffServiceTest extends TestCase
 
         $this->tenantContract->tenantPayments()->save($this->tenantPayment);
 
-        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract, '中途退租');
+        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract, '到期退租');
     }
 
     public function testBuildPayOffData()
@@ -82,7 +85,7 @@ class PayOffServiceTest extends TestCase
         $this->assertEquals($endDegreeOf110v, $this->tenantElectricityPayment['110v_end_degree']);
         $this->assertEquals($endDegreeOf220v, $this->tenantElectricityPayment['220v_end_degree']);
         $this->assertEquals($fees['履保金']['amount'], 7777);
-        $this->assertEquals($fees['電費']['amount'], -($this->tenantElectricityPayment->amount));
+        $this->assertEquals(intval($fees['電費']['amount']), -(intval($this->tenantElectricityPayment->amount)));
 
         // TODO: 這邊未來確認商業邏輯正確以後 需要把每個科目的amount計算寫清楚 總共有 包租方式 * 代管方式 = 6種 情境
 

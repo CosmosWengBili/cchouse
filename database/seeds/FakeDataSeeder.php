@@ -115,12 +115,26 @@ class FakeDataSeeder extends Seeder
             if ($faker->boolean) {
                 $tenant_contract->payOff()->create([
                     'pay_off_type' => '協調退租',
-                    'payment_detail' => $tenantPayments->toArray()
+                    'payment_detail' => [
+                        [
+                            'amount' => 70000,
+                            'comment' => null,
+                            'subject' => '履保金',
+                            'collected_by' => null,
+                        ]
+                    ]
                 ]);
             } else {
                 $tenant_contract->payOff()->create([
                     'pay_off_type' => '中途退租',
-                    'payment_detail' => $tenantPayments->toArray()
+                    'payment_detail' => [
+                        [
+                            'amount' => 70000,
+                            'comment' => null,
+                            'subject' => '履保金',
+                            'collected_by' => null,
+                        ]
+                    ]
                 ]);
             }
         });

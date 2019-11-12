@@ -239,16 +239,16 @@ class PayLogController extends Controller
         $rows = [];
         $payLogs = PayLog::with(['tenantContract.room.building', 'loggable'])
             ->whereBetween('paid_at', [$startDateStr, $endDateStr])
+            ->where('loggable_type','<>', 'OverPayment')
             ->get()
             ->sortByDesc('paid_at');
-
         foreach ($payLogs as $payLog) {
             $rows[] = [
                 '繳費科目' => $payLog->subject,
                 '繳費費用' => $payLog->amount,
                 '繳費虛擬帳號' => $payLog->virtual_account,
                 '繳費日期' => $payLog->paid_at,
-                '應繳時間' => $payLog->loggable['due_time'],
+                '應繳時間' => $payLog->loggable['due_time'] == null ? '' : $payLog->loggable['due_time']->format('Y-m-d'),
                 '承租方式' => $payLog->getCommissionType(),
                 '應繳費用' => $payLog->loggable['amount'],
                 '匯款總額' => $payLog->pay_sum,

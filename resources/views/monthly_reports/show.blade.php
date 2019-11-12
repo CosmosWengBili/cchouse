@@ -18,7 +18,7 @@
 <div class="container-fluid">
     <div class="card" style="padding: 5rem;">
         <div class="card-header">
-            <a id="pdfExport" type="button">
+            <a id="pdfExport" href='#'>
                 輸出為 PDF
             </a> |
             <a

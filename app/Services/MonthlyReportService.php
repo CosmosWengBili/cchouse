@@ -280,22 +280,22 @@ class MonthlyReportService
                             }
                         }
                     }
-
                     // payLogs for Deposit.
-                    $payLogsFormDeposits = $tenantContract->payLogs()
-                        ->with('loggable')
-                        ->whereHasMorph('loggable', 'App\Deposit')
-                        ->whereBetween('paid_at', [$start_date, $end_date])
-                        ->get();
-
-                    foreach ($payLogsFormDeposits as $payLog) {
-                        $confiscated_amount = $payLog->amount *0.5;
-                        $roomData['expenses'][] = [
-                            'subject' => '沒定',
-                            'paid_at' => $payLog->paid_at,
-                            'amount' => $confiscated_amount,
-                        ];
-                        $roomData['meta']['room_total_expense'] += $confiscated_amount;
+                    if($room->deposits->count()>0){
+                        foreach($room->deposits as $deposit){
+                            $payLogsFormDeposits = $deposit->payLogs
+                                ->whereBetween('paid_at', [$start_date, $end_date]);
+    
+                            foreach ($payLogsFormDeposits as $payLog) {
+                                $confiscated_amount = $payLog->amount *0.5;
+                                $roomData['expenses'][] = [
+                                    'subject' => '沒定',
+                                    'paid_at' => $payLog->paid_at,
+                                    'amount' => $confiscated_amount,
+                                ];
+                                $roomData['meta']['room_total_expense'] += $confiscated_amount;
+                            }
+                        }
                     }
 
                     // section : payoffs
@@ -367,9 +367,9 @@ class MonthlyReportService
                                     'subject' => $payoffPayment->subject,
                                     'month' => Carbon::parse($payoffPayment->loggable->due_time)->month.'月',
                                     'paid_at' => Carbon::parse($payoffPayment->paid_at),
-                                    'amount' => -$payoffPayment->amount,
+                                    'amount' => $payoffPayment->amount,
                                 ];
-                                $payoffData['meta']['room_total_income'] += -$payoffPayment->amount;
+                                $payoffData['meta']['room_total_income'] += $payoffPayment->amount;
                             } else {
                                 $payoffData['expenses'][] = [
                                     'subject' => $payoffPayment->subject,
@@ -391,6 +391,15 @@ class MonthlyReportService
                 $data['rooms'][] = $roomData;
                 $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
                 $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
+            }
+            else{
+                $roomData['incomes'][] = [
+                    'subject' => '',
+                    'month' => '',
+                    'paid_at' =>  '',
+                    'amount' => '',
+                ];
+                $data['rooms'][] = $roomData;
             }
         }
         // end section : rooms

@@ -58,7 +58,11 @@ class Deposit extends Model implements AuditableContract
     {
         return $this->morphToMany('App\Receipt', 'receiptable');
     }
-
+    
+    public function payLogs()
+    {
+        return $this->morphMany('App\PayLog', 'loggable');
+    }
     // 是否為代管
     public function isManagedByCompany() {
         $room = $this->room;

@@ -117,8 +117,12 @@
                             $expense_not_zero = count($room['expenses']) > 0;
                             @endphp
                             @foreach( $room['incomes'] as $income )
-                            <div class="col-8 px-5">{{ $income['subject'] }}( {{ $income['month'] }} )</div>
-                            <div class="col-2 text-center">{{ $income['paid_at']->format('m-d') }}</div>
+                            <div class="col-8 px-5">{{ $income['subject'] }}
+                                @if($income['month'] != '')
+                                    ( {{ $income['month'] }} )
+                                @endif
+                            </div>
+                            <div class="col-2 text-center">{{ $income['paid_at'] != '' ? $income['paid_at']->format('m-d') : '' }}</div>
                             <div class="col-1 text-right">{{ $income['amount'] }}</div>
                             <div class="col-1 text-right"></div>
                             @endforeach

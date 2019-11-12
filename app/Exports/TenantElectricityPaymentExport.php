@@ -23,25 +23,9 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
         return $rooms->map(function ($room) {
             $contract = $room->activeContracts()->first();
             $building = $room->building;
-            $prev110v = null;
-            $prev220v = null;
 
-            if (is_null($contract)) {
-                $prev110v = $room->current_110v;
-                $prev220v = $room->current_220v;
-            } else {
-                $payment = $contract->tenantElectricityPayments()
-                                    ->where('due_time', '<', Carbon::now())
-                                    ->orderBy('due_time', 'desc')
-                                    ->first(); // 上期 tenantElectricityPayments
-                if (is_null($payment)) { // 第一期
-                    $prev110v = $contract->{'110v_start_degree'};
-                    $prev220v = $contract->{'220v_start_degree'};
-                } else {
-                    $prev110v = $payment->{'110v_end_degree'};
-                    $prev220v = $payment->{'220v_end_degree'};
-                }
-            }
+            $prev110v = $room->current_110v;
+            $prev220v = $room->current_220v;
 
             $buildingCode = $building ? $building->building_code : '';
             $roomNumber = $room->room_number;

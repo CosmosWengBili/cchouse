@@ -193,8 +193,9 @@ class DepositController extends Controller
 
     // 轉履保
     public function transform(Deposit $deposit) {
-        $contract = $deposit->tenantContract()->active()->first();
+        $contract = $deposit->room->activeContracts->first();
         $payment =  $contract->tenantPayments()->where('subject', '履約保證金')->first();
+        
         PayLog::create([
             'loggable_type' => TenantPayment::class,
             'loggable_id' =>  $payment->id,
@@ -203,6 +204,8 @@ class DepositController extends Controller
             'receipt_type' => '收據',
             'payment_type' => '租金雜費',
             'amount' => $deposit->invoicing_amount,
+            'pay_sum' => $deposit->invoicing_amount,
+            'come_from_bank' => '訂金轉履保'
         ]);
         return response()->json(true);
     }

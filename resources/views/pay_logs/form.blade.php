@@ -122,19 +122,6 @@
                                             value="{{ $data['virtual_account'] ?? '' }}"
                                         />
                                     </td>
-                                    <td>匯款時間</td>
-                                    <td>
-                                        @php
-                                            $paid_at = '';
-                                            isset($data['paid_at']) ?? $paid_at = (new \Carbon\Carbon($data['paid_at']))->format('Y-m-d');
-                                        @endphp
-                                        <input
-                                            type="date"
-                                            name="paid_at"
-                                            class="form-control form-control-sm"
-                                            value="{{ $paid_at }}"
-                                        />
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -164,10 +151,7 @@
                 },
                 virtual_account: {
                     required: true
-                },
-                paid_at: {
-                    required: true
-                },
+                }
             };
 
             const messages = {
@@ -179,10 +163,7 @@
                 },
                 virtual_account: {
                     required: '必須輸入'
-                },
-                paid_at: {
-                    required: '必須輸入'
-                },
+                }
             };
 
             $('form').validate({

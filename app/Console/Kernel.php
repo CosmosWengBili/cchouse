@@ -66,7 +66,11 @@ class Kernel extends ConsoleKernel
                 ->name('Genarate debt collections')
                 ->dailyAt('07:00')
                 ->runInBackground();
-
+        $schedule->call(ScheduleService::make('setElectricityReceiptType'))
+                ->name('Genarate electricity receiptType')
+                ->dailyAt('07:30')
+                ->runInBackground();
+                
         $schedule->call(ScheduleService::make('notifyReversalErrorCases'))
                 ->name('Notify User for unclosed ReversalErrorCases every day')
                 ->before(function () {

@@ -62,7 +62,7 @@ class PayLogController extends Controller
         ])
             ->orderBy('due_time', 'asc')
             ->get();
-
+            
         return view('pay_logs.massive_create_form', [
             'tenantContractId' => $tenantContractId,
             'unchargedPayments' => $unchargedPayments,
@@ -122,8 +122,7 @@ class PayLogController extends Controller
             'subject' => 'required',
             'payment_type' => 'required',
             'amount' => 'required',
-            'virtual_account' => 'required',
-            'paid_at' => 'required',
+            'virtual_account' => 'required'
         ]);
 
         $result = InvoiceService::compareReceipt($payLog, $validatedData);

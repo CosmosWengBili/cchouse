@@ -195,12 +195,15 @@ class ScheduleService
     public static function setElectricityReceiptType()
     {
         // set receipt type for patment '電費' with commission type is '代管'
-        $landlordContracts = $landlordContracts->where('commission_type', '代管');
+        $landlordContracts = LandlordContract::where('commission_type', '代管')
+                                            ->where('commission_start_date', '<', Carbon::today())
+                                            ->where('commission_end_date', '>', Carbon::today())
+                                            ->get();
         foreach ($landlordContracts as $landlordContract) {
             $rooms = $landlordContract->building->rooms;
             foreach ($rooms as $room) {
                 foreach ($room->activeContracts as $tenantContract) {
-                    $paylogs = $tenantContract->payLogs()->where('payment_type', '電費')
+                    $paylogs = $tenantContract->payLogs->where('payment_type', '電費')
                                                           ->where('receipt_type', '發票');
                     $paylogs->update(['receipt_type'=>'收據']);
                 }

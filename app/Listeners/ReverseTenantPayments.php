@@ -100,7 +100,6 @@ class ReverseTenantPayments
         $order = $this->order;
         $payments = collect(); // TenantPayment and TenantElectricityPayment collection
         $building = $tenantContract->room->building;
-        $receiptType = $tenantContract->getReceiptType();
 
         TenantPayment::with('payLogs')
             ->where('tenant_contract_id', $tenantContract->id)
@@ -116,7 +115,6 @@ class ReverseTenantPayments
         $payments = $payments->sortBy(function ($tp) use ($order) {
             return $tp->due_time . '#' . ($order->search($tp->subject) + 10);
         })->values();
-
         foreach ($payments as $payment) {
             if ($amount == 0) {
                 break;
@@ -128,7 +126,7 @@ class ReverseTenantPayments
                 'virtual_account'    => $virtualAccount,
                 'paid_at'            => $paidAt,
                 'tenant_contract_id' => $tenantContract->id,
-                'receipt_type'       => $receiptType,
+                'receipt_type'       => '發票',
                 'pay_sum'            => $paySum,
             ];
 
@@ -139,6 +137,17 @@ class ReverseTenantPayments
             // by default(the tenant payment wasn't paid before),
             // the amount missing(or should be paid) is the amount of this tenant payment
             $shouldPayAmount = $payment->amount - $alreadyPaid;
+
+            if( $payment->collected_by == '房東' ||
+                ($payment->subject == '電費' && $building->activeContracts()['commission_type'] == '代管')
+            ){
+                if(($payment->subject == '租金' && $tenantContract->isInvoiceType())){
+                    $payLogData['receipt_type'] = '發票';
+                }
+                else{
+                    $payLogData['receipt_type'] = '收據';
+                }
+            }
 
             // if current amount is sufficient for the next payment
             if ( $amount - $shouldPayAmount >= 0 ) {
@@ -153,11 +162,7 @@ class ReverseTenantPayments
 
                 // Set payLogData
                 $payLogData['amount'] = $shouldPayAmount;
-                if( $payment->collected_by == '房東' ||
-                    ($payment->subject == '電費' && $building->activeContracts()['commission_type'] == '代管')
-                ){
-                    $payLogData['receipt_type'] = '收據';
-                }
+                
                 $payLog = $payment->payLogs()->create($payLogData);
                 // Error if reversal next period payment( set magic number temporarily )
                 if (!$payment->isUnderpaid() && $payment->due_time->diff($paidAt)->days > 28) {
@@ -195,7 +200,7 @@ class ReverseTenantPayments
                         }
 
                         if($building->activeContracts()['commission_type'] == "包租"){
-                            return $amount;
+                            continue;
                         }
                     }
 

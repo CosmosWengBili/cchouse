@@ -8,7 +8,7 @@ $factory->define(LandlordContract::class, function (Faker $faker) {
     return [
         'building_id'                       => \App\Building::inRandomOrder()->first(),
         'commissioner_id'                   => \App\User::inRandomOrder()->first(),
-        'commission_type'                   => \App\User::class,
+        'commission_type'                   => $faker->randomElement(config('enums.landlord_contracts.commission_type')),
         'commission_start_date'             => $faker->dateTimeBetween('-3 years', 'now'),
         'commission_end_date'               => $faker->dateTimeBetween('1 years', '3 years'),
         'warranty_start_date'               => \Carbon\Carbon::now(),

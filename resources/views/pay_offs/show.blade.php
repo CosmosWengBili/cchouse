@@ -771,7 +771,7 @@
 
             $.post(apiURL, postData, function (data) {
                 if (data) {
-                    // location.reload();
+                    location.reload();
                 }
                 else {
                     alert('儲存失敗');
@@ -785,16 +785,16 @@
     function makeSendData() {
 
         const paymentOjects = {
-            // '履保金' : {collected_by:''},
-            // '管理費': {collected_by:''},
-            // '折抵管理費': {collected_by:''},
+            '履保金' : {collected_by:'房東'},
+            '管理費': {collected_by:'公司'},
+            '折抵管理費': {collected_by:'公司'},
             '清潔費': {collected_by:'公司'},
-            // '折抵清潔費': {collected_by:''},
+            '折抵清潔費': {collected_by:'公司'},
             '滯納金': {collected_by:'公司'},
-            // '折抵滯納金': {collected_by:''},
+            '折抵滯納金': {collected_by:'公司'},
             '沒收押金': {collected_by:'房東'},
             '點交中退盈餘分配': {collected_by:'房東'},
-            // '租金': {collected_by:''},
+            '租金': {collected_by:'房東'},
             '電費': {collected_by:'房東'},
             '匯費' :{collected_by:'公司'}
         }

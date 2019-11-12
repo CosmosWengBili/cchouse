@@ -76,6 +76,7 @@ class LandlordPaymentController extends Controller
             'bill_end_date' => 'required|date',
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
+            'is_invoiced' => 'nullable',
             'amount' => 'required|integer|digits_between:1,11',
             'comment' => 'nullable'
         ]);
@@ -137,6 +138,7 @@ class LandlordPaymentController extends Controller
             'collection_date' => 'required|date',
             'billing_vendor' => 'required',
             'amount' => 'required|integer|digits_between:1,11',
+            'is_invoiced' => 'nullable',
             'comment' => 'nullable'
         ]);
 

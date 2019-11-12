@@ -463,7 +463,7 @@
                     <td>@lang("model.LandlordContract.withdrawal_revenue_distribution")</td>
                     <td>
                         <input
-                            class="form-control form-control-sm"
+                            class="form-control form-control-sm withdrawal_revenue_distribution"
                             type="number"
                             name="withdrawal_revenue_distribution[0]"
                             placeholder="請輸入 0.5, 0.6..."
@@ -653,6 +653,9 @@
             deposit_month_count: {
                 required: true
             },
+            withdrawal_revenue_distribution: {
+                required: true
+            }
         };
 
         const messages = {
@@ -692,6 +695,9 @@
             deposit_month_count: {
                 required: '必須輸入'
             },
+            withdrawal_revenue_distribution:{
+                required: '必須輸入'
+            }
         };
 
         // basic form validation below
@@ -739,6 +745,9 @@
             required: true,
         });
         $.validator.addClassRules('deposit_month_count', {
+            required: true,
+        });
+        $.validator.addClassRules('withdrawal_revenue_distribution', {
             required: true,
         });
 

@@ -21,21 +21,29 @@
                                 <tr>
                                     <td>@lang("model.LandlordOtherSubject.subject")</td>
                                     <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="landlord_other_subjects"
+                                            data-text="subject"
+                                            data-value="subject"
+                                            data-selected="{{ isset($data["subject"]) ? $data['subject'] : '' }}"
                                             name="subject"
-                                            value="{{ $data['subject'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
                                     </td>
                                     <td>@lang("model.LandlordOtherSubject.subject_type")</td>
                                     <td>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
+                                        <select
+                                            data-toggle="selectize"
+                                            data-table="landlord_other_subjects"
+                                            data-text="subject_type"
+                                            data-value="subject_type"
+                                            data-selected="{{ isset($data["subject_type"]) ? $data['subject'] : '' }}"
                                             name="subject_type"
-                                            value="{{ $data['subject_type'] ?? '' }}"
-                                        />
+                                            class="form-control form-control-sm"
+                                        >
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -88,6 +96,27 @@
                                             class="form-control form-control-sm"
                                         >
                                         </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@lang("model.LandlordOtherSubject.is_invoiced")</td>
+                                    <td>
+                                        <input type="hidden" value="0" name="is_invoiced"/>
+                                        <input
+                                            type="checkbox"
+                                            name="is_invoiced"
+                                            value="1"
+                                            {{ isset($data["is_invoiced"]) ? ($data['is_invoiced'] ? 'checked' : '') : '' }}
+                                        />
+                                    </td>
+                                    <td>@lang("model.LandlordOtherSubject.invoice_item_name")</td>
+                                    <td>
+                                        <input
+                                            class="form-control form-control-sm"
+                                            type="text"
+                                            name="invoice_item_name"
+                                            value="{{ $data['invoice_item_name'] ?? '' }}"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>

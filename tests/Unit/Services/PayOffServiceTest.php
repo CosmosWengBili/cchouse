@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Services;
 
 use App\Building;
@@ -34,44 +35,48 @@ class PayOffServiceTest extends TestCase
         // disable foreign key constraints
         Schema::disableForeignKeyConstraints();
 
-        // build fake tenant tenant contract
-        factory(TenantContract::class)->create(['deposit_paid' => 7777]);
-        $this->tenantContract = TenantContract::first();
-
-        // set fake pay off date
-        $this->payOffDate = $this->tenantContract->contract_end->subDays(5);
-
-        // build fake tenant electricity payment
-        $this->tenantElectricityPayment = factory(TenantElectricityPayment::class)->make();
-        $this->tenantContract->tenantElectricityPayments()->save($this->tenantElectricityPayment);
-
-        // build fake tenant payment
-        $this->tenantPayment = factory(TenantPayment::class)->make(['due_time' => $this->payOffDate]);
-        $this->tenantContract->tenantPayments()->save($this->tenantPayment);
-
-        factory(Building::class)->create()->each(function (Building $building) {
-            $building->rooms()->save(
-                factory(Room::class)->create()
-            );
-        });
-        $this->tenantContract->save([
-            'room_id' => Room::first()->id,
-        ]);
-
-        $this->tenantContract->building->landlordContracts()->create([
+        // build fake Building, room, landlord_contract
+        $building = factory(Building::class)->create();
+        $building->landlordContracts()->create([
             'commission_type' => '包租',
             'withdrawal_revenue_distribution' => 300,
             'commission_start_date' => $this->now->copy()->subMonth(),
             'commission_end_date' => $this->now->copy()->addWeeks(2),
         ]);
-        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract, "中途退租");
+        $room = $building->rooms()->save(factory(\App\Room::class)->make());
+
+        // build fake tenant tenant contract
+        $this->tenantContract = factory(TenantContract::class)->state('new')->create([
+            'room_id' => $room->id,
+            'tenant_id' => factory(\App\Tenant::class)->create()->id,
+            'deposit_paid' => 7777
+        ]);
+
+        // set fake pay off date
+        $this->payOffDate = $this->tenantContract->contract_end->subDays(5);
+        // build fake tenant electricity payment
+        $this->tenantElectricityPayment = factory(TenantElectricityPayment::class)->make([
+            'tenant_contract_id' => $this->tenantContract->id,
+        ]);
+
+        $this->tenantContract->tenantElectricityPayments()->save($this->tenantElectricityPayment);
+
+        // build fake tenant payment
+        $this->tenantPayment = factory(TenantPayment::class)->make([
+            'tenant_contract_id' => $this->tenantContract->id,
+            'due_time' => $this->payOffDate
+        ]);
+
+        $this->tenantContract->tenantPayments()->save($this->tenantPayment);
+
+        $this->payOffService = new PayOffService($this->payOffDate, $this->tenantContract, '中途退租');
     }
 
     public function testBuildPayOffData()
     {
         $data = $this->payOffService->buildPayOffData();
-        $endDegreeOf110v = $data["110v_end_degree"];
-        $endDegreeOf220v = $data["220v_end_degree"];
+        $endDegreeOf110v = $data['110v_end_degree'];
+        $endDegreeOf220v = $data['220v_end_degree'];
         $fees = $data['fees'];
 
         $this->assertEquals($endDegreeOf110v, $this->tenantElectricityPayment['110v_end_degree']);

@@ -3,7 +3,7 @@
         <h2>
             發票報表 
             <a class="btn btn-sm btn-success" href="{{ route( 'receipts.edit_invoice') }}">更新發票</a>
-            <a class="btn btn-sm btn-success" href="export/function/{{$type}}/?start_date={{$start_date}}&end_date={{$end_date}}">輸出報表</a>
+            <a class="btn btn-sm btn-success" id="export-invoice-btn" href="{{ route('export.function', $type) }}?start_date={{$start_date}}&end_date={{$end_date}}&category=tenant">輸出報表</a>
             <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#import-invoice">匯入報表</a>
         </h2>
         @if(session('status'))
@@ -27,8 +27,9 @@
                     @foreach($objects as $invoiceKey => $object)
                         <li class="nav-item {{ $loop->first ? 'active' : ''  }}">
                             <a
-                                class="nav-link {{ $loop->first ? 'active' : ''  }}"
+                                class="category-tab nav-link {{ $loop->first ? 'active' : ''  }}"
                                 data-toggle="tab"
+                                data-category="{{ $invoiceKey }}"
                                 href="#{{ $invoiceKey }}-pane"
                                 role="tab"
                             >
@@ -106,4 +107,10 @@
             }
         );
     @endforeach
+    $('.category-tab').click(function(){
+        var category = $(this).data('category')
+        var currentUrl = new URL($('#export-invoice-btn').attr('href'))
+        currentUrl.searchParams.set('category', category)
+        $('#export-invoice-btn').attr('href', currentUrl.href)
+    })
 </script>

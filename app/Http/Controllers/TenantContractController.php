@@ -208,7 +208,7 @@ class TenantContractController extends Controller
         $responseData
             ->show($tenantContract->load($request->withNested))
             ->relations($request->withNested);
-        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->sum('amount');
+        $paid_diff = $tenantContract->sum_paid - $tenantContract->payLogs()->get()->sum(function ($p) { return $p->amount ?? 0; });
 
         $responseData = $responseData->get();
 

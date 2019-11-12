@@ -4,7 +4,9 @@ namespace Tests\Feature\View;
 
 use App\Building;
 use App\User;
+use App\Group;
 use Tests\TestCase;
+use DepartmentsGroupsSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -20,11 +22,13 @@ class BuildingControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(DepartmentsGroupsSeeder::class);
         // create a fake user for testing
-        $this->fakeUser = new User(['name' => 'tester']);
-
+        $user = User::create(['name' => 'tester']);
+        $group = Group::where('name', '管理組')->first();
+        $user->assignGroup($group);
         // set the user as login
-        $this->be($this->fakeUser);
+        $this->be($user);
 
         $this->routeName = 'buildings';
     }

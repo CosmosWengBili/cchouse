@@ -2,8 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use App\User;
-use App\Group;
-use App\Permission;
 
 class testAddGroupMappingForUserSeeder extends Seeder
 {
@@ -14,12 +12,19 @@ class testAddGroupMappingForUserSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::all();
+        // Default
+        $user = User::find(1);
+        $user->assignGroup('管理組');
+        $user->assignGroup('帳務組');
 
-        // $group = Group::create(['name' => '管理組']);
-
+        $users = User::inRandomOrder()->take(rand(1, 100))->get();
         foreach ($users as $user) {
-            $user->assignRole('管理組');
+            $user->assignGroup('管理組');
+        }
+
+        $users = User::inRandomOrder()->take(rand(1, 100))->get();
+        foreach ($users as $user) {
+            $user->assignGroup('帳務組');
         }
     }
 }

@@ -76,6 +76,8 @@ Route::group(['middleware' => 'internal.protect'], function () {
                 'TenantElectricityPaymentController@sendReportSMSToAll'
             )->name('tenantElectricityPayments.sendReportSMSToAll');
             Route::group(['middleware' => 'payment.lock'], function () {
+                Route::post('payLogs/{payLog}/transformToDeposit', 'PayLogController@transformToDeposit')->name('payLogs.transformToDeposit');
+
                 Route::resource('payLogs', 'PayLogController');
                 Route::post('payLogs/{payLog}/changeLoggable', 'PayLogController@changeLoggable')->name('payLogs.changeLoggable');
                 Route::resource('tenantPayments', 'TenantPaymentController');
@@ -99,7 +101,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('export/{model}', 'ExcelController@export');
             Route::get('export/{model}/{id}/{relation}', 'ExcelController@exportRelation');
             Route::get('example/{model}', 'ExcelController@example');
-            Route::get('export/function/{function}', 'ExcelController@export_by_function');
+            Route::get('export/function/{function}', 'ExcelController@export_by_function')->name('export.function');
             Route::post('import/function/{function}', 'ExcelController@import_by_function');
 
             // pay off

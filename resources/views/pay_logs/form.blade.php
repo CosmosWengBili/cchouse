@@ -20,16 +20,32 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>@lang("model.DebtCollection.tenant_contract_id")</td>
+                                    <td>類型</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
-                                            name="tenant_contract_id"
-                                            value="{{ $tenantContractId }}"
-                                        />
+                                            name="loggable_type"
+                                        >
+                                            <option
+                                                value="{{App\TenantElectricityPayment::class}}"
+                                                {{ ($data['loggable_type'] ?? '') == App\TenantElectricityPayment::class ? 'selected' : '' }}
+                                            >
+                                                租客電費
+                                            </option>
+                                            <option
+                                                value="{{App\TenantPayment::class }}"
+                                                {{ ($data['loggable_type'] ?? '') == App\TenantPayment::class ? 'selected' : '' }}
+                                            >
+                                                租客帳單
+                                            </option>
+                                            <option
+                                                value="{{App\Deposit::class }}"
+                                                {{ ($data['loggable_type'] ?? '') == App\Deposit::class ? 'selected' : '' }}
+                                            >
+                                                訂金
+                                            </option>
+                                        </select>
                                     </td>
-
                                     <td>費用編號</td>
                                     <td>
                                         <input
@@ -41,25 +57,14 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>類型</td>
+                                    <td>@lang("model.DebtCollection.tenant_contract_id")</td>
                                     <td>
-                                        <select
+                                        <input
                                             class="form-control form-control-sm"
-                                            name="loggable_type"
-                                        >
-                                            <option
-                                                value="{{App\TenantElectricityPayment::class}}"
-                                                {{ ($data['loggable_type'] ?? '') == App\TenantElectricityPayment::class ? 'selected' : '' }}
-                                            >
-                                                電費
-                                            </option>
-                                            <option
-                                                value="{{App\TenantPayment::class }}"
-                                                {{ ($data['loggable_type'] ?? '') == App\TenantPayment::class ? 'selected' : '' }}
-                                            >
-                                                租金雜費
-                                            </option>
-                                        </select>
+                                            type="text"
+                                            name="tenant_contract_id"
+                                            value="{{ $tenantContractId }}"
+                                        />
                                     </td>
                                     <td>科目</td>
                                     <td>

@@ -144,12 +144,12 @@ class DepositController extends Controller
 
     public function close(Request $request, Deposit $deposit){
         $validatedData = $request->validate([
-            "deposit_returned_amount" => 'required',
-            "confiscated_or_returned_date" => 'required',
-            "returned_method" => 'required',
+            "deposit_returned_amount" => 'nullable',
+            "confiscated_or_returned_date" => 'nullable',
+            "returned_method" => 'nullable',
             "returned_bank" => 'nullable',
             "returned_serial_number" => 'nullable',
-            "deposit_confiscated_amount" => 'required',
+            "deposit_confiscated_amount" => 'nullable',
             "company_allocation_amount" => 'nullable',
         ]);
 
@@ -160,29 +160,27 @@ class DepositController extends Controller
                     'incomable_type' => Deposit::class,
                     'incomable_id' => $deposit->id,
                     'subject' => '訂金',
-                    'income_date' => Carbon::today(),
+                    'income_date' => $validatedData['confiscated_or_returned_date'],
                     'amount' => $validatedData['company_allocation_amount'] ?? $validatedData['deposit_confiscated_amount'],
                 ]);
 
-                $isManagedByCompany = $deposit->isManagedByCompany();
-                $companyAllocationAmount = $validatedData['company_allocation_amount'] ?? 0;
-                $confiscatedAmount = $validatedData['deposit_confiscated_amount'] ?? 0;
-                PayLog::create([
-                    'loggable_type' => Deposit::class,
-                    'loggable_id' =>  $deposit->id,
-                    'subject' => '訂金',
-                    'receipt_type' => '發票',
-                    'payment_type' => '租金雜費',
-                    'amount' => $companyAllocationAmount,
-                ]);
-                if ($isManagedByCompany && $confiscatedAmount - $companyAllocationAmount > 0) {
+                $companyAllocationAmount = $validatedData['company_allocation_amount'] ?? $validatedData['deposit_confiscated_amount'];
+                
+                if( $companyAllocationAmount > 0 ){
+                    if($deposit->isManagedByCompany()){
+                        $subject = '訂金(房東)';
+                    }
+                    else{
+                        $subject = '訂金';
+                    }
                     PayLog::create([
                         'loggable_type' => Deposit::class,
                         'loggable_id' =>  $deposit->id,
-                        'subject' => '訂金(房東)',
-                        'receipt_type' => '收據',
+                        'subject' => $subject,
+                        'receipt_type' => '發票',
                         'payment_type' => '租金雜費',
-                        'amount' => $confiscatedAmount - $companyAllocationAmount,
+                        'amount' => $companyAllocationAmount,
+                        'paid_at' => $validatedData['confiscated_or_returned_date']
                     ]);
                 }
             }
@@ -190,7 +188,7 @@ class DepositController extends Controller
             $deposit->room->update(['room_status' => '未出租']);
         });
 
-        return redirect(route('deposits.index'));
+        return redirect('/deposits');
     }
 
     // 轉履保

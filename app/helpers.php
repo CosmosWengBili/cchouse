@@ -85,3 +85,19 @@ if (! function_exists('makeDateFormatByKeys')) {
         return $array;
     }
 }
+
+if (! function_exists('getSqlLogs')) {
+    function getSqlLogs()
+    {
+        $events =  DB::getQueryLog();
+        $logs   = [];
+        foreach ($events as $event) {
+            $time   = $event['time']; // ms
+            $sql    = str_replace('?', "'%s'", $event['query']);
+            $log    = vsprintf($sql, $event['bindings']);
+            $logs[] = '['.date('Y-m-d H:i:s').']'.'['.(int)$time.'] '.$log ;
+        }
+
+        return $logs;
+    }
+}

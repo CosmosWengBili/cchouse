@@ -39,9 +39,8 @@ class Kernel extends ConsoleKernel
                 })
                 ->daily()
                 ->runInBackground();
-                // ->emailOutputTo('foo@example.com');
-                // ->emailOutputOnFailure('foo@example.com');
-
+        // ->emailOutputTo('foo@example.com');
+        // ->emailOutputOnFailure('foo@example.com');
 
         $schedule->call(ScheduleService::make('adjustRent'))
                 ->name('Adjust rent')
@@ -57,7 +56,6 @@ class Kernel extends ConsoleKernel
                 ->name('Notify tenant contract due in two months')
                 ->daily()
                 ->runInBackground();
-
 
         $schedule->call(ScheduleService::make('notifyMaintenanceStatus'))
                 ->name('Notify if maintenance status not changed for a long time')
@@ -80,14 +78,14 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('00:30')
                 ->runInBackground();
 
-        $schedule->call(ScheduleService::make('setReceiptType'))
-                ->name('Set Receipt Type')
-                ->dailyAt('04:30')
-                ->runInBackground();
-
         $schedule->call(ScheduleService::make('setMonthlyReportCarryFoward'))
                 ->name('Set Monthly Report CarryFoward')
                 ->dailyAt('05:00')
+                ->runInBackground();
+
+        $schedule->call(ScheduleService::make('storeMonthlyReportFromLandlordContracts', Carbon::now()->subMonth()))
+                ->name('Create Monthly Report')
+                ->monthlyOn(10, '05:30')
                 ->runInBackground();
 
         $schedule->call(ScheduleService::make('genarateDepositInterest'))
@@ -99,9 +97,13 @@ class Kernel extends ConsoleKernel
                 ->monthlyOn(Carbon::now()->endOfMonth()->day, '05:45')
                 ->runInBackground();
         $schedule->call(ScheduleService::make('notifyKeyRequestBorrowAllowed'))
-                ->name("Notify User Key Request expired")
+                ->name('Notify User Key Request expired')
                 ->dailyAt('06:00')
                 ->runInBackground();
+        $schedule->call(ScheduleService::make('updateDepositPaid'))
+            ->name("Update deposit_paid on active contract")
+            ->dailyAt('03:00')
+            ->runInBackground();
     }
 
     /**

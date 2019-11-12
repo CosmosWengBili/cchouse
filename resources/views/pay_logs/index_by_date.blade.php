@@ -20,7 +20,8 @@
                                 <input type="date" name="end_date" class="form-control form-control-sm" value="{{ Request::get('end_date') ?? '' }}" required>
                             </div>
                             <div class="col">
-                                <button class="btn btn-success btn-sm m-1" type="submit">查詢</button>
+                                <button class="btn btn-success btn-sm m-1" name="submit_type" type="submit" value="view">查詢</button>
+                                <button class="btn btn-info btn-sm m-1" name="submit_type" type="submit" value="export">匯出</button>
                             </div>
                         </div>
 
@@ -38,6 +39,10 @@
                                     <th>費用</th>
                                     <th>繳費虛擬帳號</th>
                                     <th>入帳日期</th>
+                                    <th>應繳時間</th>
+                                    <th>承租方式</th>
+                                    <th>應繳費用</th>
+                                    <th>匯款總額</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -53,6 +58,10 @@
                                             </td>
                                             <td>{{ $row['繳費虛擬帳號'] ?? '' }}</td>
                                             <td>{{ $row['繳費日期'] ?? '' }}</td>
+                                            <td>{{ $row['應繳時間'] ?? '' }}</td>
+                                            <td>{{ $row['承租方式'] ?? '' }}</td>
+                                            <td>{{ $row['應繳費用'] ?? '' }}</td>
+                                            <td>{{ $row['匯款總額'] ?? '' }}</td>
                                         </tr>
                                     @empty
                                         <tr>

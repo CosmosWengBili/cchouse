@@ -46,13 +46,14 @@ class Controller extends BaseController
         $validCall = ! is_null($callerFunction) && in_array($callerFunction, $methodAllowedFrom);
         // is show all records
         $showAll = request()->input('showAll', null) == 1;
+        $tableName = $builder->getModel()->getTable();
 
         if ($validCall && !$showAll) {
             $recordLimit = SystemVariable::where('code', 'default_records_in_index_blade')->first('value')['value'] ?? 200;
 
             return $useGET
-                ? $builder->orderBy('id', 'desc')->limit($recordLimit)->get()
-                : $builder->orderBy('id', 'desc')->limit($recordLimit);
+                ? $builder->orderBy("${tableName}.id", 'desc')->limit($recordLimit)->get()
+                : $builder->orderBy("${tableName}.id", 'desc')->limit($recordLimit);
         }
 
         return $useGET ? $builder->get(): $builder;
@@ -84,7 +85,7 @@ class Controller extends BaseController
             'edit_user' => Auth::id(),
             'extra_data' => $extraData,
             'comment' => '',
-        ]);        
+        ]);
     }
 
      /**
@@ -102,6 +103,6 @@ class Controller extends BaseController
             'edit_value' => ['command' => $command],
             'edit_user' => Auth::id(),
             'comment' => ''
-        ]);        
-    }    
+        ]);
+    }
 }

@@ -28,7 +28,9 @@ class MonthlyReportController extends Controller
     public function index(Request $request)
     {
         $responseData = new NestedRelationResponser();
-        $columns = array_map(function ($column) { return "buildings.{$column}"; }, $this->whitelist('buildings'));
+        $columns = array_map(function ($column) {
+            return "buildings.{$column}";
+        }, $this->whitelist('buildings'));
         $selectColumns = array_merge($columns, Building::extraInfoColumns());
         $selectStr = DB::raw(join(', ', $selectColumns));
         $buildings = $this->limitRecords(
@@ -40,7 +42,7 @@ class MonthlyReportController extends Controller
         );
 
         $responseData
-            ->index('buildings',$buildings)
+            ->index('buildings', $buildings)
             ->relations($request->withNested);
 
         return view('monthly_reports.index', $responseData->get());
@@ -53,14 +55,14 @@ class MonthlyReportController extends Controller
         $report_used_date = [
             'month' => $month,
             'year' => Input::get('year') ?? Carbon::now()->year,
-            'next_month' => ( $month == 12 )? 1 : $month + 1,
+            'next_month' => ($month == 12) ? 1 : $month + 1,
         ];
 
         // generate the month before, current, and the month after data
         // eg: current 2019/08, generate 2019/07, 2019/08, 2019/09
         $month_counter = Carbon::now()->subMonth();
         $month_options = [];
-        for( $k=0; $k < 3; $k ++ ){
+        for ($k=0; $k < 3; $k ++) {
             $month_options[]=[
                 'year' => $month_counter->year,
                 'month' => $month_counter->month,
@@ -71,56 +73,53 @@ class MonthlyReportController extends Controller
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
-        $monthly_data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
-        $eletricity_data = $service->getEletricityReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $monthly_data = $service->getMonthlyReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $eletricity_data = $service->getEletricityReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
         $monthly_data['building_id'] = $building->id;
+
         return view('monthly_reports.show')
                 ->with('data', $monthly_data)
                 ->with('eletricity_data', $eletricity_data)
                 ->with('month_options', $month_options)
-                ->with('report_used_date', $report_used_date);
+                ->with('report_used_date', $report_used_date)
+                ->with('file_name', $report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
     }
 
-
-    public function print(building $building){
-
+    public function print(building $building)
+    {
         $month = Input::get('month');
 
         // set object which would be used on blade date data
         $report_used_date = [
             'month' => $month,
             'year' => Input::get('year'),
-            'next_month' => ( $month == 12 )? 1 : $month + 1,
+            'next_month' => ($month == 12) ? 1 : $month + 1,
         ];
 
         // call service to generate data
         $service = new MonthlyReportService();
         $landlord_contract = $building->activeContracts();
-        $data = $service->getMonthlyReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
-        $eletricity_data = $service->getEletricityReport( $landlord_contract, $report_used_date['month'], $report_used_date['year']);
-        $data['report_used_date'] = $report_used_date;
-        $pdf_data = [
-            'data' => $data,
-            'eletricity_data' => $eletricity_data
-        ];
+        $data = $service->getMonthlyReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
+        $eletricity_data = $service->getEletricityReport($landlord_contract, $report_used_date['month'], $report_used_date['year']);
 
-        $pdf = PDF::loadView('monthly_reports.pdf', $pdf_data);
-        return $pdf->download($report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
+        $data['report_used_date'] = $report_used_date;
+
+        return view('monthly_reports.pdf')
+                ->with('data', $data)
+                ->with('eletricity_data', $eletricity_data)
+                ->with('file_name', $report_used_date['year'].$report_used_date['month'].'_'.$building->title.'月結單.pdf');
     }
 
-    public function print_tenant(building $building){
-
+    public function print_tenant(building $building)
+    {
         $month = Input::get('month');
         $year = Input::get('year');
-        $building_lazy_load = Building::with(['rooms'])
-                                    ->where('id', '=', $building->id)
-                                    ->get()
-                                    ->first();
+        $building_lazy_load = $building->load(['rooms']);
+        $MonthlyTenantExport = new MonthlyTenantExport($building_lazy_load, $year, $month);
 
         return Excel::download(
-            new MonthlyTenantExport($building_lazy_load, $year, $month),
-            $building->building_code.'_'.$building->location.'_'.$year.$month.'.xlsx'
+            $MonthlyTenantExport,
+            $MonthlyTenantExport->getFileName()
         );
     }
-
 }

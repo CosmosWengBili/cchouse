@@ -1,34 +1,31 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-
-use App\Models\Tenant;
+use App\Tenant;
 use Faker\Generator as Faker;
 
 $factory->define(Tenant::class, function (Faker $faker) {
-<<<<<<< HEAD
-
-    return [
-        'name' => $faker->word,
-        'certificate_number' => $faker->word,
-        'is_legal_person' => $faker->word,
-        'line_id' => $faker->word,
-        'residence_address' => $faker->word,
-        'company' => $faker->word,
-        'job_position' => $faker->word,
-        'company_address' => $faker->word,
-        'confirm_by' => $faker->word,
-        'confirm_at' => $faker->word,
-        'created_at' => $faker->date('Y-m-d H:i:s'),
-        'updated_at' => $faker->date('Y-m-d H:i:s'),
-        'deleted_at' => $faker->date('Y-m-d H:i:s'),
-        'birth' => $faker->word
-=======
-    $faker->addProvider(new \Faker\Provider\it_IT\Person($faker));
+    $faker->addProvider(new \Faker\Provider\es_ES\Person($faker));
 
     return [
         'name'               => $faker->name,
-        'certificate_number' => $faker->taxId(),
->>>>>>> r2_Management_team_requirement_by_Cosmos
+        'certificate_number' => $faker->vat(false),
+        'is_legal_person'    => $faker->boolean,
+        'line_id'            => $faker->word,
+        'residence_address'  => $faker->address,
+        'company'            => $faker->company,
+        'job_position'       => $faker->jobTitle,
+        'company_address'    => $faker->address,
+        'confirm_by'         => \App\User::inRandomOrder()->first(),
+        'confirm_at'         => $faker->date('Y-m-d H:i:s'),
+        'created_at'         => $faker->date('Y-m-d H:i:s'),
+        'updated_at'         => $faker->date('Y-m-d H:i:s'),
+        'birth'              => $faker->date('Y-m-d H:i:s'),
+    ];
+});
+
+$factory->state(Tenant::class, 'new', function ($faker) {
+    return [
+        'confirm_by' => factory(\App\User::class),
     ];
 });

@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -12,13 +13,16 @@ use App\PayLog;
 use App\Receipt;
 use App\Maintenance;
 use App\TenantPayment;
+use App\EditorialReview;
 use App\TenantElectricityPayment;
 use App\LandlordOtherSubject;
 use App\Services\InvoiceService;
+use App\Services\NotificationService;
 
 class InvoiceImport implements ToModel, WithHeadingRow
 {
     private $result;
+    private $temp_rows;
     public function __construct()
     {
       $this->result = ['status'=>'success', 'msg' => ''];
@@ -34,41 +38,66 @@ class InvoiceImport implements ToModel, WithHeadingRow
         $service = new InvoiceService();
         $model = app("App\\".studly_case(Str::singular($row['資料來源(程式用)'])))->find($row['來源資料編號']);
         if(isset($model)){
+            // Haven't created Receipt
             if ($row['發票ID(程式用)'] == null) {
                 // Check whether invoice_serial_number exist to avoid generating redundant receipt
                 if( $row['發票號碼'] == '' ){
                     return ;
                 }
+                if( $row['發票金額'] == ''){
+                    $row['費用來源'] = $model;
+                    $this->temp_rows[] = $row;
+                    return ; 
+                }
+
+                // Save temp rows( subtotal source )
+                foreach( $this->temp_rows as $temp_row){
+                    $receipt = new Receipt();
+                    $receipt->invoice_serial_number = $temp_row['發票號碼'];
+                    $receipt->date = $temp_row['發票日期'];
+                    $receipt->invoice_price = $row['發票金額'];
+                    $receipt->comment = $temp_row['備註'];
+                    $temp_row['費用來源']->receipts()->save($receipt);                    
+                }
+                $this->temp_rows = [];
+
+                // Save subtotal row
                 $receipt = new Receipt();
                 $receipt->invoice_serial_number = $row['發票號碼'];
                 $receipt->date = $row['發票日期'];
                 $receipt->invoice_price = $row['發票金額'];
                 $receipt->comment = $row['備註'];
-                if( $row['資料來源(程式用)'] == "landlord_other_subjects" ){
-                    $landlord_names = $model->room->building->activeContracts()->landlords->pluck('name');
-                    $receiped_landlord_names = $model->receipts->pluck('receiver');
-                    $receipt->receiver = $landlord_names->diff($receiped_landlord_names)->first();
-                }
-                else{
-                    $receipt->receiver = $service->fetchInvoiceReceiver($model);
-                }
                 $model->receipts()->save($receipt);
             }
+            // Have created Receipt
             else{
                 $receipt = Receipt::find($row['發票ID(程式用)']);
       
                 // If the invoice_serial_number from user is different with receipt, notify invoice group users
                 if( $receipt->invoice_serial_number != $row['發票號碼']){
                     NotificationService::notifyReceiptUpdated($model);
+                    EditorialReview::create([
+                        'editable_id' => $receipt->id,
+                        'editable_type' => get_class($receipt),
+                        'original_value' => $receipt->getAttributes(),
+                        'edit_value' => [
+                            'invoice_serial_number' => $row['發票號碼'],
+                            'date' => $row['發票日期'],
+                            'invoice_price' => $row['發票金額'],
+                            'comment' => $row['備註'],
+                        ],
+                        'edit_user' => Auth::id(),
+                        'extra_data' => '',
+                        'comment' => '發票號碼更新',
+                    ]);  
                 }
-                $receipt->invoice_serial_number = $row['發票號碼'];
-                $receipt->date = $row['發票日期'];
-                $receipt->invoice_price = $row['發票金額'];
-                $receipt->comment = $row['備註'];
-                if(isset($row['收取者'])){
-                  $receipt->receiver = $row['收取者'];
+                else{
+                    $receipt->invoice_serial_number = $row['發票號碼'];
+                    $receipt->date = $row['發票日期'];
+                    $receipt->invoice_price = $row['發票金額'];
+                    $receipt->comment = $row['備註'];
+                    $receipt->save();
                 }
-                $receipt->save();
             }    
         }
         else{

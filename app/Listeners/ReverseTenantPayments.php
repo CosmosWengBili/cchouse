@@ -57,7 +57,7 @@ class ReverseTenantPayments
             $restAmount = $amount;
 
             while ($targetContract) {
-                $restAmountAfterReverse = $this->reverse($targetContract, $virtualAccount, $paidAt, $restAmount);
+                $restAmountAfterReverse = $this->reverse($targetContract, $virtualAccount, $paidAt, $amount, $restAmount);
                 $amountOfThisReverse = $restAmount - $restAmountAfterReverse;
                 $this->recordSumPaid($targetContract, $amountOfThisReverse); // 紀錄「已繳總額」
 
@@ -75,6 +75,7 @@ class ReverseTenantPayments
                     'tenant_contract_id' => $tenantContract ? $tenantContract->id : null,
                     'loggable_type'      => 'OverPayment',
                     'loggable_id'        => 0, // 0 為溢繳費用（不關連至任何 TenantPayment 或 TenantElectricityPayment)
+                    'pay_sum'            => $amount,
                 ];
                 $payLog = PayLog::create($payLogData);
 
@@ -95,9 +96,11 @@ class ReverseTenantPayments
     }
 
     // 自動沖銷
-    private function reverse($tenantContract, $virtualAccount, $paidAt, $amount) {
+    private function reverse($tenantContract, $virtualAccount, $paidAt, $paySum, $amount) {
         $order = $this->order;
         $payments = collect(); // TenantPayment and TenantElectricityPayment collection
+        $building = $tenantContract->room->building;
+        $receiptType = $tenantContract->getReceiptType();
 
         TenantPayment::with('payLogs')
             ->where('tenant_contract_id', $tenantContract->id)
@@ -115,17 +118,18 @@ class ReverseTenantPayments
         })->values();
 
         foreach ($payments as $payment) {
-            if ($amount === 0) {
+            if ($amount == 0) {
                 break;
             }
 
             $payLogData = [
                 'subject'            => $payment->subject,
-                'payment_type'       => $payment->subject === '電費' ? '電費' : '租金雜費',
+                'payment_type'       => $payment->subject == '電費' ? '電費' : '租金雜費',
                 'virtual_account'    => $virtualAccount,
                 'paid_at'            => $paidAt,
                 'tenant_contract_id' => $tenantContract->id,
-                'receipt_type'       => '發票'
+                'receipt_type'       => $receiptType,
+                'pay_sum'            => $paySum,
             ];
 
             // previously paid total amount for this tenant payment(which is not enough)
@@ -149,12 +153,14 @@ class ReverseTenantPayments
 
                 // Set payLogData
                 $payLogData['amount'] = $shouldPayAmount;
-                if( $payment->collected_by == '房東'){
+                if( $payment->collected_by == '房東' ||
+                    ($payment->subject == '電費' && $building->activeContracts()['commission_type'] == '代管')
+                ){
                     $payLogData['receipt_type'] = '收據';
                 }
                 $payLog = $payment->payLogs()->create($payLogData);
                 // Error if reversal next period payment( set magic number temporarily )
-                if ( $payment->due_time->diff($paidAt)->days > 28) {
+                if (!$payment->isUnderpaid() && $payment->due_time->diff($paidAt)->days > 28) {
                     $this->createReversalErrorCase('溢繳入帳', $payLog);
                 }
 
@@ -167,8 +173,8 @@ class ReverseTenantPayments
                 $shouldPayAmount = $payment->amount - $alreadyPaid;
 
                 // determine who gets the income
-                $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by === '公司';
-                $electricityPaymentMethod = $tenantContract->room->building->electricity_payment_method;
+                $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by == '公司';
+                $electricityPaymentMethod = $building->electricity_payment_method;
                 $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod != '自行帳單繳付';
                 $rentPayment = $payment->subject == '租金';
                 if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
@@ -179,14 +185,16 @@ class ReverseTenantPayments
                         'amount'      => $payment->amount,
                     ];
 
-                    if ($payment->subject === '租金') {
+                    if ($payment->subject == '租金') {
+                        $incomeData['subject'] = '租金服務費';
+
                         if ($tenantContract->room->management_fee_mode == '比例') {
                             $incomeData['amount'] = intval(round($shouldPayAmount * $tenantContract->room->management_fee / 100));
                         } else {
                             $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($shouldPayAmount / $payment->amount)));
                         }
 
-                        if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                        if($building->activeContracts()['commission_type'] == "包租"){
                             return $amount;
                         }
                     }
@@ -205,7 +213,7 @@ class ReverseTenantPayments
                 }
                 if ($payment->subject == '租金'){
                     $incomeData = [
-                        'subject' => $payLogData['subject'],
+                        'subject' => '租金服務費',
                         'income_date' => $payLogData['paid_at'],
                         'amount' => 0
                     ];
@@ -215,8 +223,8 @@ class ReverseTenantPayments
                     } else {
                         $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($amount / $payment->amount)));
                     }
-                    
-                    if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+
+                    if($building->activeContracts()['commission_type'] == "包租"){
                         return 0;
                     }
                     $tenantContract->companyIncomes()->create($incomeData);

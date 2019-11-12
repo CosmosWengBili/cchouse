@@ -61,6 +61,10 @@
                                 @if($layer == 'tenant_contracts')
                                     <a class="btn btn-info" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}?with=payLogs">繳費記錄</a>
                                 @endif
+
+                                @if($layer == 'pay_logs')
+                                    <button class="btn btn-outline-github" data-pay-log-id="{{ $object['id'] }}" data-toggle="modal" data-target="#transform-to-deposit-modal">轉為訂金</button>
+                                @endif
                                 <a class="btn btn-success" href="{{ route( Str::camel($layer) . '.show', $object['id']) }}">查看</a>
                                 <a class="btn btn-primary" href="{{ route( Str::camel($layer) . '.edit', $object['id']) }}">編輯</a>
                                 <a class="btn btn-danger jquery-postback" data-method="delete" href="{{ route( Str::camel($layer) . '.destroy', $object['id']) }}">刪除</a>
@@ -72,6 +76,115 @@
         @endif
     </div>
 </div>
+
+@if($layer == 'pay_logs')
+<div class="modal fade" id="transform-to-deposit-modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form action="" method="POST">
+                @csrf
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">轉為訂金</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>@lang("model.Deposit.deposit_collection_serial_number")</td>
+                            <td>
+                                <input
+                                    class="form-control form-control-sm"
+                                    type="text"
+                                    name="deposit_collection_serial_number"
+                                    required
+                                />
+                            </td>
+                            <td>@lang("model.Deposit.payer_name")</td>
+                            <td>
+                                <input
+                                    class="form-control form-control-sm"
+                                    type="text"
+                                    name="payer_name"
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@lang("model.Deposit.payer_certification_number")</td>
+                            <td>
+                                <input
+                                    class="form-control form-control-sm"
+                                    type="text"
+                                    name="payer_certification_number"
+                                    required
+                                />
+                            </td>
+                            <td>@lang("model.Deposit.payer_is_legal_person")</td>
+                            <td>
+                                <input type="hidden" value="0" name="payer_is_legal_person"/>
+                                <input
+                                    type="checkbox"
+                                    name="payer_is_legal_person"
+                                    value="1"
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <td>@lang("model.Deposit.payer_phone")</td>
+                        <td>
+                            <input
+                                class="form-control form-control-sm"
+                                type="text"
+                                name="payer_phone"
+                                required
+                            />
+                        </td>
+                        <td>@lang("model.Deposit.receiver")</td>
+                        <td>
+                            <select
+                                data-toggle="selectize"
+                                data-table="users"
+                                data-text="name"
+                                name="receiver"
+                                class="form-control form-control-sm"
+                                required
+                            >
+                            </select>
+                        </td>
+                        <tr>
+                            <td>@lang("model.Deposit.appointment_date")</td>
+                            <td colspan="3">
+                                <input
+                                    class="form-control form-control-sm"
+                                    type="date"
+                                    name="appointment_date"
+                                    required
+                                />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary send">送出</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 <script>
-    renderDataTable(["#{{$tableId}}"]);
+    $(function () {
+        renderDataTable(["#{{$tableId}}"]);
+
+        $('button[data-target="#transform-to-deposit-modal"]').on('click', function () {
+           var payLogId = $(this).data('pay-log-id');
+           $('#transform-to-deposit-modal form').attr('action', '/payLogs/' + payLogId + '/transformToDeposit')
+        });
+    });
 </script>

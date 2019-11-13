@@ -487,6 +487,7 @@ class PayOffService
         return $this->tenantContract
                     ->tenantPayments()
                     ->whereBetween('due_time', [$this->lastPayDate, $this->payOffDate])
+                    ->where('is_pay_off', false)
                     ->get();
     }
 

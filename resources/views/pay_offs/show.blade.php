@@ -784,7 +784,7 @@
 
             $.post(apiURL, postData, function (data) {
                 if (data) {
-                    location.reload();
+                    alert('儲存成功');
                 }
                 else {
                     alert('儲存失敗');

@@ -198,24 +198,8 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
         //     $(this).next('.custom-file-label').html(fileName);
         // });
 
-        // 移除檔案
-        $fileInputs.on('click', '.js-delete-btn', function () {
-            const $deleteBtn = $(this);
-            const $formGroup = $deleteBtn.parent();
-            const $deleteInput = $formGroup.find('input[value="0"]');
 
-            if ($deleteInput.length > 0) { // existed file
-                $deleteInput.val(1); // 標記 `_delete` value 為 1
-                $formGroup.slideUp();
-            } else {
-                $formGroup.slideUp(400, function () {
-                    $formGroup.remove(); // 直接移除 form group
-                });
-            }
-        });
-
-        // 新增檔案
-        $('.js-add-file-row').on('click', function () {
+        $('#maintenance-table').on('click','.js-add-file-row', function () {
             $buttonDiv = $(this).parent()
             $idx = $(this).data('idx');
             $length = $buttonDiv.siblings('.form-group').length;
@@ -236,7 +220,21 @@ $fileInputsClassName = 'file-inputs-' . rand(0,99999);
 
             $buttonDiv.before(template);
             bindChangFileName();
-        });
+        })
 
+        $('#maintenance-table').on('click','.js-delete-btn', function () {
+            const $deleteBtn = $(this);
+            const $formGroup = $deleteBtn.parent();
+            const $deleteInput = $formGroup.find('input[value="0"]');
+
+            if ($deleteInput.length > 0) { // existed file
+                $deleteInput.val(1); // 標記 `_delete` value 為 1
+                $formGroup.slideUp();
+            } else {
+                $formGroup.slideUp(400, function () {
+                    $formGroup.remove(); // 直接移除 form group
+                });
+            }
+        });
     })();
 </script>

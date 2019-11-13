@@ -548,6 +548,7 @@ return [
         'is_charge_off_done'    => '是否已沖銷',
         'charge_off_date'       => '沖銷日期',
         'due_time'              => '應繳時間',
+        'is_pay_off'            => '是否為點交',
         'comment'               => '備註',
         'created_at'            => '建立時間',
         'updated_at'            => '更新時間'

@@ -36,11 +36,11 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>subject</th>
-                                        <th>amount</th>
-                                        <th>collected_by</th>
-                                        <th>comment</th>
-                                        <th>action</th>
+                                        <th>科目</th>
+                                        <th>金額</th>
+                                        <th>收取者</th>
+                                        <th>備註</th>
+                                        <th>動作</th>
                                     </tr>
                                 </thead>
                                 <tbody>

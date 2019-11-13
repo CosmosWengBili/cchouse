@@ -287,7 +287,7 @@ class MonthlyReportService
                                 ->whereBetween('paid_at', [$start_date, $end_date]);
     
                             foreach ($payLogsFormDeposits as $payLog) {
-                                $confiscated_amount = $payLog->amount *0.5;
+                                $confiscated_amount = $payLog->amount;
                                 $roomData['expenses'][] = [
                                     'subject' => '沒定',
                                     'paid_at' => $payLog->paid_at,

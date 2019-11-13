@@ -205,7 +205,8 @@ class DepositController extends Controller
             'payment_type' => '租金雜費',
             'amount' => $deposit->invoicing_amount,
             'pay_sum' => $deposit->invoicing_amount,
-            'come_from_bank' => '訂金轉履保'
+            'come_from_bank' => '訂金轉履保',
+            'tenant_contract_id' => $contract->id
         ]);
         return response()->json(true);
     }

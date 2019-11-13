@@ -760,13 +760,26 @@
 
         $('.js-save-payments').on('click', function () {
 
-            const res_110 = validate_110v.element( "#e_110v" );
-            const res_220 = validate_220v.element( "#e_220v" );
-            const has_cal_v = $('tr.cal-v').length;
-            if (!res_110 || !res_220 || !has_cal_v) {
-                alert('請輸入手動抄表的度數，並計算之。');
-                return;
+            // 結算電
+            if( validate_110v != undefined ){
+                const res_110 = validate_110v.element( "#e_110v" );
+                const res_220 = validate_220v.element( "#e_220v" );
+                const has_cal_v = $('tr.cal-v').length;
+                if (!res_110 || !res_220 || !has_cal_v) {
+                    alert('請輸入手動抄表的度數，並計算之。');
+                    return;
+                }
             }
+            // 儲值電
+            else{
+                const res_110 = parseInt($( "#e_110v_stored" ).val());
+                const res_220 = parseInt($( "#e_220v_stored" ).val());
+                if ( isNaN(res_110) || isNaN(res_220) ) {
+                    alert('請輸入手動抄表的度數，並計算之。');
+                    return;
+                }
+            }
+
             const postData = makeSendData();
 
             $.post(apiURL, postData, function (data) {
@@ -799,6 +812,21 @@
             '匯費' :{collected_by:'公司'}
         }
 
+        // 結算電
+        if( validate_110v != undefined ){
+            var old_110v = $('span.old-110v').text()
+            var old_220v = $('span.old-220v').text()
+            var final_110v = $('#e_110v').val()
+            var final_220v =$('#e_220v').val()
+        }
+        // 儲值電
+        else{
+            var old_110v = 0
+            var old_220v = 0
+            var final_110v = $( "#e_110v_stored" ).val()
+            var final_220v =$( "#e_220v_stored" ).val()
+        }
+
         return {
             header: {
                 pay_off_date: $('#pay-off-date').val(),
@@ -807,10 +835,10 @@
                 is_monthly_report: $('#is_monthly_report').is(':checked') ? 1 : 0
             },
             electricity: {
-                old_110v: $('span.old-110v').text(),
-                old_220v: $('span.old-220v').text(),
-                final_110v: $('#e_110v').val(),
-                final_220v: $('#e_220v').val(),
+                old_110v: old_110v,
+                old_220v: old_110v,
+                final_110v: final_110v,
+                final_220v: final_220v,
             },
             items: createItems(),
             sums: {

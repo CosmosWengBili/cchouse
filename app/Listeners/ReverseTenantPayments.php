@@ -73,7 +73,7 @@ class ReverseTenantPayments
                     'paid_at'            => $paidAt,
                     'amount'             => $restAmount,
                     'tenant_contract_id' => $tenantContract ? $tenantContract->id : null,
-                    'loggable_type'      => 'OverPayment',
+                    'loggable_type'      => 'App\OverPayment',
                     'loggable_id'        => 0, // 0 為溢繳費用（不關連至任何 TenantPayment 或 TenantElectricityPayment)
                     'pay_sum'            => $amount,
                 ];

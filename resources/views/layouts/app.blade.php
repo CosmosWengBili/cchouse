@@ -77,8 +77,7 @@
         Swal.fire({
             type: 'error',
             title: 'Oops...',
-            text: '{{Session::get('
-            alert ')}}',
+            text: '{{Session::get("alert")}}',
         })
 
     </script>

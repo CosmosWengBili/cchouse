@@ -23,22 +23,26 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
         return $rooms->map(function ($room) {
             $contract = $room->activeContracts()->first();
             $building = $room->building;
-
-            $prev110v = $room->current_110v;
-            $prev220v = $room->current_220v;
-
-            $buildingCode = $building ? $building->building_code : '';
-            $roomNumber = $room->room_number;
-
-            return [
-                strval($buildingCode),
-                strval($roomNumber),
-                strval($prev220v),
-                strval($prev110v),
-                '',
-                '',
-                ''
-            ];
+            if( in_array($building->electricity_payment_method,  ['公司代付', '房東自行繳納'])){
+                $prev110v = $room->current_110v;
+                $prev220v = $room->current_220v;
+    
+                $buildingCode = $building ? $building->building_code : '';
+                $roomNumber = $room->room_number;
+    
+                return [
+                    strval($buildingCode),
+                    strval($roomNumber),
+                    strval($prev220v),
+                    strval($prev110v),
+                    '',
+                    '',
+                    ''
+                ];
+            }
+            else{
+                return [];
+            }
         });
     }
 

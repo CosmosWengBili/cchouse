@@ -55,12 +55,13 @@ class InvoiceService
         foreach ($pay_logs as $pay_log_key => $pay_log) {
             // Check whether the payments could be added to invoice data
             if (
-                $pay_log->receipt_type == '收據'
+                $pay_log->receipt_type == '收據' ||
+                is_null($pay_log->loggable)
             ) {
                 continue;
             }
 
-            $receipt = $pay_log->loggable->receipts()->first();
+            $receipt = is_null($pay_log->loggable->receipts()) ? '' : $pay_log->loggable->receipts()->first();
             $data = $this->makeInvoiceMockData();
 
             $invoice_item_count++;

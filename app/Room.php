@@ -41,16 +41,7 @@ class Room extends Model implements AuditableContract
 
     public function setRoomCodeAttribute($value)
     {
-        $building = $this->building;
-        $room_code = 'B'.$building->building_code;
-
-        if ($this->room_layout == '公區') {
-            $room_code .= 'P'.$this->room_number;
-        } else {
-            $room_code .= 'G'.$this->room_number;
-        }
-
-        $this->attributes['room_code'] = $room_code;
+        $this->attributes['room_code'] = $this->$building->building_code + $this->room_number;
     }
 
     /**

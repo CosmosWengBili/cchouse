@@ -118,7 +118,7 @@ class PayOffController extends Controller
             'header.pay_off_date' => 'required|date',
             'header.commission_type' => 'required',
             'header.return_ways' => 'required',
-            'header.is_monthly_report' => 'nullable|boolean'
+            'header.is_doubtful' => 'nullable|boolean'
         ])['header'];
         // 科目相關
         $validatedItemsData = $request->validate([
@@ -164,16 +164,29 @@ class PayOffController extends Controller
             $validatedItemsData,
             $validatedSumsData
         ) {
-            if (isset($validatedHeaderData['is_monthly_report']) && $validatedHeaderData['is_monthly_report']) {
-                $room = $tenantContract->room;
-                $room->update([
-                    'current_110v' => $validatedElectricityData['final_110v'],
-                    'current_220v' => $validatedElectricityData['final_220v']
-                ]);
+            $payoff = PayOff::create([
+                'pay_off_type' => $validatedHeaderData['return_ways'],
+                '110v_degree' => $validatedElectricityData['final_110v'],
+                '220v_degree' => $validatedElectricityData['final_220v'],
+                'payment_detail' => $validatedItemsData,
+                'tenant_amount' => $validatedSumsData['refund_amount'],
+                'company_income' => $validatedSumsData['should_received'],
+                'landlord_paid' => $validatedSumsData['should_pay'],
+                'tenant_contract_id' => $tenantContract->id,
+                'is_doubtful' => $validatedHeaderData['is_doubtful']?? false,
+                'created_at' => $validatedHeaderData['pay_off_date']
+            ]);
 
-                $payOffDate = $validatedHeaderData['pay_off_date'];
-                // 產生 payments
-                $tenantPayments = collect($validatedItemsData)
+            // 更新 房間當前電表
+            $room = $tenantContract->room;
+            $room->update([
+                'current_110v' => $validatedElectricityData['final_110v'],
+                'current_220v' => $validatedElectricityData['final_220v']
+            ]);
+
+            $payOffDate = $validatedHeaderData['pay_off_date'];
+            // 產生 payments
+            $tenantPayments = collect($validatedItemsData)
                 ->where('subject', '<>', '電費')
                 ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate) {
@@ -198,8 +211,8 @@ class PayOffController extends Controller
                     }
                 });
 
-                // 產生 electricity payments
-                $tenantElectricityPayments = collect($validatedItemsData)
+            // 產生 electricity payments
+            $tenantElectricityPayments = collect($validatedItemsData)
                 ->where('subject', '電費')
                 ->where('amount', '<>', '0')
                 ->map(function ($payment) use ($tenantContract, $payOffDate, $validatedElectricityData) {
@@ -224,22 +237,22 @@ class PayOffController extends Controller
                     ]);
                 });
 
-                // save payments
-                $tenantContract->tenantPayments()->saveMany($tenantPayments);
-                // save electricity payment
-                $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
+            // save payments
+            $tenantPayments = $tenantContract->tenantPayments()->saveMany($tenantPayments);
+            // save electricity payment
+            $tenantElectricityPayments = $tenantContract->tenantElectricityPayments()->saveMany($tenantElectricityPayments);
 
-                $virtual_account = $room->virtual_account;
+            $virtual_account = $room->virtual_account;
 
-                // 新產生的點交科目is_old=false，如果為負數，也要能產生對應的 payLog ，費用等同此科目費用，但轉化為正數 ;
-                $allPayments = $tenantPayments->merge($tenantElectricityPayments);
-                foreach ($allPayments as $payment) {
-                    if ((int) $payment->amount != 0) {
-                        $amount = (int) $payment->amount;
-                        $subject = $payment->subject;
+            // 新產生的點交科目 is_old=false，如果為負數，也要能產生對應的 payLog ，費用等同此科目費用，但轉化為正數 ;
+            $allPayments = $tenantPayments->merge($tenantElectricityPayments);
 
-                        if ($payment instanceof TenantElectricityPayment) {
-                            $tenantContract->payLogs()->create([
+            foreach ($allPayments as $payment) {
+                if ((int) $payment->amount != 0) {
+                    $amount = (int) $payment->amount;
+                    $subject = $payment->subject;
+                    if ($payment instanceof TenantElectricityPayment) {
+                        $payLog = $tenantContract->payLogs()->create([
                             'loggable_type' => TenantElectricityPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
@@ -248,8 +261,8 @@ class PayOffController extends Controller
                             'virtual_account' => $virtual_account,
                             'paid_at' => now(),
                         ]);
-                        } else {
-                            $tenantContract->payLogs()->create([
+                    } else {
+                        $payLog = $tenantContract->payLogs()->create([
                             'loggable_type' => TenantPayment::class,
                             'loggable_id' => $payment->id,
                             'subject' => $subject,
@@ -259,20 +272,21 @@ class PayOffController extends Controller
                             'paid_at' => now(),
                             'receipt_type' => ($subject == '履約保證金') ? '收據' : '發票'
                         ]);
-                        }
                     }
+
+                    // 增加 payment 和 payoff 的關聯
+                    // $payoff->details()->create([
+                    //     'detail_type' => get_class($payment),
+                    //     'detail_id' => $payment->id
+                    // ]);
+
+                    // 增加 payment 和 payoff 的關聯
+                    // 為了報表在能 缺區別各個點交紀錄 從 payLogs 裡
+                    $payoff->details()->create([
+                        'detail_type' => get_class($payLog),
+                        'detail_id' => $payLog->id
+                    ]);
                 }
-            } else {
-                PayOff::create([
-                    'pay_off_type' => $validatedHeaderData['return_ways'],
-                    '110v_degree' => $validatedElectricityData['final_110v'],
-                    '220v_degree' => $validatedElectricityData['final_220v'],
-                    'payment_detail' => $validatedItemsData,
-                    'tenant_amount' => $validatedSumsData['refund_amount'],
-                    'company_income' => $validatedSumsData['should_received'],
-                    'landlord_paid' => $validatedSumsData['should_pay'],
-                    'tenant_contract_id' => $tenantContract->id,
-                ]);
             }
         });
     }

@@ -165,7 +165,7 @@
                     @endphp
                     <div class="col-12 row px-0 room border border-dark">
                         <div class="col-2 text-center border border-dark py-5 my-0">
-                            {{$payoff['meta']['room_number']}}室(點交)<br />
+                            {{$payoff['meta']['room_number']}}室({{$payoff['meta']['pay_off_type']}})<br />
                         </div>
                         <div class="col-10 row px-0">
                             @foreach( $payoff['incomes'] as $income )

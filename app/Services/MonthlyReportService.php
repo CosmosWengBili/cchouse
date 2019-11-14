@@ -299,34 +299,30 @@ class MonthlyReportService
                     }
 
                     // section : payoffs
-                    $payoffData = [
-                        'meta' => [
-                            'room_number' =>  $room->room_number,
-                            'room_total_income' => 0,
-                            'room_total_expense' => 0,
-                        ],
-                        'incomes' => [],
-                        'expenses' => []
-                    ];
 
-                    $payLogsFormTenantTypesForPayOff = $tenantContract->payLogs()
-                    ->with('loggable')
-                    ->whereHasMorph('loggable', ['*'], function ($query, $type) use ($start_date, $end_date) {
-                        if ($type == 'App\TenantPayment' || $type=='App\TenantElectricityPayment') {
-                            $query = $query->where('is_pay_off', 1)
-                                        ->whereBetween('due_time', [$start_date, $end_date]);
-                            if ($type == 'App\TenantPayment') {
-                                $query = $query->where('collected_by', '房東');
-                            }
-                        }
-                    })
-                    ->whereBetween('paid_at', [$start_date, $end_date])
-                    ->get();
+                    $payOffs = $tenantContract->payOff()
+                                                ->with(['details'])
+                                                ->where('is_doubtful', false)
+                                                ->whereBetween('created_at', [$start_date, $end_date])
+                                                ->get();
+                    foreach ($payOffs as $payOff) {
+                        $payoffData = [
+                            'meta' => [
+                                'pay_off_type' => $payOff->pay_off_type,
+                                'room_number' =>  $room->room_number,
+                                'room_total_income' => 0,
+                                'room_total_expense' => 0,
+                            ],
+                            'incomes' => [],
+                            'expenses' => []
+                        ];
 
-                    if ($payLogsFormTenantTypesForPayOff->count() > 0) {
-                        //
-                        $payOff = $tenantContract->payOff()->latest()->first();
-                        foreach ($payLogsFormTenantTypesForPayOff as $payoffPayment) {
+                        $details = $payOff->details()->with(['detail'])->get();
+                        $payoffPayments = $details->map(function ($detail) {
+                            return $detail->detail;
+                        });
+
+                        foreach ($payoffPayments as $payoffPayment) {
                             //點交中退盈餘分配 = (沒收押金 + 點交中退盈餘分配) * -1
                             if ($payoffPayment->subject == '點交中退盈餘分配') {
                                 // Comment
@@ -339,7 +335,7 @@ class MonthlyReportService
 
                                 // Amount
                                 $deposit_amount = 0;
-                                $deposit = $payLogsFormTenantTypesForPayOff->first(function ($payLog) {
+                                $deposit = $payoffPayments->first(function ($payLog) {
                                     return $payLog->subject == '沒收押金';
                                 });
 
@@ -372,7 +368,7 @@ class MonthlyReportService
                             }
                         }
 
-                        $landlordPaid = $payOff['landlord_paid'];
+                        $landlordPaid = $payOff->landlord_paid;
                         if ($landlordPaid > 0) {
                             $payoffData['expenses'][] = [
                                 'subject' => '房東應付',
@@ -382,25 +378,17 @@ class MonthlyReportService
                             ];
                             $payoffData['meta']['room_total_expense'] += $landlordPaid;
                         }
-
                         $data['payoffs'][] = $payoffData;
                         $data['meta']['total_income'] += $payoffData['meta']['room_total_income'];
                         $data['meta']['total_expense'] += $payoffData['meta']['room_total_expense'];
                     }
                     // end section : payoffs
                 }
-                $data['rooms'][] = $roomData;
                 $data['meta']['total_income'] += $roomData['meta']['room_total_income'];
                 $data['meta']['total_expense'] += $roomData['meta']['room_total_expense'];
-            } else {
-                $roomData['incomes'][] = [
-                    'subject' => '',
-                    'month' => '',
-                    'paid_at' =>  '',
-                    'amount' => '',
-                ];
-                $data['rooms'][] = $roomData;
             }
+
+            $data['rooms'][] = $roomData;
         }
         // end section : rooms
 

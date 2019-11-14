@@ -6,7 +6,7 @@
         margin-bottom: 0.25rem;
     }
 
-    .monthly-report .room>div {
+    .monthly-report .room > div {
         min-height: 100px;
     }
 
@@ -134,20 +134,20 @@
                             @if( $expense_not_zero )
                             <div class="col-12 border border-dark ml-3 mb-0" style="height: 3px;"></div>
                             @endif
-                            <div class="col-8"></div>
-                            <div class="col-2 text-center">
+                            <div class="col-8 mt-5"></div>
+                            <div class="col-2 mt-5 text-right">
                                 <span
                                     class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     小計
                                 </span>
                             </div>
-                            <div class="col-1 text-right">
+                            <div class="col-1 mt-5 text-right">
                                 <span
                                     class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     {{ number_format($room['meta']['room_total_income']) }}
                                 </span>
                             </div>
-                            <div class="col-1 text-right">
+                            <div class="col-1 mt-5 text-right">
                                 <span
                                     class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     {{ number_format($room['meta']['room_total_expense']) }}
@@ -189,18 +189,18 @@
                             @if( count($payoff['expenses']) > 0 )
                                 <div class="col-12 border border-dark ml-3 mb-0" style="height: 3px;"></div>
                             @endif
-                            <div class="col-8"></div>
-                            <div class="col-2 text-center">
+                            <div class="col-8 mt-5"></div>
+                            <div class="col-2 mt-5 text-right">
                                 <span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     小計
                                 </span>
                             </div>
-                            <div class="col-1 text-right">
+                            <div class="col-1 mt-5 text-right">
                                 <span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     {{ $payoff['meta']['room_total_income'] }}
                                 </span>
                             </div>
-                            <div class="col-1 text-right">
+                            <div class="col-1 mt-5 text-right">
                                 <span class="{{ ($expense_not_zero && $income_not_zero) == false ? 'left-bottom' : ''  }}">
                                     {{ $payoff['meta']['room_total_expense'] }}
                                 </span>
@@ -238,11 +238,11 @@
                             @endif
                             @endforeach
                             <div class="col-12 border border-dark ml-3 mb-0" style="height: 3px;"></div>
-                            <div class="col-8"></div>
-                            <div class="col-2 text-right"><span>小計</span></div>
-                            <div class="col-1 text-right"><span>{{ number_format($data['details']['meta']['total_incomes']) }}</span>
+                            <div class="col-8 mt-5"></div>
+                            <div class="col-2 mt-5 text-right"><span>小計</span></div>
+                            <div class="col-1 mt-5 text-right"><span>{{ number_format($data['details']['meta']['total_incomes']) }}</span>
                             </div>
-                            <div class="col-1 text-right"><span>{{ number_format($data['details']['meta']['total_expenses']) }}</span>
+                            <div class="col-1 mt-5 text-right"><span>{{ number_format($data['details']['meta']['total_expenses']) }}</span>
                             </div>
                         </div>
                     </div>

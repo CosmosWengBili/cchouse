@@ -109,8 +109,8 @@ class MonthlyTenantExport implements FromCollection, WithHeadings, ShouldAutoSiz
             $contract_end      = $tenantContract->contract_end ? $tenantContract->contract_end->toDateString() : null;
 
             $last_part = [
-                $tenantContract->deposit ?? null,
-                $tenantContract->deposit_paid ?? null,
+                $tenantContract->deposit ? number_format($tenantContract->deposit) : null,
+                $tenantContract->deposit_paid ? number_format($tenantContract->deposit_paid) : null,
                 $tenantContract->tenant->name ?? null,
                 implode(',', $phones->pluck('value')->toArray()),
                 $contract_start,
@@ -124,12 +124,11 @@ class MonthlyTenantExport implements FromCollection, WithHeadings, ShouldAutoSiz
             $middle_part_headings = array_keys($middle_part_headings);
             if ($tenantContract->id) {
                 foreach ($this->payment_data[$tenantContract->id] as $payment_amount) {
-                    array_push($middle_part, $payment_amount);
+                    array_push($middle_part, number_format($payment_amount));
                 }
             } else {
                 $middle_part = array_fill(0, count($middle_part_headings), null);
             }
-
             $data[] = array_flatten([$first_part, $middle_part, $last_part]);
         }
 

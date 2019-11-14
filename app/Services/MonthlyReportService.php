@@ -539,7 +539,7 @@ class MonthlyReportService
             // 三個月內每間房至少要有兩筆資料
             $current_payments = TenantElectricityPayment::with('tenantContract')
                                                         ->whereIn('tenant_contract_id', $tenantContractIds)
-                                                        ->where('ammeter_read_date', '<', $start_date)
+                                                        ->where('ammeter_read_date', '<', $end_date)
                                                         ->where('ammeter_read_date', '>=', $start_date->copy()->subMonth(3))
                                                         ->orderBy('ammeter_read_date', 'desc') // 外層還有個 room
                                                         ->get();
@@ -593,8 +593,13 @@ class MonthlyReportService
                     }
                 }
 
+                $is_pay_off_text = '';
+                if ($current_payment->is_pay_off) {
+                    $is_pay_off_text = '(點交)';
+                }
+
                 $payment = [
-                    'ammeter_read_date' => $current_payment['ammeter_read_date']->format('Y-m-d'),
+                    'ammeter_read_date' => $current_payment['ammeter_read_date']->format('Y-m-d').$is_pay_off_text,
                     'start_110v' => $current_payment['110v_start_degree'],
                     'start_220v' => $current_payment['220v_start_degree'],
                     'end_110v' => $current_payment['110v_end_degree'],

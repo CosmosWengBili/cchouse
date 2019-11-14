@@ -8,7 +8,7 @@
             @endif
         </h2>
         {{-- you should handle the empty array logic --}}
-        @if (empty($objects))
+        @if ($objects->count() == 0)
             <h3>尚無紀錄</h3>
         @else
             <form data-target="#reversal_error_case" data-toggle="datatable-query">

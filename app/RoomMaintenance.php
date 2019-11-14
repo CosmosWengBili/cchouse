@@ -42,7 +42,6 @@ class RoomMaintenance extends Model implements AuditableContract
         'maintainer',
         'maintained_location',
         'maintained_date',
-        'pictures'
     ];
 
     /**
@@ -51,12 +50,11 @@ class RoomMaintenance extends Model implements AuditableContract
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
-        'room_id' => 'integer',
-        'maintainer' => 'string',
+        'id'                  => 'integer',
+        'room_id'             => 'integer',
+        'maintainer'          => 'string',
         'maintained_location' => 'string',
-        'maintained_date' => 'date:Y-m-d',
-        'pictures' => 'array'
+        'maintained_date'     => 'date:Y-m-d',
     ];
 
     /**
@@ -65,16 +63,15 @@ class RoomMaintenance extends Model implements AuditableContract
      * @var array
      */
     public static $rules = [
-        'room_id' => 'required',
-        'maintainer' => 'required',
+        'room_id'             => 'required',
+        'maintainer'          => 'required',
         'maintained_location' => 'required',
-        'maintained_date' => 'required'
+        'maintained_date'     => 'required'
     ];
 
-    public function setPicturesAttribute($value)
+    public function storePictures($pictures)
     {
-        $this->handleDocumentsUploadByArray($this, $value, 'picture');
-        unset($this->pictures);
+        $this->handleDocumentsUploadByArray($this, $pictures, 'picture');
     }
 
     /**

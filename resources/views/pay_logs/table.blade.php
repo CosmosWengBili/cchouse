@@ -129,7 +129,6 @@
                                     type="checkbox"
                                     name="payer_is_legal_person"
                                     value="1"
-                                    required
                                 />
                             </td>
                         </tr>

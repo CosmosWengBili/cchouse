@@ -60,11 +60,7 @@ class EditorialReviewObserver
                     if ($editorialReview->status == '已通過') {
                         $payment = $editorialReview->editable;
                         $validatedData = $editorialReview->edit_value;
-
-                        $result = InvoiceService::compareReceipt($payment, $validatedData);
-                        if (!$result) {
-                            $payment->update($validatedData);
-                        }
+                        $payment->update($validatedData);
                     }
                     break;
                 default:

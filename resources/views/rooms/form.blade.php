@@ -265,6 +265,14 @@
                 defaultManagementFeePlaceholderText()
             })
 
+            $.validator.addMethod('validateManagementFee',function (value,element) {
+                $management_fee_mode = $('[name="management_fee_mode"]').val()
+                if ($management_fee_mode == '比例') {
+                    return (value > 0 && value < 100) ? true : false
+                }
+                return true
+            })
+
             const rules = {
                 // room_code: {
                 //     required: true
@@ -300,7 +308,8 @@
                     required: true
                 },
                 management_fee: {
-                    required: true
+                    required: true,
+                    validateManagementFee:true
                 },
                 wifi_account: {
                     required: true
@@ -342,7 +351,8 @@
                     required: '必須輸入'
                 },
                 management_fee: {
-                    required: '必須輸入'
+                    required: '必須輸入',
+                    validateManagementFee: '比例: [0, 99.99]'
                 },
                 wifi_account: {
                     required: '必須輸入'
@@ -356,6 +366,22 @@
                 rules: rules,
                 messages: messages,
                 errorElement: "em",
+                submitHandler:function(form) {
+                    var documents = $('[name^="documents"]');
+                    if (documents.length < 5) {
+                        alert('照片至少要 5 張')
+                        return false
+                    }
+                    for (let index = 0; index < documents.length; index++) {
+                        const document = documents[index];
+                        if (document.value == '') {
+                            alert('照片'+(index+1)+' 沒有選擇圖片')
+                            return false
+                        }
+                    }
+
+                    form.submit();
+                },
                 errorPlacement: function ( error, element ) {
                     error.addClass( "invalid-feedback" );
                     if ( element.prop( "type" ) === "checkbox" ) {

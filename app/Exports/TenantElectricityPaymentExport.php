@@ -23,38 +23,26 @@ class TenantElectricityPaymentExport implements FromCollection, WithHeadings
         return $rooms->map(function ($room) {
             $contract = $room->activeContracts()->first();
             $building = $room->building;
-            $prev110v = null;
-            $prev220v = null;
-
-            if (is_null($contract)) {
+            if( in_array($building->electricity_payment_method,  ['公司代付', '房東自行繳納'])){
                 $prev110v = $room->current_110v;
                 $prev220v = $room->current_220v;
-            } else {
-                $payment = $contract->tenantElectricityPayments()
-                                    ->where('due_time', '<', Carbon::now())
-                                    ->orderBy('due_time', 'desc')
-                                    ->first(); // 上期 tenantElectricityPayments
-                if (is_null($payment)) { // 第一期
-                    $prev110v = $contract->{'110v_start_degree'};
-                    $prev220v = $contract->{'220v_start_degree'};
-                } else {
-                    $prev110v = $payment->{'110v_end_degree'};
-                    $prev220v = $payment->{'220v_end_degree'};
-                }
+    
+                $buildingCode = $building ? $building->building_code : '';
+                $roomNumber = $room->room_number;
+    
+                return [
+                    strval($buildingCode),
+                    strval($roomNumber),
+                    strval($prev220v),
+                    strval($prev110v),
+                    '',
+                    '',
+                    ''
+                ];
             }
-
-            $buildingCode = $building ? $building->building_code : '';
-            $roomNumber = $room->room_number;
-
-            return [
-                strval($buildingCode),
-                strval($roomNumber),
-                strval($prev220v),
-                strval($prev110v),
-                '',
-                '',
-                ''
-            ];
+            else{
+                return [];
+            }
         });
     }
 

@@ -7,7 +7,10 @@ use App\TenantElectricityPayment;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\User;
+use DB;
 
 class TenantElectricityPaymentControllerTest extends TestCase
 {
@@ -20,6 +23,8 @@ class TenantElectricityPaymentControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Schema::disableForeignKeyConstraints();
+        DB::table('users')->truncate();
 
         // create a fake user for testing
         $this->fakeUser = new User(['name' => 'tester']);
@@ -35,7 +40,7 @@ class TenantElectricityPaymentControllerTest extends TestCase
      */
     public function testIndex()
     {
-        $res = $this->call('GET', route($this->routeName . '.index'));
+        $res = $this->call('GET', route($this->routeName.'.index'));
         $res->assertOk();
     }
 
@@ -44,7 +49,7 @@ class TenantElectricityPaymentControllerTest extends TestCase
      */
     public function testCreate()
     {
-        $res = $this->call('GET', route($this->routeName . '.create'));
+        $res = $this->call('GET', route($this->routeName.'.create'));
         $res->assertOk();
     }
 
@@ -54,7 +59,7 @@ class TenantElectricityPaymentControllerTest extends TestCase
     public function testShow()
     {
         $tenantElectricityPayment = factory(TenantElectricityPayment::class)->make();
-        $res = $this->call('GET', route($this->routeName . '.show', $tenantElectricityPayment));
+        $res = $this->call('GET', route($this->routeName.'.show', $tenantElectricityPayment));
         $res->assertOk();
     }
 
@@ -68,7 +73,7 @@ class TenantElectricityPaymentControllerTest extends TestCase
         $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create([
             'tenant_contract_id' => $tenant_contract->id,
         ]);
-        $res = $this->call('GET', route($this->routeName . '.edit', [$tenantElectricityPayment->id]));
+        $res = $this->call('GET', route($this->routeName.'.edit', [$tenantElectricityPayment->id]));
         $res->assertOk();
     }
 
@@ -77,13 +82,25 @@ class TenantElectricityPaymentControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        factory(TenantContract::class)->create();
+        factory(TenantContract::class)->state('new')->create();
         $tenant_contract = TenantContract::latest()->first();
+        // 不需要審核
         $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create([
             'tenant_contract_id' => $tenant_contract->id,
+            'is_charge_off_done' => 0,
         ]);
-        $res = $this->call('DELETE', route($this->routeName . '.destroy', [$tenantElectricityPayment->id]));
+        $res = $this->call('DELETE', route($this->routeName.'.destroy', [$tenantElectricityPayment->id]));
         $res->assertOk();
-    }
 
+        // 需要審核
+        $user = factory(User::class)->create();
+        Auth::login($user);
+        $tenantElectricityPayment = factory(TenantElectricityPayment::class)->create([
+            'tenant_contract_id' => $tenant_contract->id,
+            'is_charge_off_done' => 1,
+        ]);
+        $res = $this->call('DELETE', route($this->routeName.'.destroy', [$tenantElectricityPayment->id]));
+
+        $res->assertStatus(422);
+    }
 }

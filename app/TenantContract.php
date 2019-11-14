@@ -131,23 +131,7 @@ class TenantContract extends Pivot implements AuditableContract
      */
     public function payLogs()
     {
-        $commonSelect = [
-            'pay_logs.id',
-            'pay_logs.loggable_type',
-            'pay_logs.loggable_id',
-            'pay_logs.subject',
-            DB::raw('due_time AS due_time'),
-            'pay_logs.*'
-        ];
-        $joinedTenantPayment = $this->hasMany('App\PayLog', 'tenant_contract_id')
-                                    ->leftJoin('tenant_payments', 'tenant_payments.id', '=', 'pay_logs.loggable_id')
-                                    ->where('pay_logs.loggable_type', 'App\TenantPayment')
-                                    ->select($commonSelect);
-        $joinedTenantElectricityPayment = $this->hasMany('App\PayLog', 'tenant_contract_id')
-                                               ->leftJoin('tenant_electricity_payments', 'tenant_electricity_payments.id', '=', 'pay_logs.loggable_id')
-                                               ->where('pay_logs.loggable_type', 'App\TenantElectricityPayment')
-                                               ->select($commonSelect);
-        return $joinedTenantPayment->unionAll($joinedTenantElectricityPayment);
+        return $this->hasMany('App\PayLog', 'tenant_contract_id');
     }
 
     /**
@@ -222,7 +206,9 @@ class TenantContract extends Pivot implements AuditableContract
             $electricityUnpaid = $this->tenantElectricityPayments()->where('due_time', '<=', $payment_date)->sum('amount');
         }
 
-        $paid = $this->payLogs()->get()->sum(function ($p) { return $p->amount ?? 0; });
+        $paid = $this->payLogs()->get()->sum(function ($p) {
+            return $p->amount ?? 0;
+        });
 
         return $paid - $unpaid - $electricityUnpaid;
     }
@@ -271,7 +257,7 @@ class TenantContract extends Pivot implements AuditableContract
      * 然後 landlord 和 tenant 都不是法人 is_legal_person，
      * 則該 receipt_type 為收據
      */
-    public function getReceiptType()
+    public function isInvoiceType()
     {
         try {
             $room = $this->room;
@@ -281,14 +267,13 @@ class TenantContract extends Pivot implements AuditableContract
             $tenant = $tenantContract->tenant;
             $tenantIsLegalPerson = $tenant->is_legal_person;
             $landlordIsLegalPerson = $landlordContract->landlords()->where('is_legal_person', true)->exists();
-
-            if ($landlordContract->commission_type == '包租' && !$tenantIsLegalPerson && !$landlordIsLegalPerson) {
-                return '收據';
+            if ($landlordContract->commission_type == '包租' && ($tenantIsLegalPerson || $landlordIsLegalPerson)) {
+                return true;
             }
         } catch (\Exception $e) {
         }
 
-        return '發票';
+        return false;
     }
 
     private function electricityPaymentAmount($year, $month)

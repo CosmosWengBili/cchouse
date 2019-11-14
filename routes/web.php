@@ -109,6 +109,7 @@ Route::group(['middleware' => 'internal.protect'], function () {
             Route::get('payOffs/{tenant_contract}', 'PayOffController@show')->name('payOffs.show');
             Route::get('payOffs/{tenant_contract}/history', 'PayOffController@history')->name('payOffs.history');
             Route::post('payOffs/{tenant_contract}/storePayOffPayments', 'PayOffController@storePayOffPayments')->name('payOffs.storePayOffPayments');
+            Route::put('payOffs/{payOff}', 'PayOffController@update')->name('payOffs.update');
 
             // monthly report
             Route::get('monthlyReports', 'MonthlyReportController@index')->name('monthlyReports.index');

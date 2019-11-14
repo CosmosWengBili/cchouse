@@ -128,6 +128,7 @@ return [
         'bill_serial_number' => '帳單號',
         'billing_vendor'     => '廠商',
         'collection_date'    => '繳費日',
+        'is_invoiced'        => '是否開發票',
         'comment'            => '備註',
         'room_id'            => '房編號',
         'buildings'          => '建物',

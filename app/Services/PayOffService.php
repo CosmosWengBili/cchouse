@@ -159,9 +159,13 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
-            // ROUND($C5−$B5×$G2,0)
-            $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            $rent_payment = $this->lastTenantPayments()->where('subject', '租金')->first();
+
+            if(!is_null($rent_payment)){
+                $rent_pay_log = $rent_payment->payLogs->sum('amount');    
+                // ROUND($C5−$B5×$G2,0)
+                $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            }
             // SUM(B49:B50)+SUM(B52:B54)
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
@@ -179,9 +183,13 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
+            $rent_payment = $this->lastTenantPayments()->where('subject', '租金')->first();
+            if(!is_null($rent_payment)){
+                $rent_pay_log = $rent_payment->payLogs->sum('amount');    
+                // ROUND($C5−$B5×$G2,0)
+                $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            }
             $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
-            $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
             // SUM(B32:B34)+SUM(B36:B38)
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] + 
@@ -222,9 +230,15 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
-            // ROUND($C5−$B5×$G2,0)
-            $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            $rent_payment = $this->lastTenantPayments()->where('subject', '租金')->first();
+
+            if(!is_null($rent_payment)){
+                $rent_pay_log = $rent_payment->payLogs->sum('amount');    
+                // ROUND($C5−$B5×$G2,0)
+                $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            }
+
+
             // SUM(E49:E50)+SUM(E52:E54)
             $sumItems['應退金額'] = $defaultItems['履保金']['amount'] +
                 $defaultItems['租金']['amount'] +
@@ -247,10 +261,14 @@ class PayOffService
 
             // 租金
             $rent = $this->tenantContract->rent;
-            $rent_pay_log = $this->lastTenantPayments()->where('subject', '租金')->first()->payLogs->sum('amount');
+            $rent_payment = $this->lastTenantPayments()->where('subject', '租金')->first();
+            if(!is_null($rent_payment)){
+                $rent_pay_log = $rent_payment->payLogs->sum('amount');    
+                // ROUND($C5−$B5×$G2,0)
+                $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
+            }
             // −E32÷2
             $defaultItems['沒收押金']['amount'] = -1 * $defaultItems['履保金']['amount'] / 2;
-            $defaultItems['租金']['amount'] = $rent_pay_log - ($rent * $diffDays);
             $defaultItems['點交中退盈餘分配']['amount'] = $defaultItems['沒收押金']['amount'] * -1 * (1 - $withdrawal_revenue_distribution);
 
             // SUM(E32:E34)+SUM(E36:E38)
@@ -469,6 +487,7 @@ class PayOffService
         return $this->tenantContract
                     ->tenantPayments()
                     ->whereBetween('due_time', [$this->lastPayDate, $this->payOffDate])
+                    ->where('is_pay_off', false)
                     ->get();
     }
 

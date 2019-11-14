@@ -76,7 +76,7 @@
             <input type="hidden" name="pay_logs[${idx}][loggable_type]" value="App\\TenantPayment">
             <select name="pay_logs[${idx}][loggable_id]" class="form-control form-control-sm" required="required">
                 @foreach($unchargedPayments as $payment)
-                    <option value="{{$payment->id}}">{{ $payment->due_time->format('Y-m-d')}} {{ $payment->subject }}</option>
+                    <option value="{{$payment->id}}">{{ $payment->due_time->format('Y-m-d')}} {{ $payment->subject }} {{ $payment->amount }}</option>
                 @endforeach
             </select>
         </td>

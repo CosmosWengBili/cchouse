@@ -20,10 +20,6 @@
         <div class="card-header">
             <a id="pdfExport" href='#'>
                 輸出為 PDF
-            </a> |
-            <a
-                href="{{route('monthlyReports.print_tenant', $data['building_id'])}}?month={{$report_used_date['month']}}&year={{$report_used_date['year']}}">
-                輸出租客報表
             </a>
         </div>
         @include('monthly_reports.tabs', ['by' => 'contract'])
@@ -334,6 +330,26 @@
                     {{-- Electricity end --}}
                 </div>
                 @endforeach
+                <h3 class="text-center py-4">租客報表</h3>
+                <table class="table">
+                    <thead>
+                    <tr> {{$tenant_date->getAddress()}}</tr>
+                        <tr>
+                            @foreach ($tenant_date->headings() as $data)
+                            <th scope="col">{{$data}}</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($tenant_date->collection() as $data)
+                            <tr>
+                                @foreach ($data as $item)
+                            <th scope="row">{{$item}}</th>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

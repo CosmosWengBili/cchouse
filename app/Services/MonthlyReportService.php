@@ -104,13 +104,15 @@ class MonthlyReportService
         // section : rooms
         foreach ($landlordContract->building->rooms as $room) {
             // section : details
-            $landlordPayments = $room->landlordPayments
+            $landlordPayments = $room->landlordPayments()
                                     ->whereBetween('collection_date', [$start_date, $end_date])
-                                    ->where('subject', 'like', '維修案件%');
+                                    ->where('subject', 'not like', '維修案件%')
+                                    ->get();
 
-            $landlordOtherSubjects = $room->landlordOtherSubjects
+            $landlordOtherSubjects = $room->landlordOtherSubjects()
                                         ->where('subject_type', '!=', '點交')
-                                        ->whereBetween('expense_date', [$start_date, $end_date]);
+                                        ->whereBetween('expense_date', [$start_date, $end_date])
+                                        ->get();
 
             foreach ($landlordPayments as $landlordPayment) {
                 $data['details']['data'][] = [
@@ -152,7 +154,6 @@ class MonthlyReportService
                                 ->where('status', '=', '案件完成')
                                 ->whereBetween('updated_at', [$start_date, $end_date])
                                 ->get();
-
             foreach ($maintenances as $maintenance) {
                 $data['details']['data'][] = [
                     'type' => '支出',
@@ -456,6 +457,9 @@ class MonthlyReportService
             ];
         }
         // end section : shareholders
+
+        // dd($data);
+
         return collect($data);
     }
 

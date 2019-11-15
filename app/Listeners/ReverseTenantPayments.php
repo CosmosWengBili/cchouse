@@ -178,12 +178,12 @@ class ReverseTenantPayments
                 // by default(the tenant payment wasn't paid before),
                 // the amount missing(or should be paid) is the amount of this tenant payment
                 $shouldPayAmount = $payment->amount - $alreadyPaid;
-
                 // determine who gets the income
-                $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by == '公司';
+                $paymentCollectedByCompany = ($payment->subject != '電費' && $payment->collected_by == '公司');
                 $electricityPaymentMethod = $building->electricity_payment_method;
-                $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod == '公司代付' && $building->activeContracts()['commission_type'] == '包租';
+                $electricityPaymentCollectedByCompany = ($payment->subject == '電費' && $electricityPaymentMethod == '公司代付' && $building->activeContracts()['commission_type'] == '包租');
                 $rentPayment = $payment->subject == '租金';
+
                 if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
                     // generate company income
                     $incomeData = [

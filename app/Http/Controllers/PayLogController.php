@@ -56,12 +56,23 @@ class PayLogController extends Controller
     public function create(Request $request)
     {
         $tenantContractId = $request->input('tenantContractId');
-        $unchargedPayments = TenantPayment::where([
+        $tenantPayments = TenantPayment::where([
+                'tenant_contract_id' => $tenantContractId,
+                'is_charge_off_done' => false,
+            ])
+                ->orderBy('due_time', 'asc')
+                ->get();
+        $tenantElectricityPayments = TenantElectricityPayment::where([
             'tenant_contract_id' => $tenantContractId,
             'is_charge_off_done' => false,
         ])
             ->orderBy('due_time', 'asc')
             ->get();
+
+
+        $unchargedPayments = $tenantPayments->concat($tenantElectricityPayments)
+                                            ->sortBy('due_time');
+
             
         return view('pay_logs.massive_create_form', [
             'tenantContractId' => $tenantContractId,
@@ -95,7 +106,7 @@ class PayLogController extends Controller
             'tenant_contract_id' => $validatedData['tenant_contract_id'],
             'come_from_bank' => $validatedData['come_from_bank'],
             'pay_sum' => $validatedData['pay_sum'],
-            'paid_at' => $now,
+            'paid_at' => $now
         ];
         $payLogsAttrs = array_map(function ($payLogsAttr) use ($commonAttrs) {
             return array_merge($payLogsAttr, $commonAttrs);
@@ -106,6 +117,13 @@ class PayLogController extends Controller
                 $payLog = PayLog::create($payLogsAttr);
                 $payment = $payLog->loggable;
                 $sum = $payment->payLogs()->sum('amount');
+                if(get_class($payment) == 'App\TenantElectricityPayment'){
+                    $payment_type = '電費';
+                }
+                else{
+                    $payment_type = '租金雜費';
+                }
+                $payLog->update(['subject' => $payment->subject, 'payment_type' => $payment_type ]);
                 if ($payment->amount == $sum) {
                     $payment->update(['is_charge_off_done' => true, 'charge_off_date' => $now]);
                 }

@@ -88,8 +88,7 @@ class RoomService
         $maintenances = array_map(function ($maintenance) use ($room) {
             $data = $maintenance;
             $data['room_id'] = $room->id;
-
-            if ($data['id']) {
+            if (isset($data['id']) && $data['id'] > 0) {
                 $maintenance = \App\RoomMaintenance::find($data['id']);
             } else {
                 $maintenance = new \App\RoomMaintenance($data);
@@ -138,10 +137,20 @@ class RoomService
     }
 
     // alias to make, but do it with custom data
-    public static function makeEmptyRoom()
+    public static function makeEmptyRoom($building)
     {
         return Room::make([
-            'room_layout' => '公區'
+            'building_id' => $building->id,
+            'room_layout' => '公區',
+            'virtual_account' => 'ffffffff',
+            'room_number' => '100',
+            'room_code' => '系統產生',
+            'internet_form' => '無網路',
+            'internet_form' => '無網路',
+            'management_fee_mode' => '固定',
+            'management_fee' => '0',
+            'wifi_account' => 'admin',
+            'wifi_password' => 'admin',
         ]);
     }
 

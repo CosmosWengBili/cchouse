@@ -93,7 +93,7 @@ class BuildingController extends Controller
             'is_squatter'     => 'boolean',
             'squatter_status' => 'max:255',
             'decoration_needed' => 'required|boolean',
-            'decoration_price' => 'integer',
+            'decoration_price' => 'integer|nullable',
 
             'tax_number'                        => 'required|max:255',
             'building_type'                     => 'max:255',
@@ -196,7 +196,7 @@ class BuildingController extends Controller
             'is_squatter'     => 'boolean',
             'squatter_status' => 'max:255',
             'decoration_needed' => 'required|boolean',
-            'decoration_price' => 'integer',
+            'decoration_price' => 'integer|nullable',
 
             'tax_number'                        => 'required|max:255',
             'building_type'                     => 'max:255',

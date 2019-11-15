@@ -239,7 +239,7 @@ class PayLogController extends Controller
         $rows = [];
         $payLogs = PayLog::with(['tenantContract.room.building', 'loggable'])
             ->whereBetween('paid_at', [$startDateStr, $endDateStr])
-            ->where('loggable_type','<>', 'OverPayment')
+            ->where('loggable_type','<>', 'App\OverPayment')
             ->get()
             ->sortByDesc('paid_at');
         foreach ($payLogs as $payLog) {

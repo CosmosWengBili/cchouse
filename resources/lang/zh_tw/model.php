@@ -333,7 +333,7 @@ return [
         'building_code'               => '物件代碼',
         'room_code'                   => '房代碼',
         'virtual_account'             => '虛擬帳號',
-        'electricity_virtual_account' => '虛擬帳號',
+        'electricity_virtual_account' => '儲值電虛擬帳號',
         'room_status'                 => '狀態',
         'room_number'                 => '房號',
         'room_layout'                 => '物件格局',
@@ -548,6 +548,7 @@ return [
         'is_charge_off_done'    => '是否已沖銷',
         'charge_off_date'       => '沖銷日期',
         'due_time'              => '應繳時間',
+        'is_pay_off'            => '是否為點交',
         'comment'               => '備註',
         'created_at'            => '建立時間',
         'updated_at'            => '更新時間'

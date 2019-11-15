@@ -427,6 +427,53 @@
                 if (this.postData.header.pay_off_date) {
                     this.init()
                 }
+<<<<<<< HEAD
+=======
+            })
+        });
+
+
+    })();
+
+    function makeSendData() {
+
+        const paymentOjects = {
+            '履保金' : {collected_by:'房東'},
+            '管理費': {collected_by:'公司'},
+            '折抵管理費': {collected_by:'公司'},
+            '清潔費': {collected_by:'公司'},
+            '折抵清潔費': {collected_by:'公司'},
+            '滯納金': {collected_by:'公司'},
+            '折抵滯納金': {collected_by:'公司'},
+            '沒收押金': {collected_by:'房東'},
+            '點交中退盈餘分配': {collected_by:'房東'},
+            '租金': {collected_by:'房東'},
+            '電費': {collected_by:'房東'},
+            '匯費' :{collected_by:'公司'}
+        }
+
+        // 結算電
+        if( validate_110v != undefined ){
+            var old_110v = $('span.old-110v').text()
+            var old_220v = $('span.old-220v').text()
+            var final_110v = $('#e_110v').val()
+            var final_220v =$('#e_220v').val()
+        }
+        // 儲值電
+        else{
+            var old_110v = 0
+            var old_220v = 0
+            var final_110v = $( "#e_110v_stored" ).val()
+            var final_220v =$( "#e_220v_stored" ).val()
+        }
+
+        return {
+            header: {
+                pay_off_date: $('#pay-off-date').val(),
+                commission_type: $('#commission_type').text(),
+                return_ways: $('#return_ways').val(),
+                is_doubtful: $('#is_doubtful').is(':checked') ? 1 : 0
+>>>>>>> 67405c03b32f8ef378853e3e175ec88ea2b225ac
             },
             methods: {
                 addItem(){

@@ -17,7 +17,7 @@ class PayOff extends Model implements AuditableContract
     ];
 
     protected $guarded = [];
-    
+
     protected $hidden = ['pivot', 'deleted_at'];
 
     /**
@@ -26,5 +26,10 @@ class PayOff extends Model implements AuditableContract
     public function tenantContract()
     {
         return $this->belongsTo('App\TenantContract', 'tenant_contract_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany('App\PayOffDetail');
     }
 }

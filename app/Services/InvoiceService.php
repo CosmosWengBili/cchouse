@@ -262,6 +262,7 @@ class InvoiceService
             $receipt = $deposit->receipts()->first();
             $data = $this->makeInvoiceMockData();
             $data['invoice_date'] = $receipt['date'];
+            // 代管
             if( $deposit->subject == "訂金(房東)" ){
                 $landlords = $deposit->loggable->room->building->activeContracts()->landlords;
                 if (in_array(true, $landlords->pluck('is_legal_person')->toArray()) ) {
@@ -269,15 +270,18 @@ class InvoiceService
                     $data['company_name'] = $landlords->where('is_legal_person', true)->first()->name;;
                 }
                 $data['invoice_item_name'] = '管理服務費';
+                $data['amount'] = $deposit->amount;
             }
+            // 包租
             else if( $deposit->subject == "訂金" ){
                 if ($deposit->loggable->payer_is_legal_person) {
                     $data['company_number'] = $deposit->loggable->payer_certification_number;
                     $data['company_name'] = $deposit->loggable->payer_name;
                 }
                 $data['invoice_item_name'] = '違約金';
+                $data['amount'] = $deposit->loggable->deposit_confiscated_amount;
             }
-            $data['amount'] = $deposit->amount;
+
 
             // Set value for maping relative payment model
             $data['data_table'] =  __('general.'.$deposit->getTable());

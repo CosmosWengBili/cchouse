@@ -94,19 +94,19 @@ class PayLogController extends Controller
             'tenant_contract_id' => 'required|exists:tenant_contract,id',
             'come_from_bank' => 'required',
             'pay_sum' => 'required',
+            'paid_at' => 'required',
+            'deposit_at' => 'required',
             'pay_logs' => 'required|array',
-            'pay_logs.*.loggable_type' => 'required',
-            'pay_logs.*.loggable_id' => 'required|exists:tenant_payments,id',
-            'pay_logs.*.subject' => 'required',
-            'pay_logs.*.payment_type' => 'required',
             'pay_logs.*.amount' => 'required',
-            'pay_logs.*.virtual_account' => 'required',
+            'pay_logs.*.comment' => 'nullable'
         ]);
         $commonAttrs = [
             'tenant_contract_id' => $validatedData['tenant_contract_id'],
             'come_from_bank' => $validatedData['come_from_bank'],
             'pay_sum' => $validatedData['pay_sum'],
-            'paid_at' => $now
+            'paid_at' => Carbon::create($validatedData['paid_at']),
+            'deposit_at' => Carbon::create($validatedData['deposit_at']),
+            'virtual_account' => ' '
         ];
         $payLogsAttrs = array_map(function ($payLogsAttr) use ($commonAttrs) {
             return array_merge($payLogsAttr, $commonAttrs);

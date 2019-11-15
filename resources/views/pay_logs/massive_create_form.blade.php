@@ -41,16 +41,34 @@
                                         />
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>@lang("model.PayLog.paid_at")</td>
+                                    <td>
+                                        <input
+                                            type="datetime-local"
+                                            name="paid_at"
+                                            class="form-control form-control-sm"
+                                            required="required"
+                                        />
+                                    </td>
+                                    <td>@lang("model.PayLog.deposit_at")</td>
+                                    <td>
+                                        <input
+                                            type="datetime-local"
+                                            name="deposit_at"
+                                            class="form-control form-control-sm"
+                                            required="required"
+                                        />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <table id="pay-log-detail-table" class="table table-striped">
                             <thead>
                                 <tr>
                                     <td>@lang("model.PayLog.loggable_id")</td>
-                                    <td>@lang("model.PayLog.subject")</td>
-                                    <td>@lang("model.PayLog.payment_type")</td>
                                     <td>@lang("model.PayLog.amount")</td>
-                                    <td>@lang("model.PayLog.virtual_account")</td>
+                                    <td>@lang("model.PayLog.comment")</td>
                                     <td></td>
                                 </tr>
                             </thead>
@@ -84,24 +102,10 @@
             </select>
         </td>
         <td>
-            <select name="pay_logs[${idx}][subject]" class="form-control form-control-sm" required="required">
-                @foreach(config('enums.tenant_payments.subject') as $subject)
-                    <option value="{{$subject}}">{{ $subject }}</option>
-                @endforeach
-            </select>
-        </td>
-        <td>
-            <select name="pay_logs[${idx}][payment_type]" class="form-control form-control-sm" required="required">
-                @foreach(config('enums.pay_logs.payment_type') as $subject)
-                    <option value="{{$subject}}">{{ $subject }}</option>
-                @endforeach
-            </select>
-        </td>
-        <td>
             <input name="pay_logs[${idx}][amount]" type="number" min="0" value="0" class="form-control form-control-sm" required="required" />
         </td>
         <td>
-            <input name="pay_logs[${idx}][virtual_account]" type="text" class="form-control form-control-sm" required="required" />
+            <input name="pay_logs[${idx}][comment]" class="form-control form-control-sm"/>
         </td>
         <td>
             <div>

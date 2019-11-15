@@ -378,7 +378,7 @@ class TenantContractController extends Controller
         $tillDate =  $now->copy()->endOfMonth();
         $createdAt = Carbon::createFromTimestamp($data[3]);
         $tenantElectricityPayment = $tenantContract->tenantElectricityPayments()
-                                                   ->whereBetween('due_time', [$fromDate, $tillDate])
+                                                   ->whereBetween('ammeter_read_date', [$fromDate, $tillDate])
                                                    ->first();
         $ammeterReadDate = $tenantElectricityPayment ? $tenantElectricityPayment->ammeter_read_date : null;
         $room = $tenantContract->room()->first();

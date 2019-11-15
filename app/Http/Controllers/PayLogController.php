@@ -112,7 +112,7 @@ class PayLogController extends Controller
             return array_merge($payLogsAttr, $commonAttrs);
         }, $validatedData['pay_logs']);
 
-        DB::transaction(function () use ($now, $payLogsAttrs) {
+        DB::transaction(function () use ($now, $payLogsAttrs, $validatedData) {
             foreach ($payLogsAttrs as $payLogsAttr) {
                 $payLog = PayLog::create($payLogsAttr);
                 $payment = $payLog->loggable;
@@ -124,6 +124,39 @@ class PayLogController extends Controller
                     $payment_type = '租金雜費';
                 }
                 $payLog->update(['subject' => $payment->subject, 'payment_type' => $payment_type ]);
+
+                // from ReverseTenantPayments
+                $tenantContract = TenantContract::find($validatedData['tenant_contract_id']);
+                $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by == '公司';
+                $electricityPaymentMethod = $tenantContract->room->building->electricity_payment_method;
+                $electricityPaymentCollectedByCompany = $payment->subject == '電費' && in_array($electricityPaymentMethod, ['公司代付', '房東自行繳納']) && $building->activeContracts()['commission_type'] == '包租';
+                $rentPayment = $payment->subject == '租金';
+                if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
+                    // generate company income
+                    $incomeData = [
+                        'subject'     => $payLog->subject,
+                        'income_date' => $payLog->paid_at,
+                        'amount'      => $payment->amount,
+                    ];
+
+                    if ($payment->subject == '租金') {
+                        $incomeData['subject'] = '租金服務費';
+
+                        if ($tenantContract->room->management_fee_mode == '比例') {
+                            $incomeData['amount'] = intval(round($payLog->amount * $tenantContract->room->management_fee / 100));
+                        } else {
+                            $incomeData['amount'] = intval(round($tenantContract->room->management_fee * ($payLog->amount / $payment->amount)));
+                        }
+
+                        if($tenantContract->room->building->activeContracts()['commission_type'] == "包租"){
+                            continue;
+                        }
+                    }
+
+                    $tenantContract->companyIncomes()->create($incomeData);
+                }
+
+
                 if ($payment->amount == $sum) {
                     $payment->update(['is_charge_off_done' => true, 'charge_off_date' => $now]);
                 }

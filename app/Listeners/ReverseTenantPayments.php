@@ -182,7 +182,7 @@ class ReverseTenantPayments
                 // determine who gets the income
                 $paymentCollectedByCompany = $payment->subject != '電費' && $payment->collected_by == '公司';
                 $electricityPaymentMethod = $building->electricity_payment_method;
-                $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod != '自行帳單繳付';
+                $electricityPaymentCollectedByCompany = $payment->subject == '電費' && $electricityPaymentMethod == '公司代付' && $building->activeContracts()['commission_type'] == '包租';
                 $rentPayment = $payment->subject == '租金';
                 if ($paymentCollectedByCompany || $electricityPaymentCollectedByCompany || $rentPayment) {
                     // generate company income

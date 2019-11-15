@@ -24,12 +24,7 @@ class FeatureController extends Controller
         if (in_array($text, $whitelist)) {
             $table = ucfirst(camel_case(str_singular($table)));
             $model = app("App\\{$table}");
-            if( $table == 'LandlordPayment' && $value == 'subject' ){
-                $data = $model::select($text, $value)->distinct($text)->where('subject', 'not like', "%案件%")->get();
-            }
-            else{
-                $data = $model::select($text, $value)->distinct($text)->get();
-            }
+            $data = $model::select($text, $value)->distinct($text)->get();
             return response()->json($data);
         } else {
             return response('invalid');

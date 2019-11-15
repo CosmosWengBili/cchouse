@@ -187,6 +187,15 @@
                 },
                 invoicing_amount: {
                     required: true,
+                },
+                payer_name: {
+                    required: true,
+                },
+                payer_certification_number: {
+                    required: true,
+                },
+                payer_phoner: {
+                    required: true,
                 }
             };
 
@@ -198,6 +207,15 @@
                     required: '必須輸入'
                 },
                 invoicing_amount: {
+                    required: '必須輸入',
+                },
+                payer_name: {
+                    required: '必須輸入',
+                },
+                payer_certification_number: {
+                    required: '必須輸入',
+                },
+                payer_phoner: {
                     required: '必須輸入',
                 }
             };

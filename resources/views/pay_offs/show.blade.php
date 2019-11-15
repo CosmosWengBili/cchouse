@@ -16,7 +16,6 @@
             <div class="col-12 card">
                 <div class="card-body">
                     <div class="card-title"></div>
-
                     <form class="mt-3 mb-1" method="get">
                         <div class="form-group m-0">
                             <label style="vertical-align: text-top;" for="pay-off-date">產生點交報表：</label>
@@ -25,8 +24,6 @@
                         </div>
                     </form>
                     <hr class="mt-1">
-
-
                     @if(!isset($payOffData))
                         <h3 class="text-center my-5">請選擇上方日期選擇器產生報表</h3>
                     @else
@@ -76,57 +73,59 @@
                                 <tbody>
                                 <tr>
                                     <th>110v 電費度數</th>
-                                    <td colspan="3">
-                                        <form id="e_110v_form" onsubmit="return false;">
-                                            <div class="input-group w-50">
-                                                <span v-if="electricityPaymentMethod != '儲值電表'" class="align-self-center">
-                                                    <span class="old-110v">@{{ postData.electricity.old_110v }}</span>
-                                                    度
-                                                </span>
-                                                <input v-model.number="postData.electricity.final_110v"
-                                                    :min="postData.electricity.old_110v"
-                                                    class="form-control form-control-sm ml-3"
-                                                    type="number"
-                                                    @change="calculateElectricityPrice"
-                                                />
-                                                <div class="input-group-append">
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-sm btn-outline-info"
-                                                        @click="calculateElectricityPrice">
-                                                        計算
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                    <td>
+                                        <div class="input-group">
+                                            <span v-if="electricityPaymentMethod != '儲值電表'" class="align-self-center">
+                                                <span class="old-110v">@{{ postData.electricity.old_110v }}</span>
+                                                度
+                                            </span>
+                                            <input v-model.number="postData.electricity.final_110v"
+                                                :min="postData.electricity.old_110v"
+                                                class="form-control form-control-sm ml-3"
+                                                type="number"
+                                                @change="calculateElectricityPrice"
+                                            />
+                                        </div>
+                                    </td>
+                                    <td colspan="2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-info"
+                                            @click="calculateElectricityPrice">
+                                            更新
+                                        </button>
+                                        <span class="align-self-center">
+                                            @{{ electricityDegree.method+'，一般:'+ electricityDegree.pricePerDegree + '夏季:'+ electricityDegree.pricePerDegreeSummer  }}
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>220v 電費度數</th>
-                                    <td colspan="3">
-                                        <form id="e_220v_form" onsubmit="return false;">
-                                            <div class="input-group w-50">
-                                                <span v-if="electricityPaymentMethod != '儲值電表'" class="align-self-center">
-                                                    <span class="old-220v">@{{ postData.electricity.old_220v }}</span>
-                                                    度
-                                                </span>
-                                                <input
-                                                    v-model.number="postData.electricity.final_220v"
-                                                    :min="postData.electricity.old_220v"
-                                                    class="form-control form-control-sm ml-3"
-                                                    type="number"
-                                                    @change="calculateElectricityPrice"
-                                                />
-                                                <div class="input-group-append">
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-sm btn-outline-info"
-                                                        @click="calculateElectricityPrice">
-                                                        計算
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                    <td>
+                                        <div class="input-group">
+                                            <span v-if="electricityPaymentMethod != '儲值電表'" class="align-self-center">
+                                                <span class="old-220v">@{{ postData.electricity.old_220v }}</span>
+                                                度
+                                            </span>
+                                            <input
+                                                v-model.number="postData.electricity.final_220v"
+                                                :min="postData.electricity.old_220v"
+                                                class="form-control form-control-sm ml-3"
+                                                type="number"
+                                                @change="calculateElectricityPrice"
+                                            />
+                                        </div>
+                                    </td>
+                                    <td colspan="2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-info"
+                                            @click="calculateElectricityPrice">
+                                            更新
+                                        </button>
+                                        <span class="align-self-center">
+                                            @{{ electricityDegree.method+'，一般:'+ electricityDegree.pricePerDegree + '夏季:'+ electricityDegree.pricePerDegreeSummer  }}
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr class='report-header'>
@@ -189,7 +188,7 @@
                                     <template v-if="item.is_showed === true && item.is_tenant === true">
                                         <td>
                                             <button class="btn btn-rounded btn-icon"
-                                                    v-if="item.is_deleted"
+                                                    v-if="item.is_deletable"
                                                     @click="delItem(index)">
                                                 <i class="typcn typcn-delete-outline text-danger"></i>
                                             </button>
@@ -221,7 +220,6 @@
                                     <td>
                                         <select v-model="subject" class="form-control form-control-sm">
                                             <option :value="null">--請選擇--</option>
-
                                             <template v-for="subject in subjects">
                                                 <option :value="subject">@{{ subject }}</option>
                                             </template>
@@ -240,24 +238,18 @@
                                 <tr>
                                     <th>應退房客金額</th>
                                     <td colspan="3">
-                                        <div class="d-inline-flex">
-                                            <div class="align-content-center">
-                                                <input
-                                                    v-model.number="postData.sums.refund_amount"
-                                                    type="number"
-                                                    value="{{ $payOffData['sums']['應退金額'] }}"
-                                                    disabled/>
-                                                <span>元</span>
-                                                <button id="edit_refund" class="btn btn-xs btn-primary">編輯</button>
-                                                <button id="update_refund" class="btn btn-xs btn-info d-none">確認</button>
-                                                <button class="btn btn-xs btn-secondary" @click="init">
-                                                    恢復
-                                                </button>
+                                        <div class="input-group w-25">
+                                            <input
+                                                v-model.number="postData.sums.refund_amount"
+                                                type="number"
+                                                class="form-control form-control-sm"
+                                                :disabled="disabled"/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">元</span>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
-
                                 <tr v-for="item in postData.items" class="old-payment">
                                     <template v-if="item.is_showed === true && item.is_tenant === false">
                                         <td>
@@ -281,16 +273,14 @@
                                 <tr>
                                     <th>兆基應收</th>
                                     <td colspan="3">
-                                        <div class="d-inline-flex">
-                                            <div class="align-content-center">
-                                                <input
-                                                    v-model.number="postData.sums.should_received"
-                                                    type="number"
-                                                    disabled/>
-                                                <span>元</span>
-                                                <button id="edit_received" class="btn btn-xs btn-primary">編輯</button>
-                                                <button id="update_received" class="btn btn-xs btn-info d-none">確認</button>
-                                                <button id="reset_received" class="btn btn-xs btn-secondary">恢復</button>
+                                        <div class="input-group w-25">
+                                            <input
+                                                v-model.number="postData.sums.should_received"
+                                                type="number"
+                                                class="form-control form-control-sm"
+                                                disabled/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">元</span>
                                             </div>
                                         </div>
                                     </td>
@@ -298,16 +288,14 @@
                                 <tr>
                                     <th>業主應付</th>
                                     <td colspan="3">
-                                        <div class="d-inline-flex">
-                                            <div class="align-content-center">
-                                                <input
-                                                    v-model.number="postData.sums.should_pay"
-                                                    type="number"
-                                                    disabled/>
-                                                <span>元</span>
-                                                <button id="edit_pay" class="btn btn-xs btn-primary">編輯</button>
-                                                <button id="update_pay" class="btn btn-xs btn-info d-none">確認</button>
-                                                <button id="reset_pay" class="btn btn-xs btn-secondary">恢復</button>
+                                        <div class="input-group w-25">
+                                            <input
+                                                v-model.number="postData.sums.should_pay"
+                                                type="number"
+                                                class="form-control form-control-sm"
+                                                :disabled="disabled"/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">元</span>
                                             </div>
                                         </div>
                                     </td>
@@ -316,6 +304,7 @@
                             </table>
                             {{--  --}}
                             <div class="text-center">
+                                <button class="d-inline-block my-3 mx-auto btn btn-xs btn-secondary" @click="init">重設</button>
                                 <button class="d-inline-block my-3 mx-auto btn btn-lg btn-info" @click="savePayments">儲存</button>
                                 <input v-model="postData.header.is_doubtful" type="checkbox"/> 是否為呆帳
                             </div>
@@ -331,7 +320,6 @@
 <link rel="stylesheet" href="{{asset('vendors/jquery-toast-plugin/jquery.toast.min.css')}}">
 <script src="{{asset('vendors/jquery-toast-plugin/jquery.toast.min.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
 
 <script>
     const apiURL = '{{ route('payOffs.storePayOffPayments', $tenantContract->id) }}';
@@ -350,6 +338,7 @@
             data(){
                 return {
                     apiURL: apiURL,
+                    disabled: true,
                     tenantContractsId: tenantContractsId,
                     electricityPaymentMethod: electricity_payment_method,
                     returnWays:return_ways,
@@ -393,9 +382,9 @@
                     item: {
                         subject: '',
                         amount: 0,
-                        collected_by: '',
+                        collected_by: '公司',
                         comment: '',
-                        is_deleted: true
+                        is_deletable: true
                     },
                     electricityDegree:{
                         method: '固定',
@@ -417,7 +406,7 @@
                         this.postData.items.forEach(element => {
                             if(element.subject == '電費'){
                                 element = Object.assign(element, item)
-                                console.log(element,item);
+                                // console.log(element,item);
                             }
                         });
                     }
@@ -452,10 +441,11 @@
                     this.calculateElectricityPrice()
 
                     this.postData.items = JSON.parse(JSON.stringify(Object.values(payOffData.fees)))
-                    this.postData.sums.refund_amount = payOffData.sums['應退金額']
-                    this.postData.sums.should_received = payOffData.sums['兆基應收']
-                    this.postData.sums.should_pay = payOffData.sums['業主應付']
-
+                    this.postData.sums = {
+                        refund_amount:payOffData.sums['應退金額'],
+                        should_received:payOffData.sums['兆基應收'],
+                        should_pay:payOffData.sums['業主應付']
+                    }
                     // this.postData.items.unshift(this.defaultElectronic)
                 },
                 selectReturnWay(event){
@@ -480,8 +470,11 @@
                 },
                 calculateElectricityPrice(){
                     var mode = this.electricityPaymentMethod
+                    var e_110v_end = parseInt(this.postData.electricity.old_110v)
+                    var e_220v_end = parseInt(this.postData.electricity.old_220v)
                     var input_110v = parseInt(this.postData.electricity.final_110v)
                     var input_220v = parseInt(this.postData.electricity.final_220v)
+
                     if ( Number.isNaN(input_110v)) {
                         this.postData.electricity.final_110v = input_110v = 0
                     }
@@ -489,16 +482,17 @@
                         this.postData.electricity.final_220v = input_220v = 0
                     }
 
+                    if (mode != '儲值電表') {
+                        this.postData.electricity.final_110v = (input_110v > e_110v_end) ? input_110v:e_110v_end
+                        this.postData.electricity.final_220v = (input_220v > e_220v_end) ? input_220v:e_220v_end
+                    }
+
                     $.get('/tenantContracts/' + this.tenantContractsId + '/electricityDegree').then(data =>{
                         this.electricityDegree = Object.assign(this.electricityDegree, data);
-
                         var pricePerDegree = data.pricePerDegree || 0;
                         var pricePerDegreeSummer = data.pricePerDegreeSummer || 0;
                         var readMonth = (new Date).getMonth() + 1;
                         var ratio = [7, 8, 9, 10].includes(readMonth) ? pricePerDegreeSummer : pricePerDegree;
-                        var e_110v_end = parseInt(this.postData.electricity.old_110v)
-                        var e_220v_end = parseInt(this.postData.electricity.old_220v)
-
                         let amount = 0
                         if( mode == '普通' ){
                             amount = _.round (
@@ -515,8 +509,8 @@
                             amount = input_110v * ratio + input_220v * ratio
                         }
 
-                        this.defaultElectronic.amount = amount * -1
-                        // console.log(mode,pricePerDegree,pricePerDegreeSummer,readMonth,ratio,amount);
+                        this.defaultElectronic.amount = Math.floor(amount) * -1
+                        console.log(mode,pricePerDegree,pricePerDegreeSummer,readMonth,ratio,amount);
                     })
                 },
                 savePayments(){
@@ -563,7 +557,21 @@
                         }).reduce((a,b) => a + b)
                     }
 
-                    console.log(commissionType,returnWay,Object.keys(this.payOffData.fees),extraItems,extraAmount);
+                    var refund_amount = 0,
+                        should_received = 0,
+                        should_pay = 0,
+
+                    // 加入新增的項目: has is_deletable 的 object
+                    should_received = this.postData.items.reduce((accumulator, current) => {
+                                            if (current.hasOwnProperty('is_deletable') && current.is_deletable){
+                                                if (current.hasOwnProperty('collected_by') && current.collected_by == '公司') {
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                            }
+                                            return accumulator
+                                        },0)
+
+                    // console.log(commissionType,returnWay,Object.keys(this.payOffData.fees),extraItems,extraAmount);
                     if( commissionType == '包租' ){
                         if( returnWay == '中途退租' ){
                             this.postData.items.forEach((item, index, items) => {
@@ -586,39 +594,38 @@
                                                     },0)
                                 }
                             });
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
+                            should_received += this.postData.items.reduce((accumulator, current) => {
                                                                 if(['清潔費','滯納金','點交中退盈餘分配'].indexOf(current.subject) > -1){
                                                                     return Math.floor(current.amount) + accumulator
                                                                 }
                                                                 return accumulator
                                                             },0)
-
-                            this.postData.sums.should_pay = this.postData.sums.should_received + this.postData.sums.refund_amount
+                            should_pay += this.postData.sums.should_received + this.postData.sums.refund_amount
                         }
                         else if( returnWay == '到期退租' ){
-                            this.postData.sums.refund_amount = this.postData.items.reduce((accumulator, current) => {
-                                                                            if(['履保金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
-                                                                                return Math.floor(current.amount) + accumulator
-                                                                            }
-                                                                            return accumulator
-                                                                        },0) + extraAmount
+                            refund_amount += this.postData.items.reduce((accumulator, current) => {
+                                                if(['履保金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                                return accumulator
+                                            },0) + extraAmount
                             // B49−B56
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
-                                                                        if(['管理費'].indexOf(current.subject) > -1){
-                                                                            return Math.floor(current.amount) + accumulator
-                                                                        }
-                                                                        if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                            return Math.floor(-1*current.amount) + accumulator
-                                                                        }
-                                                                        return accumulator
-                                                                    },0)
+                            should_received += this.postData.items.reduce((accumulator, current) => {
+                                                    if(['管理費'].indexOf(current.subject) > -1){
+                                                        return Math.floor(current.amount) + accumulator
+                                                    }
+                                                    if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                        return Math.floor(-1*current.amount) + accumulator
+                                                    }
+                                                    return accumulator
+                                                },0)
                             //
-                            this.postData.sums.should_pay = this.postData.items.reduce((accumulator, current) => {
-                                                                if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                    return Math.floor(-1*current.amount) + accumulator
-                                                                }
-                                                                return accumulator
-                                                            },0) + this.postData.sums.refund_amount
+                            should_pay += this.postData.items.reduce((accumulator, current) => {
+                                            if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                return Math.floor(-1*current.amount) + accumulator
+                                            }
+                                            return accumulator
+                                        },0) + this.postData.sums.refund_amount
                         }
                         else if( returnWay == '協調退租' ){
                             this.postData.items.forEach((item, index, items) => {
@@ -639,30 +646,30 @@
                                                     },0)
                                 }
                             });
-                            this.postData.sums.refund_amount = this.postData.items.reduce((accumulator, current) => {
-                                                                    if(['履保金','沒收押金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
-                                                                        return Math.floor(current.amount) + accumulator
-                                                                    }
-                                                                    return accumulator
-                                                                },0) + extraAmount
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
-                                                                    if(['清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
-                                                                        return Math.floor(current.amount) + accumulator
-                                                                    }
-                                                                    if (['滯納金'].indexOf(current.subject) > -1) {
-                                                                        return Math.floor(-1*current.amount) + accumulator
-                                                                    }
-                                                                    return accumulator
-                                                                },0)
-                            this.postData.sums.should_pay = this.postData.items.reduce((accumulator, current) => {
-                                                                if(['清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
-                                                                    return Math.floor(current.amount) + accumulator
-                                                                }
-                                                                if (['滯納金'].indexOf(current.subject) > -1) {
-                                                                    return Math.floor(-1*current.amount) + accumulator
-                                                                }
-                                                                return accumulator
-                                                            },0) + this.postData.sums.refund_amount
+                            refund_amount += this.postData.items.reduce((accumulator, current) => {
+                                                if(['履保金','沒收押金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                                return accumulator
+                                            },0) + extraAmount
+                            sums.should_received += this.postData.items.reduce((accumulator, current) => {
+                                                        if(['清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
+                                                            return Math.floor(current.amount) + accumulator
+                                                        }
+                                                        if (['滯納金'].indexOf(current.subject) > -1) {
+                                                            return Math.floor(-1*current.amount) + accumulator
+                                                        }
+                                                        return accumulator
+                                                    },0)
+                            should_pay += this.postData.items.reduce((accumulator, current) => {
+                                            if(['清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
+                                                return Math.floor(current.amount) + accumulator
+                                            }
+                                            if (['滯納金'].indexOf(current.subject) > -1) {
+                                                return Math.floor(-1*current.amount) + accumulator
+                                            }
+                                            return accumulator
+                                        },0) + refund_amount
                         }
                     }
                     else if( commissionType == '代管' ){
@@ -685,46 +692,45 @@
                                                     },0)
                                 }
                             });
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
-                                                                if(['管理費','清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
-                                                                    return Math.floor(current.amount) + accumulator
-                                                                }
-                                                                if (['滯納金'].indexOf(current.subject) > -1) {
-                                                                    return Math.floor(-1*current.amount) + accumulator
-                                                                }
-                                                                return accumulator
-                                                            },0)
+                            should_received += this.postData.items.reduce((accumulator, current) => {
+                                                    if(['管理費','清潔費','點交中退盈餘分配'].indexOf(current.subject) > -1){
+                                                        return Math.floor(current.amount) + accumulator
+                                                    }
+                                                    if (['滯納金'].indexOf(current.subject) > -1) {
+                                                        return Math.floor(-1*current.amount) + accumulator
+                                                    }
+                                                    return accumulator
+                                                },0)
 
-                            this.postData.sums.should_pay = this.postData.sums.should_received + this.postData.sums.refund_amount
+                            should_pay += should_received + refund_amount
                         }
                         else if( returnWay == '到期退租' ){
-                            this.postData.sums.refund_amount = this.postData.items.reduce((accumulator, current) => {
-                                                                            if(['履保金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
-                                                                                return Math.floor(current.amount) + accumulator
-                                                                            }
-                                                                            return accumulator
-                                                                        },0) + extraAmount
+                            refund_amount += this.postData.items.reduce((accumulator, current) => {
+                                                if(['履保金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                                return accumulator
+                                            },0) + extraAmount
                             // −1×(E54+E52)+E51
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
-                                                                        if(['管理費'].indexOf(current.subject) > -1){
-                                                                            return Math.floor(current.amount) + accumulator
-                                                                        }
-                                                                        if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                            return Math.floor(-1*current.amount) + accumulator
-                                                                        }
-                                                                        return accumulator
-                                                                    },0)
-
+                            should_received += this.postData.items.reduce((accumulator, current) => {
+                                                if(['管理費'].indexOf(current.subject) > -1){
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                                if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                    return Math.floor(-1*current.amount) + accumulator
+                                                }
+                                                return accumulator
+                                            },0)
                             // −1×(B52+B54)+B56+B51
-                            this.postData.sums.should_pay = this.postData.items.reduce((accumulator, current) => {
-                                                                if(['管理費'].indexOf(current.subject) > -1){
-                                                                    return Math.floor(current.amount) + accumulator
-                                                                }
-                                                                if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                    return Math.floor(-1*current.amount) + accumulator
-                                                                }
-                                                                return accumulator
-                                                            },0) + this.postData.sums.refund_amount
+                            should_pay += this.postData.items.reduce((accumulator, current) => {
+                                            if(['管理費'].indexOf(current.subject) > -1){
+                                                return Math.floor(current.amount) + accumulator
+                                            }
+                                            if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                return Math.floor(-1*current.amount) + accumulator
+                                            }
+                                            return accumulator
+                                        },0) + refund_amount
                         }
                         else if( returnWay == '協調退租' ){
                             // −E32÷2
@@ -746,37 +752,38 @@
                                                     },0)
                                 }
                             });
-
                             // SUM(E32:E34)+SUM(E36:E38)
-                            this.postData.sums.refund_amount = this.postData.items.reduce((accumulator, current) => {
-                                                                    if(['履保金','沒收押金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
-                                                                        return Math.floor(current.amount) + accumulator
-                                                                    }
-                                                                    return accumulator
-                                                                },0) + extraAmount
+                            refund_amount += this.postData.items.reduce((accumulator, current) => {
+                                                if(['履保金','沒收押金','租金','清潔費','滯納金'].indexOf(current.subject) > -1){
+                                                    return Math.floor(current.amount) + accumulator
+                                                }
+                                                return accumulator
+                                            },0) + extraAmount
                             // E39+−1×(E36+E38)+E35
-                            this.postData.sums.should_received = this.postData.items.reduce((accumulator, current) => {
-                                                                    if(['點交中退盈餘分配','管理費'].indexOf(current.subject) > -1){
-                                                                        return Math.floor(current.amount) + accumulator
-                                                                    }
-                                                                    if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                        return Math.floor(-1*current.amount) + accumulator
-                                                                    }
-                                                                    return accumulator
-                                                                },0)
-
+                            should_received += this.postData.items.reduce((accumulator, current) => {
+                                                    if(['點交中退盈餘分配','管理費'].indexOf(current.subject) > -1){
+                                                        return Math.floor(current.amount) + accumulator
+                                                    }
+                                                    if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                        return Math.floor(-1*current.amount) + accumulator
+                                                    }
+                                                    return accumulator
+                                                },0)
                             // E41+E35+(E36+E38)×−1+E39
-                            this.postData.sums.should_pay = this.postData.items.reduce((accumulator, current) => {
-                                                                if(['管理費','點交中退盈餘分配'].indexOf(current.subject) > -1){
-                                                                    return Math.floor(current.amount) + accumulator
-                                                                }
-                                                                if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
-                                                                    return Math.floor(-1*current.amount) + accumulator
-                                                                }
-                                                                return accumulator
-                                                            },0) + this.postData.sums.refund_amount
+                            should_pay += this.postData.items.reduce((accumulator, current) => {
+                                            if(['管理費','點交中退盈餘分配'].indexOf(current.subject) > -1){
+                                                return Math.floor(current.amount) + accumulator
+                                            }
+                                            if (['清潔費','滯納金'].indexOf(current.subject) > -1) {
+                                                return Math.floor(-1*current.amount) + accumulator
+                                            }
+                                            return accumulator
+                                        },0) + refund_amount
                         }
                     }
+                    this.postData.sums.refund_amount = refund_amount
+                    this.postData.sums.should_pay = should_pay
+                    this.postData.sums.should_received = should_received
                 },
             },
         })

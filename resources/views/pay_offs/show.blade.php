@@ -306,7 +306,7 @@
                             <div class="text-center">
                                 <button class="d-inline-block my-3 mx-auto btn btn-xs btn-secondary" @click="init">重設</button>
                                 <button class="d-inline-block my-3 mx-auto btn btn-lg btn-info" @click="savePayments">儲存</button>
-                                <input v-model="postData.header.is_doubtful" type="checkbox"/> 是否為呆帳
+                                <input v-model="postData.header.is_doubtful" :true-value="1" :false-value="0" type="checkbox"/> 是否為呆帳
                             </div>
                         </div>
                     @endif
@@ -357,7 +357,7 @@
                             pay_off_date: payOffDate,
                             commission_type: commission_type,
                             return_ways: null,
-                            is_doubtful: false,
+                            is_doubtful: 0,
                         },
                         items: [],
                         sums:{
@@ -511,6 +511,15 @@
 
                         this.defaultElectronic.amount = Math.floor(amount) * -1
                         console.log(mode,pricePerDegree,pricePerDegreeSummer,readMonth,ratio,amount);
+                    }).always(()=>{
+                        $.toast({
+                            heading: 'Success',
+                            text: '已更新費率',
+                            showHideTransition: 'slide',
+                            icon: 'success',
+                            loaderBg: '#f96868',
+                            position: 'top-right'
+                        })
                     })
                 },
                 savePayments(){

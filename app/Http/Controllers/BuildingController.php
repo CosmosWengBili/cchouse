@@ -166,10 +166,6 @@ class BuildingController extends Controller
         $responseData = new FormDataResponser();
         $responseData = $responseData->edit($building, 'buildings.update')->get();
 
-        if ($request->old()) {
-            $responseData['data'] = array_merge($responseData['data'], $request->old());
-        }
-
         return view('buildings.form', $responseData);
     }
 

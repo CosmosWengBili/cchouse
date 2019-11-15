@@ -20,12 +20,15 @@
                                 <tr>
                                     <td>@lang("model.PayLog.come_from_bank")</td>
                                     <td>
-                                        <input
+                                        <select
                                             class="form-control form-control-sm"
-                                            type="text"
                                             name="come_from_bank"
-                                            required="required"
+                                            required
                                         />
+                                            @foreach(config('enums.pay_logs.come_from_bank') as $value)
+                                                <option value="{{$value}}">{{$value}}</option>
+                                            @endforeach
+                                        </select>
                                     </td>
 
                                     <td>@lang("model.PayLog.pay_sum")</td>

@@ -105,8 +105,7 @@ class MonthlyReportService
         foreach ($landlordContract->building->rooms as $room) {
             // section : details
             $landlordPayments = $room->landlordPayments
-                                    ->whereBetween('collection_date', [$start_date, $end_date])
-                                    ->where('subject', 'like', '維修案件%');
+                                    ->whereBetween('collection_date', [$start_date, $end_date]);
 
             $landlordOtherSubjects = $room->landlordOtherSubjects
                                         ->where('subject_type', '!=', '點交')

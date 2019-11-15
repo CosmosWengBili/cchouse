@@ -45,10 +45,7 @@ class RoomController extends Controller
         $data = $responseData->create(Room::class, 'rooms.store')->get();
         $data['data']['pictures'] = [];
         $data['data']['appliances'] = [];
-
-        if ($request->old()) {
-            $data['data'] = array_merge($data['data'], $request->old());
-        }
+        $data['data']['room_code'] = '系統產生';
 
         return view('rooms.form', $data);
     }

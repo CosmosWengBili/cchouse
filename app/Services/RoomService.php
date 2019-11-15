@@ -20,8 +20,7 @@ class RoomService
 
     public static function create($data, $appiances)
     {
-        $roomId         = Room::insertGetId($data);
-        $room           = Room::find($roomId);
+        $room           = Room::create($data);
         $new_appliances = [];
         // generates all of appliances
         foreach ($appiances as $appiance) {

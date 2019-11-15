@@ -1,5 +1,14 @@
 @php
     $tableId = "model-{$model_name}-{$layer}-" . rand();
+    $appendCreateParams = (function () use ($data) {
+        $routeName = request()->route()->getName();
+        switch ($routeName) {
+            case 'buildings.show':
+                return ['buildingId' => $data['id'] ?? null];
+            default:
+                return [];
+        }
+    })();
     if($layer == "active_contracts"){
         $layer = "tenant_contracts";
     }
@@ -9,14 +18,14 @@
     <div class="card-body table-responsive">
         <h2>
             @if($model_name == null)
-               {{$layer}}
+                {{$layer}}
             @else
                 @lang("model.{$model_name}.{$layer}")
             @endif
         </h2>
 
         {{-- the route to create this kind of resource --}}
-        <a class="btn btn-sm btn-success my-3" href="{{ route( 'rooms.create') }}">建立</a>
+        <a class="btn btn-sm btn-success my-3" href="{{ route( 'rooms.create',$appendCreateParams) }}">建立</a>
         @include('shared.import_export_buttons', ['layer' => $layer, 'parentModel' => $model_name, 'parentId' => $data['id'] ?? null])
 
         {{-- you should handle the empty array logic --}}

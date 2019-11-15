@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use Request;
 
 class Room extends Model implements AuditableContract
 {
@@ -42,14 +43,13 @@ class Room extends Model implements AuditableContract
     public function setRoomCodeAttribute($value)
     {
         $building    = $this->building;
-        $room_number =  $this->room_number;
+        $room_number =  Request::get('room_number', 100);
 
         if ($this->room_layout == '公區') {
             $room_number = 100;
         }
 
         $room_code = $building->building_code.str_pad($room_number, 3, 0, STR_PAD_LEFT) ;
-
         $this->attributes['room_code'] = $room_code;
     }
 

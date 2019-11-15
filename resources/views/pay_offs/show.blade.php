@@ -273,7 +273,7 @@
                         </table>
                         <div class="text-center">
                             <button class="d-inline-block my-3 mx-auto btn btn-lg btn-info js-save-payments">儲存</button>
-                            <input type="checkbox" name="is_monthly_report" id="is_monthly_report"> 為月結單資料
+                            <input type="checkbox" name="is_doubtful" id="is_doubtful"> 是否為呆帳
                         </div>
 
                     @else
@@ -832,7 +832,7 @@
                 pay_off_date: $('#pay-off-date').val(),
                 commission_type: $('#commission_type').text(),
                 return_ways: $('#return_ways').val(),
-                is_monthly_report: $('#is_monthly_report').is(':checked') ? 1 : 0
+                is_doubtful: $('#is_doubtful').is(':checked') ? 1 : 0
             },
             electricity: {
                 old_110v: old_110v,

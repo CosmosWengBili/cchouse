@@ -243,7 +243,7 @@
                                         <div class="d-inline-flex">
                                             <div class="align-content-center">
                                                 <input
-                                                    v-model.number="refund_amount"
+                                                    v-model.number="postData.sums.refund_amount"
                                                     type="number"
                                                     value="{{ $payOffData['sums']['應退金額'] }}"
                                                     disabled/>
@@ -404,21 +404,22 @@
                     }
                 }
             },
-            computed: {
-                refund_amount:{
-                    get(){
-                        return this.postData.sums.refund_amount
-                    },
-                    set(){
-                        this.postData.sums.refund_amount
-                    }
-                }
-            },
             watch: {
                 postData:{
                     deep:true,
                     handler:function(){
                         this.reCountSum()
+                    }
+                },
+                defaultElectronic:{
+                    deep:true,
+                    handler:function(item){
+                        this.postData.items.forEach(element => {
+                            if(element.subject == '電費'){
+                                element = Object.assign(element, item)
+                                console.log(element,item);
+                            }
+                        });
                     }
                 }
             },
@@ -448,7 +449,7 @@
                         this.postData.electricity.final_110v = payOffData['110v_end_degree']
                         this.postData.electricity.final_220v = payOffData['220v_end_degree']
                     }
-                    this.calculateElectricityPrice(this.electricityPaymentMethod)
+                    this.calculateElectricityPrice()
 
                     this.postData.items = JSON.parse(JSON.stringify(Object.values(payOffData.fees)))
                     this.postData.sums.refund_amount = payOffData.sums['應退金額']
@@ -477,7 +478,8 @@
                     // console.log(returnWay,originalRefund, sum);
                     return sum
                 },
-                calculateElectricityPrice(mode = '普通'){
+                calculateElectricityPrice(){
+                    var mode = this.electricityPaymentMethod
                     var input_110v = parseInt(this.postData.electricity.final_110v)
                     var input_220v = parseInt(this.postData.electricity.final_220v)
                     if ( Number.isNaN(input_110v)) {
@@ -561,7 +563,7 @@
                         }).reduce((a,b) => a + b)
                     }
 
-                    console.log(commissionType,returnWay,extraAmount);
+                    console.log(commissionType,returnWay,Object.keys(this.payOffData.fees),extraItems,extraAmount);
                     if( commissionType == '包租' ){
                         if( returnWay == '中途退租' ){
                             this.postData.items.forEach((item, index, items) => {

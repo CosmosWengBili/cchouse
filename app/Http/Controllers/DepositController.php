@@ -208,8 +208,7 @@ class DepositController extends Controller
             'come_from_bank' => '訂金轉履保',
             'tenant_contract_id' => $contract->id
         ]);
-
-        $deposit->update(['is_deposit_collected' => true]);
+        
         return response()->json(true);
     }
 

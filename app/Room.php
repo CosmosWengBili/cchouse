@@ -36,12 +36,21 @@ class Room extends Model implements AuditableContract
      */
     protected $casts = [
         'needs_decoration' => 'boolean',
-        'has_digital_tv' => 'boolean',
+        'has_digital_tv'   => 'boolean',
     ];
 
     public function setRoomCodeAttribute($value)
     {
-        $this->attributes['room_code'] = $this->$building->building_code + $this->room_number;
+        $building    = $this->building;
+        $room_number =  $this->room_number;
+
+        if ($this->room_layout == '公區') {
+            $room_number = 100;
+        }
+
+        $room_code = $building->building_code.str_pad($room_number, 3, 0, STR_PAD_LEFT) ;
+
+        $this->attributes['room_code'] = $room_code;
     }
 
     /**
@@ -161,17 +170,17 @@ class Room extends Model implements AuditableContract
     public function buildElectricityPaymentData(int $year, int $month)
     {
         $thisMonth = new Carbon("$year-$month-1");
-        $range = [$thisMonth->copy()->startOfMonth(), $thisMonth->copy()->endOfMonth()];
-        $result = [
+        $range     = [$thisMonth->copy()->startOfMonth(), $thisMonth->copy()->endOfMonth()];
+        $result    = [
             '上期 110v 起' => 'N/A',
             '上期 220v 起' => 'N/A',
             '本期 110v 結' => 'N/A',
             '本期 220v 結' => 'N/A',
-            '元 / 度' => 'N/A',
-            '用電金額' => 'N/A',
-            '前期電費欠額' => 'N/A',
-            '本期應付金額' => 'N/A',
-            '房號' => $this->room_number,
+            '元 / 度'     => 'N/A',
+            '用電金額'      => 'N/A',
+            '前期電費欠額'    => 'N/A',
+            '本期應付金額'    => 'N/A',
+            '房號'        => $this->room_number,
         ];
 
         $tenantElectricityPayment = $this->tenantElectricityPayments()

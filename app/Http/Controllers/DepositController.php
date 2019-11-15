@@ -208,6 +208,8 @@ class DepositController extends Controller
             'come_from_bank' => '訂金轉履保',
             'tenant_contract_id' => $contract->id
         ]);
+
+        $deposit->update(['is_deposit_collected' => true]);
         return response()->json(true);
     }
 
@@ -225,12 +227,8 @@ class DepositController extends Controller
                 'boolean',
                 function ($attribute, $value, $fail) use($room_id, $checkCollected) {
                     if (!$checkCollected) return;
-
-                    $room = Room::find($room_id);
-                    if (!$room) return;
-
-                    $invalid = $room->deposits()->where('is_deposit_collected', true)->first();
-                    if ($invalid) { $fail("房代碼 {$room->room_code} 已簽約"); }
+                    $room = Room::whereIn('room_status', ['已收訂', '已出租'])->where('id', $room_id)->first();
+                    if ($room) { $fail("房代碼 {$room->room_code} 已簽約"); }
                 },
             ],
             'comment' => 'nullable',

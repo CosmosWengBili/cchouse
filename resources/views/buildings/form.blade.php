@@ -630,6 +630,9 @@
             // rental_receipt: {
             //     required: true
             // },
+            // decoration_price:{
+            //     required: true
+            // }
         };
 
         const messages = {
@@ -708,6 +711,9 @@
             rental_receipt: {
                 required: '必須輸入'
             },
+            decoration_price:{
+                required: '必須輸入'
+            }
         };
 
         $('form').validate({

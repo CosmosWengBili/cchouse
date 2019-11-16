@@ -37,6 +37,7 @@ class ReceivableController extends Controller
             $data = [
                 'virtual_account' => config('finance.bank_code') . $virtualAccount,
                 'txTime' => Carbon::createFromFormat('YmdHis', $xml->PmtAddRq->TxnDate . $xml->PmtAddRq->TxnTime),
+                'depositTime' => Carbon::createFromFormat('Ymd', $xml->PmtAddRq->ValueDate),
                 'amount' => trim($xml->PmtAddRq->TxAmount),
                 'from_bank' => trim($xml->PmtAddRq->BankID),
                 'from_account' => trim($xml->PmtAddRq->ActNo),
@@ -110,6 +111,7 @@ class ReceivableController extends Controller
             $data = [
                 'virtual_account' => $virtualAccount,
                 'txTime' => $txTime,
+                'depositTime' => Carbon::createFromFormat('Ymd', $xml->PmtAddRq->ValueDate),
                 'amount' => $amount,
                 'from_bank' => $fromBank,
                 'from_account' => $fromAccount,

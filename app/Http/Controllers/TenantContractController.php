@@ -277,15 +277,24 @@ class TenantContractController extends Controller
         $data         = $responseData
                             ->edit($tempContract, 'tenantContracts.create')
                             ->get();
+
         $data['data']['original_files'] = null;
         $data['data']['carrier_files']  =  null;
-
-        $data['method'] = 'POST';
-        $data['action'] = route('tenantContracts.store');
 
         if ($request->old()) {
             $data['data'] = array_merge($data['data'], $request->old());
         }
+
+        // 租客帳單
+        $firstPaymentDate               = $tenantContract->tenantPayments->first()->due_time;
+        $data['data']['tenant_payment'] = $tenantContract->tenantPayments
+                                            ->where('due_time', $firstPaymentDate)
+                                            ->where('subject', '<>', '租金')
+                                            ->where('subject', '<>', '履約保證金')
+                                            ->toArray() or [];
+        $data['data']['tenant_payment'] = array_values($data['data']['tenant_payment']);
+        $data['method'] = 'POST';
+        $data['action'] = route('tenantContracts.store');
 
         return view('tenant_contracts.form', $data);
     }
@@ -378,7 +387,7 @@ class TenantContractController extends Controller
         $tillDate =  $now->copy()->endOfMonth();
         $createdAt = Carbon::createFromTimestamp($data[3]);
         $tenantElectricityPayment = $tenantContract->tenantElectricityPayments()
-                                                   ->whereBetween('due_time', [$fromDate, $tillDate])
+                                                   ->whereBetween('ammeter_read_date', [$fromDate, $tillDate])
                                                    ->first();
         $ammeterReadDate = $tenantElectricityPayment ? $tenantElectricityPayment->ammeter_read_date : null;
         $room = $tenantContract->room()->first();

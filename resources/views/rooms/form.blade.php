@@ -3,6 +3,10 @@
 @section('content')
     @include('layouts.form_error')
 
+    @php
+        $buildingId = Request::get('buildingId') ?? $data['building_id'] ?? 0;
+    @endphp
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 mt-5">
@@ -26,7 +30,7 @@
                                             data-table="buildings"
                                             data-text="building_code"
                                             data-text="building_id"
-                                            data-selected="{{ $data['building_id'] ?? 0 }}"
+                                            data-selected="{{ $buildingId ?? 0 }}"
                                             name="building_id"
                                             class="form-control form-control-sm"
                                         >

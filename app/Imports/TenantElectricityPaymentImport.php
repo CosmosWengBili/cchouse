@@ -76,17 +76,7 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
 
             // 計算 dueTime
             $rentPayDay = $contract->rent_pay_day;
-            $dueTime = null;
-            // - 如果為 1 號到 15 號，就會將應繳電費時間順延到匯表當月下下個月的時間，
-            // ( 8/28 匯入，租客 9/10 繳租，則此電費應繳日產生在 10/10 )
-            if (1 <= $rentPayDay && $rentPayDay <= 15) {
-                $dueTime = $now->copy()->setDay($rentPayDay)->addMonth(2);
-            } else {
-                // - 如果為 16 ~ 月底，就仍設定為匯表當月下個月時間，
-                // ( 8/16 匯入，租客 9/28 繳租，則此電費應繳日產生在 9/28 )
-                $dueTime = $now->copy()->setDay($rentPayDay)->addMonth(1);
-            }
-
+            $dueTime = Carbon::create($ammeterReadDate->format('Y-m-d'))->setDay($rentPayDay)->addMonth(1);
             $data = [
                 'tenant_contract_id' => $contract->id,
                 'ammeter_read_date' => $ammeterReadDate,
@@ -99,8 +89,8 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
                 'is_charge_off_done' => false,
                 'charge_off_date' => '',
                 'comment' => '',
+                'is_pay_off' => false
             ];
-
             $this->row += 1;
             DB::transaction(function () use ($room, $this110, $this220, $data) {
                 $room->update(['current_110v' => $this110, 'current_220v' => $this220]);
@@ -109,7 +99,6 @@ class TenantElectricityPaymentImport implements ToModel, WithHeadingRow, WithCus
         }
 
         
-
         return null;
     }
 

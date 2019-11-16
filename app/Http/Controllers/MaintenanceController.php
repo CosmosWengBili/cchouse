@@ -217,7 +217,7 @@ class MaintenanceController extends Controller
             $maintenances = $maintenancesRelation->get();
             if ($who === 'landlord') {
                 $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '房東']);
-                $this->createLandlordPaymentAndCompanyIncome($maintenances);
+                $this->createCompanyIncome($maintenances);
             } else {
                 $maintenancesRelation->update(['status' => '案件完成', 'afford_by' => '公司']);
             }
@@ -322,15 +322,21 @@ class MaintenanceController extends Controller
             : response()->json(false);
     }
 
-    private function createLandlordPaymentAndCompanyIncome($maintenances)
+    private function createCompanyIncome($maintenances)
     {
         foreach ($maintenances as $maintenance) {
             if ($maintenance->incomeAmount() == 0) {
                 return;
             }
-
-            $this->createCompanyIncome($maintenance);
-            $this->createLandlordPayment($maintenance);
+            $companyIncome = new CompanyIncome();
+            $companyIncome->incomable_id = $maintenance->id;
+            $companyIncome->incomable_type = get_class($maintenance);
+            $companyIncome->subject = "維修清潔編號: {$maintenance->id}";
+            $companyIncome->income_date = Carbon::now();
+            $companyIncome->amount = $maintenance->incomeAmount();
+            $companyIncome->comment =
+                '由維修清潔審核完畢自動產生';
+            $companyIncome->save();
         }
     }
 
@@ -358,40 +364,6 @@ class MaintenanceController extends Controller
         }
 
         return [];
-    }
-
-    /**
-     * @param $maintenance
-     */
-    private function createCompanyIncome($maintenance): void
-    {
-        $companyIncome = new CompanyIncome();
-        $companyIncome->incomable_id = $maintenance->id;
-        $companyIncome->incomable_type = get_class($maintenance);
-        $companyIncome->subject = "維修清潔編號: {$maintenance->id}";
-        $companyIncome->income_date = Carbon::now();
-        $companyIncome->amount = $maintenance->incomeAmount();
-        $companyIncome->comment =
-            '由維修清潔審核完畢自動產生';
-        $companyIncome->save();
-    }
-
-    /**
-     * @param $maintenance
-     */
-    private function createLandlordPayment($maintenance): void
-    {
-        $landlordPayment = new LandlordPayment();
-        $landlordPayment->room_id = $maintenance->room_id;
-        $landlordPayment->collection_date = Carbon::now();
-        $landlordPayment->billing_vendor = 'CCHOUSE';
-        $landlordPayment->bill_serial_number =
-            $maintenance->payment_request_serial_number;
-        $landlordPayment->subject = "維修案件 #{$maintenance->id}";
-        $landlordPayment->amount = $maintenance->price;
-        $landlordPayment->comment =
-            '系統產生';
-        $landlordPayment->save();
     }
 
     private function updateRoomStatusIfNeeded($room, $incident_type)

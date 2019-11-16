@@ -25,15 +25,16 @@ class BuildingService
     public static function create($data)
     {
         $building = Building::create($data);
-        $emptyRoom = RoomService::makeEmptyRoom();
+        $emptyRoom = RoomService::makeEmptyRoom($building);
         static::hasRooms($building, $emptyRoom);
+
         return $building;
     }
 
     // set foreign key(s) of the given room(s)
     public static function hasRooms($building, $rooms)
     {
-        if (!is_array($rooms)) {
+        if (! is_array($rooms)) {
             $rooms = [$rooms];
         }
         $building->rooms()->saveMany($rooms);

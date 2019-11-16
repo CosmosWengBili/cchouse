@@ -630,9 +630,9 @@
             // rental_receipt: {
             //     required: true
             // },
-            decoration_price:{
-                required: true
-            }
+            // decoration_price:{
+            //     required: true
+            // }
         };
 
         const messages = {

@@ -66,13 +66,14 @@ class TenantController extends Controller
     {
         $responser                          = new FormDataResponser();
         $data                               = $responser->create(Tenant::class, 'tenants.store')->get();
-        $data['data']['contact_infos']      = [];
-        $data['data']['emergency_contacts'] = [];
-        $data['data']['guarantors']         = [];
 
         if ($request->old()) {
             $data['data'] = array_merge($data['data'], $request->old());
         }
+
+        $data['data']['contact_infos']      = [];
+        $data['data']['emergency_contacts'] = [];
+        $data['data']['guarantors']         = [];
 
         return view('tenants.form', $data);
     }
@@ -87,6 +88,11 @@ class TenantController extends Controller
     {
         $responseData                  = new FormDataResponser();
         $data                          = $responseData->edit($tenant, 'tenants.update')->get();
+
+        if ($request->old()) {
+            $data['data'] = array_merge($data['data'], $request->old());
+        }
+
         $data['data']['contact_infos'] = $tenant
             ->contactInfos()
             ->get()
@@ -99,10 +105,6 @@ class TenantController extends Controller
             ->guarantors()
             ->get()
             ->toArray();
-
-        if ($request->old()) {
-            $data['data'] = array_merge($data['data'], $request->old());
-        }
 
         return view('tenants.form', $data);
     }

@@ -352,6 +352,9 @@
                 bank_name: {
                     required: true
                 },
+                bank_branch:{
+                    required: true
+                },
                 bank_code: {
                     required: true,
                     maxlength: 7,
@@ -395,6 +398,9 @@
                     required: '必須輸入'
                 },
                 bank_code: {
+                    required: '必須輸入'
+                },
+                bank_branch:{
                     required: '必須輸入'
                 },
                 account_number: {

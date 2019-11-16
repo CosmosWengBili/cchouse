@@ -71,7 +71,6 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                                 ->get()
                                 ->first()['carry_forward'] ?? 0;
             
-
             // 實收金額
             $actualMoney = $money > 0 ? $money : 0;
             // 應收金額
@@ -165,10 +164,10 @@ class ShareholderExport implements WithMultipleSheets, WithCustomValueBinder
                 $row->commission_type,                              // 物件屬性
                 $row->building_code,                                // 物件代碼
                 $location,                                          // 物件地址
-                'carry_forward' => $row->carry_forward,             // 月結單金額
-                'actual_money' => $actual_money,                    // 實收金額
+                'carry_forward' => 0,                               // 月結單金額
+                'actual_money' => 0,                                // 實收金額
                 $row->name,                                         // 業主
-                'money' => $money,                                    // 應付業主
+                'money' => $money,                                  // 應付業主
                 'method' => $row->method,                           // 方式
                 $row->transfer_from,                                // 匯出銀行
                 'amount_receivable' => $amount_receivable,          // 應收金額 < 0 然後顯示的數字要乘於 -1

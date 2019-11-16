@@ -107,16 +107,6 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>@lang("model.LandlordPayment.is_invoiced")</td>
-                                <td>
-                                    <input type="hidden" value="0" name="is_invoiced"/>
-                                    <input
-                                        type="checkbox"
-                                        name="is_invoiced"
-                                        value="1"
-                                        {{ isset($data["is_invoiced"]) ? ($data['is_invoiced'] ? 'checked' : '') : '' }}
-                                    />
-                                </td>
                                 <td>@lang("model.LandlordPayment.comment")</td>
                                 <td>
                                     <input
